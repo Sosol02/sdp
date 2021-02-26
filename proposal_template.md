@@ -4,7 +4,7 @@
 1Direction
 
 ## Description:
-Universal planificator: given a list of things (fixed in time or not) to do/go/spend time at, 
+Universal scheduler: given a list of things (fixed in time or not) to do/go/spend time at, 
 generate a planning taking opening times, durations and so on into account.
 
 ## Requirements:
