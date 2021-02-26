@@ -1,7 +1,7 @@
-# SDP Proposal - Team \#
+# SDP Proposal - Team \#8
 
 ## Team / App name:
-TODO
+3Sixtee
 
 ## Description:
 - Allow users to take 360° spherical pictures.
