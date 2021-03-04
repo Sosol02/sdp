@@ -12,11 +12,11 @@ generate a planning taking opening times, durations and so on into account.
 - Google Map/OpenStreetMap for getting locations and opening times
 
 ### Sensor usage:
-- GPS for location
+- GPS for location : track in real time the location of the user (a button will allow the user to disable this funcionnality)
 
 ### User support:
 The user can input, using both a calendar and direct inputs, a list of things to do, and will get
-a planning generated automatically.
+a planning generated automatically. The user can add elements to the planning later-on and the app will generate on the fly the updated planning.
 The apllication may send reminders regarding the planning, or export it (e.g. google calendar).
 A logged in user may synchronize the planning with other devices.
 Eventually, he might as well do collaborative planning
