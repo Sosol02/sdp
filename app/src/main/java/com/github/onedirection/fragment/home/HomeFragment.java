@@ -13,23 +13,35 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
+import com.github.onedirection.fragment.calendar.CalendarFragment;
+import com.github.onedirection.fragment.calendar.CalendarViewModel;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    private HomeViewModel mViewModel;
+    private TextView mText;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+    public static CalendarFragment newInstance() {
+        return new CalendarFragment();
+    }
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        mText = root.findViewById(R.id.textExampleHome);
+        return root;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onChanged(String s) {
+                mText.setText(s);
             }
         });
-        return root;
     }
 }
