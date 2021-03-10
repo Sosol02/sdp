@@ -1,9 +1,11 @@
+version: "2"
 checks:
-  - method-complexity
+  method-complexity:
+    enabled: true
     config:
-      - threshold: 8
+      threshold: 8
 exclude_patterns:
-  - "**/test/"
-  - "**/androidTest/"
-  - "**test"
+- "**/test/"
+- "**/androidTest/"
+- "**test"
 
