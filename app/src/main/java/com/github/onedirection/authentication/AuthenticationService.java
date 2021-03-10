@@ -11,6 +11,8 @@ public interface AuthenticationService {
 
     CompletableFuture<User> loginUser(String identifier, String credentials);
 
+    CompletableFuture<User> updateDisplayName(String newName);
+
     void logoutUser();
 
 }

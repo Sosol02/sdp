@@ -7,12 +7,13 @@ package com.github.onedirection.authentication;
  */
 public class FailedLoginException extends RuntimeException {
 
-    public FailedLoginException(String email){
+    public FailedLoginException(String email) {
         super("Could not login `" + email + "`.");
     }
 
-    public FailedLoginException(String email, Throwable cause){
-        super("Could not login `" + email + "`.", cause);
+    public FailedLoginException(String email, Throwable cause) {
+        this("Could not login `" + email + "`.");
+        initCause(cause);
     }
 
 }

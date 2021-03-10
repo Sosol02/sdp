@@ -7,12 +7,13 @@ package com.github.onedirection.authentication;
  */
 public class FailedRegistrationException extends RuntimeException {
 
-    public FailedRegistrationException(String email){
+    public FailedRegistrationException(String email) {
         super("Could not register `" + email + "`.");
     }
 
-    public FailedRegistrationException(String email, Throwable cause){
-        super("Could not register `" + email + "`.", cause);
+    public FailedRegistrationException(String email, Throwable cause) {
+        this("Could not register `" + email + "`.");
+        initCause(cause);
     }
 
 }
