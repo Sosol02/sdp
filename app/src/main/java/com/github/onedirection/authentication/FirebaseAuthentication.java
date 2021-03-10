@@ -11,6 +11,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/** A login service based on google's firebase. */
 final public class FirebaseAuthentication implements AuthenticationService {
     private final static FirebaseAuth auth = FirebaseAuth.getInstance();
     private final static FirebaseAuthentication self = new FirebaseAuthentication();
@@ -85,17 +86,17 @@ final public class FirebaseAuthentication implements AuthenticationService {
     }
 
     @Override
-    public CompletableFuture<User> registerUser(String identifier, String credentials) {
+    public CompletableFuture<User> registerUser(String identifier, String credentials) throws FailedLoginException {
         return convertAuthTask(auth.createUserWithEmailAndPassword(identifier, credentials), identifier);
     }
 
     @Override
-    public CompletableFuture<User> loginUser(String identifier, String credentials) {
+    public CompletableFuture<User> loginUser(String identifier, String credentials) throws FailedLoginException {
         return convertAuthTask(auth.signInWithEmailAndPassword(identifier, credentials), identifier);
     }
 
     @Override
-    public CompletableFuture<User> updateDisplayName(String newName) {
+    public CompletableFuture<User> updateDisplayName(String newName) throws NoUserLoggedInException {
         UserProfileChangeRequest changes = (new UserProfileChangeRequest.Builder()).setDisplayName(newName).build();
         return updateProfile(changes);
     }

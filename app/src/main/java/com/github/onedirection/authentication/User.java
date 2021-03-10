@@ -2,14 +2,22 @@ package com.github.onedirection.authentication;
 
 import java.util.Objects;
 
+/**
+ * Immutable class representing a user.
+ */
 public class User {
     private final String name;
     private final String email;
 
+    /** Create a user.
+     *
+     * @param name The user's name (same as email if null).
+     * @param email The user's email (cannot be null).
+     */
     User(String name, String email) {
         Objects.requireNonNull(email, "Email cannot be null");
 
-        this.name = name == null ? "" : name;
+        this.name = name == null ? email : name;
         this.email = email;
     }
 
