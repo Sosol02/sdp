@@ -86,17 +86,17 @@ final public class FirebaseAuthentication implements AuthenticationService {
     }
 
     @Override
-    public CompletableFuture<User> registerUser(String identifier, String credentials) throws FailedLoginException {
+    public CompletableFuture<User> registerUser(String identifier, String credentials) {
         return convertAuthTask(auth.createUserWithEmailAndPassword(identifier, credentials), identifier);
     }
 
     @Override
-    public CompletableFuture<User> loginUser(String identifier, String credentials) throws FailedLoginException {
+    public CompletableFuture<User> loginUser(String identifier, String credentials) {
         return convertAuthTask(auth.signInWithEmailAndPassword(identifier, credentials), identifier);
     }
 
     @Override
-    public CompletableFuture<User> updateDisplayName(String newName) throws NoUserLoggedInException {
+    public CompletableFuture<User> updateDisplayName(String newName) {
         UserProfileChangeRequest changes = (new UserProfileChangeRequest.Builder()).setDisplayName(newName).build();
         return updateProfile(changes);
     }

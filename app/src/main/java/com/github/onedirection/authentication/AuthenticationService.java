@@ -11,29 +11,29 @@ public interface AuthenticationService {
 
     /** Attempt to register the user.
      *
+     * Potential exceptional completion: FailedLoginException If the registration attempt fails (e.g. identifier already in use).
      * @param identifier The user's identifier.
      * @param credentials The user's password.
      * @return The user, is the registration succeeds·
-     * @throws FailedLoginException If the registration attempt fails (e.g. identifier already in use).
      */
-    CompletableFuture<User> registerUser(String identifier, String credentials) throws FailedLoginException;
+    CompletableFuture<User> registerUser(String identifier, String credentials);
 
     /** Attempt to login the user.
      *
+     * Potential exceptional completion: FailedLoginException If the login attempt fails (e.g. wrong credentials).
      * @param identifier The user's identifier.
      * @param credentials The user's password.
      * @return The user, if the login succeeds.
-     * @throws FailedLoginException If the login attempt fails (e.g. wrong credentials).
      */
-    CompletableFuture<User> loginUser(String identifier, String credentials) throws FailedLoginException;
+    CompletableFuture<User> loginUser(String identifier, String credentials);
 
     /** Change the display name of the currently logged in user.
      *
+     * Potential exceptional completion: NoUserLoggedInException If no user is currently logged in.
      * @param newName The user's new display name.
      * @return The updated user, if the operation succeeds.
-     * @throws NoUserLoggedInException If no user is currently logged in.
      */
-    CompletableFuture<User> updateDisplayName(String newName) throws NoUserLoggedInException;
+    CompletableFuture<User> updateDisplayName(String newName);
 
     /** Disconnects the current user. */
     void logoutUser();
