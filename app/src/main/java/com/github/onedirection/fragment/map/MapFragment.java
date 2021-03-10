@@ -21,10 +21,6 @@ public class MapFragment extends Fragment {
     private MapViewModel mViewModel;
     private TextView mText;
 
-    public static MapFragment newInstance() {
-        return new MapFragment();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

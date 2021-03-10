@@ -21,10 +21,6 @@ public class HomeFragment extends Fragment {
     private HomeViewModel mViewModel;
     private TextView mText;
 
-    public static CalendarFragment newInstance() {
-        return new CalendarFragment();
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);

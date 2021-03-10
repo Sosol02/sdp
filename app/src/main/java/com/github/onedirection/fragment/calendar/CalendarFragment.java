@@ -21,10 +21,6 @@ public class CalendarFragment extends Fragment {
     private CalendarViewModel mViewModel;
     private TextView mText;
 
-    public static CalendarFragment newInstance() {
-        return new CalendarFragment();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
