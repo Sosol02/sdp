@@ -4,6 +4,8 @@ checks:
     enabled: true
     config:
       threshold: 8
+  similar-code:
+    enabled: false
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
