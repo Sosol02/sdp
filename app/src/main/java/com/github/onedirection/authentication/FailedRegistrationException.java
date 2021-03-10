@@ -5,7 +5,7 @@ package com.github.onedirection.authentication;
  * wrong identifier (mail, phone number,...)
  * or password.
  */
-public class FailedRegistrationException extends RuntimeException {
+public class FailedRegistrationException extends Exception {
 
     public FailedRegistrationException(String email) {
         super("Could not register `" + email + "`.");

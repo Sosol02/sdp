@@ -52,8 +52,8 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        CompletableFuture<User> fUser = auth.loginUser(TEST_EMAIL, TEST_PSW);
         try{
+            CompletableFuture<User> fUser = auth.loginUser(TEST_EMAIL, TEST_PSW);
             User user = fUser.join();
             assertTrue(auth.getCurrentUser().isPresent());
             assertThat(auth.getCurrentUser().get(), is(user));
@@ -80,7 +80,12 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        authFails(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
+        try {
+            authFails(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
+        }
+        catch(Exception e){
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -88,8 +93,13 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        authFails(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
-        authFails(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+        try{
+            authFails(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+            authFails(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+        }
+        catch (Exception e){
+            fail(e.getMessage());
+        }
     }
 
     @Test

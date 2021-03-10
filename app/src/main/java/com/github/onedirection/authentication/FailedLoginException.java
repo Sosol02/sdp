@@ -5,7 +5,7 @@ package com.github.onedirection.authentication;
  * wrong identifier (mail, phone number,...)
  * or password.
  */
-public class FailedLoginException extends RuntimeException {
+public class FailedLoginException extends Exception {
 
     public FailedLoginException(String email) {
         super("Could not login `" + email + "`.");
