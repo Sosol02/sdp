@@ -1,6 +1,6 @@
 checks:
   - method-complexity
-    - config:
+    config:
       - threshold: 8
 exclude_patterns:
   - "**/test/"
