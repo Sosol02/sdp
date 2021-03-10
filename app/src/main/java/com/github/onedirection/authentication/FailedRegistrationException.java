@@ -2,8 +2,7 @@ package com.github.onedirection.authentication;
 
 /**
  * Represents a failed registration attempt, due to
- * wrong identifier (mail, phone number,...)
- * or password.
+ * reuse of email address.
  */
 public class FailedRegistrationException extends Exception {
 
