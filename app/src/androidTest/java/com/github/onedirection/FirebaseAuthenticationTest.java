@@ -3,6 +3,8 @@ package com.github.onedirection;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.authentication.AuthenticationService;
+import com.github.onedirection.authentication.FailedLoginException;
+import com.github.onedirection.authentication.FailedRegistrationException;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +30,7 @@ import static org.junit.Assert.fail;
 public class FirebaseAuthenticationTest {
 
     // Note: those tests are dirty !
-    // Once we were able to set up a dang Firebase Auth emulator,
+    // Once we are able to set up a dang Firebase Auth emulator,
     // those tests should use that instead...
     // Or at least hide the psw somewhere safe.
 
@@ -61,13 +63,13 @@ public class FirebaseAuthenticationTest {
         }
     }
 
-    private void cannotLogin(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> cause){
+    private void cannotLogin(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> expected){
         try{
             User user = fUser.get();
             fail("User " + user + " should not have been able to login.");
         }
         catch(Exception e){
-            if(cause.isInstance(e.getCause())){
+            if(expected.isInstance(e.getCause())){
                 assertFalse(auth.getCurrentUser().isPresent());
                 ; //This is what we expect !
             }
@@ -82,7 +84,7 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        cannotLogin(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FirebaseAuthInvalidUserException.class);
+        cannotLogin(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
     }
 
     @Test
@@ -90,7 +92,7 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        cannotLogin(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FirebaseAuthUserCollisionException.class);
-        cannotLogin(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FirebaseAuthUserCollisionException.class);
+        cannotLogin(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+        cannotLogin(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
     }
 }
