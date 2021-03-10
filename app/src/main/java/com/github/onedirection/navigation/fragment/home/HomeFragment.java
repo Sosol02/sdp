@@ -1,4 +1,4 @@
-package com.github.onedirection.fragment.home;
+package com.github.onedirection.navigation.fragment.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,8 +13,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
-import com.github.onedirection.fragment.calendar.CalendarFragment;
-import com.github.onedirection.fragment.calendar.CalendarViewModel;
 
 public class HomeFragment extends Fragment {
 
@@ -29,8 +27,8 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {

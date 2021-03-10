@@ -1,4 +1,4 @@
-package com.github.onedirection.fragment.home;
+package com.github.onedirection.navigation.fragment.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

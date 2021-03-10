@@ -1,4 +1,4 @@
-package com.github.onedirection.fragment.map;
+package com.github.onedirection.navigation.fragment.map;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,8 +30,8 @@ public class MapFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
 
         mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {

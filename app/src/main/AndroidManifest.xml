@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
         <activity
-            android:name=".NavigationActivity"
+            android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.1Direction.NoActionBar">
             <intent-filter>

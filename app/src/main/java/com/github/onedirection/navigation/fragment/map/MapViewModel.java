@@ -1,15 +1,15 @@
-package com.github.onedirection.fragment.calendar;
+package com.github.onedirection.navigation.fragment.map;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class CalendarViewModel extends ViewModel {
+public class MapViewModel extends ViewModel {
     private MutableLiveData<String> mText;
 
-    public CalendarViewModel() {
+    public MapViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is an example text for Calendar");
+        mText.setValue("This is an example text for Map");
     }
 
     public LiveData<String> getText() {
