@@ -18,9 +18,11 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -54,8 +56,8 @@ public class FirebaseAuthenticationTest {
         try{
             User user = fUser.join();
             assertTrue(auth.getCurrentUser().isPresent());
-            assertEquals(auth.getCurrentUser().get(), user);
-            assertEquals(user.getEmail(), TEST_EMAIL);
+            assertThat(auth.getCurrentUser().get(), is(user));
+            assertThat(user.getEmail(), is(TEST_EMAIL));
         }
         catch (Exception e){
             fail(e.getMessage());
@@ -68,12 +70,8 @@ public class FirebaseAuthenticationTest {
             fail("User " + user + " should not have been able to login.");
         }
         catch(Exception e){
-            if(expected.isInstance(e.getCause())){
-                assertFalse(auth.getCurrentUser().isPresent());
-            }
-            else{
-                fail("Unexpected exception:\n" + e.getMessage());
-            }
+            assertThat(e.getCause(), is(instanceOf(expected)));
+            assertFalse(auth.getCurrentUser().isPresent());
         }
     }
 
@@ -97,14 +95,14 @@ public class FirebaseAuthenticationTest {
     @Test
     public void userCanChangeDisplayName() {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
-        assertNotEquals(TEST_NAME1, TEST_NAME2);
+        assertThat(TEST_NAME1, not(TEST_NAME2));
 
         try {
             auth.loginUser(TEST_EMAIL, TEST_PSW).get();
-            assertEquals(TEST_NAME1, auth.updateDisplayName(TEST_NAME1).get().getName());
-            assertEquals(TEST_NAME1, auth.getCurrentUser().get().getName());
-            assertEquals(TEST_NAME2, auth.updateDisplayName(TEST_NAME2).get().getName());
-            assertEquals(TEST_NAME2, auth.getCurrentUser().get().getName());
+            assertThat(auth.updateDisplayName(TEST_NAME1).get().getName(), is(TEST_NAME1));
+            assertThat(auth.getCurrentUser().get().getName(), is(TEST_NAME1));
+            assertThat(auth.updateDisplayName(TEST_NAME2).get().getName(), is(TEST_NAME2));
+            assertThat(auth.getCurrentUser().get().getName(), is(TEST_NAME2));
         }
         catch(Exception e){
             fail(e.getMessage());
@@ -120,7 +118,7 @@ public class FirebaseAuthenticationTest {
             fail("Display name update should have failed.");
         }
         catch(Exception e){
-            assert(e.getCause() instanceof NoUserLoggedInException);
+            assertThat(e.getCause(), is(instanceOf(NoUserLoggedInException.class)));
         }
 
     }
