@@ -1,7 +1,7 @@
 package com.github.onedirection.authentication;
 
 /**
- * Represents a failed login attempt, due to
+ * Represents a failed registration attempt, due to
  * wrong identifier (mail, phone number,...)
  * or password.
  */
