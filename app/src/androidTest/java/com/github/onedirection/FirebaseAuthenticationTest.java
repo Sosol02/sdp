@@ -1,5 +1,8 @@
 package com.github.onedirection;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.authentication.AuthenticationService;
@@ -8,40 +11,34 @@ import com.github.onedirection.authentication.FailedRegistrationException;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.NoUserLoggedInException;
 import com.github.onedirection.authentication.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class FirebaseAuthenticationTest {
 
-    // Note: those tests are dirty !
+    // Note: those tests aren't the cleanest...
     // Once we are able to set up a dang Firebase Auth emulator,
     // those tests should use that instead...
-    // Or at least hide the psw somewhere safe.
 
-    private static final String TEST_EMAIL = "onedirection.nottheband@gmail.com";
-    private static final String TEST_PSW = "123456";
+    private static final Context ctx = ApplicationProvider.getApplicationContext();
+
+    private static final String TEST_EMAIL = ctx.getString(R.string.test_account);
+    private static final String DISABLED_EMAIL = ctx.getString(R.string.test_disabled_account);
+    private static final String TEST_PSW = ctx.getString(R.string.test_password);
     private static final String TEST_NAME1 = "TEST1";
     private static final String TEST_NAME2 = "TEST2";
 
-    private static final String DISABLED_EMAIL = "disable@disabled.disabled";
 
     @Before
     public void logout() {
@@ -65,7 +62,7 @@ public class FirebaseAuthenticationTest {
         }
     }
 
-    private void cannotLogin(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> expected){
+    private void authFails(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> expected){
         try{
             User user = fUser.get();
             fail("User " + user + " should not have been able to login.");
@@ -85,7 +82,7 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        cannotLogin(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
+        authFails(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
     }
 
     @Test
@@ -93,8 +90,8 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        cannotLogin(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
-        cannotLogin(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+        authFails(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
+        authFails(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
     }
 
     @Test
@@ -119,13 +116,11 @@ public class FirebaseAuthenticationTest {
     public void profileCannotBeUpdatedWithoutUser() {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         try{
-            auth.updateDisplayName(TEST_NAME1);
-        }
-        catch(NoUserLoggedInException e){
-            ; // That's what we expect
+            auth.updateDisplayName(TEST_NAME1).get();
+            fail("Display name update should have failed.");
         }
         catch(Exception e){
-            fail(e.getMessage());
+            assert(e.getCause() instanceof NoUserLoggedInException);
         }
 
     }
