@@ -36,11 +36,9 @@ public class LoginFragmentTest {
                 .check(matches(withText(R.string.menu_login)));
 
         onView(withId(R.id.username)).perform(ViewActions.clearText(), ViewActions.typeText("Test"));
-        onView(withId(R.id.password)).perform(ViewActions.clearText(), ViewActions.typeText("1234"));
-        onView(withId(R.id.login)).perform(ViewActions.click());
 
-        onView(withId(R.id.username)).perform(ViewActions.clearText(), ViewActions.typeText("Test"));
-        onView(withId(R.id.password)).perform(ViewActions.clearText(), ViewActions.typeText("1234"));
+        onView(withId(R.id.username)).perform(ViewActions.typeText("@test.test"));
+        onView(withId(R.id.password)).perform(ViewActions.typeText("345656"));
         onView(withId(R.id.login)).perform(ViewActions.click());
     }
 }
