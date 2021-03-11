@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/fragment_vertical_margin"
     android:paddingRight="@dimen/fragment_horizontal_margin"
     android:paddingBottom="@dimen/fragment_vertical_margin"
-    tools:context=".navigation.fragment.account.ui.login.LoginFragment">
+    tools:context=".navigation.fragment.login.LoginFragment">
 
     <EditText
         android:id="@+id/username"
@@ -54,8 +54,20 @@
         android:text="@string/action_sign_in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.193" />
+
+    <Switch
+        android:id="@+id/login_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.357"
+        app:layout_constraintStart_toEndOf="@+id/login"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintVertical_bias="0.206" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

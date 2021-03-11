@@ -1,4 +1,4 @@
-package com.github.onedirection.navigation.fragment.account.ui.login;
+package com.github.onedirection.navigation.fragment.login;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,23 +16,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.onedirection.R;
+import com.github.onedirection.authentication.User;
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
+    private TextView username;
+    private boolean register;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        View root = inflater.inflate(R.layout.fragment_login, container, false);
+        username = root.findViewById(R.id.nav_header_username);
+        return root;
     }
 
     @Override
@@ -43,6 +49,7 @@ public class LoginFragment extends Fragment {
         final EditText usernameEditText = view.findViewById(R.id.username);
         final EditText passwordEditText = view.findViewById(R.id.password);
         final Button loginButton = view.findViewById(R.id.login);
+        final Switch switchRegister = view.findViewById(R.id.login_switch);
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
             @Override
@@ -60,17 +67,14 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        loginViewModel.getLoginResult().observe(getViewLifecycleOwner(), new Observer<LoginResult>() {
+        loginViewModel.getUserResult().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
+            public void onChanged(@Nullable User user) {
+                if (user != null) {
+                    System.out.println("bb");
+                    updateUiWithUser(user);
+                } else {
+                    showLoginFailed(R.string.login_failed);
                 }
             }
         });
@@ -100,7 +104,7 @@ public class LoginFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                            passwordEditText.getText().toString(), register);
                 }
                 return false;
             }
@@ -110,14 +114,21 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                        passwordEditText.getText().toString(), register);
+            }
+        });
+
+        switchRegister.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                register = b;
             }
         });
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
+    private void updateUiWithUser(User model) {
+        String welcome = getString(R.string.welcome) + model.getName();
+        username.setText(model.getName());
         if (getContext() != null && getContext().getApplicationContext() != null) {
             Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         }

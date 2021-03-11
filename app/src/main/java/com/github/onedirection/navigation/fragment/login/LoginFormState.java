@@ -1,4 +1,4 @@
-package com.github.onedirection.navigation.fragment.account.ui.login;
+package com.github.onedirection.navigation.fragment.login;
 
 import androidx.annotation.Nullable;
 

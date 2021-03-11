@@ -21,11 +21,10 @@ import java.util.List;
 
 public class AccountFragment extends Fragment {
 
-    private AccountViewModel mViewModel;
-    ExpandableListView expandableListView;
-    ExpandableListAdapter expandableListAdapter;
-    List<String> expandableListTitle;
-    HashMap<String, List<String>> expandableListDetail;
+    private ExpandableListView expandableListView;
+    private ExpandableListAdapter expandableListAdapter;
+    private List<String> expandableListTitle;
+    private HashMap<String, List<String>> expandableListDetail;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -74,13 +73,6 @@ public class AccountFragment extends Fragment {
             }
         });
         return root;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
-        // TODO: Use the ViewModel
     }
 
 }

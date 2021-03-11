@@ -1,15 +1,23 @@
-package com.github.onedirection.navigation.fragment.account.ui.login;
+package com.github.onedirection.navigation.fragment.login;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.github.onedirection.R;
+import com.github.onedirection.authentication.FailedLoginException;
+import com.github.onedirection.authentication.FailedRegistrationException;
+import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.authentication.NoUserLoggedInException;
+import com.github.onedirection.authentication.User;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class LoginViewModel extends ViewModel {
 
     private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private final MutableLiveData<User> userResult = new MutableLiveData<>();
 
     public LoginViewModel() {
 
@@ -18,27 +26,17 @@ public class LoginViewModel extends ViewModel {
     LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
     }
-
-    LiveData<LoginResult> getLoginResult() {
-        return loginResult;
+    LiveData<User> getUserResult() {
+        return userResult;
     }
 
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        //TODO link to auth
-        /*Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+    public void login(String username, String password, boolean register) {
+        FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
+        if (register) {
+            auth.registerUser(username, password).thenAccept(user -> userResult.setValue(user));
         } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }*/
-
-        //TODO remove when linked to auth
-        loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
-        loginResult.setValue(new LoginResult(R.string.login_failed));
-
+            auth.loginUser(username, password).thenAccept(user -> userResult.setValue(user));
+        }
     }
 
     public void loginDataChanged(String username, String password) {

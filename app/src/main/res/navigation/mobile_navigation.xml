@@ -31,7 +31,7 @@
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.github.onedirection.navigation.fragment.account.ui.login.LoginFragment"
+        android:name="com.github.onedirection.navigation.fragment.login.LoginFragment"
         android:label="@string/menu_login"
         tools:layout="@layout/fragment_login" />
 </navigation>
