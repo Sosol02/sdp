@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
-        <activity android:name=".CalendarUI"></activity>
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"

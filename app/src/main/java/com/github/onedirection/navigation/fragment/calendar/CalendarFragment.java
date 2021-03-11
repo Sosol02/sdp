@@ -19,13 +19,11 @@ import com.github.onedirection.R;
 public class CalendarFragment extends Fragment {
 
     private CalendarViewModel mViewModel;
-    private TextView mText;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
-        mText = root.findViewById(R.id.textExampleCalendar);
         return root;
     }
 
@@ -33,13 +31,6 @@ public class CalendarFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(CalendarViewModel.class);
-
-        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                mText.setText(s);
-            }
-        });
     }
 
 }
