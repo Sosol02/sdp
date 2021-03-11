@@ -1,4 +1,4 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.store;
 
 /**
  * Represents the "collection" in which to store an item.
@@ -6,7 +6,10 @@ package com.github.onedirection.database;
  * See firebase docs for more info.
  */
 public enum DatabaseCollection {
-    User("user"), Event("event"); // TODO: add the actual collections
+    Debug("debug"),
+    User("user"),
+    Event("event"),
+    ; // TODO: add the actual collections
 
     private final String collectionName;
 

@@ -1,6 +1,6 @@
 package com.github.onedirection;
 
-import com.github.onedirection.database.Id;
+import com.github.onedirection.database.store.Id;
 
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class IdUnitTest {
-    private static int testNum = 500;
+    private static final int testNum = 500;
 
     private ArrayList<Id> genManyIds(int count) {
         ArrayList<Id> ids = new ArrayList<Id>();

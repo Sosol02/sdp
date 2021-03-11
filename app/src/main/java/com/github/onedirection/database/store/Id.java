@@ -1,4 +1,4 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.store;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -9,16 +9,20 @@ public class Id {
     // and the time thing uniques it
     // It would need the same uuid to be generated in the same millis
     // for a collision to happen.
-    private final UUID uuid;
-    private final long creationTime;
+    private final String uuid;
 
-    private Id(UUID uuid, long creationTime) {
-        this.uuid = uuid;
-        this.creationTime = creationTime;
+    public Id() { this(UUID.randomUUID()); }
+
+    public Id(UUID uuid) {
+        this.uuid = uuid.toString();
     }
 
     public static Id createId() {
-        return new Id(UUID.randomUUID(), System.currentTimeMillis());
+        return new Id(UUID.randomUUID());
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     @Override
@@ -26,12 +30,18 @@ public class Id {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Id id = (Id) o;
-        return creationTime == id.creationTime &&
-                uuid.equals(id.uuid);
+        return Objects.equals(uuid, id.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, creationTime);
+        return Objects.hash(uuid);
+    }
+
+    @Override
+    public String toString() {
+        return "Id{" +
+                "uuid='" + uuid + '\'' +
+                '}';
     }
 }
