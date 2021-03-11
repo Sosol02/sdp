@@ -31,7 +31,7 @@ public class User {
 
     @Override
     public boolean equals(Object other) {
-        if (other != null && other instanceof User) {
+        if (other instanceof User) {
             User that = (User) other;
             return this.name.equals(that.name) && this.email.equals(that.email);
         } else {

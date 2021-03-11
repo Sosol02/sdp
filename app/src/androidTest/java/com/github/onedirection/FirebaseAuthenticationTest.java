@@ -130,6 +130,10 @@ public class FirebaseAuthenticationTest {
         catch(Exception e){
             assertThat(e.getCause(), is(instanceOf(NoUserLoggedInException.class)));
         }
+    }
 
+    @Test
+    public void firebaseAuthenticationIsDefaultAuthentication() {
+        assertThat(AuthenticationService.getDefaultInstance(), is(FirebaseAuthentication.getInstance()));
     }
 }

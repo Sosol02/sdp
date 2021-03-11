@@ -1,5 +1,7 @@
 package com.github.onedirection.authentication;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -104,5 +106,10 @@ final public class FirebaseAuthentication implements AuthenticationService {
     @Override
     public void logoutUser() {
         auth.signOut();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof FirebaseAuthentication;
     }
 }

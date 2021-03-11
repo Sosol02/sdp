@@ -6,6 +6,11 @@ import java.util.concurrent.CompletableFuture;
 /** General interface implemented by all login services. */
 public interface AuthenticationService {
 
+    /** @return The default login service of the app. */
+    static AuthenticationService getDefaultInstance() {
+        return FirebaseAuthentication.getInstance();
+    }
+
     /** @return The user which is currently logged in.  */
     Optional<User> getCurrentUser();
 
