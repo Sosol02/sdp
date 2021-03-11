@@ -1,0 +1,46 @@
+package com.github.onedirection;
+
+import android.widget.TextView;
+
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.onedirection.navigation.NavigationActivity;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
+
+@RunWith(AndroidJUnit4.class)
+public class LoginFragmentTest {
+
+    @Rule
+    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+
+    @Test
+    public void testLogin() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_login)).perform(ViewActions.click());
+
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText(R.string.menu_login)));
+
+        onView(withId(R.id.username)).perform(ViewActions.clearText(), ViewActions.typeText("Test"));
+        onView(withId(R.id.password)).perform(ViewActions.clearText(), ViewActions.typeText("1234"));
+        onView(withId(R.id.login)).perform(ViewActions.click());
+
+        onView(withId(R.id.username)).perform(ViewActions.clearText(), ViewActions.typeText("Test"));
+        onView(withId(R.id.password)).perform(ViewActions.clearText(), ViewActions.typeText("1234"));
+        onView(withId(R.id.login)).perform(ViewActions.click());
+    }
+}
