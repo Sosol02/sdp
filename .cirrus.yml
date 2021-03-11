@@ -10,15 +10,25 @@ check_android_task:
     kvm: true
     cpu: 8
     memory: 10G
+  environment:
+    TEST_SECRETS: ENCRYPTED[d123faca3874f2bb08563f0937941ea8d0f1366833ba0e703ee2c396409f8edce291d2b8d3c43e87b2e59b900a31291d]
+    FIREBASE_TOKEN: ENCRYPTED[e30dc05ad919e78edb3f92d474e9188dc30150f6cdba2ce8c66c451dbc895146a4a860849e84d7289cd88718d12475f9]
+    FIREBASE_CONFIG: ENCRYPTED[c76555467e63a4c7088eec74bd38984d8574e9a065d033a7025ab9744a921c377cd2245e1b77ed05916bd23e672b427c]
   create_device_script:
     echo no | avdmanager create avd --force --name test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH"
   start_emulator_background_script:
     $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -camera-back none
-  environment:
-    TEST_SECRETS: ENCRYPTED[d123faca3874f2bb08563f0937941ea8d0f1366833ba0e703ee2c396409f8edce291d2b8d3c43e87b2e59b900a31291d]
   test_secrets_file:
     path: app/src/main/res/values/test_secrets.xml
     variable_name: TEST_SECRETS
+  firebase_json_file:
+    path: firebase/firebase.json
+    variable_name: FIREBASE_CONFIG
+  setup_firebase_emulator_script: |
+    cd firebase
+    curl -sL https://firebase.tools/bin/linux/latest -o firebase-tools
+    chmod u+x firebase-tools
+    ./firebase-tools emulators:start --only firestore &
   build_script: |
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest

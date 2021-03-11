@@ -46,6 +46,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation platform('com.google.firebase:firebase-bom:26.6.0')
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
