@@ -1,5 +1,7 @@
 package com.github.onedirection.authentication;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
@@ -40,13 +42,17 @@ final public class FirebaseAuthentication implements AuthenticationService {
                 res -> {
                     if (res.isSuccessful()) {
                         // We are sure that the user exists (he just logged in)
+                        Log.d("FirebaseLogin", "User logged in: " + username);
                         result.complete(convertUser(res.getResult().getUser()).get());
                     } else {
                         if (res.getException() instanceof FirebaseAuthInvalidUserException) {
+                            Log.d("FirebaseLogin", "Login failed - no such user: " + username);
                             result.completeExceptionally(new FailedLoginException(username, res.getException()));
                         } else if (res.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Log.d("FirebaseLogin", "Login failed - cannot register: " + username);
                             result.completeExceptionally(new FailedRegistrationException(username, res.getException()));
                         } else {
+                            Log.d("FirebaseLogin", "Login failed - unknown: " + username);
                             result.completeExceptionally(res.getException());
                         }
                     }
