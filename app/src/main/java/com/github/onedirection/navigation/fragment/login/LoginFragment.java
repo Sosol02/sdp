@@ -54,7 +54,9 @@ public class LoginFragment extends Fragment {
 
         View headerView = navigationView.getHeaderView(0);
         TextView drawerUsername = (TextView) headerView.findViewById(R.id.nav_header_username);
+        TextView drawerEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
         drawerUsername.setText("Guest");
+        drawerEmail.setText("");
 
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
@@ -78,6 +80,7 @@ public class LoginFragment extends Fragment {
             public void onChanged(@Nullable User user) {
                 if (user != null) {
                     drawerUsername.setText(user.getName());
+                    drawerEmail.setText(user.getName());
                     updateUiWithUser(user);
                 } else {
                     showLoginFailed(R.string.login_failed);
@@ -133,7 +136,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void updateUiWithUser(User model) {
-        String welcome = getString(R.string.welcome) + model.getName();
+        String welcome = getString(R.string.welcome) + " " + model.getName();
         if (getContext() != null && getContext().getApplicationContext() != null) {
             Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         }
