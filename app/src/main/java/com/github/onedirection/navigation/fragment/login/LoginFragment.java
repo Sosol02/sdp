@@ -24,11 +24,11 @@ import android.widget.Toast;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.User;
+import com.google.android.material.navigation.NavigationView;
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
-    private TextView username;
     private boolean register;
 
     @Nullable
@@ -37,7 +37,6 @@ public class LoginFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_login, container, false);
-        username = root.findViewById(R.id.nav_header_username);
         return root;
     }
 
@@ -50,6 +49,13 @@ public class LoginFragment extends Fragment {
         final EditText passwordEditText = view.findViewById(R.id.password);
         final Button loginButton = view.findViewById(R.id.login);
         final Switch switchRegister = view.findViewById(R.id.login_switch);
+
+        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = (TextView) headerView.findViewById(R.id.nav_header_username);
+        drawerUsername.setText("Guest");
+
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
             @Override
@@ -71,7 +77,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onChanged(@Nullable User user) {
                 if (user != null) {
-                    System.out.println("bb");
+                    drawerUsername.setText(user.getName());
                     updateUiWithUser(user);
                 } else {
                     showLoginFailed(R.string.login_failed);
@@ -128,7 +134,6 @@ public class LoginFragment extends Fragment {
 
     private void updateUiWithUser(User model) {
         String welcome = getString(R.string.welcome) + model.getName();
-        username.setText(model.getName());
         if (getContext() != null && getContext().getApplicationContext() != null) {
             Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         }
