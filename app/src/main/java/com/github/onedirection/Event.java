@@ -20,7 +20,6 @@ class Event {
         this.date = date;
         this.start_time = start_time;
         this.end_time = end_time;
-        //send information to the db?
     }
 
     public Event set_name(String new_value){
