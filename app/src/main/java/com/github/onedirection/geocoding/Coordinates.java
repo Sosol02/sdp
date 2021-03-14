@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import static java.lang.Math.abs;
 
+/** Represents (immutable) geographic coordinates. */
 public final class Coordinates {
     public final double latitude;
     public final double longitude;
@@ -29,6 +30,12 @@ public final class Coordinates {
                 Double.compare(that.longitude, longitude) == 0;
     }
 
+    /**
+     * Checks whether two coordinates are close enough.
+     * @param that The other coordinates.
+     * @param tolerance The maximal difference for each component.
+     * @return True if the two coordinates are close.
+     */
     public boolean areCloseTo(Coordinates that, double tolerance){
         return  abs(this.latitude - that.latitude) < tolerance &&
                 abs(this.longitude - that.longitude) < tolerance;

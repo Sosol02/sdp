@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/** OpenStreetMap's geocoding service. */
 public final class NominatimGeocoding implements GeocodingService {
     private static final String QUERY_FORMAT = "https://nominatim.openstreetmap.org/search?format=json&q=%s";
     private static final String NAME_FIELD = "display_name";
@@ -39,7 +40,7 @@ public final class NominatimGeocoding implements GeocodingService {
         return String.format(QUERY_FORMAT, HTTP.encode(query));
     }
 
-    private Optional<Pair<Coordinates, String>> parseResult(JSONArray json){
+    private static Optional<Pair<Coordinates, String>> parseResult(JSONArray json){
         Log.d(LOGCAT_TAG, "Parsing: " + json);
         try {
             JSONObject best = json.getJSONObject(0);
@@ -69,6 +70,6 @@ public final class NominatimGeocoding implements GeocodingService {
 
     @Override
     public CompletableFuture<Pair<Coordinates, String>> getBestNamedCoordinates(String locationName) {
-        return Monads.flatten(sendRequest(locationName).thenApply(this::parseResult));
+        return Monads.flatten(sendRequest(locationName).thenApply(NominatimGeocoding::parseResult));
     }
 }

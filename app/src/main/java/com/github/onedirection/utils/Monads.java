@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/** Functions to manipulate or transform monadic classes.  */
 public final class Monads {
 
     private Monads() {}
