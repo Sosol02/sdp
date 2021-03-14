@@ -13,6 +13,7 @@ public final class HTTP {
         try {
             return URLEncoder.encode(arg, ENCODING);
         } catch (UnsupportedEncodingException e) {
+            // Should never happen
             throw new Error(e);
         }
     }

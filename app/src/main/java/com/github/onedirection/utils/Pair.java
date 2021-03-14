@@ -14,8 +14,8 @@ public final class Pair<S, T> {
     @Override
     public String toString() {
         return "Pair{" +
-                "first=" + first +
-                ", second=" + second +
+                first +
+                ", " + second +
                 '}';
     }
 

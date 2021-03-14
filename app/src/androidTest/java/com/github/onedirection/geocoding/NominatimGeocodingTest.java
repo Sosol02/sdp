@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -37,9 +36,9 @@ public class NominatimGeocodingTest {
     @Test
     public void returnsExpectedResultsForEPFL(){
         try {
-            Pair<Coordinates, String> coords = GEOCODING.getBestNamedCoordinates(EPFL_NAME).get();
+            Coordinates coords = GEOCODING.getBestCoordinates(EPFL_NAME).get();
 
-            assertTrue(EPFL_COORDINATES.isCloseTo(coords.first, EPFL_COORDINATES_PREC));
+            assertTrue(EPFL_COORDINATES.areCloseTo(coords, EPFL_COORDINATES_PREC));
         }
         catch(Exception e) {
             fail("Unexpected exception: " + e.getMessage());
