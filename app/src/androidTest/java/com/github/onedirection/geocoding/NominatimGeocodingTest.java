@@ -13,8 +13,10 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -28,7 +30,9 @@ public class NominatimGeocodingTest {
 
     // From https://geohack.toolforge.org/geohack.php?pagename=%C3%89cole_Polytechnique_F%C3%A9d%C3%A9rale_de_Lausanne&params=46_31_13_N_6_33_56_E_region:CH-VD_type:edu
     private static final String EPFL_QUERY = "EPFL";
-    private static final List<String> EPFL_ADDRESS = List.of("École Polytechnique Fédérale de Lausanne", "Vaud", "1025");
+    private static final List<String> EPFL_NAME = List.of("École Polytechnique Fédérale de Lausanne", "EPFL");
+    private static final String EPFL_CANTON = "Vaud";
+    private static final List<String> EPFL_COUNTRY = List.of("Switzerland", "Suisse", "Schweiz", "Svizzera", "Svizra");
     private static final Coordinates EPFL_COORDINATES = new Coordinates(46.52, 6.56);
     private static final double EPFL_COORDINATES_PREC = 1e-2;
 
@@ -40,7 +44,13 @@ public class NominatimGeocodingTest {
             NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get();
 
             assertTrue(EPFL_COORDINATES.areCloseTo(coords, EPFL_COORDINATES_PREC));
-            assertThat(coords.name, stringContainsInOrder(EPFL_ADDRESS));
+
+            // Those tests might seem overly complicated, but the resulting string
+            // seems to vary a bit much.
+            String[] elems = coords.name.split(",");
+            assertThat(elems[0].trim(), isIn(EPFL_NAME));
+            assertThat(coords.name, containsString(EPFL_CANTON));
+            assertThat(elems[elems.length-1].split("/")[0].trim(), isIn(EPFL_COUNTRY));
         }
         catch(Exception e) {
             fail("Unexpected exception: " + e.getMessage());
