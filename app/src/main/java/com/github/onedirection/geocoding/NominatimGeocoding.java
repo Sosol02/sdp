@@ -40,11 +40,11 @@ public final class NominatimGeocoding implements GeocodingService {
         return String.format(QUERY_FORMAT, HTTP.encode(query));
     }
 
-    private static Optional<Pair<Coordinates, String>> parseResult(JSONArray json){
+    private static Optional<NamedCoordinates> parseResult(JSONArray json){
         Log.d(LOGCAT_TAG, "Parsing: " + json);
         try {
             JSONObject best = json.getJSONObject(0);
-            return Optional.of(new Pair<>(new Coordinates(best.getDouble(LAT_FIELD), best.getDouble(LON_FIELD)), best.getString(NAME_FIELD)));
+            return Optional.of(new NamedCoordinates(best.getDouble(LAT_FIELD), best.getDouble(LON_FIELD), best.getString(NAME_FIELD)));
         }
         catch(Exception e){
             Log.d(LOGCAT_TAG, "Parsing failed");
@@ -69,7 +69,7 @@ public final class NominatimGeocoding implements GeocodingService {
     }
 
     @Override
-    public CompletableFuture<Pair<Coordinates, String>> getBestNamedCoordinates(String locationName) {
+    public CompletableFuture<NamedCoordinates> getBestNamedCoordinates(String locationName) {
         return Monads.flatten(sendRequest(locationName).thenApply(NominatimGeocoding::parseResult));
     }
 }

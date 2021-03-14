@@ -4,18 +4,18 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.onedirection.utils.Pair;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,8 @@ public class NominatimGeocodingTest {
     private static final NominatimGeocoding GEOCODING = new NominatimGeocoding(CTX);
 
     // From https://geohack.toolforge.org/geohack.php?pagename=%C3%89cole_Polytechnique_F%C3%A9d%C3%A9rale_de_Lausanne&params=46_31_13_N_6_33_56_E_region:CH-VD_type:edu
-    private static final String EPFL_NAME = "EPFL";
+    private static final String EPFL_QUERY = "EPFL";
+    private static final List<String> EPFL_ADDRESS = List.of("École Polytechnique Fédérale de Lausanne", "Vaud", "1025");
     private static final Coordinates EPFL_COORDINATES = new Coordinates(46.52, 6.56);
     private static final double EPFL_COORDINATES_PREC = 1e-2;
 
@@ -36,9 +37,10 @@ public class NominatimGeocodingTest {
     @Test
     public void returnsExpectedResultsForEPFL(){
         try {
-            Coordinates coords = GEOCODING.getBestCoordinates(EPFL_NAME).get();
+            NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get();
 
             assertTrue(EPFL_COORDINATES.areCloseTo(coords, EPFL_COORDINATES_PREC));
+            assertThat(coords.name, stringContainsInOrder(EPFL_ADDRESS));
         }
         catch(Exception e) {
             fail("Unexpected exception: " + e.getMessage());
@@ -47,7 +49,7 @@ public class NominatimGeocodingTest {
 
     @Test
     public void returnsEmptyForGarbage() {
-        CompletableFuture<Pair<Coordinates, String>> result = GEOCODING.getBestNamedCoordinates(GARBAGE_LOCATION);
+        CompletableFuture<Coordinates> result = GEOCODING.getBestCoordinates(GARBAGE_LOCATION);
         try{
             result.get();
             fail("The result should not contain any value");

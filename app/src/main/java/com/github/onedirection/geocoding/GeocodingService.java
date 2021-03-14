@@ -16,13 +16,13 @@ interface GeocodingService {
      * @return The coordinates if the location is found.
      */
     default CompletableFuture<Coordinates> getBestCoordinates(String locationName){
-        return getBestNamedCoordinates(locationName).thenApply(p -> p.first);
+        return getBestNamedCoordinates(locationName).thenApply(p -> p.dropName());
     }
 
     /**
      * @param locationName Some location's name.
      * @return The coordinates and their associated name if the location is found.
      */
-    CompletableFuture<Pair<Coordinates, String>> getBestNamedCoordinates(String locationName);
+    CompletableFuture<NamedCoordinates> getBestNamedCoordinates(String locationName);
 
 }
