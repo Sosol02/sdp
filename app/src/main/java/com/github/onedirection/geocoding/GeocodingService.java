@@ -3,11 +3,14 @@ package com.github.onedirection.geocoding;
 import com.github.onedirection.utils.Pair;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 interface GeocodingService {
 
-    Optional<Coordinates> getBestCoordinates(String locationName);
+    default CompletableFuture<Coordinates> getBestCoordinates(String locationName){
+        return getBestNamedCoordinates(locationName).thenApply(p -> p.first);
+    }
 
-    Optional<Pair<Coordinates, String>> getBestNamedCoordinates(String locationName);
+    CompletableFuture<Pair<Coordinates, String>> getBestNamedCoordinates(String locationName);
 
 }
