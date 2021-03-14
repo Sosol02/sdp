@@ -28,7 +28,7 @@ public class NominatimGeocodingTest {
     private static final NominatimGeocoding GEOCODING = new NominatimGeocoding(CTX);
 
     // From https://geohack.toolforge.org/geohack.php?pagename=%C3%89cole_Polytechnique_F%C3%A9d%C3%A9rale_de_Lausanne&params=46_31_13_N_6_33_56_E_region:CH-VD_type:edu
-    private static final String EPFL_NAME = "Avenue du tir federal, Vaud, Switzerland";
+    private static final String EPFL_NAME = "EPFL";
     private static final Coordinates EPFL_COORDINATES = new Coordinates(46.52, 6.56);
     private static final double EPFL_COORDINATES_PREC = 1e-2;
 
