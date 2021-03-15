@@ -24,33 +24,30 @@ class Event {
     }
 
     public Event set_name(String new_value){
-        Objects.requireNonNull(new_value);
 
-        return new_value == this.name?this : new Event(id,new_value,location,date,start_time,end_time);
+
+        return Objects.requireNonNull(new_value) == this.name?this : new Event(id,new_value,location,date,start_time,end_time);
     }
 
     public Event set_location(String new_value){
-        Objects.requireNonNull(new_value);
 
-        return new_value == this.location? this: new Event(id,name,new_value,date,start_time,end_time);
+
+        return Objects.requireNonNull(new_value) == this.location? this: new Event(id,name,new_value,date,start_time,end_time);
     }
 
     public Event set_date(String new_value){
-        Objects.requireNonNull(new_value);
 
-        return new_value == this.date? this:new Event(id,name,location,new_value,start_time,end_time);
+        return Objects.requireNonNull(new_value) == this.date? this:new Event(id,name,location,new_value,start_time,end_time);
     }
 
     public Event set_start_time(String new_value){
-        Objects.requireNonNull(new_value);
 
-        return new_value == this.start_time? this: new Event(id,name,location,date,new_value,end_time);
+        return Objects.requireNonNull(new_value) == this.start_time? this: new Event(id,name,location,date,new_value,end_time);
     }
 
     public Event set_end_time(String new_value){
-        Objects.requireNonNull(new_value);
 
-        return new_value == this.end_time? this:new Event(id,name,location,date,start_time,new_value);
+        return Objects.requireNonNull(new_value) == this.end_time? this:new Event(id,name,location,date,start_time,new_value);
     }
 
     public int get_id(){
