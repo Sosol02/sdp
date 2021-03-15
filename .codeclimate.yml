@@ -1,4 +1,19 @@
-
+version: "2"
+checks:
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 8
+  similar-code:
+    enabled: false
+  identical-code:
+    enabled: false
+  method-lines:
+    config:
+      threshold: 100
+  argument-count:
+    config:
+      threshold: 6
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
