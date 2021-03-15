@@ -36,11 +36,11 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(NullPointerException.class, () -> event.set_name(null));
-        Event eventChanged = event.set_name("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_name());
-        eventChanged.set_name("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_name());
+        assertThrows(NullPointerException.class, () -> event.setName(null));
+        Event eventChanged = event.setName("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getName());
+        eventChanged.setName("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getName());
     }
 
     @Test
@@ -52,11 +52,11 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(NullPointerException.class, () -> event.set_location(null));
-        Event eventChanged = event.set_location("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_location());
-        eventChanged.set_location("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_location());
+        assertThrows(NullPointerException.class, () -> event.setLocation(null));
+        Event eventChanged = event.setLocation("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getLocation());
+        eventChanged.setLocation("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getLocation());
     }
 
     @Test
@@ -68,11 +68,11 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(NullPointerException.class, () -> event.set_date(null));
-        Event eventChanged = event.set_date("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_date());
-        eventChanged.set_date("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_date());
+        assertThrows(NullPointerException.class, () -> event.setDate(null));
+        Event eventChanged = event.setDate("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getDate());
+        eventChanged.setDate("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getDate());
     }
 
     @Test
@@ -84,11 +84,11 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(NullPointerException.class, () -> event.set_start_time(null));
-        Event eventChanged = event.set_start_time("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_start_time());
-        eventChanged.set_start_time("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_start_time());
+        assertThrows(NullPointerException.class, () -> event.setStartTime(null));
+        Event eventChanged = event.setStartTime("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getStartTime());
+        eventChanged.setStartTime("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getStartTime());
     }
 
     @Test
@@ -100,8 +100,8 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(NullPointerException.class, () -> event.set_end_time(null));
-        Event eventChanged = event.set_end_time("changed_parameter");
-        assertEquals("changed_parameter",eventChanged.get_end_time());
+        assertThrows(NullPointerException.class, () -> event.setEndTime(null));
+        Event eventChanged = event.setEndTime("changed_parameter");
+        assertEquals("changed_parameter",eventChanged.getEndTime());
     }
 }
