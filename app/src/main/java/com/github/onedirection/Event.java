@@ -1,5 +1,7 @@
 package com.github.onedirection;
 
+import java.util.Objects;
+
 class Event {
 
     final private int id;
@@ -11,65 +13,44 @@ class Event {
 
 
     public Event(int id,String name, String location, String date, String start_time, String end_time){
-        if(name == null || location == null || date == null || start_time == null || end_time == null){
-            throw new IllegalArgumentException();
-        }
+
+        this.name = Objects.requireNonNull(name);
+        this.location = Objects.requireNonNull(location);
+        this.date = Objects.requireNonNull(date);
+        this.start_time = Objects.requireNonNull(start_time);
+        this.end_time = Objects.requireNonNull(end_time);
         this.id = id;
-        this.name = name;
-        this.location = location;
-        this.date = date;
-        this.start_time = start_time;
-        this.end_time = end_time;
+
     }
 
     public Event set_name(String new_value){
-        if(new_value ==  null){
-            throw new IllegalArgumentException();
-        }
-        if(new_value == this.name){
-            return this;
-        }
-        return new Event(id,new_value,location,date,start_time,end_time);
+        Objects.requireNonNull(new_value);
+
+        return new_value == this.name?this : new Event(id,new_value,location,date,start_time,end_time);
     }
 
     public Event set_location(String new_value){
-        if(new_value ==  null){
-            throw new IllegalArgumentException();
-        }
-        if(new_value == this.location){
-            return this;
-        }
-        return new Event(id,name,new_value,date,start_time,end_time);
+        Objects.requireNonNull(new_value);
+
+        return new_value == this.location? this: new Event(id,name,new_value,date,start_time,end_time);
     }
 
     public Event set_date(String new_value){
-        if(new_value ==  null){
-            throw new IllegalArgumentException();
-        }
-        if(new_value == this.date){
-            return this;
-        }
-        return new Event(id,name,location,new_value,start_time,end_time);
+        Objects.requireNonNull(new_value);
+
+        return new_value == this.date? this:new Event(id,name,location,new_value,start_time,end_time);
     }
 
     public Event set_start_time(String new_value){
-        if(new_value ==  null){
-            throw new IllegalArgumentException();
-        }
-        if(new_value == this.start_time){
-            return this;
-        }
-        return new Event(id,name,location,date,new_value,end_time);
+        Objects.requireNonNull(new_value);
+
+        return new_value == this.start_time? this: new Event(id,name,location,date,new_value,end_time);
     }
 
     public Event set_end_time(String new_value){
-        if(new_value ==  null){
-            throw new IllegalArgumentException();
-        }
-        if(new_value == this.end_time){
-            return this;
-        }
-        return new Event(id,name,location,date,start_time,new_value);
+        Objects.requireNonNull(new_value);
+
+        return new_value == this.end_time? this:new Event(id,name,location,date,start_time,new_value);
     }
 
     public int get_id(){

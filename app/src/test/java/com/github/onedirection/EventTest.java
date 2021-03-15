@@ -20,11 +20,11 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
 
-        assertThrows(IllegalArgumentException.class,() -> new Event(id,null,location,date,start_time,end_time));
-        assertThrows(IllegalArgumentException.class,() -> new Event(id,name,null,date,start_time,end_time));
-        assertThrows(IllegalArgumentException.class,() -> new Event(id,name,location,null,start_time,end_time));
-        assertThrows(IllegalArgumentException.class,() -> new Event(id,name,location,date,null,end_time));
-        assertThrows(IllegalArgumentException.class,() -> new Event(id,name,location,date,start_time,null));
+        assertThrows(NullPointerException.class,() -> new Event(id,null,location,date,start_time,end_time));
+        assertThrows(NullPointerException.class,() -> new Event(id,name,null,date,start_time,end_time));
+        assertThrows(NullPointerException.class,() -> new Event(id,name,location,null,start_time,end_time));
+        assertThrows(NullPointerException.class,() -> new Event(id,name,location,date,null,end_time));
+        assertThrows(NullPointerException.class,() -> new Event(id,name,location,date,start_time,null));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(IllegalArgumentException.class, () -> event.set_name(null));
+        assertThrows(NullPointerException.class, () -> event.set_name(null));
         Event eventChanged = event.set_name("changed_parameter");
         assertEquals("changed_parameter",eventChanged.get_name());
         eventChanged.set_name("changed_parameter");
@@ -52,7 +52,7 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(IllegalArgumentException.class, () -> event.set_location(null));
+        assertThrows(NullPointerException.class, () -> event.set_location(null));
         Event eventChanged = event.set_location("changed_parameter");
         assertEquals("changed_parameter",eventChanged.get_location());
         eventChanged.set_location("changed_parameter");
@@ -68,7 +68,7 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(IllegalArgumentException.class, () -> event.set_date(null));
+        assertThrows(NullPointerException.class, () -> event.set_date(null));
         Event eventChanged = event.set_date("changed_parameter");
         assertEquals("changed_parameter",eventChanged.get_date());
         eventChanged.set_date("changed_parameter");
@@ -84,7 +84,7 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(IllegalArgumentException.class, () -> event.set_start_time(null));
+        assertThrows(NullPointerException.class, () -> event.set_start_time(null));
         Event eventChanged = event.set_start_time("changed_parameter");
         assertEquals("changed_parameter",eventChanged.get_start_time());
         eventChanged.set_start_time("changed_parameter");
@@ -100,7 +100,7 @@ public class EventTest {
         String start_time = "start_time";
         String end_time = "end_time";
         Event event = new Event(id,name,location,date,start_time,end_time);
-        assertThrows(IllegalArgumentException.class, () -> event.set_end_time(null));
+        assertThrows(NullPointerException.class, () -> event.set_end_time(null));
         Event eventChanged = event.set_end_time("changed_parameter");
         assertEquals("changed_parameter",eventChanged.get_end_time());
     }
