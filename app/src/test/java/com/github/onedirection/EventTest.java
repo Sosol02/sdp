@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.time.ZonedDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -83,5 +84,11 @@ public class EventTest {
                         ID, NAME, LOCATION, START_TIME, START_TIME.minus(1, Event.TIME_PRECISION)
                 )
         );
+    }
+
+    @Test
+    public void eventCanEndInstantly(){
+        Event event = new Event(ID, NAME, LOCATION, START_TIME, START_TIME);
+        assertThat(event.getStartTime(), is(event.getEndTime()));
     }
 }
