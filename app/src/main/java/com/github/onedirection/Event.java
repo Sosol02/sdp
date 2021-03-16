@@ -2,7 +2,7 @@ package com.github.onedirection;
 
 import java.util.Objects;
 
-class Event {
+public class Event {
 
     final private int id;
     final private String name;
