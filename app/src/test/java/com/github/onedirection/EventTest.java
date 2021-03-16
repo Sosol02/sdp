@@ -6,8 +6,11 @@ import org.junit.Test;
 
 import java.time.ZonedDateTime;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 public class EventTest {
@@ -42,6 +45,7 @@ public class EventTest {
         Event eventChanged = EVENT.setName(newName);
         assertEquals(newName, eventChanged.getName());
         assertEquals(NAME, EVENT.getName());
+        assertThat(EVENT.setName(NAME), sameInstance(EVENT));
     }
 
     @Test
@@ -52,6 +56,7 @@ public class EventTest {
         Event eventChanged = EVENT.setLocation(newLoc);
         assertEquals(newLoc, eventChanged.getLocation());
         assertEquals(LOCATION, EVENT.getLocation());
+        assertThat(EVENT.setLocation(LOCATION), sameInstance(EVENT));
     }
 
     @Test
@@ -62,6 +67,7 @@ public class EventTest {
         Event eventChanged = EVENT.setStartTime(newTime);
         assertEquals(newTime, eventChanged.getStartTime());
         assertEquals(START_TIME, EVENT.getStartTime());
+        assertThat(EVENT.setStartTime(START_TIME), sameInstance(EVENT));
     }
 
     @Test
@@ -72,5 +78,6 @@ public class EventTest {
         Event eventChanged = EVENT.setEndTime(newTime);
         assertEquals(newTime, eventChanged.getEndTime());
         assertEquals(START_TIME, EVENT.getStartTime());
+        assertThat(EVENT.setEndTime(END_TIME), sameInstance(EVENT));
     }
 }
