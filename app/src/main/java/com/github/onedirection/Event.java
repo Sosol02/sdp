@@ -14,16 +14,31 @@ public class Event {
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
 
-    public Event(int id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) {
-        if (startTime.until(endTime, ChronoUnit.SECONDS) < 0) {
-            throw new IllegalArgumentException("The end date should be later than the start date.");
-        }
+    /**
+     * Smallest time unit recorded inside the event
+     */
+    final public static ChronoUnit TIME_PRECISION = ChronoUnit.SECONDS;
 
+    /**
+     * Create a new event.
+     *
+     * @param id        The unique identifier.
+     * @param name      The display name.
+     * @param location  Where the event takes place.
+     * @param startTime When the event starts.
+     * @param endTime   When the event ends.
+     * @throws IllegalArgumentException If startTime happens before endTime.
+     */
+    public Event(int id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) throws IllegalArgumentException {
         this.name = Objects.requireNonNull(name);
         this.location = Objects.requireNonNull(location);
-        this.startTime = Objects.requireNonNull(startTime);
-        this.endTime = Objects.requireNonNull(endTime);
+        this.startTime = Objects.requireNonNull(startTime).truncatedTo(TIME_PRECISION);
+        this.endTime = Objects.requireNonNull(endTime).truncatedTo(TIME_PRECISION);
         this.id = id;
+
+        if (startTime.until(endTime, TIME_PRECISION) < 0) {
+            throw new IllegalArgumentException("The end date should be later than the start date.");
+        }
     }
 
     public Event setName(String new_value) {
@@ -35,11 +50,15 @@ public class Event {
     }
 
     public Event setStartTime(ZonedDateTime new_value) {
-        return Objects.requireNonNull(new_value).equals(this.startTime) ? this : new Event(id, name, location, new_value, endTime);
+        return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)
+                ? this
+                : new Event(id, name, location, new_value, endTime);
     }
 
     public Event setEndTime(ZonedDateTime new_value) {
-        return Objects.requireNonNull(new_value).equals(this.endTime) ? this : new Event(id, name, location, startTime, new_value);
+        return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)
+                ? this
+                : new Event(id, name, location, startTime, new_value);
     }
 
     public int getId() {
