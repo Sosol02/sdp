@@ -83,4 +83,31 @@ public class Event {
     public ZonedDateTime getEndTime() {
         return endTime;
     }
+
+    @Override
+    public String toString() {
+        return "Event" +  id +
+                " - " + name +
+                "(@" + location +
+                ':' + startTime +
+                "-" + endTime +
+                ')';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return id == event.id &&
+                name.equals(event.name) &&
+                location.equals(event.location) &&
+                startTime.equals(event.startTime) &&
+                endTime.equals(event.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, location, startTime, endTime);
+    }
 }
