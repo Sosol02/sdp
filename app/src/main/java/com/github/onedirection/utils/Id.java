@@ -1,8 +1,11 @@
-package com.github.onedirection.database.store;
+package com.github.onedirection.utils;
 
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class Id {
     // these fields are what's compared for equality
     // the UUID are extremely unique (2^122 possibilities)
@@ -11,7 +14,9 @@ public class Id {
     // for a collision to happen.
     private final String uuid;
 
-    public Id() { this(UUID.randomUUID()); }
+    public static Id generateRandom() {
+        return new Id(UUID.randomUUID());
+    }
 
     public Id(UUID uuid) {
         this.uuid = uuid.toString();
@@ -40,8 +45,6 @@ public class Id {
 
     @Override
     public String toString() {
-        return "Id{" +
-                "uuid='" + uuid + '\'' +
-                '}';
+        return "UUID(" + uuid + ")";
     }
 }

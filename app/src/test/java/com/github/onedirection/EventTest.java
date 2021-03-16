@@ -1,6 +1,7 @@
 package com.github.onedirection;
 
 import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.utils.Id;
 
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertThrows;
 
 public class EventTest {
 
-    private final static int ID = 001;
+    private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
     private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
@@ -101,7 +102,7 @@ public class EventTest {
     @Test
     public void toStringContainsAllFields(){
         String str = EVENT.toString();
-        assertThat(str, containsString(Integer.toString(ID)));
+        assertThat(str, containsString(ID.toString()));
         assertThat(str, containsString(NAME));
         assertThat(str, containsString(LOCATION.toString()));
         assertThat(str, containsString(START_TIME.toString()));
@@ -111,7 +112,7 @@ public class EventTest {
     @Test
     public void equalsBehavesAsExpected(){
         Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
-        Event event2 = new Event(2, NAME, LOCATION, START_TIME, END_TIME);
+        Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME);
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));

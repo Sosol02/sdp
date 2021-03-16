@@ -2,6 +2,7 @@ package com.github.onedirection;
 
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -13,7 +14,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class Event {
 
-    final private int id;
+    final private Id id;
     final private String name;
     final private NamedCoordinates location;
     final private ZonedDateTime startTime;
@@ -34,12 +35,12 @@ public class Event {
      * @param endTime   When the event ends.
      * @throws IllegalArgumentException If startTime happens before endTime.
      */
-    public Event(int id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) throws IllegalArgumentException {
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) throws IllegalArgumentException {
         this.name = Objects.requireNonNull(name);
         this.location = Objects.requireNonNull(location);
         this.startTime = Objects.requireNonNull(startTime).truncatedTo(TIME_PRECISION);
         this.endTime = Objects.requireNonNull(endTime).truncatedTo(TIME_PRECISION);
-        this.id = id;
+        this.id = Objects.requireNonNull(id);
 
         if (startTime.until(endTime, TIME_PRECISION) < 0) {
             throw new IllegalArgumentException("The end date should be later than the start date.");
@@ -66,7 +67,7 @@ public class Event {
                 : new Event(id, name, location, startTime, new_value);
     }
 
-    public int getId() {
+    public Id getId() {
         return id;
     }
 
@@ -108,7 +109,7 @@ public class Event {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return id == event.id &&
+        return id.equals(event.id) &&
                 name.equals(event.name) &&
                 location.equals(event.location) &&
                 startTime.equals(event.startTime) &&
