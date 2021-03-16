@@ -1,71 +1,63 @@
 package com.github.onedirection;
 
+import com.github.onedirection.geocoding.NamedCoordinates;
+
+import java.util.Date;
 import java.util.Objects;
 
-class Event {
+public class Event {
 
     final private int id;
     final private String name;
-    final private String location;
-    final private String date;
-    final private String start_time;
-    final private String end_time;
+    final private NamedCoordinates location;
+    final private Date startTime;
+    final private Date endTime;
 
-    public Event(int id,String name, String location, String date, String start_time, String end_time){
+    public Event(int id, String name, NamedCoordinates location, Date startTime, Date endTime) {
+        if(endTime.before(startTime)){
+            throw new IllegalArgumentException("The end date should be later than the start date.");
+        }
+
         this.name = Objects.requireNonNull(name);
         this.location = Objects.requireNonNull(location);
-        this.date = Objects.requireNonNull(date);
-        this.start_time = Objects.requireNonNull(start_time);
-        this.end_time = Objects.requireNonNull(end_time);
+        this.startTime = Objects.requireNonNull(startTime);
+        this.endTime = Objects.requireNonNull(endTime);
         this.id = id;
     }
 
-    public Event setName(String new_value){
-
-        return Objects.requireNonNull(new_value) == this.name?this : new Event(id,new_value,location,date,start_time,end_time);
+    public Event setName(String new_value) {
+        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, location, startTime, endTime);
     }
 
-    public Event setLocation(String new_value){
-
-        return Objects.requireNonNull(new_value) == this.location? this: new Event(id,name,new_value,date,start_time,end_time);
+    public Event setLocation(NamedCoordinates new_value) {
+        return Objects.requireNonNull(new_value).equals(this.location) ? this : new Event(id, name, new_value, startTime, endTime);
     }
 
-    public Event setDate(String new_value){
-
-        return Objects.requireNonNull(new_value) == this.date? this:new Event(id,name,location,new_value,start_time,end_time);
+    public Event setStartTime(Date new_value) {
+        return Objects.requireNonNull(new_value).equals(this.startTime) ? this : new Event(id, name, location, new_value, endTime);
     }
 
-    public Event setStartTime(String new_value){
-
-        return Objects.requireNonNull(new_value) == this.start_time? this: new Event(id,name,location,date,new_value,end_time);
+    public Event setEndTime(Date new_value) {
+        return Objects.requireNonNull(new_value).equals(this.endTime) ? this : new Event(id, name, location, startTime, new_value);
     }
 
-    public Event setEndTime(String new_value){
-
-        return Objects.requireNonNull(new_value) == this.end_time? this:new Event(id,name,location,date,start_time,new_value);
-    }
-
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getDate(){
-        return date;
-    }
-
-    public String getLocation(){
+    public NamedCoordinates getLocation() {
         return location;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public String getStartTime(){
-        return start_time;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public String getEndTime(){
-        return end_time;
+    public Date getEndTime() {
+        return endTime;
     }
 }
