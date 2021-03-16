@@ -15,7 +15,14 @@ public class Id {
     private final String uuid;
 
     public static Id generateRandom() {
-        return new Id(UUID.randomUUID());
+        return new Id();
+    }
+
+    /**
+     * Generate a new random Id.
+     */
+    public Id(){
+        this(UUID.randomUUID());
     }
 
     public Id(UUID uuid) {
@@ -45,6 +52,6 @@ public class Id {
 
     @Override
     public String toString() {
-        return "UUID(" + uuid + ")";
+        return "ID(" + uuid + ")";
     }
 }
