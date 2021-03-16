@@ -6,6 +6,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class Event {
 
     final private int id;
@@ -15,7 +18,7 @@ public class Event {
     final private ZonedDateTime endTime;
 
     /**
-     * Smallest time unit recorded inside the event
+     * Smallest time unit recorded inside the event.
      */
     final public static ChronoUnit TIME_PRECISION = ChronoUnit.SECONDS;
 

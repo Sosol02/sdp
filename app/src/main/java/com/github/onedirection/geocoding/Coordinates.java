@@ -2,9 +2,12 @@ package com.github.onedirection.geocoding;
 
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
 import static java.lang.Math.abs;
 
 /** Represents (immutable) geographic coordinates. */
+@Immutable
 public final class Coordinates {
     public final double latitude;
     public final double longitude;
