@@ -4,7 +4,9 @@ import com.github.onedirection.geocoding.NamedCoordinates;
 
 import org.junit.Test;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -13,7 +15,6 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 
 public class EventTest {
@@ -22,7 +23,8 @@ public class EventTest {
     private final static String NAME = "Event name";
     private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
-    private final static ZonedDateTime END_TIME = ZonedDateTime.now().plusHours(1).truncatedTo(Event.TIME_PRECISION);
+    private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
+    private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
 
@@ -54,6 +56,8 @@ public class EventTest {
         assertEquals(newLoc, eventChanged.getLocation());
         assertEquals(LOCATION, EVENT.getLocation());
         assertThat(EVENT.setLocation(LOCATION), sameInstance(EVENT));
+
+        assertThat(eventChanged.getCoordinates(), is(newLoc.dropName()));
     }
 
     @Test
@@ -120,5 +124,10 @@ public class EventTest {
         assertThat(event, is(EVENT));
         assertThat(event, not(sameInstance(EVENT)));
         assertThat(event.hashCode(), is(EVENT.hashCode()));
+    }
+
+    @Test
+    public void durationIsCorrect(){
+        assertThat(EVENT.getDuration(), is(DURATION));
     }
 }

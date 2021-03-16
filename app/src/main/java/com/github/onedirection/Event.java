@@ -1,7 +1,9 @@
 package com.github.onedirection;
 
+import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -68,6 +70,10 @@ public class Event {
         return id;
     }
 
+    public Coordinates getCoordinates(){
+        return location.dropName();
+    }
+
     public NamedCoordinates getLocation() {
         return location;
     }
@@ -84,6 +90,10 @@ public class Event {
         return endTime;
     }
 
+    public Duration getDuration(){
+        return Duration.between(startTime, endTime);
+    }
+
     @Override
     public String toString() {
         return "Event" +  id +
@@ -96,7 +106,6 @@ public class Event {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
         return id == event.id &&
