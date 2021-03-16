@@ -22,12 +22,12 @@ import com.skyhope.eventcalenderlibrary.model.Event;
 import com.github.onedirection.R;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class CalendarFragment extends Fragment {
 
     private CalendarViewModel mViewModel;
     private CalenderEvent calendarView;
-    private String startDate, endDate;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -41,26 +41,20 @@ public class CalendarFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(CalendarViewModel.class);
-        calendarView.initCalderItemClickCallback(dayContainerModel -> showEventScreen(dayContainerModel.getTimeInMillisecond()));
+        calendarView.initCalderItemClickCallback(dayContainerModel -> showEventCreationScreen(dayContainerModel.getTimeInMillisecond()));
 
     }
 
-    public void addEventToCalendar(1DirectionEvent oneDEvent, long timeInMillis){
+    public void addEventToCalendar(com.github.onedirection.Event event, long timeInMillis){
+        Objects.requireNonNull(event, "tried to add null Event");
         //Calendar calendar = Calendar.getInstance();
         //calendar.add(Calendar.DAY_OF_MONTH, 6);
-        Event event = new Event(timeInMillis, oneDEvent.title);
-        calendarView.addEvent(event);
-
-
+        Event calendarEvent = new Event(timeInMillis, event.getName());
+        calendarView.addEvent(calendarEvent);
     }
 
-    public void showEventScreen(long timeInMillis){
-        Intent intent = new Intent(this, 1DEvent.class);
-        intent.putExtra();
-        startActivity(intent);
+    public void removeEventFromCalendar(Event calendarEvent){
+        Objects.requireNonNull(calendarEvent, "tried to remove null calendarEvent");
+        calendarView.removeEvent(calendarEvent);
     }
-
-
-
-
 }
