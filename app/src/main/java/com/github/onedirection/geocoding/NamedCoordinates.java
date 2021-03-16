@@ -10,14 +10,14 @@ public class NamedCoordinates {
     public final double longitude;
     public final String name;
 
-    NamedCoordinates(double latitude, double longitude, String name){
+    public NamedCoordinates(double latitude, double longitude, String name){
         Objects.requireNonNull(name);
         this.latitude = latitude;
         this.longitude = longitude;
         this.name = name;
     }
 
-    NamedCoordinates(Coordinates coordinates, String name){
+    public NamedCoordinates(Coordinates coordinates, String name){
         this(coordinates.latitude, coordinates.longitude, name);
     }
 
