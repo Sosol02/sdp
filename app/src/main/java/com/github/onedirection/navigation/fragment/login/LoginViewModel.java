@@ -49,6 +49,11 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
+    public void logout() {
+        FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
+        auth.logoutUser();
+    }
+
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
         return username.contains("@");

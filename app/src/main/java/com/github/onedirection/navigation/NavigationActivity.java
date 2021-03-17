@@ -2,6 +2,9 @@ package com.github.onedirection.navigation;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,6 +29,15 @@ public class NavigationActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = (TextView) headerView.findViewById(R.id.nav_header_username);
+        TextView drawerEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
+        drawerUsername.setText("Guest");
+        drawerEmail.setText("");
+
+        MenuItem logoutItem = navigationView.getMenu().findItem(R.id.nav_logout);
+        logoutItem.setVisible(false);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -50,4 +62,5 @@ public class NavigationActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 }

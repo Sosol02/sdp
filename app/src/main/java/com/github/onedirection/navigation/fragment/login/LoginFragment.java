@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -51,13 +52,26 @@ public class LoginFragment extends Fragment {
         final Switch switchRegister = view.findViewById(R.id.login_switch);
 
         NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-
+        MenuItem logoutItem = navigationView.getMenu().findItem(R.id.nav_logout);
+        MenuItem loginItem = navigationView.getMenu().findItem(R.id.nav_login);
+        MenuItem homeItem = navigationView.getMenu().findItem(R.id.nav_home);
         View headerView = navigationView.getHeaderView(0);
         TextView drawerUsername = (TextView) headerView.findViewById(R.id.nav_header_username);
         TextView drawerEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
-        drawerUsername.setText("Guest");
-        drawerEmail.setText("");
 
+
+
+        logoutItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                //loginViewModel.logout();
+                drawerUsername.setText("Guest");
+                drawerEmail.setText("");
+                loginItem.setVisible(true);
+                logoutItem.setVisible(false);
+                return false;
+            }
+        });
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
             @Override
@@ -81,6 +95,8 @@ public class LoginFragment extends Fragment {
                 if (user != null) {
                     drawerUsername.setText(user.getName());
                     drawerEmail.setText(user.getName());
+                    logoutItem.setVisible(true);
+                    loginItem.setVisible(false);
                     updateUiWithUser(user);
                 } else {
                     showLoginFailed(R.string.login_failed);
