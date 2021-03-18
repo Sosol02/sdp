@@ -53,13 +53,13 @@ public class SignFragmentTest {
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_logout)).perform(click());
-        onView(withText("No")).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+        onView(withText(R.string.dialog_logout_no)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_logout)).check(matches(isDisplayed()));
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_logout)).perform(click());
-        onView(withText("Yes")).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+        onView(withText(R.string.dialog_logout_yes)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
     }

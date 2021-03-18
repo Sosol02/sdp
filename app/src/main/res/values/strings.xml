@@ -3,7 +3,7 @@
     <string name="title_activity_navigation">NavigationActivity</string>
 
     <string name="nav_header_username">Guest</string>
-    <string name="nav_header_email">empty@email.com</string>
+    <string name="nav_header_email" />
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_home">Home</string>
@@ -28,5 +28,9 @@
     <string name="button_sign_in_text">Sign in</string>
     <string name="clickable_text_to_sign_in">Already an account?</string>
     <string name="clickable_text_to_register">New user?</string>
+    <string name="dialog_logout_tittle">Log out</string>
+    <string name="dialog_logout_body">Are you sure you want to log out ?</string>
+    <string name="dialog_logout_yes">Yes</string>
+    <string name="dialog_logout_no">No</string>
 
 </resources>

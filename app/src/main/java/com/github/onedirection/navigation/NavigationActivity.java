@@ -66,9 +66,9 @@ public class NavigationActivity extends AppCompatActivity {
     private void logout(MenuItem signMenuItem, MenuItem logoutMenuItem, TextView drawerUsername,
                         TextView drawerEmail, DrawerLayout drawer) {
         AlertDialog.Builder confirmationWindows = new AlertDialog.Builder(this)
-                .setTitle("Log out")
-                .setMessage("Are you sure you want to log out ?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.dialog_logout_tittle)
+                .setMessage(R.string.dialog_logout_body)
+                .setPositiveButton(R.string.dialog_logout_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
@@ -79,7 +79,7 @@ public class NavigationActivity extends AppCompatActivity {
                         logoutMenuItem.setVisible(false);
                         drawer.close();
                     }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.dialog_logout_no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 

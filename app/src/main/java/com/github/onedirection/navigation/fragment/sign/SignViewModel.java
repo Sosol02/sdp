@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.github.onedirection.R;
+import com.github.onedirection.authentication.AuthenticationService;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.User;
 
@@ -24,7 +25,7 @@ public class SignViewModel extends ViewModel {
     }
 
     public void sign(String username, String password, boolean register) {
-        FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
+        AuthenticationService auth = AuthenticationService.getDefaultInstance();
         if (register) {
             auth.registerUser(username, password).thenAccept(userResult::setValue)
                     .exceptionally(error -> {userResult.setValue(null); return null; });
