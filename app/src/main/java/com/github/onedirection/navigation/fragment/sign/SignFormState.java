@@ -1,32 +1,32 @@
-package com.github.onedirection.navigation.fragment.login;
+package com.github.onedirection.navigation.fragment.sign;
 
 import androidx.annotation.Nullable;
 
 /**
  * Data validation state of the login form.
  */
-class LoginFormState {
+class SignFormState {
     @Nullable
-    private final Integer usernameError;
+    private final Integer emailError;
     @Nullable
     private final Integer passwordError;
     private final boolean isDataValid;
 
-    LoginFormState(@Nullable Integer usernameError, @Nullable Integer passwordError) {
-        this.usernameError = usernameError;
+    SignFormState(@Nullable Integer emailError, @Nullable Integer passwordError) {
+        this.emailError = emailError;
         this.passwordError = passwordError;
         this.isDataValid = false;
     }
 
-    LoginFormState(boolean isDataValid) {
-        this.usernameError = null;
+    SignFormState(boolean isDataValid) {
+        this.emailError = null;
         this.passwordError = null;
         this.isDataValid = isDataValid;
     }
 
     @Nullable
-    Integer getUsernameError() {
-        return usernameError;
+    Integer getEmailError() {
+        return emailError;
     }
 
     @Nullable
