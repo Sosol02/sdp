@@ -3,7 +3,7 @@ package com.github.onedirection.testdatabase;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.database.store.Id;
+import com.github.onedirection.utils.Id;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

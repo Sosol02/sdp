@@ -1,6 +1,6 @@
 package com.github.onedirection;
 
-import com.github.onedirection.database.store.Id;
+import com.github.onedirection.utils.Id;
 
 import org.junit.Test;
 
