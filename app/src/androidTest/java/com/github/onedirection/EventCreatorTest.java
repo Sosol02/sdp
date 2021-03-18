@@ -47,7 +47,7 @@ public class EventCreatorTest {
 
 
     @Rule
-    public ActivityScenarioRule<EventCreator> eventCreator = new ActivityScenarioRule<>(EventCreator.class);
+    public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Before
     public void setUp() {
@@ -62,7 +62,9 @@ public class EventCreatorTest {
     @Test
     public void verifyEventActivityIsCorrectlyCreated() {
         //Intents.init();
-        //onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_create_event)).perform(ViewActions.click());
+
         //onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
         //String name = onView(withId(R.id.editTextName)).check();
         //String location = onView(withId(R.id.editTextLocation)).toString();
