@@ -2,7 +2,7 @@ package com.github.onedirection.database;
 
 import android.util.Log;
 
-import com.github.onedirection.database.store.Id;
+import com.github.onedirection.utils.Id;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.database.utils.FirebaseUtils;

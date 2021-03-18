@@ -1,6 +1,6 @@
 package com.github.onedirection.testdatabase;
 
-import com.github.onedirection.database.store.Id;
+import com.github.onedirection.utils.Id;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 
