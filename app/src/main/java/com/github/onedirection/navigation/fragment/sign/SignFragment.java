@@ -89,11 +89,13 @@ public class SignFragment extends Fragment {
                     showSignFailed(register);
                 } else {
                     drawerUsername.setText(user.getName());
-                    drawerEmail.setText(user.getName());
+                    drawerEmail.setText(user.getEmail());
                     signMenuItem.setVisible(false);
                     logoutMenuItem.setVisible(true);
                     showSignSuccess(user);
-                    getActivity().findViewById(R.id.nav_home).performClick();
+                    if (getActivity() != null) {
+                        getActivity().findViewById(R.id.nav_home).performClick();
+                    }
                 }
             }
         });

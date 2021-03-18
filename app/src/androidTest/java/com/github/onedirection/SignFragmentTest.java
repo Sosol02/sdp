@@ -16,8 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -35,20 +38,41 @@ public class SignFragmentTest {
 
     @Test
     public void testNormalSignInAndLogout() {
-        onView(withId(R.id.nav_header_email)).check(matches(withText(equalTo(ctx.getString(R.string.nav_header_email)))));
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_sign)).perform(ViewActions.click());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
+        onView(withId(R.id.nav_sign)).perform(click());
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_sign)));
 
         onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
         onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
-        onView(withId(R.id.sign)).perform(ViewActions.click());
-        //onView(withId(R.id.nav_header_email)).check(matches(withText(equalTo(ctx.getString(R.string.test_account)))));
+        onView(withId(R.id.sign)).perform(click());
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.test_account))));
 
-        /*onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_logout)).perform(ViewActions.click());*/
-        //onView(withId(R.id.nav_header_email)).check(matches(withText(equalTo(ctx.getString(R.string.nav_header_email)))));
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_logout)).perform(click());
+        onView(withText("No")).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_logout)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_logout)).perform(click());
+        onView(withText("Yes")).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
+    }
+
+    @Test
+    public void testSignToggle() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_sign)).perform(click());
+
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText(R.string.menu_sign)));
+
+        onView(withId(R.id.sign_toggle)).perform(click());
+        onView(withId(R.id.sign_toggle)).check(matches(withText(R.string.clickable_text_to_sign_in)));
     }
 }
