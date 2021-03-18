@@ -19,9 +19,16 @@ public class EventCreator extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_creator);
+
+        findViewById(R.id.buttonEventAdd).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateEvent(v);
+            }
+        });
     }
 
-    public void validateEvent(View view){
+    public void validateEvent(View view) {
         Intent intent = new Intent(this,EventsView.class);
         EditText name = (EditText) findViewById(R.id.editTextName);
         EditText location = (EditText) findViewById(R.id.editTextLocation);

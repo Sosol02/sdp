@@ -30,46 +30,62 @@ import static androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasSho
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(AndroidJUnit4.class)
 
 public class EventCreatorTest {
 
-    private static final String NAME = "Name";
-    private static final String PACKAGE_NAME = "src\\main\\res\\layout\\event_viewer.xml";
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
+    public ActivityScenarioRule<EventCreator> eventCreator = new ActivityScenarioRule<>(EventCreator.class);
 
-    //@Before
-    //public void setUp() {
-    //    Intents.init();
-    //}
+    @Before
+    public void setUp() {
+        Intents.init();
+    }
 
-//    @After
-//    public void tearDown() {
-//        Intents.release();
-//    }
+     @After
+    public void tearDown() {
+        Intents.release();
+    }
 
     @Test
     public void verifyEventActivityIsCorrectlyCreated() {
-        Intents.init();
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
+        //Intents.init();
+        //onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        //onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
+        //String name = onView(withId(R.id.editTextName)).check();
+        //String location = onView(withId(R.id.editTextLocation)).toString();
+        //String date = onView(withId(R.id.editTextDate)).toString();
+        //String start_time = onView(withId(R.id.editTextStartTime)).toString();
+        //String end_time = onView(withId(R.id.editTextEndTime)).toString();
 
         onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
-        intended(allOf(
-               hasComponent(hasShortClassName("EventsView")),
-                toPackage(PACKAGE_NAME),
-                hasExtra(EventCreator.EXTRA_NAME, NAME)));
-        Intents.release();
+
+        intended(hasComponent(EventsView.class.getName()));
+
+        String name_view = onView(withId(R.id.textViewNameView)).toString().toString();
+        //String location_view = onView(withId(R.id.textViewLocationView)).toString();
+        //String date_view = onView(withId(R.id.textViewDateView)).toString();
+        //String start_time_view = onView(withId(R.id.textViewStartTimeView)).toString();
+        //String end_time_view = onView(withId(R.id.textViewEndTimeView)).toString();
+
+        assertThat(name,is(name_view));
+        //assertEquals(location,location_view);
+        //assertEquals(date,date_view);
+        //assertEquals(start_time,start_time_view);
+        //assertEquals(end_time,end_time_view);
+        //Intents.release();
 
 
         //onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))

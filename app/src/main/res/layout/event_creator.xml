@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="127dp"
         android:layout_marginBottom="128dp"
-        android:onClick="validateEvent"
         android:text="Create"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
