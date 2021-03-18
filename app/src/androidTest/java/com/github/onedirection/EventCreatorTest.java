@@ -46,28 +46,31 @@ public class EventCreatorTest {
     private static final String PACKAGE_NAME = "src\\main\\res\\layout\\event_viewer.xml";
 
     @Rule
-    public ActivityScenarioRule<EventCreator> eventCreator = new ActivityScenarioRule<>(EventCreator.class);
+    public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
 
-    @Before
-    public void setUp() {
-        Intents.init();
-    }
+    //@Before
+    //public void setUp() {
+    //    Intents.init();
+    //}
 
-    @After
-    public void tearDown() {
-        Intents.release();
-    }
+//    @After
+//    public void tearDown() {
+//        Intents.release();
+//    }
 
     @Test
     public void verifyEventActivityIsCorrectlyCreated() {
+        Intents.init();
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
 
         onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
         intended(allOf(
-                hasComponent(hasShortClassName(".DisplayMessageActivity")),
+               hasComponent(hasShortClassName("EventsView")),
                 toPackage(PACKAGE_NAME),
                 hasExtra(EventCreator.EXTRA_NAME, NAME)));
-        //onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        //onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
+        Intents.release();
+
 
         //onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
         //       .check(matches(withText(R.string.menu_calendar)));
