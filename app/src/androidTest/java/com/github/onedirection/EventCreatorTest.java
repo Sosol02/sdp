@@ -74,13 +74,13 @@ public class EventCreatorTest {
 
         intended(hasComponent(EventsView.class.getName()));
 
-        String name_view = onView(withId(R.id.textViewNameView)).toString().toString();
+        //String name_view = onView(withId(R.id.textViewNameView)).toString().toString();
         //String location_view = onView(withId(R.id.textViewLocationView)).toString();
         //String date_view = onView(withId(R.id.textViewDateView)).toString();
         //String start_time_view = onView(withId(R.id.textViewStartTimeView)).toString();
         //String end_time_view = onView(withId(R.id.textViewEndTimeView)).toString();
 
-        assertThat(name,is(name_view));
+        //assertThat(name,is(name_view));
         //assertEquals(location,location_view);
         //assertEquals(date,date_view);
         //assertEquals(start_time,start_time_view);
