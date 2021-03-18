@@ -62,7 +62,7 @@
         android:id="@+id/sign_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New user ?"
+        android:text="@string/clickable_text_to_register"
         android:textColor="#4294D5"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

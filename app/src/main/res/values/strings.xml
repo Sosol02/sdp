@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">1Direction</string>
     <string name="title_activity_navigation">NavigationActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="nav_header_username">Guest</string>
     <string name="nav_header_email">empty@email.com</string>
+    <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_calendar">Calendar</string>
