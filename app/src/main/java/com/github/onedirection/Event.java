@@ -1,3 +1,4 @@
+
 package com.github.onedirection;
 
 import java.util.Objects;
@@ -68,4 +69,5 @@ public class Event {
     public String getEndTime(){
         return end_time;
     }
+
 }
