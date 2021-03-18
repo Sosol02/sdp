@@ -11,7 +11,7 @@ public class EventsView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_events_view);
+        setContentView(R.layout.event_viewer);
 
         Intent intent = getIntent();
         String name = intent.getStringExtra(EventCreator.EXTRA_NAME);

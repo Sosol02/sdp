@@ -18,7 +18,7 @@ public class EventCreator extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_event_creator);
+        setContentView(R.layout.event_creator);
     }
 
     public void validateEvent(View view){
