@@ -36,8 +36,7 @@ public class EventCreator extends AppCompatActivity {
         EditText start_time = (EditText) findViewById(R.id.editTextEndTime);
         EditText end_time = (EditText) findViewById(R.id.editTextStartTime);
         //generate id?
-        int id = 001;
-        Event event = new Event(id,name.getText().toString(),location.getText().toString(),date.getText().toString(),start_time.getText().toString(),end_time.getText().toString());
+        //Event event = new Event(id,name.getText().toString(),location.getText().toString(),date.getText().toString(),start_time.getText().toString(),end_time.getText().toString());
         //send event to the db
         intent.putExtra(EXTRA_NAME,name.getText().toString());
         intent.putExtra(EXTRA_LOCATION,location.getText().toString());
