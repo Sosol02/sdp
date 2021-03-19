@@ -1,12 +1,13 @@
 package com.github.onedirection.utils;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Id {
+public class Id implements Serializable {
     // these fields are what's compared for equality
     // the UUID are extremely unique (2^122 possibilities)
     // and the time thing uniques it
