@@ -56,16 +56,14 @@ public class EventCreator extends AppCompatActivity {
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
     private Id eventId;
-
-    private boolean isEditing() {
-        return eventId != null;
-    }
+    private boolean isEditing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_creator);
 
+        isEditing = false;
         startTime = ZonedDateTime.now();
         endTime = startTime.plusHours(1);
         updateTimeDates();
@@ -80,7 +78,7 @@ public class EventCreator extends AppCompatActivity {
         findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
             Event event = generateEvent();
 
-            if(isEditing()){
+            if(isEditing){
                 //update in db
             }
             else{
@@ -121,6 +119,8 @@ public class EventCreator extends AppCompatActivity {
         startTime = event.getStartTime();
         endTime = event.getEndTime();
         updateTimeDates();
+
+        isEditing = true;
     }
 
     private void updateTimeDates() {
@@ -166,7 +166,7 @@ public class EventCreator extends AppCompatActivity {
                 v.getContext(),
                 (view, year, month, dayOfMonth) ->
                         startTime = ZonedDateTime.of(
-                                LocalDate.of(year, month, dayOfMonth),
+                                LocalDate.of(year, month+1, dayOfMonth),
                                 startTime.toLocalTime(),
                                 startTime.getZone()
                         ),
@@ -181,14 +181,14 @@ public class EventCreator extends AppCompatActivity {
         DatePickerDialog datePicker = new DatePickerDialog(
                 v.getContext(),
                 (view, year, month, dayOfMonth) ->
-                        startTime = ZonedDateTime.of(
-                                LocalDate.of(year, month, dayOfMonth),
-                                startTime.toLocalTime(),
-                                startTime.getZone()
+                        endTime = ZonedDateTime.of(
+                                LocalDate.of(year, month+1, dayOfMonth),
+                                endTime.toLocalTime(),
+                                endTime.getZone()
                         ),
-                startTime.getYear(),
-                startTime.getMonthValue(),
-                startTime.getDayOfMonth()
+                endTime.getYear(),
+                endTime.getMonthValue(),
+                endTime.getDayOfMonth()
         );
         datePicker.show();
     }

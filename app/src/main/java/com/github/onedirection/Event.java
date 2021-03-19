@@ -24,7 +24,7 @@ public class Event implements Serializable {
     /**
      * Smallest time unit recorded inside the event.
      */
-    final public static ChronoUnit TIME_PRECISION = ChronoUnit.SECONDS;
+    final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
 
     /**
      * Create a new event.
