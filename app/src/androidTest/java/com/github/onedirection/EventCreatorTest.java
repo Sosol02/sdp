@@ -4,15 +4,22 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.calendar.CalendarFragment;
+import com.github.onedirection.utils.Id;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,6 +29,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -45,6 +56,14 @@ import static org.junit.Assert.assertEquals;
 
 public class EventCreatorTest {
 
+    private final static Id ID = Id.generateRandom();
+    private final static String NAME = "Event name";
+    private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
+    private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
+    private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
+    private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
+
+    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
@@ -54,45 +73,37 @@ public class EventCreatorTest {
         Intents.init();
     }
 
-     @After
+    @After
     public void tearDown() {
         Intents.release();
     }
 
-    @Test
-    public void verifyEventActivityIsCorrectlyCreated() {
-        //Intents.init();
+    public void gotoCreator(){
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_create_event)).perform(ViewActions.click());
+    }
 
-        //onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
-        //String name = onView(withId(R.id.editTextName)).check();
-        //String location = onView(withId(R.id.editTextLocation)).toString();
-        //String date = onView(withId(R.id.editTextDate)).toString();
-        //String start_time = onView(withId(R.id.editTextStartTime)).toString();
-        //String end_time = onView(withId(R.id.editTextEndTime)).toString();
+    @Test
+    public void verifyEventViewIsCorrectlyCalled() {
+        gotoCreator();
 
         onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
 
-        intended(hasComponent(EventsView.class.getName()));
+        intended(allOf(
+                hasComponent(EventsView.class.getName()),
+                hasExtra(is(EventCreator.EXTRA_EVENT), is(instanceOf(Event.class)))
+        ));
+    }
 
-        //String name_view = onView(withId(R.id.textViewNameView)).toString().toString();
-        //String location_view = onView(withId(R.id.textViewLocationView)).toString();
-        //String date_view = onView(withId(R.id.textViewDateView)).toString();
-        //String start_time_view = onView(withId(R.id.textViewStartTimeView)).toString();
-        //String end_time_view = onView(withId(R.id.textViewEndTimeView)).toString();
+    @Test
+    public void eventCreatorDisplaysEventToUpdate(){
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
+        EventCreator.putEventExtra(intent, EVENT);
 
-        //assertThat(name,is(name_view));
-        //assertEquals(location,location_view);
-        //assertEquals(date,date_view);
-        //assertEquals(start_time,start_time_view);
-        //assertEquals(end_time,end_time_view);
-        //Intents.release();
-
-
-        //onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
-        //       .check(matches(withText(R.string.menu_calendar)));
-        //onView(withIndex(withId(R.id.calendarView), 0)).check(matches(isDisplayed()));
+        try(ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.editEventName)).check(ViewAssertions.matches(ViewMatchers.withText(NAME)));
+            onView(withId(R.id.editEventLocation)).check(ViewAssertions.matches(ViewMatchers.withText(LOCATION.name)));
+        }
     }
 }
 

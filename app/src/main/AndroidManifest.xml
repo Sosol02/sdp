@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
         <activity android:name=".EventCreator"></activity>
         <activity android:name=".EventsView"></activity>
 
