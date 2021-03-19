@@ -1,15 +1,14 @@
 package com.github.onedirection.database;
 
-import android.util.Log;
-
-import com.github.onedirection.utils.Id;
-import com.github.onedirection.database.store.Storable;
-import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.database.utils.FirebaseUtils;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -29,12 +28,12 @@ public class ConcreteDatabase /* implements Database */ {
     }
 
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
+        if(toStore == null) { throw new IllegalArgumentException("store is null"); }
         CompletableFuture<Id> result = new CompletableFuture<Id>();
 
         Storer<T> storer = toStore.storer();
 
-        db.collection(storer.getCollection().getCollectionName())
-                .add(toStore)
+        db.collection(storer.getCollection().getCollectionName()).document(toStore.getId().getUuid()).set(toStore.storer().storableToMap(toStore))
                 .addOnCompleteListener(res -> {
                     if (res.isSuccessful()) {
                         result.complete(toStore.getId());
@@ -47,23 +46,19 @@ public class ConcreteDatabase /* implements Database */ {
     }
 
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
+        if(storer == null) { throw new IllegalArgumentException("storer is null"); }
         CompletableFuture<T> result = new CompletableFuture<T>();
 
         db.collection(storer.getCollection().getCollectionName())
-                .whereEqualTo("id", id)
+                .document(id.getUuid())
                 .get()
                 .addOnCompleteListener(res -> {
                     if (res.isSuccessful()) {
-                        List<DocumentSnapshot> docs = res.getResult()
-                                .getDocuments();
-
-                        if (docs.size() > 1) {
-                            // TODO: make real exception type
-                            Log.d("DB", String.format("More than 1 element with given id: %s", id.toString()));
-                            result.completeExceptionally(new RuntimeException("Id not unique"));
+                        Map<String, Object> doc = res.getResult().getData();
+                        if(doc == null) {
+                            result.complete(null);
                         } else {
-                            // TODO: docs don't specify what happens if class cast fails
-                            T obj = docs.get(0).toObject(storer.classTag());
+                            T obj = storer.mapToStorable(doc);
                             result.complete(obj);
                         }
                     } else {
@@ -73,5 +68,58 @@ public class ConcreteDatabase /* implements Database */ {
 
         return result;
     }
+
+    public <T extends Storable<T>> CompletableFuture<Id> remove(Id id, Storer<T> storer) {
+        if(storer == null) { throw new IllegalArgumentException("storer is null"); }
+        CompletableFuture<Id> result = new CompletableFuture<Id>();
+
+        db.collection(storer.getCollection().getCollectionName())
+                .document(String.valueOf(id)).delete().addOnCompleteListener(res -> {
+            if (res.isSuccessful()) {
+                result.complete(id);
+            } else {
+                result.completeExceptionally(res.getException());
+            }
+        }).addOnCanceledListener(() -> result.cancel(false));
+
+        return result;
+    }
+
+    private <T extends Storable<T>> CompletableFuture<List<T>> completeOnList(Task<QuerySnapshot> t, Storer<T> storer) {
+        CompletableFuture<List<T>> result = new CompletableFuture<List<T>>();
+
+        Objects.requireNonNull(t)
+                .addOnCompleteListener(res -> {
+                    if(res.isSuccessful()) {
+                        QuerySnapshot docs = res.getResult();
+                        List<T> storables = new ArrayList<T>();
+                        if(docs != null) {
+                            for (DocumentSnapshot ds : docs) {
+                                storables.add(storer.mapToStorable(ds.getData()));
+                            }
+                        }
+                        result.complete(storables);
+                    } else {
+                        result.completeExceptionally(res.getException());
+                    }
+                }).addOnCanceledListener(() -> result.cancel(false));
+
+        return result;
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
+
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).get();
+
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> retrieveOnFilterKey(String key, String value, Storer<T> storer) {
+
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+
+        return completeOnList(t, storer);
+    }
+
 
 }
