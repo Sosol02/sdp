@@ -17,6 +17,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
+/**
+ * To use to create an event, just start the activity.
+ * To edit an event, start using the following code
+ * <pre>
+ * {@code
+ * Event eventToEdit = ...;
+ * Intent intent = new Intent(..., EventCreator.class);
+ * ... //prepare your intent
+ * EventCreator.putEventExtra(eventToEdit);
+ * startActivity(intent);
+ * }
+ * </pre>
+ */
 public class EventCreator extends AppCompatActivity {
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
