@@ -21,7 +21,7 @@
             android:id="@+id/textEventCreatorTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create an event:"
+            android:text="@string/create_an_event_title"
             android:textSize="30sp"
             android:textStyle="bold" />
 
@@ -34,16 +34,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="14"
+            android:hint="@string/event_name_hint"
             android:inputType="textPersonName"
-            android:text="Event name" />
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/editEventLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="14"
+            android:hint="@string/location_hint"
             android:inputType="textPersonName"
-            android:text="Location" />
+            android:importantForAutofill="no" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -55,8 +57,7 @@
                 android:layout_width="140dp"
                 android:layout_height="44dp"
                 android:layout_marginTop="4dp"
-                android:onClick="showStartTimePicker"
-                android:text="Start time" />
+                android:onClick="showStartTimePicker" />
 
             <Button
                 android:id="@+id/buttonStartDate"
@@ -64,8 +65,7 @@
                 android:layout_height="45dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:onClick="showStartDatePicker"
-                android:text="Start date" />
+                android:onClick="showStartDatePicker" />
         </LinearLayout>
 
         <LinearLayout
@@ -78,8 +78,7 @@
                 android:layout_width="140dp"
                 android:layout_height="44dp"
                 android:layout_marginTop="4dp"
-                android:onClick="showEndTimePicker"
-                android:text="End Time" />
+                android:onClick="showEndTimePicker" />
 
             <Button
                 android:id="@+id/buttonEndDate"
@@ -87,8 +86,7 @@
                 android:layout_height="45dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:onClick="showEndDatePicker"
-                android:text="End Date" />
+                android:onClick="showEndDatePicker" />
         </LinearLayout>
 
         <Space
@@ -100,9 +98,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="128dp"
-            android:text="Create event" />
+            android:text="@string/create_event_button_text" />
     </LinearLayout>
-
->>>>>>> Stashed changes
-
 </androidx.constraintlayout.widget.ConstraintLayout>
