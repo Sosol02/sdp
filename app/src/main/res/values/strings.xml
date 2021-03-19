@@ -32,5 +32,6 @@
     <string name="dialog_logout_body">Are you sure you want to log out ?</string>
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
+    <string name="add_event">Add Event</string>
 
 </resources>
