@@ -14,7 +14,7 @@ public class EventsView extends AppCompatActivity {
         setContentView(R.layout.event_viewer);
 
         Intent intent = getIntent();
-        Event event = EventCreator.EXTRA_EVENT_TYPE.cast(intent.getSerializableExtra(EventCreator.EXTRA_EVENT));
+        Event event = EventCreator.getEventExtra(intent);
 
         TextView textViewName = findViewById(R.id.textViewNameView);
         textViewName.setText(event.getName());

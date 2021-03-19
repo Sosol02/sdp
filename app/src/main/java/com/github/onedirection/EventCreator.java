@@ -21,6 +21,25 @@ public class EventCreator extends AppCompatActivity {
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
 
+    /**
+     * Extract the event extra put by/for the Event creator.
+     * @param intent The intent.
+     * @return The contained event.
+     */
+    public static Event getEventExtra(Intent intent){
+        return EXTRA_EVENT_TYPE.cast(intent.getSerializableExtra(EXTRA_EVENT));
+    }
+
+    /**
+     * Put an event extra for the Event creator.
+     * @param intent The intent which will carry the event.
+     * @param event The event to put.
+     * @return The passed intent.
+     */
+    public static Intent putEventExtra(Intent intent, Event event){
+        return intent.putExtra(EXTRA_EVENT, event);
+    }
+
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
     private Id eventId;
@@ -40,22 +59,28 @@ public class EventCreator extends AppCompatActivity {
 
 
         if (getIntent().hasExtra(EXTRA_EVENT)) {
-            Event event = EXTRA_EVENT_TYPE.cast(getIntent().getSerializableExtra(EXTRA_EVENT));
-            loadEvent(event);
+            loadEvent(getEventExtra(getIntent()));
         } else {
             eventId = Id.generateRandom();
         }
 
         findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
             Event event = generateEvent();
-            // TODO: add logic to put/update (into) db
+
+            if(isEditing()){
+                //update in db
+            }
+            else{
+                //put to database
+            }
+
             viewEvent(event);
         });
     }
 
     private void viewEvent(Event event) {
         Intent intent = new Intent(this, EventsView.class);
-        intent.putExtra(EXTRA_EVENT, event);
+        putEventExtra(intent, event);
         startActivity(intent);
     }
 
