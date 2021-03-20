@@ -1,4 +1,4 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocalization;
 
 import java.util.Objects;
 
@@ -6,35 +6,43 @@ import javax.annotation.concurrent.Immutable;
 
 import static java.lang.Math.abs;
 
-/** Represents (immutable) geographic coordinates. */
+/** Represents (immutable) geographic coordinates paired with the name of the location. */
 @Immutable
-public final class Coordinates {
+public class NamedCoordinates {
     public final double latitude;
     public final double longitude;
+    public final String name;
 
-    public Coordinates(double latitude, double longitude){
+    public NamedCoordinates(double latitude, double longitude, String name){
+        Objects.requireNonNull(name);
         this.latitude = latitude;
         this.longitude = longitude;
+        this.name = name;
+    }
+
+    public NamedCoordinates(Coordinates coordinates, String name){
+        this(coordinates.latitude, coordinates.longitude, name);
+    }
+
+    public Coordinates dropName(){
+        return new Coordinates(latitude, longitude);
     }
 
     @Override
     public String toString() {
-        return "Coordinates(" +
+        return name + "(" +
                 "lat=" + latitude +
                 ", lon=" + longitude +
                 ')';
     }
 
-    public NamedCoordinates addName(String name){
-        return new NamedCoordinates(this, name);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Coordinates that = (Coordinates) o;
+        NamedCoordinates that = (NamedCoordinates) o;
         return Double.compare(that.latitude, latitude) == 0 &&
-                Double.compare(that.longitude, longitude) == 0;
+                Double.compare(that.longitude, longitude) == 0 &&
+                that.name.equals(name);
     }
 
     /**
@@ -44,8 +52,7 @@ public final class Coordinates {
      * @return True if the two coordinates are close.
      */
     public boolean areCloseTo(Coordinates that, double tolerance){
-        return  abs(this.latitude - that.latitude) < tolerance &&
-                abs(this.longitude - that.longitude) < tolerance;
+        return  dropName().areCloseTo(that, tolerance);
     }
 
     /**
@@ -55,11 +62,11 @@ public final class Coordinates {
      * @return True if the two coordinates are close.
      */
     public boolean areCloseTo(NamedCoordinates that, double tolerance){
-        return  areCloseTo(that.dropName(), tolerance);
+        return  dropName().areCloseTo(that.dropName(), tolerance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(latitude, longitude);
+        return Objects.hash(latitude, longitude, name);
     }
 }

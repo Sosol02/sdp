@@ -1,8 +1,5 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocalization;
 
-import com.github.onedirection.utils.Pair;
-
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
