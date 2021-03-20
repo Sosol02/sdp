@@ -4,10 +4,13 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.onedirection.geocoding.NamedCoordinates;
@@ -15,7 +18,6 @@ import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -46,39 +48,43 @@ public class EventCreator extends AppCompatActivity {
 
     /**
      * Extract the event extra put by/for the Event creator.
+     *
      * @param intent The intent.
      * @return The contained event.
      */
-    public static Event getEventExtra(Intent intent){
+    public static Event getEventExtra(Intent intent) {
         return EXTRA_EVENT_TYPE.cast(intent.getSerializableExtra(EXTRA_EVENT));
     }
 
     /**
      * Put an event extra for the Event creator.
+     *
      * @param intent The intent which will carry the event.
-     * @param event The event to put.
+     * @param event  The event to put.
      * @return The passed intent.
      */
-    public static Intent putEventExtra(Intent intent, Event event){
+    public static Intent putEventExtra(Intent intent, Event event) {
         return intent.putExtra(EXTRA_EVENT, event);
     }
 
     /**
      * Extract the date extra put by/for the Event creator.
+     *
      * @param intent The intent.
      * @return The contained date.
      */
-    public static LocalDate getDateExtra(Intent intent){
+    public static LocalDate getDateExtra(Intent intent) {
         return EXTRA_DATE_TYPE.cast(intent.getSerializableExtra(EXTRA_DATE));
     }
 
     /**
      * Put a date extra for the Event creator.
+     *
      * @param intent The intent which will carry the event.
-     * @param date The date to put.
+     * @param date   The date to put.
      * @return The passed intent.
      */
-    public static Intent putDateExtra(Intent intent, LocalDate date){
+    public static Intent putDateExtra(Intent intent, LocalDate date) {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
@@ -92,10 +98,10 @@ public class EventCreator extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_creator);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         isEditing = false;
-        startTime = ZonedDateTime.now();
-        endTime = startTime.plus(DEFAULT_EVENT_DURATION);
-        updateTimeDates();
 
         Intent intent = getIntent();
 
@@ -103,26 +109,33 @@ public class EventCreator extends AppCompatActivity {
             loadEvent(getEventExtra(intent));
         } else {
             eventId = Id.generateRandom();
-
-            if(intent.hasExtra(EXTRA_DATE)){
-                startTime = ZonedDateTime.of(getDateExtra(intent), LocalTime.now(), ZoneId.systemDefault());
-                endTime = startTime.plus(DEFAULT_EVENT_DURATION);
-                updateTimeDates();
-            }
+            startTime = intent.hasExtra(EXTRA_DATE) ?
+                    ZonedDateTime.of(getDateExtra(intent), LocalTime.now(), ZoneId.systemDefault()) :
+                    ZonedDateTime.now();
+            endTime = startTime.plus(DEFAULT_EVENT_DURATION);
+            updateTimeDates();
         }
 
         findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
             Event event = generateEvent();
 
-            if(isEditing){
-                //update in db
-            }
-            else{
-                //put to database
+            if (isEditing) {
+                // TODO: update event in db
+            } else {
+                // TODO: put event in db
             }
 
             viewEvent(event);
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void viewEvent(Event event) {
@@ -202,7 +215,7 @@ public class EventCreator extends AppCompatActivity {
                 v.getContext(),
                 (view, year, month, dayOfMonth) ->
                         startTime = ZonedDateTime.of(
-                                LocalDate.of(year, month+1, dayOfMonth),
+                                LocalDate.of(year, month + 1, dayOfMonth),
                                 startTime.toLocalTime(),
                                 startTime.getZone()
                         ),
@@ -218,7 +231,7 @@ public class EventCreator extends AppCompatActivity {
                 v.getContext(),
                 (view, year, month, dayOfMonth) ->
                         endTime = ZonedDateTime.of(
-                                LocalDate.of(year, month+1, dayOfMonth),
+                                LocalDate.of(year, month + 1, dayOfMonth),
                                 endTime.toLocalTime(),
                                 endTime.getZone()
                         ),

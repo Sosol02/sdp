@@ -72,7 +72,7 @@ public class Event implements Serializable {
         return id;
     }
 
-    public Coordinates getCoordinates(){
+    public Coordinates getCoordinates() {
         return location.dropName();
     }
 
@@ -92,13 +92,13 @@ public class Event implements Serializable {
         return endTime;
     }
 
-    public Duration getDuration(){
+    public Duration getDuration() {
         return Duration.between(startTime, endTime);
     }
 
     @Override
     public String toString() {
-        return "Event" +  id +
+        return "Event" + id +
                 " - " + name +
                 "(@" + location +
                 ':' + startTime +
