@@ -25,15 +25,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -95,8 +98,8 @@ public class EventCreatorTest {
         EventCreator.putEventExtra(intent, EVENT);
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.editEventName)).check(ViewAssertions.matches(ViewMatchers.withText(NAME)));
-            onView(withId(R.id.editEventLocation)).check(ViewAssertions.matches(ViewMatchers.withText(LOCATION.name)));
+            onView(withId(R.id.editEventName)).check(matches(withText(NAME)));
+            onView(withId(R.id.editEventLocation)).check(matches(withText(LOCATION.name)));
         }
     }
 
@@ -113,12 +116,10 @@ public class EventCreatorTest {
     }
 
     @Test
-    public void eventSettingsCanBeChanged() throws InterruptedException {
+    public void eventSettingsCanBeChanged() {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
         EventCreator.putEventExtra(intent, EVENT_BIS);
 
-        Intents.release();
-        Intents.init();
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.clearText());
             onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.clearText());
@@ -145,6 +146,18 @@ public class EventCreatorTest {
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
 
             //intended(hasExtra(EventCreator.EXTRA_EVENT, EVENT));
+        }
+    }
+
+    @Test
+    public void eventDateCanSpecified() {
+        final LocalDate date = LocalDate.of(1000, 10, 1);
+
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
+        EventCreator.putDateExtra(intent, date);
+
+        try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.buttonStartDate)).check(matches(withText(date.toString())));
         }
     }
 }

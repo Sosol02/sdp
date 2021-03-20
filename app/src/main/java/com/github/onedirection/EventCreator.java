@@ -13,9 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * To use to create an event, just start the activity.
@@ -29,10 +33,16 @@ import java.time.ZonedDateTime;
  * startActivity(intent);
  * }
  * </pre>
+ * A date can also be passed to specify the initial date
+ * of the event. Ignored if an event is also given.
  */
 public class EventCreator extends AppCompatActivity {
     public static final String EXTRA_EVENT = "EVENT_ID";
+    public static final String EXTRA_DATE = "DATE";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
+    public static final Class<LocalDate> EXTRA_DATE_TYPE = LocalDate.class;
+
+    private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
 
     /**
      * Extract the event extra put by/for the Event creator.
@@ -53,6 +63,25 @@ public class EventCreator extends AppCompatActivity {
         return intent.putExtra(EXTRA_EVENT, event);
     }
 
+    /**
+     * Extract the date extra put by/for the Event creator.
+     * @param intent The intent.
+     * @return The contained date.
+     */
+    public static LocalDate getDateExtra(Intent intent){
+        return EXTRA_DATE_TYPE.cast(intent.getSerializableExtra(EXTRA_DATE));
+    }
+
+    /**
+     * Put a date extra for the Event creator.
+     * @param intent The intent which will carry the event.
+     * @param date The date to put.
+     * @return The passed intent.
+     */
+    public static Intent putDateExtra(Intent intent, LocalDate date){
+        return intent.putExtra(EXTRA_DATE, date);
+    }
+
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
     private Id eventId;
@@ -65,14 +94,21 @@ public class EventCreator extends AppCompatActivity {
 
         isEditing = false;
         startTime = ZonedDateTime.now();
-        endTime = startTime.plusHours(1);
+        endTime = startTime.plus(DEFAULT_EVENT_DURATION);
         updateTimeDates();
 
+        Intent intent = getIntent();
 
-        if (getIntent().hasExtra(EXTRA_EVENT)) {
-            loadEvent(getEventExtra(getIntent()));
+        if (intent.hasExtra(EXTRA_EVENT)) {
+            loadEvent(getEventExtra(intent));
         } else {
             eventId = Id.generateRandom();
+
+            if(intent.hasExtra(EXTRA_DATE)){
+                startTime = ZonedDateTime.of(getDateExtra(intent), LocalTime.now(), ZoneId.systemDefault());
+                endTime = startTime.plus(DEFAULT_EVENT_DURATION);
+                updateTimeDates();
+            }
         }
 
         findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
