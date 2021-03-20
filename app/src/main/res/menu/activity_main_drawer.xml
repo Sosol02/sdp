@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -21,8 +22,17 @@
             android:icon="@drawable/ic_menu_account"
             android:title="@string/menu_account" />
         <item
-            android:id="@+id/nav_login"
-            android:icon="@drawable/ic_menu_login"
-            android:title="@string/menu_login" />
+            android:id="@+id/nav_create_event"
+            android:icon="@drawable/ic_date_range_black_18dp"
+            android:title="@string/add_event" />
+        <item
+            android:id="@+id/nav_sign"
+            android:icon="@drawable/ic_menu_sign"
+            android:title="@string/menu_sign" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_logout"
+            android:visible="false"
+            android:title="@string/menu_logout" />
     </group>
 </menu>

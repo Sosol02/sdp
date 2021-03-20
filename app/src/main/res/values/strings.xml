@@ -1,36 +1,44 @@
 <resources>
     <string name="app_name">1Direction</string>
     <string name="title_activity_navigation">NavigationActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="nav_header_title">Example Name</string>
-    <string name="nav_header_subtitle">example.name@somewhere.com</string>
+    <string name="nav_header_username">Guest</string>
+    <string name="nav_header_email" />
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_calendar">Calendar</string>
     <string name="menu_map">Map</string>
     <string name="menu_account">Account</string>
-    <string name="menu_login">Login or register</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings related to login -->
+    <string name="menu_sign">Sign</string>
+    <string name="menu_logout">Logout</string>
+
+
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="welcome">Welcome</string>
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="register_failed">Register failed</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="title_activity_day_select_popup">DaySelectPopup</string>
+
+    <string name="invalid_username">Not a valid email</string>
+    <string name="invalid_password">Password must be > 5 characters</string>
+    <string name="button_register_text">Register</string>
+    <string name="button_sign_in_text">Sign in</string>
+    <string name="clickable_text_to_sign_in">Already an account?</string>
+    <string name="clickable_text_to_register">New user?</string>
+    <string name="dialog_logout_tittle">Log out</string>
+    <string name="dialog_logout_body">Are you sure you want to log out ?</string>
+    <string name="dialog_logout_yes">Yes</string>
+    <string name="dialog_logout_no">No</string>
 
     <!-- Strings related to calendar and event creation -->
-    <string name= "add_event"> </string>
+    <string name="add_event">Add Event</string>
     <string name= "popup_title"> "" </string>
     <string name= "cancel"> "cancel" </string>
     <array name= "day_select_actions">{"Add event", "View events"}</array>
-
-
+>>>>>>> main
 
 </resources>
