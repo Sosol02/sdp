@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import java.time.ZonedDateTime;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
@@ -119,12 +120,12 @@ public class EventCreatorTest {
         Intents.release();
         Intents.init();
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.editEventName)).perform(ViewActions.clearText());
-            onView(withId(R.id.editEventLocation)).perform(ViewActions.clearText());
+            onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.clearText());
+            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.clearText());
 
-            onView(withId(R.id.editEventName)).perform(ViewActions.typeText(NAME));
+            onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.typeText(NAME));
             ViewActions.closeSoftKeyboard();
-            onView(withId(R.id.editEventLocation)).perform(ViewActions.typeText(LOCATION.name));
+            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.typeText(LOCATION.name));
             ViewActions.closeSoftKeyboard();
 
             /*
@@ -141,7 +142,7 @@ public class EventCreatorTest {
 //            setTimePicker(R.id.buttonEndTime, END_TIME);
 //            setDatePicker(R.id.buttonEndDate, END_TIME);
 
-            onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
+            onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
 
             //intended(hasExtra(EventCreator.EXTRA_EVENT, EVENT));
         }
