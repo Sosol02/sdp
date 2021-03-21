@@ -1,10 +1,11 @@
 
 package com.github.onedirection;
 
-import com.github.onedirection.geolocalization.Coordinates;
-import com.github.onedirection.geolocalization.NamedCoordinates;
+import com.github.onedirection.geocoding.Coordinates;
+import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Event {
+public class Event implements Serializable {
 
     final private Id id;
     final private String name;
