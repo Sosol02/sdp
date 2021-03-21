@@ -47,11 +47,11 @@ public class EventCreatorTest {
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
-    private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
+    private final static String LOCATION_NAME = "Location name";
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().plusDays(1);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plusDays(2);
 
-    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
+    private final static Event EVENT = new Event(ID, NAME, LOCATION_NAME, START_TIME, END_TIME);
     private final static Event EVENT_BIS = new Event(
             ID,
             "Other name",
@@ -97,7 +97,7 @@ public class EventCreatorTest {
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.editEventName)).check(matches(withText(NAME)));
-            onView(withId(R.id.editEventLocation)).check(matches(withText(LOCATION.name)));
+            onView(withId(R.id.editEventLocation)).check(matches(withText(LOCATION_NAME)));
         }
     }
 
@@ -124,7 +124,7 @@ public class EventCreatorTest {
 
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.typeText(NAME));
             ViewActions.closeSoftKeyboard();
-            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.typeText(LOCATION.name));
+            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.typeText(LOCATION_NAME));
             ViewActions.closeSoftKeyboard();
 
             /*
@@ -143,7 +143,7 @@ public class EventCreatorTest {
 
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
 
-            //intended(hasExtra(EventCreator.EXTRA_EVENT, EVENT));
+//            intended(hasExtra(EventCreator.EXTRA_EVENT, EVENT));
         }
     }
 

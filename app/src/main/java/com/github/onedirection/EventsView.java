@@ -20,7 +20,7 @@ public class EventsView extends AppCompatActivity {
         textViewName.setText(event.getName());
 
         TextView textViewLocation = findViewById(R.id.textViewLocationView);
-        textViewLocation.setText(event.getLocation().name);
+        textViewLocation.setText(event.getLocationName());
 
         TextView textViewStartTime = findViewById(R.id.textViewStartTimeView);
         textViewStartTime.setText(event.getStartTime().toString());

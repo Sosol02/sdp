@@ -151,7 +151,7 @@ public class EventCreator extends AppCompatActivity {
         return new Event(
                 eventId,
                 name.getText().toString(),
-                new NamedCoordinates(0, 0, loc.getText().toString()),
+                loc.getText().toString(),
                 startTime,
                 endTime
         );
@@ -164,7 +164,7 @@ public class EventCreator extends AppCompatActivity {
         EditText loc = findViewById(R.id.editEventLocation);
 
         name.setText(event.getName());
-        loc.setText(event.getLocation().name);
+        loc.setText(event.getLocationName());
         startTime = event.getStartTime();
         endTime = event.getEndTime();
         updateTimeDates();
