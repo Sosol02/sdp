@@ -127,7 +127,7 @@ public class Event implements Serializable {
         return "Event" + id +
                 " - " + name +
                 "(@" + locationName +
-                getCoordinates().map(coordinates -> "[" + coordinates + "]").orElse("") +
+                (location == null ? "" : "[" + location + "]") +
                 ':' + startTime +
                 "-" + endTime +
                 ')';
@@ -140,7 +140,7 @@ public class Event implements Serializable {
         return id.equals(event.id) &&
                 name.equals(event.name) &&
                 locationName.equals(event.locationName) &&
-                location.equals(event.location) &&
+                getLocation().equals(event.getLocation()) &&
                 startTime.equals(event.startTime) &&
                 endTime.equals(event.endTime);
     }
