@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -32,7 +33,6 @@ public class EventTest {
     @Test
     public void testEventWithNullArgument() {
         assertThrows(NullPointerException.class, () -> new Event(ID, null, LOCATION, START_TIME, END_TIME));
-        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, null, START_TIME, END_TIME));
         assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, null, END_TIME));
         assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, START_TIME, null));
     }
@@ -54,11 +54,11 @@ public class EventTest {
 
         assertThrows(NullPointerException.class, () -> EVENT.setLocation(null));
         Event eventChanged = EVENT.setLocation(newLoc);
-        assertEquals(newLoc, eventChanged.getLocation());
-        assertEquals(LOCATION, EVENT.getLocation());
+        assertEquals(Optional.of(newLoc), eventChanged.getLocation());
+        assertEquals(Optional.of(LOCATION), EVENT.getLocation());
         assertThat(EVENT.setLocation(LOCATION), sameInstance(EVENT));
 
-        assertThat(eventChanged.getCoordinates(), is(newLoc.dropName()));
+        assertThat(eventChanged.getCoordinates(), is(Optional.of(newLoc.dropName())));
     }
 
     @Test
@@ -104,7 +104,8 @@ public class EventTest {
         String str = EVENT.toString();
         assertThat(str, containsString(ID.toString()));
         assertThat(str, containsString(NAME));
-        assertThat(str, containsString(LOCATION.toString()));
+        assertThat(str, containsString(LOCATION.dropName().toString()));
+        assertThat(str, containsString(LOCATION.name));
         assertThat(str, containsString(START_TIME.toString()));
         assertThat(str, containsString(END_TIME.toString()));
     }

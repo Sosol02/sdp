@@ -75,7 +75,7 @@ public class Event implements Serializable {
     }
 
     public Event setLocation(NamedCoordinates new_value) {
-        return Objects.requireNonNull(new_value).equals(this.location) ? this : new Event(id, name, new_value, startTime, endTime);
+        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime);
     }
 
     public Event setStartTime(ZonedDateTime new_value) {
@@ -139,6 +139,7 @@ public class Event implements Serializable {
         Event event = (Event) o;
         return id.equals(event.id) &&
                 name.equals(event.name) &&
+                locationName.equals(event.locationName) &&
                 location.equals(event.location) &&
                 startTime.equals(event.startTime) &&
                 endTime.equals(event.endTime);
