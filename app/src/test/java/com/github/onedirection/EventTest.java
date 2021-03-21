@@ -13,6 +13,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +39,11 @@ public class EventTest {
     }
 
     @Test
+    public void idIsCorrect(){
+        assertThat(EVENT.getId(), is(ID));
+    }
+
+    @Test
     public void testEventSetNameAndGet() {
         final String newName = "New event name";
 
@@ -53,8 +59,10 @@ public class EventTest {
         final NamedCoordinates newLoc = new NamedCoordinates(1, 1, "New location name");
 
         assertThrows(NullPointerException.class, () -> EVENT.setLocation(null));
+        assertThat(EVENT.getLocationName(), is(LOCATION.name));
         Event eventChanged = EVENT.setLocation(newLoc);
         assertEquals(Optional.of(newLoc), eventChanged.getLocation());
+        assertThat(eventChanged.getLocationName(), is(newLoc.name));
         assertEquals(Optional.of(LOCATION), EVENT.getLocation());
         assertThat(EVENT.setLocation(LOCATION), sameInstance(EVENT));
 
@@ -114,10 +122,18 @@ public class EventTest {
     public void equalsBehavesAsExpected(){
         Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
         Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME);
+        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1));
+        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME);
+        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME);
+        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME);
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));
         assertThat(EVENT, not(is(event2)));
+        assertThat(EVENT, not(is(event3)));
+        assertThat(EVENT, not(is(event4)));
+        assertThat(EVENT, is(event5));
+        assertThat(EVENT, not(is(event6)));
     }
 
     @Test
