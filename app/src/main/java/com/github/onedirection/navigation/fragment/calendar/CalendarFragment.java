@@ -2,6 +2,7 @@ package com.github.onedirection.navigation.fragment.calendar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,10 @@ import com.skyhope.eventcalenderlibrary.CalenderEvent;
 import com.skyhope.eventcalenderlibrary.model.Event;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
 import java.util.Objects;
 
 public class CalendarFragment extends Fragment {
@@ -39,7 +43,7 @@ public class CalendarFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(CalendarViewModel.class);
         calendarView.initCalderItemClickCallback(dayContainerModel -> {
-            DaySelectPopupFragment popup = new DaySelectPopupFragment(this, dayContainerModel.getTimeInMillisecond());
+            DaySelectPopupFragment popup = new DaySelectPopupFragment(this, dayContainerModel.getDay(), dayContainerModel.getMonthNumber(), dayContainerModel.getYear());
             popup.show(getChildFragmentManager(), getResources().getString(R.string.day_select_dialog_tag));
         });
     }
@@ -55,10 +59,9 @@ public class CalendarFragment extends Fragment {
         calendarView.removeEvent(calendarEvent);
     }
 
-    public void showEventCreationScreen(long timeInMillis) {
+    public void showEventCreationScreen(int day, int month, int year) {
         Intent intent = new Intent(getActivity(), EventCreator.class);
-        Instant instant = Instant.ofEpochMilli(timeInMillis);
-        intent.putExtra(EXTRA_MESSAGE_DATE, instant.truncatedTo(ChronoUnit.DAYS));
+        intent.putExtra(EXTRA_MESSAGE_DATE, LocalDate.of(year, month, day));
         startActivity(intent);
     }
 }

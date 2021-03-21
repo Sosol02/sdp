@@ -12,12 +12,16 @@ import com.github.onedirection.R;
 public class DaySelectPopupFragment extends DialogFragment {
 
     final private CharSequence[] buttonTitles = {"Add Event", "View Events"};
-    private final long timeInMillis;
+    private final int day;
+    private final int month;
+    private final int year;
     private final CalendarFragment calendar;
 
-    public DaySelectPopupFragment(CalendarFragment calendar, long timeInMillis) {
+    public DaySelectPopupFragment(CalendarFragment calendar, int day, int month, int year) {
         this.calendar = calendar;
-        this.timeInMillis = timeInMillis;
+        this.day = day;
+        this.month = month;
+        this.year = year;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class DaySelectPopupFragment extends DialogFragment {
                 switch (which) {
                     //add events
                     case 0:
-                        calendar.showEventCreationScreen(timeInMillis);
+                        calendar.showEventCreationScreen(day, month, year);
                         break;
                     //view events
                     case 1:
