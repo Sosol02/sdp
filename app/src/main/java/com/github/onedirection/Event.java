@@ -19,7 +19,7 @@ public class Event implements Serializable {
     final private Id id;
     final private String name;
     final private String locationName;
-    final private Optional<Coordinates> location;
+    final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
 
@@ -32,7 +32,7 @@ public class Event implements Serializable {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.locationName = Objects.requireNonNull(locationName);
-        this.location = Objects.requireNonNull(location);
+        this.location = Objects.requireNonNull(location).orElse(null);
         this.startTime = Objects.requireNonNull(startTime).truncatedTo(TIME_PRECISION);
         this.endTime = Objects.requireNonNull(endTime).truncatedTo(TIME_PRECISION);
 
@@ -95,7 +95,7 @@ public class Event implements Serializable {
     }
 
     public Optional<Coordinates> getCoordinates() {
-        return location;
+        return Optional.ofNullable(location);
     }
 
     public String getLocationName(){
@@ -103,7 +103,7 @@ public class Event implements Serializable {
     }
 
     public Optional<NamedCoordinates> getLocation() {
-        return location.map(coordinates -> coordinates.addName(locationName));
+        return getCoordinates().map(coordinates -> coordinates.addName(locationName));
     }
 
     public String getName() {
@@ -127,7 +127,7 @@ public class Event implements Serializable {
         return "Event" + id +
                 " - " + name +
                 "(@" + locationName +
-                location.map(coordinates -> "[" + coordinates + "]").orElse("") +
+                getCoordinates().map(coordinates -> "[" + coordinates + "]").orElse("") +
                 ':' + startTime +
                 "-" + endTime +
                 ')';
@@ -147,6 +147,6 @@ public class Event implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, location, startTime, endTime);
+        return Objects.hash(id, name, locationName, location, startTime, endTime);
     }
 }
