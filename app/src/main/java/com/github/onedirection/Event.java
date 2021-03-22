@@ -1,7 +1,7 @@
 package com.github.onedirection;
 
-import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.geolocalization.Coordinates;
+import com.github.onedirection.geolocalization.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import java.io.Serializable;
