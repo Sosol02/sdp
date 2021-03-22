@@ -9,7 +9,6 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="45dp">
 
 
             <TextView
@@ -36,7 +36,7 @@
 
             <EditText
                 android:id="@+id/editEventName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="14"
                 android:hint="@string/event_name_hint"
@@ -45,7 +45,7 @@
 
             <EditText
                 android:id="@+id/editEventLocation"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="14"
                 android:hint="@string/location_hint"
@@ -53,45 +53,75 @@
                 android:inputType="textPersonName" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/startTimeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/start_time_text" />
 
                 <Button
                     android:id="@+id/buttonStartTime"
-                    android:layout_width="140dp"
-                    android:layout_height="44dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:onClick="showStartTimePicker" />
+                    android:layout_weight="1"
+                    android:onClick="showStartTimePicker"
+                    android:textColor="?colorPrimary" />
 
                 <Button
                     android:id="@+id/buttonStartDate"
-                    android:layout_width="140dp"
-                    android:layout_height="45dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:onClick="showStartDatePicker" />
+                    android:layout_weight="2"
+                    android:onClick="showStartDatePicker"
+                    android:textColor="?colorPrimary" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/endTimeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/end_time_text" />
 
                 <Button
                     android:id="@+id/buttonEndTime"
-                    android:layout_width="140dp"
-                    android:layout_height="44dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:onClick="showEndTimePicker" />
+                    android:layout_weight="1"
+                    android:onClick="showEndTimePicker"
+                    android:textColor="?colorPrimary" />
 
                 <Button
                     android:id="@+id/buttonEndDate"
-                    android:layout_width="140dp"
-                    android:layout_height="45dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:onClick="showEndDatePicker" />
+                    android:layout_weight="2"
+                    android:onClick="showEndDatePicker"
+                    android:textColor="?colorPrimary" />
             </LinearLayout>
 
             <Space

@@ -37,5 +37,7 @@
     <string name="create_event_button_text">Create event</string>
     <string name="event_name_hint">Event name</string>
     <string name="location_hint">Location</string>
+    <string name="start_time_text">Start time:</string>
+    <string name="end_time_text">End time:</string>
 
 </resources>
