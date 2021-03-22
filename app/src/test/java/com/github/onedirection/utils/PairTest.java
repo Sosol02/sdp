@@ -1,6 +1,6 @@
 package com.github.onedirection.utils;
 
-import com.github.onedirection.geocoding.Coordinates;
+import com.github.onedirection.geolocalization.Coordinates;
 
 import org.junit.Test;
 
