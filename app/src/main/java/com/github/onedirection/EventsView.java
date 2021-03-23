@@ -14,26 +14,19 @@ public class EventsView extends AppCompatActivity {
         setContentView(R.layout.event_viewer);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra(EventCreator.EXTRA_NAME);
-        String location = intent.getStringExtra(EventCreator.EXTRA_LOCATION);
-        String date = intent.getStringExtra(EventCreator.EXTRA_DATE);
-        String start_time = intent.getStringExtra(EventCreator.EXTRA_START_TIME);
-        String end_time = intent.getStringExtra(EventCreator.EXTRA_END_TIME);
+        Event event = EventCreator.getEventExtra(intent);
 
         TextView textViewName = findViewById(R.id.textViewNameView);
-        textViewName.setText(name);
+        textViewName.setText(event.getName());
 
         TextView textViewLocation = findViewById(R.id.textViewLocationView);
-        textViewLocation.setText(location);
-
-        TextView textViewDate = findViewById(R.id.textViewDateView);
-        textViewDate.setText(date);
+        textViewLocation.setText(event.getLocationName());
 
         TextView textViewStartTime = findViewById(R.id.textViewStartTimeView);
-        textViewStartTime.setText(start_time);
+        textViewStartTime.setText(event.getStartTime().toString());
 
         TextView textViewEndTime = findViewById(R.id.textViewEndTimeView);
-        textViewEndTime.setText(end_time);
+        textViewEndTime.setText(event.getEndTime().toString());
 
     }
 }

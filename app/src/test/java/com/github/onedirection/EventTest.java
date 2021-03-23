@@ -9,10 +9,12 @@ import org.junit.Test;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -33,9 +35,13 @@ public class EventTest {
     @Test
     public void testEventWithNullArgument() {
         assertThrows(NullPointerException.class, () -> new Event(ID, null, LOCATION, START_TIME, END_TIME));
-        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, null, START_TIME, END_TIME));
         assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, null, END_TIME));
         assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, START_TIME, null));
+    }
+
+    @Test
+    public void idIsCorrect() {
+        assertThat(EVENT.getId(), is(ID));
     }
 
     @Test
@@ -54,12 +60,14 @@ public class EventTest {
         final NamedCoordinates newLoc = new NamedCoordinates(1, 1, "New location name");
 
         assertThrows(NullPointerException.class, () -> EVENT.setLocation(null));
+        assertThat(EVENT.getLocationName(), is(LOCATION.name));
         Event eventChanged = EVENT.setLocation(newLoc);
-        assertEquals(newLoc, eventChanged.getLocation());
-        assertEquals(LOCATION, EVENT.getLocation());
+        assertEquals(Optional.of(newLoc), eventChanged.getLocation());
+        assertThat(eventChanged.getLocationName(), is(newLoc.name));
+        assertEquals(Optional.of(LOCATION), EVENT.getLocation());
         assertThat(EVENT.setLocation(LOCATION), sameInstance(EVENT));
 
-        assertThat(eventChanged.getCoordinates(), is(newLoc.dropName()));
+        assertThat(eventChanged.getCoordinates(), is(Optional.of(newLoc.dropName())));
     }
 
     @Test
@@ -85,7 +93,7 @@ public class EventTest {
     }
 
     @Test
-    public void eventCannotEndBeforeStarting(){
+    public void eventCannotEndBeforeStarting() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Event(
@@ -95,33 +103,42 @@ public class EventTest {
     }
 
     @Test
-    public void eventCanEndInstantly(){
+    public void eventCanEndInstantly() {
         Event event = new Event(ID, NAME, LOCATION, START_TIME, START_TIME);
         assertThat(event.getStartTime(), is(event.getEndTime()));
     }
 
     @Test
-    public void toStringContainsAllFields(){
+    public void toStringContainsAllFields() {
         String str = EVENT.toString();
         assertThat(str, containsString(ID.toString()));
         assertThat(str, containsString(NAME));
-        assertThat(str, containsString(LOCATION.toString()));
+        assertThat(str, containsString(LOCATION.dropName().toString()));
+        assertThat(str, containsString(LOCATION.name));
         assertThat(str, containsString(START_TIME.toString()));
         assertThat(str, containsString(END_TIME.toString()));
     }
 
     @Test
-    public void equalsBehavesAsExpected(){
+    public void equalsBehavesAsExpected() {
         Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
         Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME);
+        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1));
+        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME);
+        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME);
+        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME);
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));
         assertThat(EVENT, not(is(event2)));
+        assertThat(EVENT, not(is(event3)));
+        assertThat(EVENT, not(is(event4)));
+        assertThat(EVENT, is(event5));
+        assertThat(EVENT, not(is(event6)));
     }
 
     @Test
-    public void hashCodeIsEqualCompatible(){
+    public void hashCodeIsEqualCompatible() {
         Event event = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
         assertThat(event, is(EVENT));
         assertThat(event, not(sameInstance(EVENT)));
@@ -129,7 +146,7 @@ public class EventTest {
     }
 
     @Test
-    public void durationIsCorrect(){
+    public void durationIsCorrect() {
         assertThat(EVENT.getDuration(), is(DURATION));
     }
 }

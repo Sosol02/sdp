@@ -41,5 +41,11 @@
     <string name= "day_select_dialog_tag">"daySelectedDialog"</string>
     <array name= "day_select_actions">{"Add event", "View events"}</array>
 
+    <string name="create_an_event_title">Create an event:</string>
+    <string name="create_event_button_text">Create event</string>
+    <string name="event_name_hint">Event name</string>
+    <string name="location_hint">Location</string>
+    <string name="start_time_text">Start time:</string>
+    <string name="end_time_text">End time:</string>
 
 </resources>
