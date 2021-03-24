@@ -1,8 +1,14 @@
 package com.github.onedirection.database;
 
+import com.github.onedirection.database.store.Storable;
+import com.github.onedirection.database.store.Storer;
+import com.github.onedirection.database.utils.FirebaseUtils;
+import com.github.onedirection.utils.Id;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -11,10 +17,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * The auto synced database of the application
  */
-public class ConcreteDatabase /* implements Database */ {
+public class ConcreteDatabase {
     private final FirebaseFirestore db;
 
     private static final ConcreteDatabase global = new ConcreteDatabase();
@@ -28,10 +36,9 @@ public class ConcreteDatabase /* implements Database */ {
     }
 
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
-        if(toStore == null) { throw new IllegalArgumentException("store is null"); }
         CompletableFuture<Id> result = new CompletableFuture<Id>();
 
-        Storer<T> storer = toStore.storer();
+        Storer<T> storer = Objects.requireNonNull(toStore).storer();
 
         db.collection(storer.getCollection().getCollectionName()).document(toStore.getId().getUuid()).set(toStore.storer().storableToMap(toStore))
                 .addOnCompleteListener(res -> {
@@ -55,7 +62,7 @@ public class ConcreteDatabase /* implements Database */ {
                 .addOnCompleteListener(res -> {
                     if (res.isSuccessful()) {
                         Map<String, Object> doc = res.getResult().getData();
-                        if(doc == null) {
+                        if(doc == null || doc.isEmpty()) {
                             result.complete(null);
                         } else {
                             T obj = storer.mapToStorable(doc);
@@ -85,6 +92,33 @@ public class ConcreteDatabase /* implements Database */ {
         return result;
     }
 
+    public <T extends Storable<T>> CompletableFuture<Boolean> contains(T storable) {
+        CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
+
+        Storer<T> storer = Objects.requireNonNull(storable).storer();
+        Map<String, Object> doc = storer.storableToMap(storable);
+
+        Query q = db.collection(storer.getCollection().getCollectionName());
+        for(Map.Entry<String, Object> entry : doc.entrySet()) {
+            q = q.whereEqualTo(entry.getKey(), entry.getValue());
+        }
+
+        q.get().addOnCompleteListener(res -> {
+            if(res.isSuccessful()) {
+                QuerySnapshot docs = res.getResult();
+                result.complete(docs != null && !docs.isEmpty());
+            } else {
+                result.completeExceptionally(res.getException());
+            }
+        }).addOnCanceledListener(() -> result.cancel(false));
+
+        return result;
+    }
+
+    public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer) {
+        return retrieve(id, storer).thenApply(r -> r != null);
+    }
+
     private <T extends Storable<T>> CompletableFuture<List<T>> completeOnList(Task<QuerySnapshot> t, Storer<T> storer) {
         CompletableFuture<List<T>> result = new CompletableFuture<List<T>>();
 
@@ -105,6 +139,22 @@ public class ConcreteDatabase /* implements Database */ {
                 }).addOnCanceledListener(() -> result.cancel(false));
 
         return result;
+    }
+
+    public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
+        if(Objects.requireNonNull(listToStore).isEmpty()) {
+            CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
+            result.complete(true);
+            return result;
+        }
+
+        List<CompletableFuture<Id>> allStored = new ArrayList<CompletableFuture<Id>>();
+        for(T toStore : listToStore) {
+            allStored.add(store(toStore));
+        }
+        //Combine all results. We don't car about the Ids returned we just care about if exceptions are thrown.
+        CompletableFuture<Void> stored = CompletableFuture.allOf(allStored.toArray(new CompletableFuture[listToStore.size()]));
+        return stored.thenApply(t -> true);
     }
 
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {

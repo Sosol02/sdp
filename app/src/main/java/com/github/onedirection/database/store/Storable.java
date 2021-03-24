@@ -5,5 +5,4 @@ import com.github.onedirection.utils.Id;
 public interface Storable<T extends Storable<T>> {
     Id getId();
     Storer<T> storer();
-    //Map<String, Object> toMap();
 }

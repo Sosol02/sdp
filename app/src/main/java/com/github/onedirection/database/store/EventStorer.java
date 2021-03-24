@@ -1,11 +1,15 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.store;
 
 
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.github.onedirection.Event;
+import com.github.onedirection.database.store.DatabaseCollection;
+import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.utils.Id;
 
 import java.time.Instant;
 import java.time.ZoneId;

@@ -1,5 +1,8 @@
 package com.github.onedirection;
 
+import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.database.store.Storable;
+import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
@@ -12,7 +15,7 @@ import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Event {
+public class Event implements Storable<Event> {
 
     final private Id id;
     final private String name;
@@ -67,8 +70,14 @@ public class Event {
                 : new Event(id, name, location, startTime, new_value);
     }
 
+    @Override
     public Id getId() {
         return id;
+    }
+
+    @Override
+    public Storer<Event> storer() {
+        return EventStorer.getInstance();
     }
 
     public Coordinates getCoordinates(){
