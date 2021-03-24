@@ -37,7 +37,7 @@ public class SignFragmentTest {
     private static final Context ctx = ApplicationProvider.getApplicationContext();
 
     @Test
-    public void testNormalSignInAndLogout() {
+    public void testNormalSignInAndLogout() throws InterruptedException {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
         onView(withId(R.id.nav_sign)).perform(click());
@@ -48,6 +48,8 @@ public class SignFragmentTest {
         onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
         onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
         onView(withId(R.id.sign)).perform(click());
+        // TODO: find better alternative than this crap
+        Thread.sleep(1000);
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.test_account))));
 
