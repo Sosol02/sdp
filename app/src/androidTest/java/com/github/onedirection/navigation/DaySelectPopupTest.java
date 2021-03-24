@@ -1,20 +1,17 @@
-package com.github.onedirection;
+package com.github.onedirection.navigation;
 
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.navigation.NavigationActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,8 +19,8 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -34,37 +31,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
 @LargeTest
-@RunWith(AndroidJUnit4.class)
-public class DaySelectPopupFragmentTest {
+@RunWith(JUnit4.class)
+public class DaySelectPopupTest {
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
-
     @Test
-    public void daySelectPopupFragmentTest() {
+    public void daySelectPopupTest() {
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -88,28 +65,52 @@ public class DaySelectPopupFragmentTest {
         navigationMenuItemView.perform(click());
 
         ViewInteraction textView = onView(
-                allOf(withText("1"),
+                allOf(withText("17"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.calendar_week_1),
-                                        1),
+                                        withId(R.id.calendar_week_3),
+                                        3),
                                 0),
                         isDisplayed()));
         textView.perform(click());
 
-        DataInteraction materialTextView = onData(anything())
-                .inAdapterView(allOf(withId(R.id.select_dialog_listview),
-                        childAtPosition(
-                                withId(R.id.contentPanel),
-                                0)))
-                .atPosition(0);
-        materialTextView.perform(click());
+        ViewInteraction textView2 = onView(
+                allOf(withId(android.R.id.text1), withText("Add Event"),
+                        withParent(allOf(withId(R.id.select_dialog_listview),
+                                withParent(withId(R.id.contentPanel)))),
+                        isDisplayed()));
+        textView2.check(matches(withText("Add Event")));
+
+        ViewInteraction textView3 = onView(
+                allOf(withId(android.R.id.text1), withText("View Events"),
+                        withParent(allOf(withId(R.id.select_dialog_listview),
+                                withParent(withId(R.id.contentPanel)))),
+                        isDisplayed()));
+        textView3.check(matches(withText("View Events")));
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.buttonEventAdd), withText("CREATE"),
-                        withParent(withParent(withId(android.R.id.content))),
+                allOf(withId(android.R.id.button2), withText("CANCEL"),
+                        withParent(withParent(withId(R.id.buttonPanel))),
                         isDisplayed()));
         button.check(matches(isDisplayed()));
     }
-}
 
+    private static Matcher<View> childAtPosition(
+            final Matcher<View> parentMatcher, final int position) {
+
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Child at position " + position + " in parent ");
+                parentMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
+            }
+        };
+    }
+}
