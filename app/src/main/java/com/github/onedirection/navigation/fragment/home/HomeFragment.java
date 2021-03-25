@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
+import com.github.onedirection.notifs.Notifications;
 
 public class HomeFragment extends Fragment {
 
@@ -37,5 +39,14 @@ public class HomeFragment extends Fragment {
                 mText.setText(s);
             }
         });
+
+        Button b = view.findViewById(R.id.testNotfBut);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Notifications.getInstance(v.getContext()).testNotif(v.getContext());
+            }
+        });
+
     }
 }

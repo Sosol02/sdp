@@ -10,11 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.github.onedirection.R;
+
+import java.time.Instant;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -47,54 +52,43 @@ public class Notifications {
     }
 
     public void testNotif(Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "testChannel")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_menu_home)
                 .setContentTitle("Test Notification")
-                .setContentText("Luke, je suis ton père")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setContentText("-w-")
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
-        nm.notify(123, builder.build());
+        Log.d("testNotif", "Send notification");
+        nm.notify(NotificationIdGenerator.getUniqueId(), builder.build());
+        scheduleNotif(context, Date.from(Instant.now().plusMillis(5000)), "Scheduled in 5", "owo");
+        Log.d("testNotif", "Scheduled notification");
     }
 
-    public <T> void schedule(Context context, long whenMillis, int notifId, /* TODO fix that */ String payload, BroadcastReceiver handler) {
-        /*NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle("Title")
-                .setContentText("Text")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);*/
+    public void schedule(Context context, long whenMillis, int notifId, /* TODO fix that */ String payload, BroadcastReceiver handler) {
+        Log.d("schedule", "schedule " + whenMillis + " " + new Date(whenMillis).toString() + " " + handler.toString());
+        Log.d("schedule", "");
 
-        Log.d("NOTIF", "schedule " + whenMillis + " " + new Date(whenMillis).toString() + " " + handler.toString());
+        context.registerReceiver(handler, new IntentFilter());
 
         Intent intent = new Intent(context, handler.getClass());
         intent.putExtra(NOTIF_ID, notifId);
         intent.putExtra(PAYLOAD, payload);
-        PendingIntent pending = PendingIntent.getActivity(context, notifId, intent, 0);
-
-        context.registerReceiver(handler, new IntentFilter());
+        PendingIntent pending = PendingIntent.getBroadcast(context, notifId, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, whenMillis, pending);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, whenMillis, pending);
     }
 
     public void scheduleNotif(Context context, Date date, String title, String text) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
+
         Notification notif = builder.build();
-
-        Log.d("NOTIF", "scheduleNotif");
-
-        schedule(context, date.getTime(), 42, "i am a payload", new NotificationPublisher());
-                /*new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d("OMG", "HELP ME IM SLOWLY DYING");
-                NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                Notification notif = intent.getParcelableExtra(PAYLOAD);
-                int id = intent.getIntExtra(NOTIF_ID, 0);
-                nm.notify(id, notif);
-            }
-        }.getClass());*/
+        Log.d("scheduleNotif", "scheduling");
+        int id = NotificationIdGenerator.getUniqueId();
+        schedule(context, date.getTime(), id, "i am a payload", new NotificationPublisher());
     }
 }
