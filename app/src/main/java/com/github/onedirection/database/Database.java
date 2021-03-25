@@ -17,4 +17,5 @@ public interface Database {
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(T storable);
 
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer);
+
 }
