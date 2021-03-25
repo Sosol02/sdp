@@ -3,6 +3,7 @@ package com.github.onedirection.geocoding;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -20,6 +22,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -99,24 +102,24 @@ public final class DeviceLocation implements DataBufferObserver.Observable, Loca
             }
         });
 
-//        task.addOnFailureListener(this, new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                if (e instanceof ResolvableApiException) {
-//                    // Location settings are not satisfied, but this can be fixed
-//                    // by showing the user a dialog.
-//                    try {
-//                        // Show the dialog by calling startResolutionForResult(),
-//                        // and check the result in onActivityResult().
-//                        ResolvableApiException resolvable = (ResolvableApiException) e;
-//                        resolvable.startResolutionForResult(callingActivity,
-//                                REQUEST_CHECK_SETTINGS);
-//                    } catch (IntentSender.SendIntentException sendEx) {
-//                        // Ignore the error.
-//                    }
-//                }
-//            }
-//        });
+        task.addOnFailureListener(callingActivity, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(callingActivity,
+                                R.integer.request_change_settings);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
         return locationRequest;
     }
 
