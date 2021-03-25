@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -13,15 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.onedirection.geocoding.Coordinates;
+import com.github.onedirection.geocoding.DeviceLocation;
+import com.github.onedirection.geocoding.GeocodingService;
 import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.geocoding.NominatimGeocoding;
 import com.github.onedirection.utils.Id;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 /**
  * To use to create an event, just start the activity.
@@ -90,6 +97,7 @@ public class EventCreator extends AppCompatActivity {
 
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
+    private Optional<Coordinates> coordinates;
     private Id eventId;
     private boolean isEditing;
 
@@ -102,6 +110,7 @@ public class EventCreator extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         isEditing = false;
+        coordinates = Optional.empty();
 
         Intent intent = getIntent();
 
@@ -146,12 +155,13 @@ public class EventCreator extends AppCompatActivity {
 
     private Event generateEvent() {
         EditText name = findViewById(R.id.editEventName);
-        EditText loc = findViewById(R.id.editEventLocation);
+        EditText loc = findViewById(R.id.editEventLocationName);
 
         return new Event(
                 eventId,
                 name.getText().toString(),
                 loc.getText().toString(),
+                coordinates,
                 startTime,
                 endTime
         );
@@ -161,12 +171,13 @@ public class EventCreator extends AppCompatActivity {
         eventId = event.getId();
 
         EditText name = findViewById(R.id.editEventName);
-        EditText loc = findViewById(R.id.editEventLocation);
+        EditText loc = findViewById(R.id.editEventLocationName);
 
         name.setText(event.getName());
         loc.setText(event.getLocationName());
         startTime = event.getStartTime();
         endTime = event.getEndTime();
+        coordinates = event.getCoordinates();
         updateTimeDates();
 
         isEditing = true;
@@ -240,5 +251,15 @@ public class EventCreator extends AppCompatActivity {
                 endTime.getDayOfMonth()
         );
         datePicker.show();
+    }
+
+    public void usePhoneLocation(View v) {
+        DeviceLocation.getCurrentLocation(this).thenAccept(coords -> {
+            coordinates = Optional.of(coords);
+            EditText locName = findViewById(R.id.editEventLocationName);
+            // TODO: display the location somehow (better)
+            DecimalFormat format = new DecimalFormat("#.##");
+            locName.setText("Current location (" + format.format(coords.latitude) + " ; " + format.format(coords.longitude)  + ")");
+        });
     }
 }

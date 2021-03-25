@@ -44,13 +44,35 @@
                 android:inputType="textPersonName" />
 
             <EditText
-                android:id="@+id/editEventLocation"
+                android:id="@+id/editEventLocationName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="14"
                 android:hint="@string/location_hint"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonSearchLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="Search location" />
+
+                <Button
+                    android:id="@+id/buttonUsePhoneLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="usePhoneLocation"
+                    android:text="Use current location" />
+            </LinearLayout>
 
             <LinearLayout
                 style="?android:attr/buttonBarStyle"

@@ -97,7 +97,7 @@ public class EventCreatorTest {
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.editEventName)).check(matches(withText(NAME)));
-            onView(withId(R.id.editEventLocation)).check(matches(withText(LOCATION_NAME)));
+            onView(withId(R.id.editEventLocationName)).check(matches(withText(LOCATION_NAME)));
         }
     }
 
@@ -120,11 +120,11 @@ public class EventCreatorTest {
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.clearText());
-            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.clearText());
+            onView(withId(R.id.editEventLocationName)).perform(scrollTo(), ViewActions.clearText());
 
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.typeText(NAME));
             ViewActions.closeSoftKeyboard();
-            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.typeText(LOCATION_NAME));
+            onView(withId(R.id.editEventLocationName)).perform(scrollTo(), ViewActions.typeText(LOCATION_NAME));
             ViewActions.closeSoftKeyboard();
 
             /*
