@@ -82,7 +82,7 @@ public class EventCreatorTest {
     public void verifyEventViewIsCorrectlyCalled() {
         gotoCreator();
 
-        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
+        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
 
         intended(allOf(
                 hasComponent(EventsView.class.getName()),
