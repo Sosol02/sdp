@@ -42,8 +42,7 @@
 
     <!-- Strings related to calendar and event creation -->
     <string name= "popup_title"> "" </string>
-    <string name= "cancel"> "cancel" </string>
-    <string name= "day_select_dialog_tag">"daySelectedDialog"</string>
-    <array name= "day_select_actions">{"Add event", "View events"}</array>
+    <string name= "cancel"> cancel </string>
+    <string name= "day_select_dialog_tag">daySelectedDialog</string>
 
 </resources>

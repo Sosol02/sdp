@@ -56,7 +56,7 @@ public class CalendarFragment extends Fragment {
 
     public void showEventCreationScreen(int day, int month, int year) {
         Intent intent = new Intent(getActivity(), EventCreator.class);
-        intent.putExtra(EXTRA_MESSAGE_DATE, LocalDate.of(year, month, day));
+        EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
         startActivity(intent);
     }
 }
