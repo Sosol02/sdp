@@ -1,37 +1,53 @@
 package com.github.onedirection;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.utils.Id;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -39,11 +55,13 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 
 
 @RunWith(AndroidJUnit4.class)
-
 public class EventCreatorTest {
+
+    private final static Coordinates PHONE_COORDINATES = new Coordinates(37.4, -122.0);
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
@@ -62,6 +80,11 @@ public class EventCreatorTest {
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
+
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(
+                    "android.permission.ACCESS_FINE_LOCATION");
 
     @Before
     public void setUp() {
@@ -157,6 +180,58 @@ public class EventCreatorTest {
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.buttonStartDate)).check(matches(withText(date.toString())));
         }
+    }
+
+    @Test
+    public void canUsePhoneLocation() throws InterruptedException {
+//        Context ctx = ApplicationProvider.getApplicationContext();
+//        LocationManager mgr = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+//        mgr.removeTestProvider(LocationManager.GPS_PROVIDER);
+//        mgr.addTestProvider(
+//            LocationManager.GPS_PROVIDER,
+//            false,
+//            false,
+//            false,
+//            false,
+//            false,
+//            false,
+//            false,
+//
+//            android.location.Criteria.POWER_LOW,
+//            android.location.Criteria.ACCURACY_FINE
+//        );
+//        Location loc = new Location(LocationManager.GPS_PROVIDER);
+//        loc.setLatitude(PHONE_COORDINATES.latitude);
+//        loc.setLongitude(PHONE_COORDINATES.longitude);
+//        loc.setAccuracy(500);
+//        loc.setTime(System.currentTimeMillis());
+//
+//        mgr.setTestProviderLocation(LocationManager.GPS_PROVIDER, loc);
+        gotoCreator();
+
+        onView(withId(R.id.buttonUsePhoneLocation)).perform(scrollTo(), click());
+        // Yeah, I know, again, but I promise, next week I'll find a better way
+        Thread.sleep(10000);
+        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
+
+        intended(allOf(
+                hasComponent(EventsView.class.getName()),
+                hasExtra(is(EventCreator.EXTRA_EVENT), is(new BaseMatcher<Event>() {
+                    @Override
+                    public void describeTo(Description description) {
+
+                    }
+
+                    @Override
+                    public boolean matches(Object item) {
+                        if(item instanceof Event){
+                            Optional<Coordinates> coords = ((Event) item).getCoordinates();
+                            return coords.isPresent() && coords.get().areCloseTo(PHONE_COORDINATES, 1e-1);
+                        }
+                        return false;
+                    }
+                }))
+        ));
     }
 }
 
