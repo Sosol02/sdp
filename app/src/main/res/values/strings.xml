@@ -40,4 +40,5 @@
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
 
+    <integer name="location_permission_code"> 1 </integer>
 </resources>
