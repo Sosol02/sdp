@@ -14,10 +14,12 @@ public class NotificationPublisher extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("NotificationPublisher", "onReceive");
         Toast.makeText(context, "I am a toast owo", Toast.LENGTH_LONG).show();
-        //NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //Notification notif = intent.getParcelableExtra(Notifications.PAYLOAD);
-        //int id = intent.getIntExtra(Notifications.NOTIF_ID, -1);
-        //Log.d("NotificationPublisher", "-> notif id = " + id);
-        //nm.notify(id, notif);
+
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notif = intent.getParcelableExtra(Notifications.PAYLOAD);
+        int id = intent.getIntExtra(Notifications.NOTIF_ID, -1);
+        Log.d("NotificationPublisher", "-> notif id = " + id);
+        Log.d("NotificationPublisher", "-> notif = " + notif);
+        nm.notify(id, notif);
     }
 }

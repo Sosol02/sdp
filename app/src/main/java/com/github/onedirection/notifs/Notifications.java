@@ -12,13 +12,16 @@ import android.content.IntentFilter;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.github.onedirection.R;
+import com.github.onedirection.database.ConcreteDatabase;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -51,22 +54,8 @@ public class Notifications {
         }
     }
 
-    public void testNotif(Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_menu_home)
-                .setContentTitle("Test Notification")
-                .setContentText("-w-")
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
-        Log.d("testNotif", "Send notification");
-        nm.notify(NotificationIdGenerator.getUniqueId(), builder.build());
-        scheduleNotif(context, Date.from(Instant.now().plusMillis(5000)), "Scheduled in 5", "owo");
-        Log.d("testNotif", "Scheduled notification");
-    }
-
-    public void schedule(Context context, long whenMillis, int notifId, /* TODO fix that */ String payload, BroadcastReceiver handler) {
+    public void schedule(Context context, long whenMillis, int notifId, /* TODO fix that */ Parcelable payload, BroadcastReceiver handler) {
         Log.d("schedule", "schedule " + whenMillis + " " + new Date(whenMillis).toString() + " " + handler.toString());
-        Log.d("schedule", "");
 
         context.registerReceiver(handler, new IntentFilter());
 
@@ -79,16 +68,25 @@ public class Notifications {
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, whenMillis, pending);
     }
 
-    public void scheduleNotif(Context context, Date date, String title, String text) {
+    public int scheduleNotif(Context context, Date date, String title, String text) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_menu_home) // TODO: make actual icon
                 .setContentTitle(title)
                 .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // ignored on android 23+
                 .setAutoCancel(true);
 
         Notification notif = builder.build();
-        Log.d("scheduleNotif", "scheduling");
         int id = NotificationIdGenerator.getUniqueId();
-        schedule(context, date.getTime(), id, "i am a payload", new NotificationPublisher());
+        schedule(context, date.getTime(), id, notif, new NotificationPublisher());
+        return id;
+    }
+
+    public void updateNotifs(Context context) {
+
+    }
+
+    public void testNotif(Context context) {
+        scheduleNotif(context, Date.from(Instant.now().plusMillis(5000)), "Test notif", "u.u");
     }
 }
