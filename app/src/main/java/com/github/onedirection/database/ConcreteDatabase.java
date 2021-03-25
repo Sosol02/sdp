@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * The auto synced database of the application
  */
-public class ConcreteDatabase {
+public class ConcreteDatabase implements Database {
     private final FirebaseFirestore db;
 
     private static final ConcreteDatabase global = new ConcreteDatabase();
@@ -35,6 +35,7 @@ public class ConcreteDatabase {
         db = FirebaseUtils.getFirestore();
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
         CompletableFuture<Id> result = new CompletableFuture<Id>();
 
@@ -52,6 +53,7 @@ public class ConcreteDatabase {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
         if(storer == null) { throw new IllegalArgumentException("storer is null"); }
         CompletableFuture<T> result = new CompletableFuture<T>();
@@ -76,6 +78,7 @@ public class ConcreteDatabase {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Id> remove(Id id, Storer<T> storer) {
         if(storer == null) { throw new IllegalArgumentException("storer is null"); }
         CompletableFuture<Id> result = new CompletableFuture<Id>();
@@ -92,6 +95,7 @@ public class ConcreteDatabase {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(T storable) {
         CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
 
@@ -115,6 +119,7 @@ public class ConcreteDatabase {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer) {
         return retrieve(id, storer).thenApply(r -> r != null);
     }

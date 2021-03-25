@@ -6,9 +6,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.github.onedirection.Event;
-import com.github.onedirection.database.store.DatabaseCollection;
-import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Instant;
@@ -25,7 +23,7 @@ public class EventStorer extends Storer<Event> {
     public static final String KEY_NAME = "name";
     public static final String KEY_COORD_LATITUDE = "coordLatitude";
     public static final String KEY_COORD_LONGITUDE = "coordLongitude";
-    public static final String KEY_COORD_NAME = "coordName";
+    public static final String KEY_COORD_NAME = "locationName";
     public static final String KEY_EPOCH_START_TIME = "epochStartTime";
     public static final String KEY_EPOCH_END_TIME = "epochEndTime";
 
@@ -50,22 +48,16 @@ public class EventStorer extends Storer<Event> {
             throw new IllegalArgumentException("argument is null");
         }
 
-        String id = storable.getId().getUuid();
-        String name = storable.getName();
-        double coordLatitude = storable.getLocation().latitude;
-        double coordLongitude = storable.getLocation().longitude;
-        String coordName = storable.getLocation().name;
-        long epochStartTime = storable.getStartTime().toEpochSecond();
-        long epochEndTime = storable.getEndTime().toEpochSecond();
-
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put(KEY_ID, id);
-        map.put(KEY_NAME, name);
-        map.put(KEY_COORD_LATITUDE, coordLatitude);
-        map.put(KEY_COORD_LONGITUDE, coordLongitude);
-        map.put(KEY_COORD_NAME, coordName);
-        map.put(KEY_EPOCH_START_TIME, epochStartTime);
-        map.put(KEY_EPOCH_END_TIME, epochEndTime);
+        map.put(KEY_ID, storable.getId().getUuid());
+        map.put(KEY_NAME, storable.getName());
+        storable.getLocation().ifPresent(loc -> {
+            map.put(KEY_COORD_LATITUDE, loc.latitude);
+            map.put(KEY_COORD_LONGITUDE, loc.longitude);
+        });
+        map.put(KEY_COORD_NAME, storable.getLocationName());
+        map.put(KEY_EPOCH_START_TIME, storable.getStartTime().toEpochSecond());
+        map.put(KEY_EPOCH_END_TIME, storable.getEndTime().toEpochSecond());
 
         return map;
     }
@@ -79,15 +71,21 @@ public class EventStorer extends Storer<Event> {
         }
         String id = (String) m.get(KEY_ID);
         String name = (String) m.get(KEY_NAME);
-        double coordLatitude = (double) m.get(KEY_COORD_LATITUDE);
-        double coordLongitude = (double) m.get(KEY_COORD_LONGITUDE);
-        String coordName = (String) m.get(KEY_COORD_NAME);
+        Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
+        Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
+        String locationName = (String) m.get(KEY_COORD_NAME);
         long epochStartTime = (long) m.get(KEY_EPOCH_START_TIME);
         long epochEndTime = (long) m.get(KEY_EPOCH_END_TIME);
 
-        return new Event(new Id(UUID.fromString(id)), name, new NamedCoordinates(coordLatitude, coordLongitude, coordName),
-                ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochStartTime), ZoneId.systemDefault()),
-                ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochEndTime), ZoneId.systemDefault()));
+        if(coordLatitude == null || coordLongitude == null) {
+            return new Event(new Id(UUID.fromString(id)), name, locationName,
+                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochStartTime), ZoneId.systemDefault()),
+                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochEndTime), ZoneId.systemDefault()));
+        } else {
+            return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
+                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochStartTime), ZoneId.systemDefault()),
+                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochEndTime), ZoneId.systemDefault()));
+        }
     }
 
 }

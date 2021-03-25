@@ -1,7 +1,5 @@
 package com.github.onedirection.testdatabase;
 
-import android.util.Log;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.Event;
@@ -18,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -28,11 +27,17 @@ import static org.junit.Assert.assertTrue;
 public class ConcreteDatabaseTest {
 
     private int count = 100;
+    private int emptyCoordProportion = 3; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
 
     private Event[] makeEvents(int count) {
         Event[] l = new Event[count];
+        Random r = new Random();
         for (int i = 0; i < count; ++i) {
-            l[i] = new Event(Id.createId(), "MyCity"+i, new NamedCoordinates(i, i, "city"+i), ZonedDateTime.now(), ZonedDateTime.now());
+            if(r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
+                l[i] = new Event(Id.createId(), "MyCity" + i, "city"+i, ZonedDateTime.now(), ZonedDateTime.now());
+            } else {
+                l[i] = new Event(Id.createId(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now(), ZonedDateTime.now());
+            }
         }
         return l;
     }
