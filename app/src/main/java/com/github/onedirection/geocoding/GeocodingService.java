@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
  * General interface implemented by all geocoding services.
  * Geocoding consist of mapping a name into its geographical coordinates.
  */
-interface GeocodingService {
+public interface GeocodingService {
 
     /**
      * @param locationName Some location's name.

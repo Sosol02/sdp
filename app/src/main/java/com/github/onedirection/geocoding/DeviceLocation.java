@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
+import com.github.onedirection.utils.ObserverPattern;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -28,13 +28,33 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import static com.github.onedirection.utils.ObserverPattern.Observable;
+import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public final class DeviceLocation implements DataBufferObserver.Observable, LocationProvider {
+public final class DeviceLocation implements Observable<Coordinates>, LocationProvider {
+
+    public static CompletableFuture<Coordinates> getCurrentLocation(Activity callingActivity) {
+        CompletableFuture<Coordinates> result = new CompletableFuture<>();
+
+        DeviceLocation self = new DeviceLocation(callingActivity);
+        self.addObserver(new Observer<Coordinates>() {
+            @Override
+            public void onObservableUpdate(Observable<Coordinates> source, Coordinates coords) {
+                self.removeObserver(this);
+                result.complete(coords);
+            }
+        });
+        if(!self.startLocationTracking()){
+            result.completeExceptionally(new RuntimeException("Could not start location tracking."));
+        }
+        return result;
+    }
 
     private final Activity callingActivity;
     private final FusedLocationProviderClient fusedLocationClient;
     private boolean requestingLocationUpdates = false;
-    private final ArrayList<DataBufferObserver> observers = new ArrayList<>();
+    private final ArrayList<ObserverPattern.Observer<Coordinates>> observers = new ArrayList<>();
     private Location lastLocation;
 
 
@@ -152,18 +172,20 @@ public final class DeviceLocation implements DataBufferObserver.Observable, Loca
     //************************ Methods to be Observable *****************************************
 
     private void notifyOfLocationChange() {
-        for (DataBufferObserver observer : observers) {
-            observer.onDataChanged();
+        for (Observer<Coordinates> observer : observers) {
+            observer.onObservableUpdate(this, getLastLocation());
         }
     }
 
     @Override
-    public void addObserver(@NonNull DataBufferObserver dataBufferObserver) {
+    public boolean addObserver(@NonNull Observer<Coordinates> dataBufferObserver) {
         observers.add(dataBufferObserver);
+        return true;
     }
 
     @Override
-    public void removeObserver(@NonNull DataBufferObserver dataBufferObserver) {
+    public boolean removeObserver(@NonNull Observer<Coordinates> dataBufferObserver) {
         observers.remove(dataBufferObserver);
+        return true;
     }
 }
