@@ -81,7 +81,7 @@ public class ConcreteDatabase {
         CompletableFuture<Id> result = new CompletableFuture<Id>();
 
         db.collection(storer.getCollection().getCollectionName())
-                .document(String.valueOf(id)).delete().addOnCompleteListener(res -> {
+                .document(id.getUuid()).delete().addOnCompleteListener(res -> {
             if (res.isSuccessful()) {
                 result.complete(id);
             } else {
@@ -152,7 +152,7 @@ public class ConcreteDatabase {
         for(T toStore : listToStore) {
             allStored.add(store(toStore));
         }
-        //Combine all results. We don't car about the Ids returned we just care about if exceptions are thrown.
+        //Combine all results. We don't care about the Ids returned we just care about if exceptions are thrown.
         CompletableFuture<Void> stored = CompletableFuture.allOf(allStored.toArray(new CompletableFuture[listToStore.size()]));
         return stored.thenApply(t -> true);
     }
