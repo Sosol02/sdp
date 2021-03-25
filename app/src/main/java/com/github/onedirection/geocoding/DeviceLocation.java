@@ -3,17 +3,14 @@ package com.github.onedirection.geocoding;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -23,19 +20,18 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public final class DeviceLocation extends AppCompatActivity implements DataBufferObserver.Observable {
+public final class DeviceLocation implements DataBufferObserver.Observable, LocationProvider {
 
     private final Activity callingActivity;
     private final FusedLocationProviderClient fusedLocationClient;
     private boolean requestingLocationUpdates = false;
-    private ArrayList<DataBufferObserver> observers = new ArrayList<>();
+    private final ArrayList<DataBufferObserver> observers = new ArrayList<>();
     private Location lastLocation;
 
 
@@ -44,34 +40,32 @@ public final class DeviceLocation extends AppCompatActivity implements DataBuffe
         this.callingActivity = callingActivity;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(callingActivity);
 
-        if(!fineLocationUsageIsAllowed()){
+        if (!fineLocationUsageIsAllowed()) {
             requestFineLocationPermission();
         }
     }
 
 
-    public boolean startLocationTracking(){
-        if(!fineLocationUsageIsAllowed()){
+    public boolean startLocationTracking() {
+        if (!fineLocationUsageIsAllowed()) {
             return false;
         }
         LocationRequest locationRequest = createLocationRequest();
-        startLocationUpdates(locationRequest);
         return true;
     }
 
 
-    private boolean fineLocationUsageIsAllowed(){
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    public boolean fineLocationUsageIsAllowed() {
+        return ActivityCompat.checkSelfPermission(callingActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    @SuppressLint("MissingPermission")
-    public Location getLastLocation() {
-        return lastLocation;
+    public Coordinates getLastLocation() {
+        return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
-    public void requestFineLocationPermission(){
+    public void requestFineLocationPermission() {
         if (!fineLocationUsageIsAllowed()) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
+            ActivityCompat.requestPermissions(callingActivity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
         }
     }
 
@@ -96,44 +90,34 @@ public final class DeviceLocation extends AppCompatActivity implements DataBuffe
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
-        SettingsClient client = LocationServices.getSettingsClient(this);
+        SettingsClient client = LocationServices.getSettingsClient(callingActivity);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-            @SuppressLint("MissingPermission")
+        task.addOnSuccessListener(callingActivity, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 startLocationUpdates(locationRequest);
             }
         });
 
-        task.addOnFailureListener(this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(this,
-                                REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
-            }
-        });
+//        task.addOnFailureListener(this, new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                if (e instanceof ResolvableApiException) {
+//                    // Location settings are not satisfied, but this can be fixed
+//                    // by showing the user a dialog.
+//                    try {
+//                        // Show the dialog by calling startResolutionForResult(),
+//                        // and check the result in onActivityResult().
+//                        ResolvableApiException resolvable = (ResolvableApiException) e;
+//                        resolvable.startResolutionForResult(callingActivity,
+//                                REQUEST_CHECK_SETTINGS);
+//                    } catch (IntentSender.SendIntentException sendEx) {
+//                        // Ignore the error.
+//                    }
+//                }
+//            }
+//        });
         return locationRequest;
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (requestingLocationUpdates) {
-            startLocationUpdates();
-        }
     }
 
     private LocationCallback createLocationCallback() {
@@ -164,8 +148,8 @@ public final class DeviceLocation extends AppCompatActivity implements DataBuffe
 
     //************************ Methods to be Observable *****************************************
 
-    private void notifyOfLocationChange(){
-        for(DataBufferObserver observer : observers){
+    private void notifyOfLocationChange() {
+        for (DataBufferObserver observer : observers) {
             observer.onDataChanged();
         }
     }
