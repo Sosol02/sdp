@@ -71,9 +71,6 @@ public class EventCreatorTest {
     private IdlingResource idling;
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
-
-    @Rule
     public GrantPermissionRule mGrantPermissionRule =
             GrantPermissionRule.grant(
                     "android.permission.ACCESS_FINE_LOCATION");
@@ -93,15 +90,8 @@ public class EventCreatorTest {
         IdlingRegistry.getInstance().unregister(idling);
     }
 
-    public void gotoCreator() {
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_create_event)).perform(ViewActions.click());
-    }
-
     @Test
     public void verifyEventViewIsCorrectlyCalled() {
-        gotoCreator();
-
         onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
 
         intended(allOf(
