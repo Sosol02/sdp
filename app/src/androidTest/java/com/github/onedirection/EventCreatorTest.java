@@ -1,6 +1,7 @@
 package com.github.onedirection;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.TimePicker;
@@ -52,6 +53,8 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(AndroidJUnit4.class)
 public class EventCreatorTest {
+
+    private final static Coordinates PHONE_COORDINATES = new Coordinates(46.5, 6.5);
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
@@ -209,7 +212,8 @@ public class EventCreatorTest {
                     public boolean matches(Object item) {
                         if (item instanceof Event) {
                             Optional<Coordinates> coords = ((Event) item).getCoordinates();
-                            return coords.isPresent();// && coords.get().areCloseTo(PHONE_COORDINATES, 1e-1);
+                            Log.d("JTEST", coords.toString());
+                            return coords.isPresent() && coords.get().areCloseTo(PHONE_COORDINATES, 1e-1);
                         }
                         return false;
                     }

@@ -22,8 +22,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
@@ -32,12 +30,12 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public final class DeviceLocation implements Observable<Coordinates>, LocationProvider {
+public final class DeviceLocationProvider implements Observable<Coordinates>, LocationProvider {
 
     public static CompletableFuture<Coordinates> getCurrentLocation(Activity callingActivity) {
         CompletableFuture<Coordinates> result = new CompletableFuture<>();
 
-        DeviceLocation self = new DeviceLocation(callingActivity);
+        DeviceLocationProvider self = new DeviceLocationProvider(callingActivity);
         self.addObserver(new Observer<Coordinates>() {
             @Override
             public void onObservableUpdate(Observable<Coordinates> source, Coordinates coords) {
@@ -45,125 +43,109 @@ public final class DeviceLocation implements Observable<Coordinates>, LocationPr
                 result.complete(coords);
             }
         });
-        if(!self.startLocationTracking()){
-            result.completeExceptionally(new RuntimeException("Could not start location tracking."));
-        }
+        self.startLocationTracking().thenAccept(b -> {
+            if(!b){
+                result.completeExceptionally(new RuntimeException("Could not start location tracking."));
+            }
+        });
         return result;
+    }
+
+    private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
+    static {
+        LOCATION_REQUEST.setInterval(10000);
+        LOCATION_REQUEST.setFastestInterval(5000);
+        LOCATION_REQUEST.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private final Activity callingActivity;
     private final FusedLocationProviderClient fusedLocationClient;
-    private boolean requestingLocationUpdates = false;
     private final ArrayList<ObserverPattern.Observer<Coordinates>> observers = new ArrayList<>();
     private Location lastLocation;
 
 
-    public DeviceLocation(Activity callingActivity) {
+    public DeviceLocationProvider(Activity callingActivity) {
         Objects.requireNonNull(callingActivity);
         this.callingActivity = callingActivity;
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(callingActivity);
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(callingActivity);
 
         if (!fineLocationUsageIsAllowed()) {
             requestFineLocationPermission();
         }
     }
 
-
-    public boolean startLocationTracking() {
+    @Override
+    public CompletableFuture<Boolean> startLocationTracking() {
         if (!fineLocationUsageIsAllowed()) {
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
-        LocationRequest locationRequest = createLocationRequest();
-        return true;
+        return createLocationRequest();
     }
 
 
+    @Override
     public boolean fineLocationUsageIsAllowed() {
         return ActivityCompat.checkSelfPermission(callingActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    @Override
     public Coordinates getLastLocation() {
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
+    @Override
     public void requestFineLocationPermission() {
         if (!fineLocationUsageIsAllowed()) {
             ActivityCompat.requestPermissions(callingActivity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
         }
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                                           int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if(permissions.length == 0){
-//            //permission request cancelled
-//            return;
-//        }
-//        if(requestCode == R.integer.location_permission_code && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-//
-//        }
-//    }
+    private CompletableFuture<Boolean> createLocationRequest() {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
 
-    private LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
         SettingsClient client = LocationServices.getSettingsClient(callingActivity);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(callingActivity, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                startLocationUpdates(locationRequest);
-            }
-        });
+        task.addOnSuccessListener(
+                callingActivity,
+                locationSettingsResponse -> {
+                    startLocationUpdates();
+                    result.complete(true);
+                });
 
-        task.addOnFailureListener(callingActivity, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(callingActivity,
-                                R.integer.request_change_settings);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
+        task.addOnFailureListener(callingActivity, e -> {
+            if (e instanceof ResolvableApiException) {
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(callingActivity, R.integer.request_change_settings);
+                    // TODO: We should most likely do something more (onActivityResult ?)
+                } catch (IntentSender.SendIntentException sendEx) {
+                    result.complete(false);
                 }
             }
         });
-        return locationRequest;
+
+        return result;
     }
 
     private LocationCallback createLocationCallback() {
-        LocationCallback locationCallback = new LocationCallback() {
+        return new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
+            public void onLocationResult(@NonNull LocationResult locationResult) {
                 lastLocation = locationResult.getLastLocation();
-                for (Location location : locationResult.getLocations()) {
-                    notifyOfLocationChange();
-                }
+                notifyOfLocationChange();
             }
         };
-        return locationCallback;
     }
 
     @SuppressLint("MissingPermission")
-    private void startLocationUpdates(LocationRequest locationRequest) {
+    private void startLocationUpdates() {
         if (fineLocationUsageIsAllowed()) {
-            requestingLocationUpdates = true;
-            fusedLocationClient.requestLocationUpdates(locationRequest,
+            fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
                     createLocationCallback(),
                     Looper.getMainLooper());
         }
@@ -178,14 +160,16 @@ public final class DeviceLocation implements Observable<Coordinates>, LocationPr
     }
 
     @Override
-    public boolean addObserver(@NonNull Observer<Coordinates> dataBufferObserver) {
-        observers.add(dataBufferObserver);
+    public boolean addObserver(Observer<Coordinates> observer) {
+        Objects.requireNonNull(observer);
+        observers.add(observer);
         return true;
     }
 
     @Override
-    public boolean removeObserver(@NonNull Observer<Coordinates> dataBufferObserver) {
-        observers.remove(dataBufferObserver);
+    public boolean removeObserver(Observer<Coordinates> observer) {
+        Objects.requireNonNull(observer);
+        observers.remove(observer);
         return true;
     }
 }

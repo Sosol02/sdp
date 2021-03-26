@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -18,10 +17,8 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.DeviceLocation;
-import com.github.onedirection.geocoding.GeocodingService;
-import com.github.onedirection.geocoding.NamedCoordinates;
-import com.github.onedirection.geocoding.NominatimGeocoding;
+import com.github.onedirection.geocoding.DeviceLocationProvider;
+import com.github.onedirection.geocoding.LocationProvider;
 import com.github.onedirection.utils.Id;
 
 import java.text.DecimalFormat;
@@ -260,7 +257,7 @@ public class EventCreator extends AppCompatActivity {
 
     public void usePhoneLocation(View v) {
         incrementLoad();
-        DeviceLocation.getCurrentLocation(this).thenAccept(coords -> {
+        LocationProvider.getCurrentLocation(this).thenAccept(coords -> {
             coordinates = Optional.of(coords);
             EditText locName = findViewById(R.id.editEventLocationName);
             // TODO: display the location somehow (better)
