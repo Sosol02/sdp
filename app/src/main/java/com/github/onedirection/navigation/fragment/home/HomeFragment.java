@@ -39,14 +39,5 @@ public class HomeFragment extends Fragment {
                 mText.setText(s);
             }
         });
-
-        Button b = view.findViewById(R.id.testNotfBut);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Notifications.getInstance(v.getContext()).testNotif(v.getContext());
-            }
-        });
-
     }
 }

@@ -30,10 +30,6 @@ public class Id implements Serializable {
         this.uuid = uuid.toString();
     }
 
-    public static Id createId() {
-        return new Id(UUID.randomUUID());
-    }
-
     public String getUuid() {
         return uuid;
     }

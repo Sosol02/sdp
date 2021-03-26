@@ -21,5 +21,9 @@ public class NotificationPublisher extends BroadcastReceiver {
         Log.d("NotificationPublisher", "-> notif id = " + id);
         Log.d("NotificationPublisher", "-> notif = " + notif);
         nm.notify(id, notif);
+
+        // Required to be able to register to recieve intents
+        Context appContext = context.getApplicationContext();
+        Notifications.getInstance(appContext).scheduleClosestEvent(appContext);
     }
 }
