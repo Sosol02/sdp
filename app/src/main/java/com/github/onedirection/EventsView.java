@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.github.onedirection.notifs.Notifications;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class EventsView extends AppCompatActivity {
 
     @Override
@@ -28,5 +33,8 @@ public class EventsView extends AppCompatActivity {
         TextView textViewEndTime = findViewById(R.id.textViewEndTimeView);
         textViewEndTime.setText(event.getEndTime().toString());
 
+        HashSet<Event> eventHashSet = new HashSet<>();
+        eventHashSet.add(event);
+        Notifications.getInstance(getApplicationContext()).scheduleEventNotifs(getApplicationContext(), eventHashSet);
     }
 }

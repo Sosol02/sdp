@@ -23,7 +23,7 @@ public class Item implements Storable<Item> {
     }
 
     public Item(int number, String s) {
-        this(Id.createId(), number, s);
+        this(Id.generateRandom(), number, s);
     }
 
     @Override
