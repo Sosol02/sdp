@@ -1,5 +1,8 @@
 package com.github.onedirection;
 
+import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.database.store.Storable;
+import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
@@ -14,7 +17,7 @@ import java.util.Optional;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Event implements Serializable {
+public class Event implements Serializable, Storable<Event> {
 
     final private Id id;
     final private String name;
@@ -90,16 +93,23 @@ public class Event implements Serializable {
                 : new Event(id, name, locationName, location, startTime, new_value);
     }
 
+    @Override
     public Id getId() {
         return id;
     }
 
+    @Override
+    public Storer<Event> storer() {
+        return EventStorer.getInstance();
+    }
+  
     public Optional<Coordinates> getCoordinates() {
         return Optional.ofNullable(location);
     }
 
     public String getLocationName(){
         return locationName;
+
     }
 
     public Optional<NamedCoordinates> getLocation() {
