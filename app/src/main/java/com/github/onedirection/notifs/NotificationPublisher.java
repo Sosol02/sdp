@@ -13,8 +13,6 @@ public class NotificationPublisher extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("NotificationPublisher", "onReceive");
-        Toast.makeText(context, "I am a toast owo", Toast.LENGTH_LONG).show();
-
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notif = intent.getParcelableExtra(Notifications.PAYLOAD);
         int id = intent.getIntExtra(Notifications.NOTIF_ID, -1);
