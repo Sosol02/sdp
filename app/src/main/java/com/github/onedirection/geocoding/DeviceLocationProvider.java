@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
@@ -63,15 +64,18 @@ public final class DeviceLocationProvider implements Observable<Coordinates>, Lo
     private final ArrayList<ObserverPattern.Observer<Coordinates>> observers = new ArrayList<>();
     private Location lastLocation;
 
-
-    public DeviceLocationProvider(Activity callingActivity) {
-        Objects.requireNonNull(callingActivity);
-        this.callingActivity = callingActivity;
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(callingActivity);
+    @VisibleForTesting
+    public DeviceLocationProvider(Activity callingActivity, FusedLocationProviderClient provider){
+        this.callingActivity = Objects.requireNonNull(callingActivity);
+        this.fusedLocationClient = Objects.requireNonNull(provider);
 
         if (!fineLocationUsageIsAllowed()) {
             requestFineLocationPermission();
         }
+    }
+
+    public DeviceLocationProvider(Activity callingActivity) {
+        this(callingActivity, LocationServices.getFusedLocationProviderClient(callingActivity));
     }
 
     @Override
