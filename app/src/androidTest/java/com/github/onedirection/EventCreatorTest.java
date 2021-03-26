@@ -1,22 +1,18 @@
 package com.github.onedirection;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
@@ -30,14 +26,12 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -47,7 +41,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -55,7 +48,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -76,6 +68,8 @@ public class EventCreatorTest {
             ZonedDateTime.now().plusHours(10)
     );
 
+    private IdlingResource idling;
+
     @Rule
     public ActivityScenarioRule<NavigationActivity> eventCreator = new ActivityScenarioRule<>(NavigationActivity.class);
 
@@ -86,12 +80,17 @@ public class EventCreatorTest {
 
     @Before
     public void setUp() {
+        ActivityScenario.launch(EventCreator.class).onActivity(activity -> {
+            idling = activity.getIdlingResource();
+            IdlingRegistry.getInstance().register(idling);
+        });
         Intents.init();
     }
 
     @After
     public void tearDown() {
         Intents.release();
+        IdlingRegistry.getInstance().unregister(idling);
     }
 
     public void gotoCreator() {
@@ -181,7 +180,7 @@ public class EventCreatorTest {
     }
 
     @Test
-    public void canUsePhoneLocation() throws InterruptedException {
+    public void canUsePhoneLocation() {
 //        Context ctx = ApplicationProvider.getApplicationContext();
 //        LocationManager mgr = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 //        mgr.removeTestProvider(LocationManager.GPS_PROVIDER);
@@ -205,12 +204,8 @@ public class EventCreatorTest {
 //        loc.setTime(System.currentTimeMillis());
 //
 //        mgr.setTestProviderLocation(LocationManager.GPS_PROVIDER, loc);
-        gotoCreator();
-
         onView(withId(R.id.buttonUsePhoneLocation)).perform(scrollTo(), click());
-        // Yeah, I know, again, but I promise, next week I'll find a better way
-        Thread.sleep(10000);
-        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
+        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
 
         intended(allOf(
                 hasComponent(EventsView.class.getName()),
@@ -222,7 +217,7 @@ public class EventCreatorTest {
 
                     @Override
                     public boolean matches(Object item) {
-                        if(item instanceof Event){
+                        if (item instanceof Event) {
                             Optional<Coordinates> coords = ((Event) item).getCoordinates();
                             return coords.isPresent();// && coords.get().areCloseTo(PHONE_COORDINATES, 1e-1);
                         }

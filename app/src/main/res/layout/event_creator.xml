@@ -150,6 +150,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp" />
 
+            <ProgressBar
+                android:id="@+id/progressBarEventCreatorLoading"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
+
             <Button
                 android:id="@+id/buttonEventAdd"
                 android:layout_width="wrap_content"

@@ -11,8 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.DeviceLocation;
@@ -100,6 +103,7 @@ public class EventCreator extends AppCompatActivity {
     private Optional<Coordinates> coordinates;
     private Id eventId;
     private boolean isEditing;
+    private CountingIdlingResource idling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +115,7 @@ public class EventCreator extends AppCompatActivity {
 
         isEditing = false;
         coordinates = Optional.empty();
+        idling = new CountingIdlingResource("Event creator is loading.");
 
         Intent intent = getIntent();
 
@@ -254,12 +259,32 @@ public class EventCreator extends AppCompatActivity {
     }
 
     public void usePhoneLocation(View v) {
+        incrementLoad();
         DeviceLocation.getCurrentLocation(this).thenAccept(coords -> {
             coordinates = Optional.of(coords);
             EditText locName = findViewById(R.id.editEventLocationName);
             // TODO: display the location somehow (better)
             DecimalFormat format = new DecimalFormat("#.##");
             locName.setText("Current location (" + format.format(coords.latitude) + " ; " + format.format(coords.longitude)  + ")");
+            decrementLoad();
         });
+    }
+
+    private void incrementLoad(){
+        idling.increment();
+        if(!idling.isIdleNow())
+            findViewById(R.id.progressBarEventCreatorLoading).setVisibility(View.VISIBLE);
+    }
+
+    private void decrementLoad(){
+        idling.decrement();
+        if(idling.isIdleNow()){
+            findViewById(R.id.progressBarEventCreatorLoading).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @VisibleForTesting
+    public IdlingResource getIdlingResource(){
+        return idling;
     }
 }
