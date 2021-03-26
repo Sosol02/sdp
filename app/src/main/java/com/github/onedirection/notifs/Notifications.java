@@ -133,7 +133,7 @@ public class Notifications {
         events.addAll(eventList);
         scheduleClosestEvent(context);
     }
-
+/*
     public void testNotif(Context context) {
         ZonedDateTime now = ZonedDateTime.now();
         Set<Event> evs = new HashSet<>();
@@ -144,5 +144,5 @@ public class Notifications {
         scheduleEventNotifs(context, evs);
 
         //scheduleNotif(context, System.currentTimeMillis() + 5000, "Test notif", "u.u");
-    }
+    }*/
 }

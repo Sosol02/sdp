@@ -15,7 +15,7 @@ public class IdUnitTest {
         ArrayList<Id> ids = new ArrayList<Id>();
         // generate ids
         for (int i = 0; i < count; ++i) {
-            ids.add(Id.createId());
+            ids.add(Id.generateRandom());
         }
         return ids;
     }
