@@ -26,8 +26,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class ConcreteDatabaseTest {
 
-    private int count = 50;
-    private int emptyCoordProportion = 2; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
+    private static int count = 50;
+    private static int emptyCoordProportion = 2; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
 
     private Event[] makeEvents(int count) {
         Event[] l = new Event[count];

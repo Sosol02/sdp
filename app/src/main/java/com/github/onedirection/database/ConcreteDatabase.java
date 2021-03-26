@@ -55,7 +55,7 @@ public class ConcreteDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
-        if(storer == null) { throw new IllegalArgumentException("storer is null"); }
+        Objects.requireNonNull(storer, "Storer is null");
         CompletableFuture<T> result = new CompletableFuture<T>();
 
         db.collection(storer.getCollection().getCollectionName())
@@ -80,7 +80,7 @@ public class ConcreteDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> remove(Id id, Storer<T> storer) {
-        if(storer == null) { throw new IllegalArgumentException("storer is null"); }
+        Objects.requireNonNull(storer, "Storer is null");
         CompletableFuture<Id> result = new CompletableFuture<Id>();
 
         db.collection(storer.getCollection().getCollectionName())

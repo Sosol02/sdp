@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EventStorer extends Storer<Event> {
@@ -41,12 +42,9 @@ public class EventStorer extends Storer<Event> {
         return Event.class;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Map<String, Object> storableToMap(Event storable) {
-        if(storable == null) {
-            throw new IllegalArgumentException("argument is null");
-        }
+        Objects.requireNonNull(storable, "Argument is null");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(KEY_ID, storable.getId().getUuid());
@@ -62,13 +60,10 @@ public class EventStorer extends Storer<Event> {
         return map;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Event mapToStorable(Map m) {
-        if(m == null) {
-            throw new IllegalArgumentException("argument is null");
-        }
+        Objects.requireNonNull(m, "Argument is null");
+
         String id = (String) m.get(KEY_ID);
         String name = (String) m.get(KEY_NAME);
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
