@@ -34,9 +34,9 @@ public class ConcreteDatabaseTest {
         Random r = new Random();
         for (int i = 0; i < count; ++i) {
             if(r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
-                l[i] = new Event(Id.createId(), "MyCity" + i, "city"+i, ZonedDateTime.now(), ZonedDateTime.now());
+                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city"+i, ZonedDateTime.now(), ZonedDateTime.now());
             } else {
-                l[i] = new Event(Id.createId(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now(), ZonedDateTime.now());
+                l[i] = new Event(Id.generateRandom(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now(), ZonedDateTime.now());
             }
         }
         return l;
