@@ -163,18 +163,40 @@ public class ConcreteDatabase implements Database {
     }
 
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
-
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).get();
-
         return completeOnList(t, storer);
     }
 
-    public <T extends Storable<T>> CompletableFuture<List<T>> retrieveOnFilterKey(String key, String value, Storer<T> storer) {
-
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
-
         return completeOnList(t, storer);
     }
 
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereGreaterThan(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
 
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereGreaterThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereLessThan(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereLessThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName())
+                .whereGreaterThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(valueGreaterEq))
+                .whereLessThan(Objects.requireNonNull(key), Objects.requireNonNull(valueLess))
+                .get();
+        return completeOnList(t, storer);
+    }
 }
