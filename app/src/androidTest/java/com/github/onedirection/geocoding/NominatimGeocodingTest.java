@@ -28,7 +28,6 @@ public class NominatimGeocodingTest {
     private static final Context CTX = ApplicationProvider.getApplicationContext();
     private static final NominatimGeocoding GEOCODING = new NominatimGeocoding(CTX);
 
-    // From https://geohack.toolforge.org/geohack.php?pagename=%C3%89cole_Polytechnique_F%C3%A9d%C3%A9rale_de_Lausanne&params=46_31_13_N_6_33_56_E_region:CH-VD_type:edu
     private static final String EPFL_QUERY = "EPFL";
     private static final List<String> EPFL_NAME = List.of("École Polytechnique Fédérale de Lausanne", "EPFL");
     private static final String EPFL_CANTON = "Vaud";
@@ -36,10 +35,11 @@ public class NominatimGeocodingTest {
     private static final Coordinates EPFL_COORDINATES = new Coordinates(46.52, 6.56);
     private static final double EPFL_COORDINATES_PREC = 1e-2;
 
-    private static final String GARBAGE_LOCATION = "jdfahgfoqaghegaghufagipdhgaofdghaiodgfhoahahid";
+    private static final String GARBAGE_LOCATION_NAME = "jdfahgfoqaghegaghufagipdhgaofdghaiodgfhoahahid";
+    private static final Coordinates GARBAGE_LOCATION_COORDINATEs = new Coordinates(-61.74, -133.41);
 
     @Test
-    public void returnsExpectedResultsForEPFL(){
+    public void geocodingHasExpectedResultsForEPFL(){
         try {
             NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get();
 
@@ -58,8 +58,23 @@ public class NominatimGeocodingTest {
     }
 
     @Test
-    public void returnsEmptyForGarbage() {
-        CompletableFuture<Coordinates> result = GEOCODING.getBestCoordinates(GARBAGE_LOCATION);
+    public void reverseGeocodingHasExpectedResultForEPFL(){
+        try {
+            NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_COORDINATES).get();
+
+            assertTrue(coords.areCloseTo(EPFL_COORDINATES, EPFL_COORDINATES_PREC));
+
+            String[] elems = coords.name.split(",");
+            assertThat(coords.name, containsString(EPFL_CANTON));
+            assertThat(elems[elems.length-1].split("/")[0].trim(), isIn(EPFL_COUNTRY));
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void geocodingHasNoResultForGarbage() {
+        CompletableFuture<Coordinates> result = GEOCODING.getBestCoordinates(GARBAGE_LOCATION_NAME);
         try{
             result.get();
             fail("The result should not contain any value");
@@ -70,5 +85,26 @@ public class NominatimGeocodingTest {
         catch(InterruptedException e){
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void reverseGeocodingHasNoResultForGarbage(){
+        try {
+            GEOCODING.getBestNamedCoordinates(GARBAGE_LOCATION_COORDINATEs).get();
+        }
+        catch(ExecutionException e){
+            assertThat(e.getCause(), is(instanceOf(NoSuchElementException.class)));
+        }
+        catch(InterruptedException e){
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getBestCoordinatesIsCoherent() throws ExecutionException, InterruptedException {
+        assertThat(
+                GEOCODING.getBestCoordinates(EPFL_QUERY).get(),
+                is(GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get().dropName())
+        );
     }
 }
