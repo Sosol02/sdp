@@ -44,5 +44,6 @@
     <string name= "popup_title"> "" </string>
     <string name= "cancel"> cancel </string>
     <string name= "day_select_dialog_tag">daySelectedDialog</string>
+    <string name="my_location_button_desc">My location icon</string>
 
 </resources>
