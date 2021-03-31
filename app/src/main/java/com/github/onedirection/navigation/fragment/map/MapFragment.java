@@ -32,7 +32,6 @@ public class MapFragment extends Fragment {
     private final String SYMBOL_ID = "MARKER_MAP";
     private final String BUNDLE_ID = "bundleT";
     private final String MARKERS_ID = "markers_size";
-    private Bundle savedState = null;
 
     @Nullable
     @Override
@@ -42,18 +41,6 @@ public class MapFragment extends Fragment {
         Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        if (savedInstanceState != null && savedState == null) {
-            savedState = savedInstanceState.getBundle(BUNDLE_ID);
-        }
-        List<LatLng> previousMarkers = new ArrayList<>();
-        if (savedState != null) {
-            int sizeMarkers = savedState.getInt(MARKERS_ID);
-            for (int key = 0; key < sizeMarkers; ++key) {
-                previousMarkers.add(savedInstanceState.getParcelable(String.valueOf(key)));
-            }
-        }
-        savedState = null;
-
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
@@ -62,10 +49,6 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeMarkerSymbolManager(style);
             });
-
-            for (LatLng previousMarker: previousMarkers) {
-                markerSymbolManager.addMarker(previousMarker);
-            }
 
             mapboxMap.addOnMapClickListener(point -> {
                 markerSymbolManager.removeAllMarker();
@@ -110,37 +93,6 @@ public class MapFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
-        outState.putBundle(BUNDLE_ID, savedState != null ? savedState : saveMapState());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            savedState = savedInstanceState.getBundle(BUNDLE_ID);
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        savedState = saveMapState();
-    }
-
-
-
-    private Bundle saveMapState() {
-        Bundle saveState = new Bundle();
-        if (markerSymbolManager != null) {
-            List<Symbol> markers = markerSymbolManager.getAllMarkers();
-            saveState.putInt(MARKERS_ID, markers.size());
-            int key = 0;
-            for (Symbol marker: markers) {
-                saveState.putParcelable(String.valueOf(key), marker.getLatLng());
-                ++key;
-            }
-        }
-        return saveState;
     }
 
     private void initializeMarkerSymbolManager(@NonNull Style styleOnLoaded) {
