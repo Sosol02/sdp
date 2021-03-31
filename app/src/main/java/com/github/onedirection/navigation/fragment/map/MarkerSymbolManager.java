@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapSymbolManager {
+public class MarkerSymbolManager {
 
     private final String SYMBOL_ID;
     private final SymbolManager symbolManager;
-    private List<Symbol> symbols;
+    private final List<Symbol> symbols;
 
-    public MapSymbolManager(SymbolManager symbolManager, String SYMBOL_ID) {
+    public MarkerSymbolManager(SymbolManager symbolManager, String SYMBOL_ID) {
         this.symbolManager = symbolManager;
         this.SYMBOL_ID = SYMBOL_ID;
         this.symbols = new ArrayList<>();
@@ -30,8 +30,7 @@ public class MapSymbolManager {
         Symbol marker = symbolManager.create(new SymbolOptions()
                 .withLatLng(position)
                 .withIconImage(SYMBOL_ID)
-                //Icon offset is useful so the marker is centered at the tip
-                .withIconOffset(new Float[] {0.0f, -10.5f})
+                .withIconSize(2f)
                 );
         symbols.add(marker);
         return marker;
@@ -46,10 +45,12 @@ public class MapSymbolManager {
     }
 
     public void removeMarker (Symbol marker) {
+        symbolManager.delete(marker);
         symbols.remove(marker);
     }
 
     public void removeAllMarker () {
+        symbolManager.deleteAll();
         symbols.clear();
     }
 }

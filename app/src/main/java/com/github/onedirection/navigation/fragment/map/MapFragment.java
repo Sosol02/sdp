@@ -18,14 +18,14 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 public class MapFragment extends Fragment {
 
     private MapView mapView;
-    private MapSymbolManager mapSymbolManager;
+    private MapboxMap mapboxMap;
+    private MarkerSymbolManager markerSymbolManager;
+    private final String SYMBOL_ID = "MARKER_MAP";
 
     @Nullable
     @Override
@@ -36,20 +36,23 @@ public class MapFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mapView = (MapView) view.findViewById(R.id.mapView);
+        mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+        mapView.getMapAsync(mapboxMap -> {
+            this.mapboxMap = mapboxMap;
 
-            Drawable marker = ContextCompat.getDrawable(getContext(), R.drawable.ic_marker_map);
-            style.addImage("marker_map", BitmapUtils.getBitmapFromDrawable(marker));
-            GeoJsonOptions geoJsonOptions = new GeoJsonOptions().withTolerance(0.4f);
-            SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style, null, geoJsonOptions);
-            symbolManager.setIconAllowOverlap(true);
-            mapSymbolManager = new MapSymbolManager(symbolManager);
-            mapSymbolManager.addMarker(new LatLng(48.858093, 2.294694));
-            mapboxMap.addOnCameraMoveListener(() -> mapSymbolManager
-                    .updateSymbolsOffset(mapboxMap.getCameraPosition().zoom));
-        }));
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                initializeMarkerSymbolManager(style);
+            });
+
+
+
+            mapboxMap.addOnMapClickListener(point -> {
+                markerSymbolManager.removeAllMarker();
+                markerSymbolManager.addMarker(point);
+                return false;
+            });
+        });
         return view;
     }
 
@@ -57,5 +60,42 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    private void initializeMarkerSymbolManager(@NonNull Style styleOnLoaded) {
+        Drawable marker = ContextCompat.getDrawable(getContext(), R.drawable.ic_marker_map);
+        styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
+        SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
+        markerSymbolManager = new MarkerSymbolManager(symbolManager, SYMBOL_ID);
     }
 }
