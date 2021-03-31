@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation.fragment.map;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,20 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.LocationComponentOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.maps.Style;
 
 public class MapFragment extends Fragment {
 
     private MapView mapView;
+    private MapboxMap mapboxMap;
 
     @Nullable
     @Override
@@ -35,7 +42,10 @@ public class MapFragment extends Fragment {
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
-            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {});
+            this.mapboxMap = mapboxMap;
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                enableLocationComponent(style);
+            });
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
                 //TODO add location service
                 CameraPosition position = new CameraPosition.Builder()
@@ -53,5 +63,23 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+
+    @SuppressLint("MissingPermission")
+    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
+        LocationComponentOptions customLocationComponentOptions =
+                LocationComponentOptions.builder(getContext())
+                        .build();
+
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+
+        locationComponent.activateLocationComponent(LocationComponentActivationOptions
+                .builder(getContext(), loadedMapStyle)
+                .locationComponentOptions(customLocationComponentOptions)
+                .build());
+
+        locationComponent.setLocationComponentEnabled(true);
+        locationComponent.setCameraMode(CameraMode.TRACKING);
+        locationComponent.setRenderMode(RenderMode.NORMAL);
     }
 }
