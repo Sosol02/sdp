@@ -30,6 +30,8 @@ public class MapFragment extends Fragment {
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
     private final String SYMBOL_ID = "MARKER_MAP";
+    private final String BUNDLE_ID = "bundleT";
+    private final String MARKERS_ID = "markers_size";
     private Bundle savedState = null;
 
     @Nullable
@@ -39,17 +41,13 @@ public class MapFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        System.out.println("OnCREAAATTTEEEDDDVIEWWWWWWW");
-        System.out.println(this);
-        System.out.println(savedInstanceState);
+
         if (savedInstanceState != null && savedState == null) {
-            System.out.println("SavedStateInstanceNotNULLLLLLLl");
-            savedState = savedInstanceState.getBundle("bundleT");
+            savedState = savedInstanceState.getBundle(BUNDLE_ID);
         }
         List<LatLng> previousMarkers = new ArrayList<>();
         if (savedState != null) {
-            System.out.println("SavedStateNotNULLLLLLLl");
-            int sizeMarkers = savedState.getInt("markers_size");
+            int sizeMarkers = savedState.getInt(MARKERS_ID);
             for (int key = 0; key < sizeMarkers; ++key) {
                 previousMarkers.add(savedInstanceState.getParcelable(String.valueOf(key)));
             }
@@ -81,35 +79,25 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        System.out.println("OnVIEWCCCCCREATEEEEEEEEDDDDDDDDDD");
         System.out.println(savedInstanceState);
-        if (savedState != null) {
-            System.out.println("SavedStateNotNULLLLLLLl");
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        System.out.println("OnREEEEEEESSSSSSSSSSSSSUUUUUUMMMMMEEEE");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        System.out.println("OOOOOOOOOOOOOOOONNNNNNNNNNNNNNNNNNDDESTROyMAP");
-        //savedState = saveMapState();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        System.out.println("OnPPPPPAUUUUUUUSSSSSSSSSEEEEE");
-        savedState = saveMapState();
     }
 
     @Override
@@ -122,27 +110,20 @@ public class MapFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
-        if (outState != null) {
-            System.out.println("OUTSTATENOTNULLLLLLLLLLLLLLLLllllllll");
-        }
-        System.out.println("OOOOOOOOOOOOOOOONNNNNNNNNNNNNNNNNNSSSSSAVESTATEINSTANCEEEE");
-        outState.putBundle("bundleT", savedState != null ? savedState : saveMapState());
+        outState.putBundle(BUNDLE_ID, savedState != null ? savedState : saveMapState());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        System.out.println("___________________________________________TTTT");
         if (savedInstanceState != null) {
-            savedState = savedInstanceState.getBundle("bundleT");
-            System.out.println("___________________________________________TTTTTTTT");
+            savedState = savedInstanceState.getBundle(BUNDLE_ID);
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        System.out.println("OOOOOOOOOOOOOOOONNNNNNNNNNNNNNNNNNDDESTROyvIEWWWWWW");
         savedState = saveMapState();
     }
 
@@ -152,7 +133,7 @@ public class MapFragment extends Fragment {
         Bundle saveState = new Bundle();
         if (markerSymbolManager != null) {
             List<Symbol> markers = markerSymbolManager.getAllMarkers();
-            saveState.putInt("markers_size", markers.size());
+            saveState.putInt(MARKERS_ID, markers.size());
             int key = 0;
             for (Symbol marker: markers) {
                 saveState.putParcelable(String.valueOf(key), marker.getLatLng());
