@@ -22,6 +22,8 @@ public class OnMapReadyIdlingResource implements IdlingResource, OnMapReadyCallb
 
     public OnMapReadyIdlingResource(MapFragment fragment) {
         this.fragment = fragment;
+        this.mapboxMap = null;
+        this.resourceCallback = null;
         try {
             Field field = fragment.getClass().getDeclaredField("mapView");
             field.setAccessible(true);

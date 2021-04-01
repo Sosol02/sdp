@@ -29,9 +29,7 @@ public class MapFragment extends Fragment {
     private MapView mapView;
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
-    private final String SYMBOL_ID = "MARKER_MAP";
-    private final String BUNDLE_ID = "bundleT";
-    private final String MARKERS_ID = "markers_size";
+    public static final String SYMBOL_ID = "MARKER_MAP";
 
     @Nullable
     @Override
@@ -62,7 +60,6 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        System.out.println(savedInstanceState);
     }
 
     @Override
@@ -99,6 +96,6 @@ public class MapFragment extends Fragment {
         Drawable marker = ContextCompat.getDrawable(getContext(), R.drawable.ic_marker_map);
         styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
-        markerSymbolManager = new MarkerSymbolManager(symbolManager, SYMBOL_ID);
+        this.markerSymbolManager = new MarkerSymbolManager(symbolManager);
     }
 }

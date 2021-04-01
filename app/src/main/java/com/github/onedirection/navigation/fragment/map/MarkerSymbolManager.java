@@ -10,13 +10,11 @@ import java.util.List;
 
 public class MarkerSymbolManager {
 
-    private final String SYMBOL_ID;
     private final SymbolManager symbolManager;
     private final List<Symbol> markers;
 
-    public MarkerSymbolManager(SymbolManager symbolManager, String SYMBOL_ID) {
+    public MarkerSymbolManager(SymbolManager symbolManager) {
         this.symbolManager = symbolManager;
-        this.SYMBOL_ID = SYMBOL_ID;
         this.markers = new ArrayList<>();
         symbolManager.setIconAllowOverlap(true);
     }
@@ -24,7 +22,7 @@ public class MarkerSymbolManager {
     public Symbol addMarker(LatLng position) {
         Symbol marker = symbolManager.create(new SymbolOptions()
                 .withLatLng(position)
-                .withIconImage(SYMBOL_ID)
+                .withIconImage(MapFragment.SYMBOL_ID)
                 .withIconSize(2f)
                 );
         markers.add(marker);
