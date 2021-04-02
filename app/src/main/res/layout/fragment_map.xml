@@ -13,12 +13,11 @@
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
-
-    <Button
+    <!--Button
         android:id="@+id/fragment_map_test_show_bottom_sheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show collapsed bottom sheet" />
+        android:text="Show collapsed bottom sheet" /-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_map_bottom_sheet"

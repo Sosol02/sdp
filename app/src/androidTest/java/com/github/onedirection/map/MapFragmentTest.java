@@ -1,18 +1,11 @@
 package com.github.onedirection.map;
 
-import android.util.Log;
-
 import androidx.fragment.app.testing.FragmentScenario;
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
-import androidx.test.espresso.ViewAction;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.WaitAction;
-import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -21,12 +14,10 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -94,7 +85,7 @@ public class MapFragmentTest {
 
         markers = markerSymbolManager.getAllMarkers();
         assertThat(markers.size(), is(2));
-        fragment.getActivity().runOnUiThread(() -> markerSymbolManager.removeAllMarker());
+        fragment.getActivity().runOnUiThread(() -> markerSymbolManager.removeAllMarkers());
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
         assertThat(markers.size(), is(0));
     }

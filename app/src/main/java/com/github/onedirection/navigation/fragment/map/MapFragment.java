@@ -2,6 +2,7 @@ package com.github.onedirection.navigation.fragment.map;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +19,12 @@ import com.github.onedirection.R;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -44,6 +41,7 @@ public class MapFragment extends Fragment {
     private TextView event_location;
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
+    private Symbol clickSymbol;
     public static final String SYMBOL_ID = "MARKER_MAP";
 
     @Nullable
@@ -59,23 +57,19 @@ public class MapFragment extends Fragment {
         mapView.getMapAsync(mapboxMap -> {
             this.mapboxMap = mapboxMap;
 
-            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                initializeMarkerSymbolManager(style);
-            });
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, this::initializeMarkerSymbolManager);
 
             mapboxMap.addOnMapClickListener(point -> {
-                markerSymbolManager.removeAllMarker();
-                markerSymbolManager.addMarker(point);
+                if (clickSymbol != null)
+                    markerSymbolManager.removeMarker(clickSymbol);
+                clickSymbol = markerSymbolManager.addMarker(point);
                 return false;
-            });
+            }); // */
         });
 
         View bottomSheet = view.findViewById(R.id.fragment_map_bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        Button button = view.findViewById(R.id.fragment_map_test_show_bottom_sheet);
-        button.setOnClickListener(x -> showBottomSheet(view));
 
         event_name = view.findViewById(R.id.fragment_map_event_name);
         event_time_start = view.findViewById(R.id.fragment_map_event_time_start);
@@ -90,13 +84,7 @@ public class MapFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void showBottomSheet(View view) {
-        /*
-        Event event = new Event(Id.generateRandom(), "Test event", "Mooon",
-                ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
-                ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
-        setBottomSheetEvent(event); // */
-
+    public void showBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
@@ -134,7 +122,7 @@ public class MapFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
@@ -143,6 +131,14 @@ public class MapFragment extends Fragment {
         Drawable marker = ContextCompat.getDrawable(getContext(), R.drawable.ic_marker_map);
         styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
-        this.markerSymbolManager = new MarkerSymbolManager(symbolManager);
+        this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
+
+        // /*
+        Event event = new Event(Id.generateRandom(), "Test event", "Paris",
+                ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
+                ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
+        // */
+
+        markerSymbolManager.addGeocodedEventMarker(event).thenApply(symbol -> Log.d("Debug", "Symbol: " + symbol + " Map: " + markerSymbolManager.getEventMap()));
     }
 }
