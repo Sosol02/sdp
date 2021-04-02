@@ -42,4 +42,9 @@
 
     <integer name="location_permission_code"> 1 </integer>
     <integer name="request_change_settings"> 2 </integer>
+    <!-- Strings related to calendar and event creation -->
+    <string name= "popup_title"> "" </string>
+    <string name= "cancel"> cancel </string>
+    <string name= "day_select_dialog_tag">daySelectedDialog</string>
+
 </resources>

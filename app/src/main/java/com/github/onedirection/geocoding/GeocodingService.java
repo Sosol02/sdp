@@ -25,4 +25,10 @@ public interface GeocodingService {
      */
     CompletableFuture<NamedCoordinates> getBestNamedCoordinates(String locationName);
 
+    /**
+     * @param coordinates Some location on earth.
+     * @return The coordinates and their associated name if the location is found.
+     */
+    CompletableFuture<NamedCoordinates> getBestNamedCoordinates(Coordinates coordinates);
+
 }
