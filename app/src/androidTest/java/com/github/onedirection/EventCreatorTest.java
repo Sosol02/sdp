@@ -157,30 +157,5 @@ public class EventCreatorTest {
             onView(withId(R.id.buttonStartDate)).check(matches(withText(date.toString())));
         }
     }
-
-    @Test
-    public void canUsePhoneLocation() {
-        onView(withId(R.id.buttonUsePhoneLocation)).perform(scrollTo(), click());
-        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
-
-        intended(allOf(
-                hasComponent(EventsView.class.getName()),
-                hasExtra(is(EventCreator.EXTRA_EVENT), is(new BaseMatcher<Event>() {
-                    @Override
-                    public void describeTo(Description description) {
-
-                    }
-
-                    @Override
-                    public boolean matches(Object item) {
-                        if (item instanceof Event) {
-                            Optional<Coordinates> coords = ((Event) item).getCoordinates();
-                            return coords.isPresent();
-                        }
-                        return false;
-                    }
-                }))
-        ));
-    }
 }
 

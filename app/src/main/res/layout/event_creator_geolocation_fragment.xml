@@ -6,7 +6,6 @@
     tools:context=".events.EventCreatorGeolocationFragment">
 
     <LinearLayout
-        android:id="@+id/geolocationBlock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -15,58 +14,63 @@
 
 
         <TextView
-            android:id="@+id/textSearchSection"
+            android:id="@+id/textEventCreatorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set event location"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <TextView
+            android:id="@+id/textLocationSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search:"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:text="Search:" />
 
         <EditText
             android:id="@+id/editLocationQuery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:ems="10"
-            android:hint="Location name"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:hint="Location name" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/buttonUseCurrentLocation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Use current location" />
-
-            <Button
-                android:id="@+id/buttonSearchLocation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Search location" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textResultSection"
+        <Button
+            android:id="@+id/buttonSearchLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Result"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:text="Search location" />
+
+        <Button
+            android:id="@+id/buttonUseCurrentLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Use current location" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
 
         <TextView
             android:id="@+id/textLocationResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="false"
-            android:textSize="18sp"
-            tools:text="None" />
+            android:text="Result:" />
+
+        <TextView
+            android:id="@+id/textSelectedLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textSelectedLocationFull"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp" />
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -79,16 +83,13 @@
             android:id="@+id/buttonCancelGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="cancelGeolocation"
-            android:text="Confirm" />
+            android:text="Cancel" />
 
         <Button
-            android:id="@+id/buttonSubmitLocation"
+            android:id="@+id/buttonSetGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="validateGeolocation"
-            android:text="Confirm" />
-
+            android:layout_marginBottom="128dp"
+            android:text="Set geolocation" />
     </LinearLayout>
-
 </FrameLayout>

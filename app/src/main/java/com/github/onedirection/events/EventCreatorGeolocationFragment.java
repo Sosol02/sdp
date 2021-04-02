@@ -1,38 +1,137 @@
 package com.github.onedirection.events;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.github.onedirection.R;
+import com.github.onedirection.geocoding.GeocodingService;
+import com.github.onedirection.geocoding.LocationProvider;
+import com.github.onedirection.geocoding.NominatimGeocoding;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class EventCreatorGeolocationFragment extends Fragment {
 
-    private EventCreatorViewModel mViewModel;
+    private static final String NO_LOCATION = "None";
 
-    public static EventCreatorGeolocationFragment newInstance() {
-        return new EventCreatorGeolocationFragment();
-    }
+    private EventCreatorViewModel model;
+    private GeocodingService geocoding;
+
+    private ProgressBar requestLoading;
+    private CompletableFuture<?> lastRequest;
+
+    private EditText locationQuery;
+    private TextView locationSelected;
+    private TextView locationSelectedFull;
+    private Button cancel;
+    private Button validate;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.event_creator_geolocation_fragment, container, false);
     }
 
+
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(EventCreatorViewModel.class);
-        // TODO: Use the ViewModel
+
+        this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
+        this.geocoding = new NominatimGeocoding(getContext());
+
+        this.requestLoading = getView().findViewById(R.id.progressBarEventCreatorLoading);
+        this.lastRequest = CompletableFuture.completedFuture(null);
+
+        this.locationQuery = getView().findViewById(R.id.editLocationQuery);
+        this.locationSelected = getView().findViewById(R.id.textLocationResult);
+        this.locationSelectedFull = getView().findViewById(R.id.textSelectedLocationFull);
+        this.cancel = getView().findViewById(R.id.buttonCancelGeolocation);
+        this.validate = getView().findViewById(R.id.buttonSetGeolocation);
+
+        // Model listeners
+        model.coordinates.observe(getViewLifecycleOwner(), coordinates -> {
+            boolean valid = coordinates.isPresent();
+
+            locationSelected.setText(valid ? coordinates.get().toString().split(",")[0] : NO_LOCATION);
+
+            if(valid){
+                locationSelectedFull.setVisibility(View.VISIBLE);
+                locationSelectedFull.setText(coordinates.get().toString());
+            }
+            else{
+                locationSelectedFull.setVisibility(View.GONE);
+            }
+
+            validate.setEnabled(valid);
+        });
+
+        // Click listeners
+        getView().findViewById(R.id.buttonSearchLocation).setOnClickListener(v -> {
+            lastRequest.cancel(true);
+            requestLoading.setVisibility(View.VISIBLE);
+
+            model.incrementLoad();
+            lastRequest = geocoding.getBestNamedCoordinates(locationQuery.getText().toString()).whenComplete(
+                    (coordinates, throwable) -> {
+                        if (coordinates != null) {
+                            model.coordinates.postValue(Optional.of(coordinates));
+                            requestLoading.setVisibility(View.INVISIBLE);
+                        }
+                        model.decrementLoad();
+                    }
+            );
+        });
+
+        getView().findViewById(R.id.buttonUseCurrentLocation).setOnClickListener(v -> {
+            lastRequest.cancel(true);
+            requestLoading.setVisibility(View.VISIBLE);
+
+            model.incrementLoad();
+            lastRequest = LocationProvider.getCurrentLocation(requireActivity()).whenComplete((coordinates, throwable) -> {
+                if (coordinates != null) {
+                    lastRequest = geocoding.getBestNamedCoordinates(coordinates).whenComplete(
+                            (namedCoordinates, throwable1) -> {
+                                if (namedCoordinates != null) {
+                                    model.coordinates.postValue(Optional.of(namedCoordinates));
+                                    requestLoading.setVisibility(View.INVISIBLE);
+                                }
+                                model.decrementLoad();
+                            }
+                    );
+                }
+                else{
+                    model.decrementLoad();
+                }
+            });
+        });
+
+        cancel.setOnClickListener(v -> gotoMain());
+
+        validate.setOnClickListener(v -> {
+            model.useGeolocation.postValue(true);
+            gotoMain();
+        });
     }
 
+    private void gotoMain() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.eventCreatorFragmentContainer, EventCreatorMainFragment.class, null)
+                .setReorderingAllowed(true)
+                .commit();
+    }
 }

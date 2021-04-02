@@ -12,28 +12,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.github.onedirection.EventsView;
 import com.github.onedirection.R;
-import com.github.onedirection.geocoding.LocationProvider;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class EventCreatorMainFragment extends Fragment {
 
     private EventCreatorViewModel model;
-    private ProgressBar requestLoading;
     private CompletableFuture<?> lastRequest;
+    private EditText name;
+    private EditText customLocation;
+    private Button geolocation;
+    private CheckBox useGeolocation;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -46,8 +50,27 @@ public class EventCreatorMainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
-        this.requestLoading = getView().findViewById(R.id.progressBarEventCreatorLoading);
         this.lastRequest = CompletableFuture.completedFuture(null);
+        this.name = getView().findViewById(R.id.editEventName);
+        this.customLocation = getView().findViewById(R.id.editEventLocationName);
+        this.geolocation = getView().findViewById(R.id.buttonGotoGeolocation);
+        this.useGeolocation = getView().findViewById(R.id.checkGeolocation);
+
+        // Model listeners
+        model.name.observe(getViewLifecycleOwner(), str -> name.setText(str));
+        model.customLocation.observe(getViewLifecycleOwner(), str -> customLocation.setText(str));
+
+        model.useGeolocation.observe(getViewLifecycleOwner(), b -> {
+            useGeolocation.setChecked(b);
+            if(b){
+                customLocation.setVisibility(View.GONE);
+                geolocation.setVisibility(View.VISIBLE);
+            }
+            else{
+                customLocation.setVisibility(View.VISIBLE);
+                geolocation.setVisibility(View.GONE);
+            }
+        });
 
         model.startTime.observe(getViewLifecycleOwner(), zonedDateTime -> {
             Button startTimeBtn = getView().findViewById(R.id.buttonStartTime);
@@ -64,40 +87,61 @@ public class EventCreatorMainFragment extends Fragment {
         });
 
         // Click listeners
-
         getView().findViewById(R.id.buttonStartTime).setOnClickListener(v -> showTimePicker(v, model.startTime));
         getView().findViewById(R.id.buttonEndTime).setOnClickListener(v -> showTimePicker(v, model.endTime));
         getView().findViewById(R.id.buttonStartDate).setOnClickListener(v -> showDatePicker(v, model.startTime));
         getView().findViewById(R.id.buttonEndTime).setOnClickListener(v -> showDatePicker(v, model.endTime));
 
-        getView().findViewById(R.id.buttonUsePhoneLocation).setOnClickListener(v -> {
-            lastRequest.cancel(true);
-            requestLoading.setVisibility(View.VISIBLE);
-
-            model.incrementLoad();
-            lastRequest = LocationProvider.getCurrentLocation(requireActivity()).whenComplete((coordinates, throwable) -> {
-                if(coordinates != null){
-                    model.coordinates.setValue(Optional.of(coordinates));
-                    requestLoading.setVisibility(View.INVISIBLE);
-                }
-                model.decrementLoad();
-            });
-        });
+        geolocation.setOnClickListener(v -> gotoGeolocation());
 
         getView().findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
             Intent intent = new Intent(requireActivity(), EventsView.class);
             EventCreator.putEventExtra(intent, generateEvent());
             startActivity(intent);
         });
+
+        // Text listeners
+        name.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                model.name.postValue(name.getText().toString());
+            }
+        });
+        customLocation.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                model.customLocation.postValue(customLocation.getText().toString());
+            }
+        });
+
+
+        // Checkbox listeners
+        useGeolocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                if(model.coordinates.getValue().isPresent()){
+                    model.useGeolocation.postValue(true);
+                }
+                else{
+                    gotoGeolocation();
+                }
+            }
+            else{
+                model.useGeolocation.postValue(false);
+            }
+        });
+    }
+
+    private void gotoGeolocation() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.eventCreatorFragmentContainer, EventCreatorGeolocationFragment.class, null)
+                .setReorderingAllowed(true)
+                .commit();
     }
 
     private void showTimePicker(View v, MutableLiveData<ZonedDateTime> time){
         TimePickerDialog timePicker = new TimePickerDialog(
                 v.getContext(),
-                (view, hourOfDay, minute) -> {
-                    ZonedDateTime startTime = time.getValue();
-                    time.setValue(ZonedDateTime.of(startTime.toLocalDate(), LocalTime.of(hourOfDay, minute), startTime.getZone()));
-                },
+                (view, hourOfDay, minute) ->
+                    time.postValue(ZonedDateTime.of(time.getValue().toLocalDate(), LocalTime.of(hourOfDay, minute), time.getValue().getZone()))
+                ,
                 time.getValue().getHour(),
                 time.getValue().getMinute(),
                 true);
@@ -107,14 +151,13 @@ public class EventCreatorMainFragment extends Fragment {
     private void showDatePicker(View v, MutableLiveData<ZonedDateTime> time){
         DatePickerDialog datePicker = new DatePickerDialog(
                 v.getContext(),
-                (view, year, month, dayOfMonth) -> {
-                    ZonedDateTime startTime = time.getValue();
-                    time.setValue(ZonedDateTime.of(
+                (view, year, month, dayOfMonth) ->
+                    time.postValue(ZonedDateTime.of(
                             LocalDate.of(year, month + 1, dayOfMonth),
-                            startTime.toLocalTime(),
-                            startTime.getZone()
-                    ));
-                },
+                            time.getValue().toLocalTime(),
+                            time.getValue().getZone()
+                    ))
+                ,
                 time.getValue().getYear(),
                 time.getValue().getMonthValue(),
                 time.getValue().getDayOfMonth()
@@ -123,10 +166,7 @@ public class EventCreatorMainFragment extends Fragment {
     }
 
     private Event generateEvent() {
-        EditText name = getView().findViewById(R.id.editEventName);
-        EditText loc = getView().findViewById(R.id.editEventLocationName);
-
-        return model.generateEvent(name.getText().toString(), loc.getText().toString());
+        return model.generateEvent();
     }
 
 }
