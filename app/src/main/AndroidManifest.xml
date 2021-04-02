@@ -26,7 +26,7 @@
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
         <activity android:name=".EventCreator" />
         <activity android:name=".EventsView" />
-          
+
         <receiver android:name=".notifs.NotificationPublisher" />
     </application>
 </manifest>

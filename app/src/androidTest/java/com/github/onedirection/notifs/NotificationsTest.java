@@ -90,11 +90,11 @@ public class NotificationsTest {
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.clearText());
-            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.clearText());
+            onView(withId(R.id.editEventLocationName)).perform(scrollTo(), ViewActions.clearText());
 
             onView(withId(R.id.editEventName)).perform(scrollTo(), ViewActions.typeText(NAME));
             ViewActions.closeSoftKeyboard();
-            onView(withId(R.id.editEventLocation)).perform(scrollTo(), ViewActions.typeText(LOCATION_NAME));
+            onView(withId(R.id.editEventLocationName)).perform(scrollTo(), ViewActions.typeText(LOCATION_NAME));
             ViewActions.closeSoftKeyboard();
 
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
