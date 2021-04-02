@@ -1,9 +1,7 @@
 package com.github.onedirection;
 
 import android.content.Intent;
-import android.util.Log;
 import android.widget.DatePicker;
-import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import androidx.test.core.app.ActivityScenario;
@@ -11,16 +9,15 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.events.Event;
+import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NamedCoordinates;
-import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.utils.Id;
 
 import org.hamcrest.BaseMatcher;

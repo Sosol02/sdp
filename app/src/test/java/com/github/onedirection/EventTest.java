@@ -1,5 +1,6 @@
 package com.github.onedirection;
 
+import com.github.onedirection.events.Event;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 

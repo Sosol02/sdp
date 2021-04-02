@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.events;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -16,8 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.github.onedirection.EventsView;
+import com.github.onedirection.R;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.DeviceLocationProvider;
 import com.github.onedirection.geocoding.LocationProvider;
 import com.github.onedirection.utils.Id;
 

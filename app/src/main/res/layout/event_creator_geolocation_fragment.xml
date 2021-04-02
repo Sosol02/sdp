@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".events.EventCreatorGeolocationFragment">
+
+    <LinearLayout
+        android:id="@+id/geolocationBlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="45dp">
+
+
+        <TextView
+            android:id="@+id/textSearchSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search:"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editLocationQuery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Location name"
+            android:inputType="textPersonName" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonUseCurrentLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Use current location" />
+
+            <Button
+                android:id="@+id/buttonSearchLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Search location" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textResultSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Result"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textLocationResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:textSize="18sp"
+            tools:text="None" />
+
+        <ProgressBar
+            android:id="@+id/progressBarEventCreatorLoading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/buttonCancelGeolocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="cancelGeolocation"
+            android:text="Confirm" />
+
+        <Button
+            android:id="@+id/buttonSubmitLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="validateGeolocation"
+            android:text="Confirm" />
+
+    </LinearLayout>
+
+</FrameLayout>

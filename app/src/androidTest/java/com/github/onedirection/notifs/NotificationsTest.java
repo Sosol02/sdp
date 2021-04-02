@@ -13,8 +13,8 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.Event;
-import com.github.onedirection.EventCreator;
+import com.github.onedirection.events.Event;
+import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
