@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
@@ -53,7 +55,9 @@ public class EventCreator extends AppCompatActivity {
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
     public static final Class<LocalDate> EXTRA_DATE_TYPE = LocalDate.class;
 
-    private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
+    public static boolean hasEventExtra(Intent intent){
+        return intent.hasExtra(EXTRA_EVENT);
+    }
 
     /**
      * Extract the event extra put by/for the Event creator.
@@ -74,6 +78,10 @@ public class EventCreator extends AppCompatActivity {
      */
     public static Intent putEventExtra(Intent intent, Event event) {
         return intent.putExtra(EXTRA_EVENT, event);
+    }
+
+    public static boolean hasDateExtra(Intent intent){
+        return intent.hasExtra(EXTRA_DATE);
     }
 
     /**
@@ -97,12 +105,7 @@ public class EventCreator extends AppCompatActivity {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
-    private ZonedDateTime startTime;
-    private ZonedDateTime endTime;
-    private Optional<Coordinates> coordinates;
-    private Id eventId;
-    private boolean isEditing;
-    private CountingIdlingResource idling;
+    EventCreatorViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,34 +115,19 @@ public class EventCreator extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        isEditing = false;
-        coordinates = Optional.empty();
-        idling = new CountingIdlingResource("Event creator is loading.");
-
         Intent intent = getIntent();
 
-        if (intent.hasExtra(EXTRA_EVENT)) {
-            loadEvent(getEventExtra(intent));
-        } else {
-            eventId = Id.generateRandom();
-            startTime = intent.hasExtra(EXTRA_DATE) ?
-                    ZonedDateTime.of(getDateExtra(intent), LocalTime.now(), ZoneId.systemDefault()) :
-                    ZonedDateTime.now();
-            endTime = startTime.plus(DEFAULT_EVENT_DURATION);
-            updateTimeDates();
+        this.model = new ViewModelProvider(this).get(EventCreatorViewModel.class);
+
+        if(hasEventExtra(intent)){
+            this.model.init(getEventExtra(intent));
         }
-
-        findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
-            Event event = generateEvent();
-
-            if (isEditing) {
-                // TODO: update event in db
-            } else {
-                // TODO: put event in db
-            }
-
-            viewEvent(event);
-        });
+        else if(hasDateExtra(intent)){
+            this.model.init(getDateExtra(intent));
+        }
+        else{
+            this.model.init();
+        }
     }
 
     @Override
@@ -151,139 +139,8 @@ public class EventCreator extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void viewEvent(Event event) {
-        Intent intent = new Intent(this, EventsView.class);
-        putEventExtra(intent, event);
-        startActivity(intent);
-    }
-
-    private Event generateEvent() {
-        EditText name = findViewById(R.id.editEventName);
-        EditText loc = findViewById(R.id.editEventLocationName);
-
-        return new Event(
-                eventId,
-                name.getText().toString(),
-                loc.getText().toString(),
-                coordinates,
-                startTime,
-                endTime
-        );
-    }
-
-    private void loadEvent(Event event) {
-        eventId = event.getId();
-
-        EditText name = findViewById(R.id.editEventName);
-        EditText loc = findViewById(R.id.editEventLocationName);
-
-        name.setText(event.getName());
-        loc.setText(event.getLocationName());
-        startTime = event.getStartTime();
-        endTime = event.getEndTime();
-        coordinates = event.getCoordinates();
-        updateTimeDates();
-
-        isEditing = true;
-    }
-
-    private void updateTimeDates() {
-        Button startTimeBtn = findViewById(R.id.buttonStartTime);
-        Button endTimeBtn = findViewById(R.id.buttonEndTime);
-        Button startDateBtn = findViewById(R.id.buttonStartDate);
-        Button endDateBtn = findViewById(R.id.buttonEndDate);
-
-        startTimeBtn.setText(LocalTime.of(startTime.getHour(), startTime.getMinute()).toString());
-        endTimeBtn.setText(LocalTime.of(endTime.getHour(), endTime.getMinute()).toString());
-        startDateBtn.setText(startTime.toLocalDate().toString());
-        endDateBtn.setText(endTime.toLocalDate().toString());
-    }
-
-    public void showStartTimePicker(View v) {
-        TimePickerDialog timePicker = new TimePickerDialog(
-                v.getContext(),
-                (view, hourOfDay, minute) -> {
-                    startTime = ZonedDateTime.of(startTime.toLocalDate(), LocalTime.of(hourOfDay, minute), startTime.getZone());
-                    updateTimeDates();
-                },
-                startTime.getHour(),
-                startTime.getMinute(),
-                true);
-        timePicker.show();
-    }
-
-    public void showEndTimePicker(View v) {
-        TimePickerDialog timePicker = new TimePickerDialog(
-                v.getContext(),
-                (view, hourOfDay, minute) -> {
-                    endTime = ZonedDateTime.of(endTime.toLocalDate(), LocalTime.of(hourOfDay, minute), endTime.getZone());
-                    updateTimeDates();
-                },
-                endTime.getHour(),
-                endTime.getMinute(),
-                true);
-        timePicker.show();
-    }
-
-    public void showStartDatePicker(View v) {
-        DatePickerDialog datePicker = new DatePickerDialog(
-                v.getContext(),
-                (view, year, month, dayOfMonth) ->
-                        startTime = ZonedDateTime.of(
-                                LocalDate.of(year, month + 1, dayOfMonth),
-                                startTime.toLocalTime(),
-                                startTime.getZone()
-                        ),
-                startTime.getYear(),
-                startTime.getMonthValue(),
-                startTime.getDayOfMonth()
-        );
-        datePicker.show();
-    }
-
-    public void showEndDatePicker(View v) {
-        DatePickerDialog datePicker = new DatePickerDialog(
-                v.getContext(),
-                (view, year, month, dayOfMonth) ->
-                        endTime = ZonedDateTime.of(
-                                LocalDate.of(year, month + 1, dayOfMonth),
-                                endTime.toLocalTime(),
-                                endTime.getZone()
-                        ),
-                endTime.getYear(),
-                endTime.getMonthValue(),
-                endTime.getDayOfMonth()
-        );
-        datePicker.show();
-    }
-
-    public void usePhoneLocation(View v) {
-        incrementLoad();
-        LocationProvider.getCurrentLocation(this).thenAccept(coords -> {
-            coordinates = Optional.of(coords);
-            EditText locName = findViewById(R.id.editEventLocationName);
-            // TODO: display the location somehow (better)
-            DecimalFormat format = new DecimalFormat("#.##");
-            locName.setText("Current location (" + format.format(coords.latitude) + " ; " + format.format(coords.longitude)  + ")");
-            decrementLoad();
-        });
-    }
-
-    private void incrementLoad(){
-        idling.increment();
-        if(!idling.isIdleNow())
-            findViewById(R.id.progressBarEventCreatorLoading).setVisibility(View.VISIBLE);
-    }
-
-    private void decrementLoad(){
-        idling.decrement();
-        if(idling.isIdleNow()){
-            findViewById(R.id.progressBarEventCreatorLoading).setVisibility(View.INVISIBLE);
-        }
-    }
-
     @VisibleForTesting
     public IdlingResource getIdlingResource(){
-        return idling;
+        return model.idling;
     }
 }

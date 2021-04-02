@@ -100,17 +100,6 @@ public class EventCreatorTest {
         ));
     }
 
-    @Test
-    public void eventCreatorDisplaysEventToUpdate() {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
-        EventCreator.putEventExtra(intent, EVENT);
-
-        try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.editEventName)).check(matches(withText(NAME)));
-            onView(withId(R.id.editEventLocationName)).check(matches(withText(LOCATION_NAME)));
-        }
-    }
-
     private void setTimePicker(int startId, ZonedDateTime time) {
         onView(withId(startId)).perform(ViewActions.click());
         onView(withClassName(equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(time.getHour(), time.getMinute()));
