@@ -73,7 +73,7 @@ public class DaySelectPopupTest {
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.calendar_week_3),
-                                        3),
+                                        6),
                                 0),
                         isDisplayed()));
         textView.perform(click());
@@ -130,7 +130,7 @@ public class DaySelectPopupTest {
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.calendar_week_1),
-                                        1),
+                                        4),
                                 0),
                         isDisplayed()));
         textView.perform(click());
