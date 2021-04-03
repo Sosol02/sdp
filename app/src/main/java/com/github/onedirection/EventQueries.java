@@ -6,7 +6,9 @@ import com.github.onedirection.database.store.EventStorer;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class EventQueries {
@@ -18,14 +20,30 @@ public class EventQueries {
     }
 
     public CompletableFuture<List<Event>> getEventsInTimeframe(ZonedDateTime start, ZonedDateTime end) {
-        Long ti = start.toEpochSecond();
-        Long tf = end.toEpochSecond();
+        Objects.requireNonNull(start);
+        Objects.requireNonNull(end);
         if(db.getClass() == ConcreteDatabase.class) {
-            CompletableFuture<List<Event>> res1 = ((ConcreteDatabase) db).filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, ti, tf, EventStorer.getInstance());
-            CompletableFuture<List<Event>> res2 = ((ConcreteDatabase) db).filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_END_TIME, ti, tf, EventStorer.getInstance());
-            CompletableFuture<List<Event>> res3 = null; //starTime < start AND endTime > end
+            Long ti = start.toEpochSecond();
+            Long tf = end.toEpochSecond();
+            ConcreteDatabase cdb = (ConcreteDatabase)db;
+            CompletableFuture<List<Event>> res1 = cdb.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, ti, tf, EventStorer.getInstance()); // ti <= eventStartTime < tf
+            CompletableFuture<List<Event>> res2 = cdb.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, ti, tf, EventStorer.getInstance()); // ti < eventEndTime <= tf
+            CompletableFuture<List<Event>> res3 = cdb.filterWhereLess(EventStorer.KEY_EPOCH_START_TIME, ti, EventStorer.getInstance()); // eventStartTime < ti
+            CompletableFuture<List<Event>> res4 = cdb.filterWhereGreater(EventStorer.KEY_EPOCH_END_TIME, tf, EventStorer.getInstance()); // eventEndTime > tf
+            return CompletableFuture.allOf(res1, res2, res3, res4).thenApply(ignoredVoid -> {
+                List<Event> r1 = res1.join();
+                List<Event> r2 = res2 .join();
+                List<Event> r3 = res3.join();
+                List<Event> r4 = res4.join();
+                r1.removeIf(event -> r2.contains(event));
+                r3.removeIf(event -> !r4.contains(event));
+                r1.addAll(r2);
+                r1.addAll(r3);
+                return r1;
+            });
+        } else {
+            throw new UnsupportedOperationException("This method is not supported for non firebase database.");
         }
-        return null;
     }
 
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
