@@ -51,8 +51,6 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class EventCreatorTest {
 
-    private final static Coordinates PHONE_COORDINATES = new Coordinates(46.5, 6.5);
-
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
     private final static String LOCATION_NAME = "Location name";
@@ -63,7 +61,7 @@ public class EventCreatorTest {
     private final static Event EVENT_BIS = new Event(
             ID,
             "Other name",
-            new NamedCoordinates(1, 1, "Other location"),
+            "Other location",
             ZonedDateTime.now(),
             ZonedDateTime.now().plusHours(10)
     );
@@ -92,7 +90,7 @@ public class EventCreatorTest {
 
     @Test
     public void verifyEventViewIsCorrectlyCalled() {
-        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), ViewActions.click());
+        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
 
         intended(allOf(
                 hasComponent(EventsView.class.getName()),

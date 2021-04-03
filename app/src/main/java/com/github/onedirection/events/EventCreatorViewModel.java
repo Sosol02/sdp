@@ -29,8 +29,8 @@ public class EventCreatorViewModel extends ViewModel {
     public CountingIdlingResource idling;
 
     private void init(ZonedDateTime start){
-        this.name = new MutableLiveData<>();
-        this.customLocation = new MutableLiveData<>();
+        this.name = new MutableLiveData<>("");
+        this.customLocation = new MutableLiveData<>("");
         this.coordinates = new MutableLiveData<>(Optional.empty());
         this.startTime = new MutableLiveData<>(start);
         this.endTime = new MutableLiveData<>(start.plus(DEFAULT_EVENT_DURATION));
