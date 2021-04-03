@@ -2,7 +2,7 @@ package com.github.onedirection.database.store;
 
 
 import com.github.onedirection.events.Event;
-import com.github.onedirection.geocoding.Coordinates;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Instant;

@@ -3,8 +3,8 @@ package com.github.onedirection.events;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import java.io.Serializable;

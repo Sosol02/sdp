@@ -1,38 +1,19 @@
 package com.github.onedirection.events;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
-import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.github.onedirection.EventsView;
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.LocationProvider;
-import com.github.onedirection.utils.Id;
 
-import java.text.DecimalFormat;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 /**
  * To use to create an event, just start the activity.

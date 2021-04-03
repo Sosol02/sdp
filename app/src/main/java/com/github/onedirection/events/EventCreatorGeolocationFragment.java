@@ -16,9 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geocoding.GeocodingService;
-import com.github.onedirection.geocoding.LocationProvider;
-import com.github.onedirection.geocoding.NominatimGeocoding;
+import com.github.onedirection.geolocation.GeocodingService;
+import com.github.onedirection.geolocation.LocationProvider;
+import com.github.onedirection.geolocation.NominatimGeocoding;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

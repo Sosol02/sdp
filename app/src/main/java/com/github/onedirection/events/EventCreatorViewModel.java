@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.github.onedirection.geocoding.NamedCoordinates;
+import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
