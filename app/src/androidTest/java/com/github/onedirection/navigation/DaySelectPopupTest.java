@@ -143,11 +143,7 @@ public class DaySelectPopupTest {
                 .atPosition(0);
         materialTextView.perform(click());
 
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.textEventCreatorTitle), withText("Create an event:"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class))),
-                        isDisplayed()));
-        textView2.check(matches(isDisplayed()));
+        onView(withId(R.id.textEventCreatorTitle)).check(matches(isDisplayed()));
     }
 
 
