@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical"
-        android:padding="45dp">
+        android:orientation="vertical">
 
 
         <TextView
@@ -36,8 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Location name" />
+            android:hint="Location name"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/buttonSearchLocation"

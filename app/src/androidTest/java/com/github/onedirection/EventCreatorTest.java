@@ -11,6 +11,7 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -45,6 +46,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -115,6 +117,14 @@ public class EventCreatorTest {
         onView(withId(android.R.id.button1)).perform(ViewActions.click());
     }
 
+    public void testIsMainFragment(){
+        onView(withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
+    }
+
+    public void testIsGeolocationFragment(){
+        onView(withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("location"))));
+    }
+
     @Test
     public void verifyEventViewIsCorrectlyCalled() {
         onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
@@ -129,12 +139,26 @@ public class EventCreatorTest {
     public void geolocationTabIsOpenedWhenNoGeolocationIsSet(){
         onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
 
+        testIsGeolocationFragment();
         onView(withId(R.id.buttonSetGeolocation)).check(matches(not(isEnabled())));
+    }
+
+    @Test
+    public void geolocationTabIsNotOpenedIfGeolocationAlreadySet(){
+        onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
+        testIsGeolocationFragment();
+
+        onView(withId(R.id.buttonUseCurrentLocation)).perform(scrollTo(), click());
+        onView(withId(R.id.buttonSetGeolocation)).perform(scrollTo(), click());
+
+        onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click(), click());
+        testIsMainFragment();
     }
 
     @Test
     public void geocodingCanBeUsed() {
         onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
+        testIsGeolocationFragment();
 
         onView(withId(R.id.editLocationQuery)).perform(scrollTo(), clearText(), typeText(EPFL_QUERY));
         closeSoftKeyboard();
@@ -147,6 +171,7 @@ public class EventCreatorTest {
         List<String> expected = List.of("lat", "lon");
 
         onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
+        testIsGeolocationFragment();
 
         onView(withId(R.id.buttonUseCurrentLocation)).perform(scrollTo(), click());
         onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(stringContainsInOrder(expected))));
