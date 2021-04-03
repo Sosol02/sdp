@@ -60,3 +60,6 @@ check_android_task:
       path: ./app/build/reports/lint-results-debug.xml
       type: text/xml
       format: android-lint
+  on_failure:
+    androidTest_artifacts:
+      path: ./app/build/reports/androidTests/connected/flavors/debugAndroidTest/*
