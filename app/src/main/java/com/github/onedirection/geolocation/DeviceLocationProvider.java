@@ -127,6 +127,14 @@ public final class DeviceLocationProvider implements Observable<Coordinates>, Lo
                     ResolvableApiException resolvable = (ResolvableApiException) e;
                     resolvable.startResolutionForResult(callingActivity, R.integer.request_change_settings);
                     // TODO: We should most likely do something more (onActivityResult ?)
+                    createLocationRequest().whenComplete((aBoolean, throwable) -> {
+                        if(aBoolean != null){
+                            result.complete(aBoolean);
+                        }
+                        else{
+                            result.completeExceptionally(throwable);
+                        }
+                    });
                 } catch (IntentSender.SendIntentException sendEx) {
                     result.complete(false);
                 }
