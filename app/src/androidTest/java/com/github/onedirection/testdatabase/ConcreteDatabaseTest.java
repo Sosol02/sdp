@@ -81,6 +81,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void containsOnEventId() throws ExecutionException, InterruptedException {
+
         Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         for (int i = 0; i < events.length; ++i) {
