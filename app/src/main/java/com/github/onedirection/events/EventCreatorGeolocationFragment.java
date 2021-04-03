@@ -1,12 +1,6 @@
 package com.github.onedirection.events;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +9,18 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.github.onedirection.R;
 import com.github.onedirection.geolocation.GeocodingService;
 import com.github.onedirection.geolocation.LocationProvider;
 import com.github.onedirection.geolocation.NominatimGeocoding;
 
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
 public class EventCreatorGeolocationFragment extends Fragment {
@@ -69,11 +69,10 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
             locationSelected.setText(valid ? coordinates.get().toString().split(",")[0] : NO_LOCATION);
 
-            if(valid){
+            if (valid) {
                 locationSelectedFull.setVisibility(View.VISIBLE);
                 locationSelectedFull.setText(coordinates.get().toString());
-            }
-            else{
+            } else {
                 locationSelectedFull.setVisibility(View.GONE);
             }
 
@@ -113,8 +112,11 @@ public class EventCreatorGeolocationFragment extends Fragment {
                                 model.decrementLoad();
                             }
                     );
-                }
-                else{
+                } else {
+                    if (!(throwable instanceof CancellationException)) {
+                        requestLoading.setVisibility(View.INVISIBLE);
+                    }
+
                     model.decrementLoad();
                 }
             });
