@@ -4,10 +4,17 @@ import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,19 +54,19 @@ public class EventQueries {
     }
 
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
-        ZonedDateTime dayStart = day.truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime dayStart = truncateTimeToDays(day);
         ZonedDateTime dayEnd = dayStart.plusDays(1);
         return getEventsInTimeframe(dayStart, dayEnd);
     }
 
     public CompletableFuture<List<Event>> getEventsByWeek(ZonedDateTime week) {
-        ZonedDateTime weekStart = week.truncatedTo(ChronoUnit.WEEKS);
+        ZonedDateTime weekStart = truncateTimeToWeeks(week);
         ZonedDateTime weekEnd = weekStart.plusWeeks(1);
         return getEventsInTimeframe(weekStart, weekEnd);
     }
 
     public CompletableFuture<List<Event>> getEventsByMonth(ZonedDateTime month) {
-        ZonedDateTime monthStart = month.truncatedTo(ChronoUnit.MONTHS);
+        ZonedDateTime monthStart = truncateTimeToMonths(month);
         ZonedDateTime monthEnd = monthStart.plusMonths(1);
         return getEventsInTimeframe(monthStart, monthEnd);
     }
@@ -74,5 +81,18 @@ public class EventQueries {
 
     public static CompletableFuture<List<Event>> getEventsByMonth(Database db, ZonedDateTime month) {
         return new EventQueries(db).getEventsByMonth(month);
+    }
+
+    public static ZonedDateTime truncateTimeToWeeks(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS)
+                .with(TemporalAdjusters.next(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())).minusWeeks(1);
+    }
+
+    public static ZonedDateTime truncateTimeToDays(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS);
+    }
+
+    public static ZonedDateTime truncateTimeToMonths(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS).withDayOfMonth(1);
     }
 }
