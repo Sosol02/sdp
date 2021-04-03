@@ -2,6 +2,7 @@ package com.github.onedirection.events;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.test.espresso.IdlingResource;
 import com.github.onedirection.R;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 /**
  * To use to create an event, just start the activity.
@@ -118,6 +120,12 @@ public class EventCreator extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("Testing", "Activitied " + requestCode + " " + Arrays.toString(permissions) + " " + Arrays.toString(grantResults));
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @VisibleForTesting

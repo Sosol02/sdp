@@ -3,12 +3,15 @@ package com.github.onedirection.geolocation;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 
@@ -68,10 +71,6 @@ public final class DeviceLocationProvider implements Observable<Coordinates>, Lo
     public DeviceLocationProvider(Activity callingActivity, FusedLocationProviderClient provider){
         this.callingActivity = Objects.requireNonNull(callingActivity);
         this.fusedLocationClient = Objects.requireNonNull(provider);
-
-        if (!fineLocationUsageIsAllowed()) {
-            requestFineLocationPermission();
-        }
     }
 
     public DeviceLocationProvider(Activity callingActivity) {
@@ -80,10 +79,7 @@ public final class DeviceLocationProvider implements Observable<Coordinates>, Lo
 
     @Override
     public CompletableFuture<Boolean> startLocationTracking() {
-        if (!fineLocationUsageIsAllowed()) {
-            return CompletableFuture.completedFuture(false);
-        }
-        return createLocationRequest();
+        return requestFineLocationPermission().whenCompleteAsync((aBoolean, throwable) -> createLocationRequest());
     }
 
 
@@ -98,13 +94,42 @@ public final class DeviceLocationProvider implements Observable<Coordinates>, Lo
     }
 
     @Override
-    public void requestFineLocationPermission() {
-        if (!fineLocationUsageIsAllowed()) {
+    public CompletableFuture<Boolean> requestFineLocationPermission() {
+        if (fineLocationUsageIsAllowed()) {
+            Log.d("Testing", "Already granted");
+            return CompletableFuture.completedFuture(true);
+        }
+        else{
+            Log.d("Testing", "Asking user...");
+            CompletableFuture<Boolean> result = new CompletableFuture<>();
+            ActivityCompat.setPermissionCompatDelegate(new ActivityCompat.PermissionCompatDelegate() {
+                @Override
+                public boolean requestPermissions(@NonNull Activity activity, @NonNull String[] permissions, int requestCode) {
+                    Log.d("Testing", "Delegate saw smth");
+                    return false;
+                }
+
+                @Override
+                public boolean onActivityResult(@NonNull Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
+                    Log.d("Testing", "Delegate asked");
+                    if(requestCode == R.integer.location_permission_code){
+                        Log.d("Testing", "User responded");
+                        result.complete(resultCode == PackageManager.PERMISSION_GRANTED);
+                        return true;
+                    }
+                    else{
+                        Log.d("Testing", "Paul did nothing");
+                        return false;
+                    }
+                }
+            });
             ActivityCompat.requestPermissions(callingActivity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
+            return result;
         }
     }
 
     private CompletableFuture<Boolean> createLocationRequest() {
+        Log.d("Testing", "Request created");
         CompletableFuture<Boolean> result = new CompletableFuture<>();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);

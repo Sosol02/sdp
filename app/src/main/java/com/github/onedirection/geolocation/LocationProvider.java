@@ -13,6 +13,6 @@ public interface LocationProvider {
     CompletableFuture<Boolean> startLocationTracking();
     boolean fineLocationUsageIsAllowed();
     Coordinates getLastLocation();
-    void requestFineLocationPermission();
+    CompletableFuture<Boolean> requestFineLocationPermission();
 
 }
