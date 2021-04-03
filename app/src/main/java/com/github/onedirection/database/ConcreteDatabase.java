@@ -146,8 +146,13 @@ public class ConcreteDatabase implements Database {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
-        if(Objects.requireNonNull(listToStore).isEmpty()) {
+        Objects.requireNonNull(listToStore);
+        for(T t : listToStore) {
+            Objects.requireNonNull(t);
+        }
+        if(listToStore.isEmpty()) {
             CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
             result.complete(true);
             return result;
@@ -162,6 +167,7 @@ public class ConcreteDatabase implements Database {
         return stored.thenApply(t -> true);
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).get();
         return completeOnList(t, storer);
@@ -195,7 +201,15 @@ public class ConcreteDatabase implements Database {
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName())
                 .whereGreaterThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(valueGreaterEq))
-                .whereLessThan(Objects.requireNonNull(key), Objects.requireNonNull(valueLess))
+                .whereLessThan(key, Objects.requireNonNull(valueLess))
+                .get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName())
+                .whereGreaterThan(Objects.requireNonNull(key), Objects.requireNonNull(valueGreater))
+                .whereLessThanOrEqualTo(key, Objects.requireNonNull(valueLessEq))
                 .get();
         return completeOnList(t, storer);
     }

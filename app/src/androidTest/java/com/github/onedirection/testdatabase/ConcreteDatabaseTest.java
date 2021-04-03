@@ -3,6 +3,7 @@ package com.github.onedirection.testdatabase;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.Event;
+import com.github.onedirection.EventQueriesTest;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.geocoding.NamedCoordinates;
@@ -27,20 +28,6 @@ import static org.junit.Assert.assertTrue;
 public class ConcreteDatabaseTest {
 
     private static int count = 10;
-    private static int emptyCoordProportion = 2; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
-
-    private Event[] makeEvents(int count) {
-        Event[] l = new Event[count];
-        Random r = new Random();
-        for (int i = 0; i < count; ++i) {
-            if(r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
-                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city"+i, ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
-            } else {
-                l[i] = new Event(Id.generateRandom(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
-            }
-        }
-        return l;
-    }
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
@@ -54,7 +41,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void canStoreAndRetrieveAndRemoveEvents() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         ArrayList<Id> ids = new ArrayList<Id>();
         for (int i = 0; i < events.length; ++i) {
@@ -74,7 +61,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void containsOnEventObject() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         for (int i = 0; i < events.length; ++i) {
             Id id = db.store(events[i]).get();
@@ -94,7 +81,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void containsOnEventId() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         for (int i = 0; i < events.length; ++i) {
             Id id = db.store(events[i]).get();
@@ -114,7 +101,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void storeAllWorksJustLikeManyStores() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -139,7 +126,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void retrieveAllWorksJustLikeManyRetrieves() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -164,7 +151,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void retrieveOnFilterKeyQueryActsLikeRDB() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -184,8 +171,26 @@ public class ConcreteDatabaseTest {
     }
 
     @Test
+    public void sameIdOverridesEntry() throws ExecutionException, InterruptedException  {
+        Event[] events = EventQueriesTest.makeEvents(count);
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        Boolean stored = db.storeAll(Arrays.asList(events)).get();
+        assertTrue(stored);
+        Boolean stored2 = db.storeAll(Arrays.asList(events)).get();
+        assertTrue(stored);
+        List<Event> eventsInDb= db.retrieveAll(EventStorer.getInstance()).get();
+        assertEquals(events.length, eventsInDb.size());
+        for(int i = 0; i < events.length; ++i) {
+            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
+            assertEquals(events[i].getId(), id);
+            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+            assertFalse(contains);
+        }
+    }
+
+    @Test
     public void filterWhereGreaterFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -206,7 +211,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void filterWhereGreaterEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -227,7 +232,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void filterWhereLessFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -248,7 +253,7 @@ public class ConcreteDatabaseTest {
 
     @Test
     public void filterWhereLessEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        Event[] events = makeEvents(count);
+        Event[] events = EventQueriesTest.makeEvents(count);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
@@ -265,5 +270,35 @@ public class ConcreteDatabaseTest {
             Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
+    }
+
+    @Test
+    public void filterWhereGreaterEqLessFiltersLikeRDB() throws ExecutionException, InterruptedException {
+        ZonedDateTime s = ZonedDateTime.now();
+        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        Id stored = db.store(event).get();
+        assertTrue(stored.equals(event.getId()));
+        List<Event> e = db.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, event.getStartTime().minusHours(1).toEpochSecond(), event.getStartTime().plusHours(1).toEpochSecond(), EventStorer.getInstance()).get();
+        assertEquals(1, e.size());
+        Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+        assertEquals(event.getId(), id);
+        Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
+        assertFalse(contains);
+    }
+
+    @Test
+    public void filterWhereGreaterLessEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
+        ZonedDateTime s = ZonedDateTime.now();
+        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        Id stored = db.store(event).get();
+        assertTrue(stored.equals(event.getId()));
+        List<Event> e = db.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, event.getEndTime().minusHours(1).toEpochSecond(), event.getEndTime().toEpochSecond(), EventStorer.getInstance()).get();
+        assertEquals(1, e.size());
+        Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+        assertEquals(event.getId(), id);
+        Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
+        assertFalse(contains);
     }
 }

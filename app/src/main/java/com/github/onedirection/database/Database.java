@@ -4,6 +4,7 @@ import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.utils.Id;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface Database {
@@ -18,5 +19,7 @@ public interface Database {
 
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer);
 
+    public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore);
 
+    public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer);
 }
