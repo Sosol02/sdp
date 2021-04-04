@@ -146,8 +146,13 @@ public class ConcreteDatabase implements Database {
         return result;
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
-        if(Objects.requireNonNull(listToStore).isEmpty()) {
+        Objects.requireNonNull(listToStore);
+        for(T t : listToStore) {
+            Objects.requireNonNull(t);
+        }
+        if(listToStore.isEmpty()) {
             CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
             result.complete(true);
             return result;
@@ -162,19 +167,50 @@ public class ConcreteDatabase implements Database {
         return stored.thenApply(t -> true);
     }
 
+    @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
-
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).get();
-
         return completeOnList(t, storer);
     }
 
-    public <T extends Storable<T>> CompletableFuture<List<T>> retrieveOnFilterKey(String key, String value, Storer<T> storer) {
-
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
         Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
-
         return completeOnList(t, storer);
     }
 
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereGreaterThan(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
 
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereGreaterThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereLessThan(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName()).whereLessThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(value)).get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName())
+                .whereGreaterThanOrEqualTo(Objects.requireNonNull(key), Objects.requireNonNull(valueGreaterEq))
+                .whereLessThan(key, Objects.requireNonNull(valueLess))
+                .get();
+        return completeOnList(t, storer);
+    }
+
+    public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
+        Task<QuerySnapshot> t = db.collection(Objects.requireNonNull(storer).getCollection().getCollectionName())
+                .whereGreaterThan(Objects.requireNonNull(key), Objects.requireNonNull(valueGreater))
+                .whereLessThanOrEqualTo(key, Objects.requireNonNull(valueLessEq))
+                .get();
+        return completeOnList(t, storer);
+    }
 }
