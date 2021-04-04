@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,6 +33,7 @@ public class MarkerSymbolManager {
     private final MapFragment fragment;
 
     public MarkerSymbolManager(SymbolManager symbolManager, MapFragment fragment) {
+        Objects.requireNonNull(fragment);
         this.symbolManager = symbolManager;
         this.markers = new ArrayList<>();
         this.fragment = fragment;

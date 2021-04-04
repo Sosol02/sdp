@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MapFragment extends Fragment {
 
@@ -88,7 +89,8 @@ public class MapFragment extends Fragment {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    public void setBottomSheetEvent(Event event){
+    public void setBottomSheetEvent(Event event) {
+        Objects.requireNonNull(event);
         event_name.setText(event.getName());
         ZonedDateTime start=event.getStartTime();
         event_time_start.setText(String.format("%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
