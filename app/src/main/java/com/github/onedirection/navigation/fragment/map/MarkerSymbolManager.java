@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.github.onedirection.Event;
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.geocoding.NominatimGeocoding;
+import com.github.onedirection.utils.Pair;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
@@ -64,21 +65,21 @@ public class MarkerSymbolManager {
         return markers;
     }
 
-    public CompletableFuture<Symbol> addGeocodedEventMarker(@NonNull Event event) {
+    public CompletableFuture<Pair<Symbol, LatLng>> addGeocodedEventMarker(@NonNull Event event) {
         Optional<Coordinates> optCoords = event.getCoordinates();
         if (optCoords.isPresent()) {
             Coordinates coords = optCoords.get();
             LatLng latLng = new LatLng(coords.latitude, coords.longitude);
-            CompletableFuture<Symbol> future = new CompletableFuture<>();
-            future.complete(addEventMarkerAt(event, latLng));
+            CompletableFuture<Pair<Symbol, LatLng>> future = new CompletableFuture<>();
+            future.complete(new Pair<>(addEventMarkerAt(event, latLng), latLng));
             return future;
         } else {
-            CompletableFuture<Symbol> future = new CompletableFuture<>();
+            CompletableFuture<Pair<Symbol, LatLng>> future = new CompletableFuture<>();
             NominatimGeocoding geocoding = new NominatimGeocoding(fragment.getContext());
             geocoding.getBestNamedCoordinates(event.getLocationName())
                     .thenApply(namedCoordinates -> {
                         LatLng latLng = new LatLng(namedCoordinates.latitude, namedCoordinates.longitude);
-                        fragment.getActivity().runOnUiThread(() -> future.complete(addEventMarkerAt(event, latLng)));
+                        fragment.getActivity().runOnUiThread(() -> future.complete(new Pair<>(addEventMarkerAt(event, latLng), latLng)));
                         return null;
                     }).exceptionally(future::completeExceptionally);
 

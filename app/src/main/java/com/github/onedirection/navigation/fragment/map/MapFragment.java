@@ -133,12 +133,11 @@ public class MapFragment extends Fragment {
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
         this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
 
-        // /*
+        /*
         Event event = new Event(Id.generateRandom(), "Test event", "Paris",
                 ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
                 ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
-        // */
-
         markerSymbolManager.addGeocodedEventMarker(event).thenApply(symbol -> Log.d("Debug", "Symbol: " + symbol + " Map: " + markerSymbolManager.getEventMap()));
+        // */
     }
 }
