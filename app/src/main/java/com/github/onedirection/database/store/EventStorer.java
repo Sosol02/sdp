@@ -61,7 +61,7 @@ public class EventStorer extends Storer<Event> {
     }
 
     @Override
-    public Event mapToStorable(Map m) {
+    public Event mapToStorable(Map<String, Object> m) {
         Objects.requireNonNull(m, "Argument is null");
 
         String id = (String) m.get(KEY_ID);
@@ -69,8 +69,8 @@ public class EventStorer extends Storer<Event> {
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
         String locationName = (String) m.get(KEY_COORD_NAME);
-        long epochStartTime = (long) m.get(KEY_EPOCH_START_TIME);
-        long epochEndTime = (long) m.get(KEY_EPOCH_END_TIME);
+        long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
+        long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
 
         if(coordLatitude == null || coordLongitude == null) {
             return new Event(new Id(UUID.fromString(id)), name, locationName,

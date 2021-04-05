@@ -44,5 +44,9 @@
     <string name= "popup_title"> "" </string>
     <string name= "cancel"> cancel </string>
     <string name= "day_select_dialog_tag">daySelectedDialog</string>
+    <string name="fragment_map_event_name">Event name</string>
+    <string name="fragment_map_event_time_start">Start time</string>
+    <string name="fragment_map_event_time_end">End time</string>
+    <string name="fragment_map_event_location">Location</string>
 
 </resources>
