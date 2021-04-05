@@ -65,7 +65,7 @@ public class MapFragment extends Fragment {
                     markerSymbolManager.removeMarker(clickSymbol);
                 clickSymbol = markerSymbolManager.addMarker(point);
                 return false;
-            }); // */
+            });
         });
 
         View bottomSheet = view.findViewById(R.id.fragment_map_bottom_sheet);
@@ -134,12 +134,5 @@ public class MapFragment extends Fragment {
         styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
         this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
-
-        /*
-        Event event = new Event(Id.generateRandom(), "Test event", "Paris",
-                ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
-                ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
-        markerSymbolManager.addGeocodedEventMarker(event).thenApply(symbol -> Log.d("Debug", "Symbol: " + symbol + " Map: " + markerSymbolManager.getEventMap()));
-        // */
     }
 }
