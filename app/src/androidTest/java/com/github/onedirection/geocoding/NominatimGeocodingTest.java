@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.github.onedirection.utils.Monads;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -36,6 +38,7 @@ public class NominatimGeocodingTest {
 
     private static final String GARBAGE_LOCATION_NAME = "jdfahgfoqaghegaghufagipdhgaofdghaiodgfhoahahid";
     private static final Coordinates GARBAGE_LOCATION_COORDINATEs = new Coordinates(-61.74, -133.41);
+    private static final int QUERY_COUNT = 20;
 
     private void assertValidResultForEPFL(NamedCoordinates coordinates, boolean withName){
         assertTrue(EPFL_COORDINATES.areCloseTo(coordinates, EPFL_COORDINATES_PREC));
@@ -62,10 +65,8 @@ public class NominatimGeocodingTest {
     @Test
     public void allGeocodingResultsHaveExpectedResultsForEPFL(){
         try {
-            final int queryCount = 20;
-
-            List<NamedCoordinates> results = GEOCODING.getNamedCoordinates(EPFL_QUERY, queryCount).get();
-            assertThat(results.size(), is(lessThanOrEqualTo(queryCount)));
+            List<NamedCoordinates> results = GEOCODING.getNamedCoordinates(EPFL_QUERY, QUERY_COUNT).get();
+            assertThat(results.size(), is(lessThanOrEqualTo(QUERY_COUNT)));
             results.forEach(r -> assertValidResultForEPFL(r, true));
         }
         catch(Exception e) {
@@ -126,6 +127,10 @@ public class NominatimGeocodingTest {
         assertThat(
                 GEOCODING.getBestCoordinates(EPFL_QUERY).get(),
                 is(GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get().dropName())
+        );
+        assertThat(
+                GEOCODING.getCoordinates(EPFL_QUERY, QUERY_COUNT).get(),
+                is(Monads.map(GEOCODING.getNamedCoordinates(EPFL_QUERY, QUERY_COUNT).get(), NamedCoordinates::dropName))
         );
     }
 }
