@@ -14,13 +14,15 @@ import com.github.onedirection.utils.Monads;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /** OpenStreetMap's geocoding service. */
 public final class NominatimGeocoding implements GeocodingService {
-    private static final String SEARCH_QUERY_FORMAT = "https://nominatim.openstreetmap.org/search?format=json&q=%s";
+    private static final String SEARCH_QUERY_FORMAT = "https://nominatim.openstreetmap.org/search?limit=%s&format=json&q=%s";
     private static final String REVERSE_QUERY_FORMAT = "https://nominatim.openstreetmap.org/reverse?format=json&lat=%s&lon=%s";
 
     private static final String NAME_FIELD = "display_name";
@@ -31,6 +33,8 @@ public final class NominatimGeocoding implements GeocodingService {
 
     private final RequestQueue requestQueue;
 
+    public static final int MAX_RESULTS = 50;
+
     public NominatimGeocoding(RequestQueue requestQueue){
         this.requestQueue = requestQueue;
     }
@@ -39,8 +43,8 @@ public final class NominatimGeocoding implements GeocodingService {
         this(Volley.newRequestQueue(ctx));
     }
 
-    private static String generateSearchRequestURL(String query){
-        return String.format(SEARCH_QUERY_FORMAT, HTTP.encode(query));
+    private static String generateSearchRequestURL(String query, int countLimit){
+        return String.format(SEARCH_QUERY_FORMAT, countLimit, HTTP.encode(query));
     }
 
     private static String generateReverseRequestURL(Coordinates coordinates){
@@ -66,6 +70,17 @@ public final class NominatimGeocoding implements GeocodingService {
             Log.d(LOGCAT_TAG, "Parsing failed");
             return Optional.empty();
         }
+    }
+
+    private static List<NamedCoordinates> parseResult(JSONArray json){
+        List<NamedCoordinates> result = new ArrayList<>();
+        for(int i = 0; i < json.length(); ++i){
+            try {
+                result.add(parseResult(json.getJSONObject(i)).get());
+            }
+            catch(Exception ignored){}
+        }
+        return result;
     }
 
     private CompletableFuture<JSONArray> sendArrayRequest(String url){
@@ -101,8 +116,17 @@ public final class NominatimGeocoding implements GeocodingService {
     @Override
     public CompletableFuture<NamedCoordinates> getBestNamedCoordinates(String locationName) {
         return Monads.flatten(
-                sendArrayRequest(generateSearchRequestURL(locationName)).thenApply(r -> parseResult(r, 0))
+                sendArrayRequest(generateSearchRequestURL(locationName, 1)).thenApply(r -> parseResult(r, 0))
         );
+    }
+
+    @Override
+    public CompletableFuture<List<NamedCoordinates>> getNamedCoordinates(String locationName, int count) {
+        if(count > MAX_RESULTS){
+            Log.w(LOGCAT_TAG, "The specified number of results is over Nominatim's limit (which is 50).");
+        }
+
+        return sendArrayRequest(generateSearchRequestURL(locationName, count)).thenApply(NominatimGeocoding::parseResult);
     }
 
     @Override
