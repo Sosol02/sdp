@@ -125,6 +125,9 @@ public final class NominatimGeocoding implements GeocodingService {
         if(count > MAX_RESULTS){
             Log.w(LOGCAT_TAG, "The specified number of results is over Nominatim's limit (which is 50).");
         }
+        else if(count < 1){
+            throw new IllegalArgumentException("Count cannot be below 1.");
+        }
 
         return sendArrayRequest(generateSearchRequestURL(locationName, count)).thenApply(NominatimGeocoding::parseResult);
     }
