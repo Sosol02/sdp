@@ -15,9 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.github.onedirection.geolocation.GeocodingService;
-import com.github.onedirection.geolocation.LocationProvider;
+import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.NominatimGeocoding;
 
 import java.util.Optional;
@@ -85,50 +86,18 @@ public class EventCreatorGeolocationFragment extends Fragment {
         });
 
         // Click listeners
-        getView().findViewById(R.id.buttonSearchLocation).setOnClickListener(v -> {
-            lastRequest.cancel(true);
-            requestLoading.setVisibility(View.VISIBLE);
-
-            model.incrementLoad();
-            lastRequest = geocoding.getBestNamedCoordinates(locationQuery.getText().toString()).whenComplete(
-                    (coordinates, throwable) -> {
-                        if (coordinates != null) {
-                            model.coordinates.postValue(Optional.of(coordinates));
-                            requestLoading.setVisibility(View.INVISIBLE);
-                        }
-                        if (!(throwable instanceof CancellationException)) {
-                            requestLoading.setVisibility(View.INVISIBLE);
-                        }
-
-                        model.decrementLoad();
-                    }
-            );
-        });
+        getView().findViewById(R.id.buttonSearchLocation).setOnClickListener(v ->
+            setCurrentRequest(
+                    generateGeocodingRequest(locationQuery.getText().toString())
+            )
+        );;
 
         getView().findViewById(R.id.buttonUseCurrentLocation).setOnClickListener(v -> {
-            lastRequest.cancel(true);
-            requestLoading.setVisibility(View.VISIBLE);
-
-            model.incrementLoad();
-            lastRequest = locationProvider.getNextLocation().whenComplete((coordinates, throwable) -> {
-                if (coordinates != null) {
-                    lastRequest = geocoding.getBestNamedCoordinates(coordinates).whenComplete(
-                            (namedCoordinates, throwable1) -> {
-                                if (namedCoordinates != null) {
-                                    model.coordinates.postValue(Optional.of(namedCoordinates));
-                                    requestLoading.setVisibility(View.INVISIBLE);
-                                }
-                                model.decrementLoad();
-                            }
-                    );
-                } else {
-                    if (!(throwable instanceof CancellationException)) {
-                        requestLoading.setVisibility(View.INVISIBLE);
-                    }
-
-                    model.decrementLoad();
-                }
-            });
+            setCurrentRequest(
+                    locationProvider.getNextLocation()
+                        .thenAccept(coordinates ->
+                                setCurrentRequest(generateGeocodingRequest(coordinates)))
+            );
         });
 
         cancel.setOnClickListener(v -> gotoMain());
@@ -137,6 +106,39 @@ public class EventCreatorGeolocationFragment extends Fragment {
             model.useGeolocation.postValue(true);
             gotoMain();
         });
+    }
+
+    synchronized private void setCurrentRequest(CompletableFuture<?> request) {
+        lastRequest.cancel(true);
+        requestLoading.setVisibility(View.VISIBLE);
+
+        model.incrementLoad();
+        lastRequest = request.whenComplete((o, t) -> {
+            if(!(t instanceof CancellationException)){
+                requestLoading.setVisibility(View.INVISIBLE);
+            }
+            model.decrementLoad();
+        });
+    }
+
+    private CompletableFuture<NamedCoordinates> generateGeocodingRequest(String query){
+        return addGeocodingCallbacks(geocoding.getBestNamedCoordinates(query));
+    }
+
+    private CompletableFuture<NamedCoordinates> generateGeocodingRequest(Coordinates query){
+        return addGeocodingCallbacks(geocoding.getBestNamedCoordinates(query));
+    }
+
+    private CompletableFuture<NamedCoordinates> addGeocodingCallbacks(CompletableFuture<NamedCoordinates> future){
+        return future
+            .whenComplete((coordinates, throwable) -> {
+                if(coordinates != null) {
+                    model.coordinates.postValue(Optional.of(coordinates));
+                }
+                else{
+                    model.coordinates.postValue(Optional.empty());
+                }
+            });
     }
 
     private void gotoMain() {
