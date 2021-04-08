@@ -123,12 +123,6 @@ public class EventCreator extends DeviceLocationProvider {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d("Testing", "Activitied " + requestCode + " " + Arrays.toString(permissions) + " " + Arrays.toString(grantResults));
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
     @VisibleForTesting
     public IdlingResource getIdlingResource(){
         return model.idling;

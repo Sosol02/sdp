@@ -77,10 +77,10 @@ public class EventCreatorTest {
 
     private IdlingResource idling;
 
-    @Rule
-    public GrantPermissionRule mGrantPermissionRule =
-            GrantPermissionRule.grant(
-                    "android.permission.ACCESS_FINE_LOCATION");
+//    @Rule
+//    public GrantPermissionRule mGrantPermissionRule =
+//            GrantPermissionRule.grant(
+//                    "android.permission.ACCESS_FINE_LOCATION");
 
     @Before
     public void setUp() {

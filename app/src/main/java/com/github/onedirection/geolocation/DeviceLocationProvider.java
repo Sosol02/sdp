@@ -8,10 +8,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -38,16 +36,24 @@ import static com.github.onedirection.utils.ObserverPattern.Observer;
 public abstract class DeviceLocationProvider extends AppCompatActivity implements Observable<Coordinates>, LocationProvider {
 
     public final CompletableFuture<Coordinates> getNextLocation() {
-        startLocationTracking();
         CompletableFuture<Coordinates> result = new CompletableFuture<>();
 
-        addObserver(new Observer<Coordinates>() {
-            @Override
-            public void onObservableUpdate(Observable<Coordinates> subject, Coordinates value) {
-                result.complete(value);
-                subject.removeObserver(this);
+        startLocationTracking().whenComplete((aBoolean, throwable) -> {
+            if(aBoolean != null && aBoolean){
+                addObserver(new Observer<Coordinates>() {
+                    @Override
+                    public void onObservableUpdate(Observable<Coordinates> subject, Coordinates value) {
+                        result.complete(value);
+                        subject.removeObserver(this);
+                    }
+                });
+            }
+            else{
+                result.completeExceptionally(new IllegalStateException("Could not track location."));
             }
         });
+
+
         return result;
     }
 
@@ -86,7 +92,7 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
                 }
             }
         };
-        permissionRequestResult = new CompletableFuture<>();
+        permissionRequestResult = CompletableFuture.completedFuture(false);
     }
 
 
@@ -97,6 +103,10 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
     @Override
     @SuppressLint("MissingPermission")
     public final CompletableFuture<Boolean> startLocationTracking() {
+        if(!permissionRequestResult.isDone())
+            throw new IllegalStateException("Location tracking is already starting.");
+
+        permissionRequestResult = new CompletableFuture<>();
         requestFineLocationPermission();
         return permissionRequestResult.whenComplete( (permission, throwable) -> {
                 if(permission){
@@ -110,19 +120,18 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
 
     @Override
     public final Coordinates getLastLocation() {
+        if(lastLocation == null){
+            throw new IllegalStateException("There is no last location currently");
+        }
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
-
-//    public CompletableFuture<Boolean> startLocationTracking() {
-//        return requestFineLocationPermission().whenCompleteAsync((aBoolean, throwable) -> createLocationRequest());
-//    }
 
     private void requestFineLocationPermission() {
         if (!fineLocationUsageIsAllowed()) {
             requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
         } else{
-            permissionRequestResult.obtrudeValue(true);
+            permissionRequestResult.complete(true);
         }
     }
 
@@ -132,10 +141,11 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         if(requestCode == R.integer.location_permission_code){
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                    permissionRequestResult.obtrudeValue(true);
+                    permissionRequestResult.complete(true);
                 }
             }
         }
+
         // Will be set only if not obtruded earlier
         permissionRequestResult.complete(false);
     }
@@ -145,7 +155,6 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
     }
 
     private CompletableFuture<Boolean> createLocationRequest() {
-        Log.d("Testing", "Request created");
         CompletableFuture<Boolean> result = new CompletableFuture<>();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
@@ -153,33 +162,11 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
         task.addOnSuccessListener(
                 this,
-                locationSettingsResponse -> {
-                    result.complete(true);
-                });
+                locationSettingsResponse ->
+                    result.complete(locationSettingsResponse.getLocationSettingsStates().isLocationUsable())
+        );
 
-        task.addOnFailureListener(this, e -> {
-            if (e instanceof ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    ResolvableApiException resolvable = (ResolvableApiException) e;
-                    resolvable.startResolutionForResult(this, R.integer.request_change_settings);
-                    // TODO: We should most likely do something more (onActivityResult ?)
-                    createLocationRequest().whenComplete((aBoolean, throwable) -> {
-                        if(aBoolean != null){
-                            result.complete(aBoolean);
-                        }
-                        else{
-                            result.completeExceptionally(throwable);
-                        }
-                    });
-                } catch (IntentSender.SendIntentException sendEx) {
-                    result.complete(false);
-                }
-            }
-        });
+        task.addOnFailureListener(this, e -> result.complete(false));
 
         return result;
     }

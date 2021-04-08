@@ -96,6 +96,10 @@ public class EventCreatorGeolocationFragment extends Fragment {
                             model.coordinates.postValue(Optional.of(coordinates));
                             requestLoading.setVisibility(View.INVISIBLE);
                         }
+                        if (!(throwable instanceof CancellationException)) {
+                            requestLoading.setVisibility(View.INVISIBLE);
+                        }
+
                         model.decrementLoad();
                     }
             );
