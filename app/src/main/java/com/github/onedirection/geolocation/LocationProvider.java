@@ -6,13 +6,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface LocationProvider {
 
-    static CompletableFuture<Coordinates> getCurrentLocation(Activity callingActivity) {
-        return DeviceLocationProvider.getCurrentLocation(callingActivity);
-    }
 
-    CompletableFuture<Boolean> startLocationTracking();
-    boolean fineLocationUsageIsAllowed();
+    //CompletableFuture<Boolean> startLocationTracking();
     Coordinates getLastLocation();
-    CompletableFuture<Boolean> requestFineLocationPermission();
-
+    CompletableFuture startLocationTracking();
 }
