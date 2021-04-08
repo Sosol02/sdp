@@ -75,6 +75,7 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                lastLocation = locationResult.getLastLocation();
                 notifyOfLocationChange();
             }
             @Override
