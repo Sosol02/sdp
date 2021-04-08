@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.github.onedirection.geolocation.GeocodingService;
 import com.github.onedirection.geolocation.LocationProvider;
 import com.github.onedirection.geolocation.NominatimGeocoding;
@@ -26,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 public class EventCreatorGeolocationFragment extends Fragment {
 
     private static final String NO_LOCATION = "None";
+
+    private DeviceLocationProvider locationProvider;
 
     private EventCreatorViewModel model;
     private GeocodingService geocoding;
@@ -50,6 +53,8 @@ public class EventCreatorGeolocationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.locationProvider = (DeviceLocationProvider) requireActivity();
 
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
@@ -101,7 +106,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
             requestLoading.setVisibility(View.VISIBLE);
 
             model.incrementLoad();
-            lastRequest = LocationProvider.getCurrentLocation(requireActivity()).whenComplete((coordinates, throwable) -> {
+            lastRequest = locationProvider.getNextLocation().whenComplete((coordinates, throwable) -> {
                 if (coordinates != null) {
                     lastRequest = geocoding.getBestNamedCoordinates(coordinates).whenComplete(
                             (namedCoordinates, throwable1) -> {

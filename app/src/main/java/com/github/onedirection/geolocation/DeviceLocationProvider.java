@@ -2,14 +2,17 @@ package com.github.onedirection.geolocation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
@@ -32,26 +35,21 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public abstract class DeviceLocationProvider extends Activity implements Observable<Coordinates>, LocationProvider {
+public abstract class DeviceLocationProvider extends AppCompatActivity implements Observable<Coordinates>, LocationProvider {
 
-//    public static CompletableFuture<Coordinates> getCurrentLocation(Activity callingActivity) {
-//        CompletableFuture<Coordinates> result = new CompletableFuture<>();
-//
-//        DeviceLocationProvider self = new DeviceLocationProvider(callingActivity);
-//        self.addObserver(new Observer<Coordinates>() {
-//            @Override
-//            public void onObservableUpdate(Observable<Coordinates> source, Coordinates coords) {
-//                self.removeObserver(this);
-//                result.complete(coords);
-//            }
-//        });
-//        self.startLocationTracking().thenAccept(b -> {
-//            if(!b){
-//                result.completeExceptionally(new RuntimeException("Could not start location tracking."));
-//            }
-//        });
-//        return result;
-//    }
+    public final CompletableFuture<Coordinates> getNextLocation() {
+        startLocationTracking();
+        CompletableFuture<Coordinates> result = new CompletableFuture<>();
+
+        addObserver(new Observer<Coordinates>() {
+            @Override
+            public void onObservableUpdate(Observable<Coordinates> subject, Coordinates value) {
+                result.complete(value);
+                subject.removeObserver(this);
+            }
+        });
+        return result;
+    }
 
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
@@ -60,14 +58,16 @@ public abstract class DeviceLocationProvider extends Activity implements Observa
         LOCATION_REQUEST.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    private final FusedLocationProviderClient fusedLocationClient;
-    private final ArrayList<ObserverPattern.Observer<Coordinates>> observers;
+    private FusedLocationProviderClient fusedLocationClient;
+    private ArrayList<ObserverPattern.Observer<Coordinates>> observers;
     private Location lastLocation;
     private LocationCallback locationCallback;
     private CompletableFuture<Boolean> permissionRequestResult;
 
 
-    public DeviceLocationProvider() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         observers =  new ArrayList<>();
         lastLocation = null;
@@ -85,7 +85,7 @@ public abstract class DeviceLocationProvider extends Activity implements Observa
                 }
             }
         };
-        permissionRequestResult = null;
+        permissionRequestResult = new CompletableFuture<>();
     }
 
 
@@ -95,18 +95,14 @@ public abstract class DeviceLocationProvider extends Activity implements Observa
      */
     @Override
     @SuppressLint("MissingPermission")
-    public final CompletableFuture startLocationTracking() {
+    public final CompletableFuture<Boolean> startLocationTracking() {
         requestFineLocationPermission();
-        return permissionRequestResult.thenApply(permission -> {
+        return permissionRequestResult.whenComplete( (permission, throwable) -> {
                 if(permission){
                     fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
                             locationCallback,
                             Looper.getMainLooper());
                     createLocationRequest();
-                    return CompletableFuture.completedFuture(true);
-                }
-                else{
-                    return CompletableFuture.completedFuture(false);
                 }
         });
     }
@@ -125,24 +121,22 @@ public abstract class DeviceLocationProvider extends Activity implements Observa
         if (!fineLocationUsageIsAllowed()) {
             requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
         } else{
-            permissionRequestResult = CompletableFuture.completedFuture(true);
+            permissionRequestResult.obtrudeValue(true);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionRequestResult = new CompletableFuture<Boolean>();
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == R.integer.location_permission_code){
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                    permissionRequestResult.complete(true);
-                }
-                else{
-                    permissionRequestResult.complete(false);
+                    permissionRequestResult.obtrudeValue(true);
                 }
             }
         }
+        // Will be set only if not obtruded earlier
+        permissionRequestResult.complete(false);
     }
 
     private boolean fineLocationUsageIsAllowed() {

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.R;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ import java.util.Arrays;
  * A date can also be passed to specify the initial date
  * of the event. Ignored if an event is also given.
  */
-public class EventCreator extends AppCompatActivity {
+public class EventCreator extends DeviceLocationProvider {
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final String EXTRA_DATE = "DATE";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
