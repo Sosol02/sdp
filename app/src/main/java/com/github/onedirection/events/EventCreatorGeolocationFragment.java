@@ -1,6 +1,7 @@
 package com.github.onedirection.events;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,9 +95,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
         getView().findViewById(R.id.buttonUseCurrentLocation).setOnClickListener(v -> {
             setCurrentRequest(
-                    locationProvider.getNextLocation()
-                        .thenAccept(coordinates ->
-                                setCurrentRequest(generateGeocodingRequest(coordinates)))
+                    locationProvider.getNextLocation().thenCompose(this::generateGeocodingRequest)
             );
         });
 
