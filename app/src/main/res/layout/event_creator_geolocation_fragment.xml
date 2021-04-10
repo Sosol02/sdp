@@ -13,14 +13,15 @@
         android:paddingStart="40dp"
         android:paddingTop="10dp"
         android:paddingEnd="40dp"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        tools:ignore="UselessParent">
 
 
         <TextView
             android:id="@+id/textEventCreatorTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Set event location"
+            android:text="@string/set_event_location"
             android:textSize="30sp"
             android:textStyle="bold" />
 
@@ -32,27 +33,28 @@
             android:id="@+id/textLocationSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search:" />
+            android:text="@string/search" />
 
         <EditText
             android:id="@+id/editLocationQuery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Location name"
-            android:inputType="textPersonName" />
+            android:hint="@string/location_name"
+            android:inputType="textPersonName"
+            android:importantForAutofill="no" />
 
         <Button
             android:id="@+id/buttonSearchLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search location" />
+            android:text="@string/search_location" />
 
         <Button
             android:id="@+id/buttonUseCurrentLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Use current location" />
+            android:text="@string/use_current_location" />
 
         <Space
             android:layout_width="match_parent"
@@ -62,7 +64,7 @@
             android:id="@+id/textLocationResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Result:" />
+            android:text="@string/result" />
 
         <TextView
             android:id="@+id/textSelectedLocation"
@@ -73,7 +75,8 @@
             android:id="@+id/textSelectedLocationFull"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="8sp" />
+            android:textSize="8sp"
+            tools:ignore="SmallSp" />
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -86,12 +89,12 @@
             android:id="@+id/buttonCancelGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/buttonSetGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set geolocation" />
+            android:text="@string/set_geolocation" />
     </LinearLayout>
 </FrameLayout>
