@@ -109,7 +109,6 @@ public class Event implements Serializable, Storable<Event> {
 
     public String getLocationName(){
         return locationName;
-
     }
 
     public Optional<NamedCoordinates> getLocation() {
