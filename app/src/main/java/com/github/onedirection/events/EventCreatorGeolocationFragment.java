@@ -36,7 +36,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
     private GeocodingService geocoding;
 
     private ProgressBar requestLoading;
-    private CompletableFuture<?> lastRequest;
+    private CompletableFuture<NamedCoordinates> lastRequest;
 
     private EditText locationQuery;
     private TextView locationSelected;
@@ -110,7 +110,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
         });
     }
 
-    synchronized private void setCurrentRequest(CompletableFuture<?> request) {
+    synchronized private void setCurrentRequest(CompletableFuture<NamedCoordinates> request) {
         lastRequest.cancel(true);
         requestLoading.setVisibility(View.VISIBLE);
 
@@ -135,10 +135,10 @@ public class EventCreatorGeolocationFragment extends Fragment {
         return future
             .whenComplete((coordinates, throwable) -> {
                 if(coordinates != null) {
-                    model.coordinates.postValue(Optional.of(coordinates));
+                    model.coordinates.setValue(Optional.of(coordinates));
                 }
                 else{
-                    model.coordinates.postValue(Optional.empty());
+                    model.coordinates.setValue(Optional.empty());
                 }
             });
     }
