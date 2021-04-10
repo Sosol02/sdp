@@ -57,6 +57,9 @@ public class EventCreatorGeolocationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.locationProvider = (DeviceLocationProvider) requireActivity();
+        if(this.locationProvider.fineLocationUsageIsAllowed()){
+            this.locationProvider.startLocationTracking();
+        }
 
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
@@ -95,7 +98,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
         getView().findViewById(R.id.buttonUseCurrentLocation).setOnClickListener(v -> {
             setCurrentRequest(
-                    locationProvider.getNextLocation().thenCompose(this::generateGeocodingRequest)
+                    locationProvider.getCurrentLocation().thenCompose(this::generateGeocodingRequest)
             );
         });
 

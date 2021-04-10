@@ -57,6 +57,15 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         return result;
     }
 
+    public final CompletableFuture<Coordinates> getCurrentLocation() {
+        if(lastLocation == null){
+            return getNextLocation();
+        }
+        else{
+            return CompletableFuture.completedFuture(getLastLocation());
+        }
+    }
+
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
         LOCATION_REQUEST.setInterval(10000);
@@ -150,7 +159,7 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         permissionRequestResult.complete(false);
     }
 
-    private boolean fineLocationUsageIsAllowed() {
+    public boolean fineLocationUsageIsAllowed() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
