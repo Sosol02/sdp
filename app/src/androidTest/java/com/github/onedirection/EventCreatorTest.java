@@ -29,6 +29,7 @@ import com.github.onedirection.utils.Id;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -144,16 +145,22 @@ public class EventCreatorTest {
         onView(withId(R.id.buttonSetGeolocation)).check(matches(not(isEnabled())));
     }
 
-    //@Test
+    @Test
     public void geolocationTabIsNotOpenedIfGeolocationAlreadySet(){
-        onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
-        testIsGeolocationFragment();
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
+        EventCreator.putEventExtra(intent, EVENT);
 
-        onView(withId(R.id.buttonUseCurrentLocation)).perform(scrollTo(), click());
-        onView(withId(R.id.buttonSetGeolocation)).perform(scrollTo(), click());
+        try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
+            testIsMainFragment();
+            onView(withId(R.id.checkGeolocation)).check(matches(isChecked()));
+            onView(withId(R.id.buttonGotoGeolocation)).perform(scrollTo(), click());
+            testIsGeolocationFragment();
 
-        onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click(), click());
-        testIsMainFragment();
+            onView(withId(R.id.buttonSetGeolocation)).perform(scrollTo(), click());
+
+            onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click(), click());
+            testIsMainFragment();
+        }
     }
 
     @Test
@@ -167,7 +174,8 @@ public class EventCreatorTest {
         onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(containsString(EPFL_CANTON))));
     }
 
-    //@Test
+    @Ignore("Cirrus' reject")
+    @Test
     public void phoneLocationCanBeUsed() {
         List<String> expected = List.of("lat", "lon");
 
