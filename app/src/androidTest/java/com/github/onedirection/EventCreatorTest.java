@@ -23,6 +23,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
@@ -59,7 +61,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.junit.Assert.assertThat;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -218,6 +222,15 @@ public class EventCreatorTest {
 
             onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(EVENT.getLocation().get().toString())));
         }
+    }
+
+
+    @Test
+    public void phoneLocationCanBeUsedWithoutUI() throws ExecutionException, InterruptedException {
+        final DeviceLocationProvider[] testClass = new DeviceLocationProvider/*The array is so that it works*/[1];
+        ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProvider)activity);
+        testClass[0].startLocationTracking().get();
+        assertThat(testClass[0].getNextLocation().get(), not(nullValue()));
     }
 }
 
