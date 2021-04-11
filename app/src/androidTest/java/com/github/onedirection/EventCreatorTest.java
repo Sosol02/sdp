@@ -23,9 +23,11 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
+import com.github.onedirection.utils.ObserverPattern;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -230,7 +232,13 @@ public class EventCreatorTest {
         final DeviceLocationProvider[] testClass = new DeviceLocationProvider/*The array is so that it works*/[1];
         ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProvider)activity);
 
-        assertThat(testClass[0].addObserver((subject, value) -> {}), is(true));
+        ObserverPattern.Observer<Coordinates> observer = (subject, value) -> {};
+
+        assertThat(testClass[0].addObserver(observer), is(true));
+        assertThat(testClass[0].removeObserver(observer), is(true));
+
+        // For some reason, the location is never updated on cirrus, so we can't
+        // test it...
         assertThat(testClass[0].startLocationTracking().get(), not(nullValue()));
         try {
             testClass[0].getLastLocation();
