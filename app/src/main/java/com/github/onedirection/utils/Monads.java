@@ -2,6 +2,7 @@ package com.github.onedirection.utils;
 
 import com.google.android.gms.tasks.Task;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +24,13 @@ public final class Monads {
     }
 
     public static <T> CompletableFuture<T> toFuture(Optional<T> m){
-        return CompletableFuture.supplyAsync(() -> m.get());
+        CompletableFuture<T> result = new CompletableFuture<>();
+        if(m.isPresent()){
+            result.complete(m.get());
+        }
+        else {
+            result.completeExceptionally(new NoSuchElementException("The provided optional was empty"));
+        }
+        return result;
     }
 }
