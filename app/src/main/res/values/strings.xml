@@ -57,5 +57,6 @@
     <string name="use_current_location">Use current location</string>
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
+    <string name="use_geolocation">Use geolocation</string>
 
 </resources>

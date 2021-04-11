@@ -42,7 +42,7 @@
             android:id="@+id/checkGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Use geolocation" />
+            android:text="@string/use_geolocation" />
 
         <EditText
             android:id="@+id/editEventLocationName"
@@ -57,13 +57,8 @@
             android:id="@+id/buttonGotoGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set geolocation"
+            android:text="@string/set_geolocation"
             android:visibility="gone" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" />
 
         <LinearLayout
             style="?android:attr/buttonBarStyle"
