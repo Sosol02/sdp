@@ -229,8 +229,15 @@ public class EventCreatorTest {
     public void phoneLocationCanBeUsedWithoutUI() throws ExecutionException, InterruptedException {
         final DeviceLocationProvider[] testClass = new DeviceLocationProvider/*The array is so that it works*/[1];
         ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProvider)activity);
-        testClass[0].startLocationTracking().get();
-        assertThat(testClass[0].getNextLocation().get(), not(nullValue()));
+
+        assertThat(testClass[0].addObserver((subject, value) -> {}), is(true));
+        assertThat(testClass[0].startLocationTracking().get(), not(nullValue()));
+        try {
+            testClass[0].getLastLocation();
+        }
+        catch(Exception e){
+            assertThat(e, is(instanceOf(IllegalStateException.class)));
+        }
     }
 }
 
