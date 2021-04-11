@@ -9,8 +9,13 @@ import com.github.onedirection.utils.Id;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,31 +30,40 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
+    final private Instant recurringPeriod;
 
     /**
      * Smallest time unit recorded inside the event.
      */
     final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
 
-    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime) {
+    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Instant> recurringPeriod) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.locationName = Objects.requireNonNull(locationName);
         this.location = Objects.requireNonNull(location).orElse(null);
         this.startTime = Objects.requireNonNull(startTime).truncatedTo(TIME_PRECISION);
         this.endTime = Objects.requireNonNull(endTime).truncatedTo(TIME_PRECISION);
-
+        this.recurringPeriod = Objects.requireNonNull(recurringPeriod).orElse(null);
         if (this.startTime.until(this.endTime, TIME_PRECISION) < 0) {
             throw new IllegalArgumentException("The end date should be later than the start date.");
         }
     }
 
     public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime) {
-        this(id, name, locationName, Optional.of(location), startTime, endTime);
+        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.empty());
     }
 
     public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime) {
-        this(id, name, locationName, Optional.empty(), startTime, endTime);
+        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.empty());
+    }
+
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) {
+        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.of(recurringPeriod));
+    }
+
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) {
+        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.of(recurringPeriod));
     }
 
     /**
@@ -69,28 +83,47 @@ public class Event implements Serializable, Storable<Event> {
                 Objects.requireNonNull(location).name,
                 Optional.of(location.dropName()),
                 startTime,
-                endTime
+                endTime,
+                Optional.empty()
+        );
+    }
+
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) throws IllegalArgumentException {
+        this(
+                id,
+                name,
+                Objects.requireNonNull(location).name,
+                Optional.of(location.dropName()),
+                startTime,
+                endTime,
+                Optional.of(recurringPeriod)
         );
     }
 
     public Event setName(String new_value) {
-        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, location, startTime, endTime);
+        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, location, startTime, endTime, recurringPeriod);
     }
 
     public Event setLocation(NamedCoordinates new_value) {
-        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime);
+        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, recurringPeriod);
     }
 
     public Event setStartTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)
                 ? this
-                : new Event(id, name, locationName, location, new_value, endTime);
+                : new Event(id, name, locationName, location, new_value, endTime, recurringPeriod);
     }
 
     public Event setEndTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)
                 ? this
-                : new Event(id, name, locationName, location, startTime, new_value);
+                : new Event(id, name, locationName, location, startTime, new_value, recurringPeriod);
+    }
+
+    public Event setRecurringPeriod(Instant period) {
+        return Objects.requireNonNull(period).equals(recurringPeriod)
+                ? this
+                : new Event(id, name, locationName, location,  startTime, endTime, period);
     }
 
     @Override
@@ -132,6 +165,31 @@ public class Event implements Serializable, Storable<Event> {
         return Duration.between(startTime, endTime);
     }
 
+    public boolean isRecurrent() {
+        return recurringPeriod != null;
+    }
+
+    public Optional<Instant> getRecurringPeriod() {
+        return Optional.ofNullable(recurringPeriod);
+    }
+
+    public static ZonedDateTime truncateTimeToWeeks(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS)
+                .with(TemporalAdjusters.next(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())).minusWeeks(1);
+    }
+
+    public static ZonedDateTime truncateTimeToDays(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS);
+    }
+
+    public static ZonedDateTime truncateTimeToMonths(ZonedDateTime time) {
+        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS).withDayOfMonth(1);
+    }
+
+    public static ZonedDateTime epochToZonedDateTime(long epoch) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.systemDefault());
+    }
+
     @Override
     public String toString() {
         return "Event" + id +
@@ -140,7 +198,7 @@ public class Event implements Serializable, Storable<Event> {
                 (location == null ? "" : "[" + location + "]") +
                 ':' + startTime +
                 "-" + endTime +
-                ')';
+                ')' + (recurringPeriod == null ? "" : " recurring every " + recurringPeriod.toString());
     }
 
     @Override
@@ -152,11 +210,12 @@ public class Event implements Serializable, Storable<Event> {
                 locationName.equals(event.locationName) &&
                 getLocation().equals(event.getLocation()) &&
                 startTime.equals(event.startTime) &&
-                endTime.equals(event.endTime);
+                endTime.equals(event.endTime) &&
+                getRecurringPeriod().equals(event.getRecurringPeriod());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, locationName, location, startTime, endTime);
+        return Objects.hash(id, name, locationName, location, startTime, endTime, recurringPeriod);
     }
 }

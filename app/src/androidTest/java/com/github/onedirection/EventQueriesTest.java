@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import java.io.Console;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -89,6 +90,26 @@ public class EventQueriesTest {
     }
 
     @Test
+    public void returnNoEventsWhenTimeFrameIsInvalid() throws ExecutionException, InterruptedException, ParseException  {
+        List<Event> events = new ArrayList<Event>();
+        ZonedDateTime start = getConventionStartTime();
+        ZonedDateTime end = start.plusMinutes(10);
+        for(int i=0; i<5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent"+i, "loc"+i, start.plusMinutes(5).minusMinutes(i+1), start.plusMinutes(5).plusMinutes(i)));
+        }
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        boolean b = db.storeAll(events).get();
+        if(b) {
+            EventQueries eq = new EventQueries(db);
+            List<Event> noEvents = eq.getEventsInTimeframe(end, start).get();
+            assertEquals(0, noEvents.size());
+        }
+        for(Event e : events) {
+            db.remove(e.getId(), EventStorer.getInstance()).get();
+        }
+    }
+
+    @Test
     public void nonDisjointTimeIntervalsMeansToBeReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
@@ -147,7 +168,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenDayReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime today = EventQueries.truncateTimeToDays(getConventionStartTime());
+        ZonedDateTime today = Event.truncateTimeToDays(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, today.plusHours(2*i), today.plusHours(2*i+1)));
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, today.minusDays(i+2), today.minusDays(i+1)));
@@ -177,7 +198,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenWeekReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime thisWeek = EventQueries.truncateTimeToWeeks(getConventionStartTime());
+        ZonedDateTime thisWeek = Event.truncateTimeToWeeks(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusHours(2*i), thisWeek.plusHours(2*i+1)));
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusDays(i), thisWeek.plusDays(i+1)));
@@ -209,7 +230,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenMonthReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime thisMonth = EventQueries.truncateTimeToMonths(getConventionStartTime());
+        ZonedDateTime thisMonth = Event.truncateTimeToMonths(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.plusDays(2*i+3), thisMonth.plusDays(2*i+4)));
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i+2)));
@@ -233,6 +254,30 @@ public class EventQueriesTest {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
         for(Event e : eventsRejected) {
+            db.remove(e.getId(), EventStorer.getInstance()).get();
+        }
+    }
+
+    @Test
+    public void recurringEventsLoadedFromDbAsMultipleEvents() throws ExecutionException, InterruptedException, ParseException  {
+        List<Event> events = new ArrayList<Event>();
+        ZonedDateTime start = getConventionStartTime();
+        ZonedDateTime end = start.plusMinutes(10);
+        for(int i=0; i<5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent"+i, "loc"+i, start.plusMinutes(5).minusMinutes(i+1), start.plusMinutes(5).plusMinutes(i), Instant.ofEpochSecond(3600)));
+        }
+        Event recurrEvent = new Event(Id.generateRandom(), "RecurrentEvent", "locationRec", start.minusMinutes(20), start.minusMinutes(19), Instant.ofEpochSecond(120));
+        events.add(recurrEvent);
+        Event recurrEventOutOfBounds = new Event(Id.generateRandom(), "RecurrentEvent", "locationRec", start.minusMinutes(20), start.minusMinutes(19), Instant.ofEpochSecond(7200));
+        events.add(recurrEventOutOfBounds);
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        boolean b = db.storeAll(events).get();
+        if(b) {
+            EventQueries eq = new EventQueries(db);
+            List<Event> eventsRec = eq.getEventsInTimeframe(start, end).get();
+            assertEquals(events.size()+5-2, eventsRec.size()); //+5 because recurrEvent will have 5 recurring events in the interval, and -2 because recurrEvent and recurrEventOutOfBounds should not be in the return list
+        }
+        for(Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
