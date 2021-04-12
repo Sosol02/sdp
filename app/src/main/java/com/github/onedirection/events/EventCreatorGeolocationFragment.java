@@ -1,7 +1,6 @@
 package com.github.onedirection.events;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
 import com.github.onedirection.geolocation.Coordinates;
@@ -22,13 +23,17 @@ import com.github.onedirection.geolocation.GeocodingService;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.NominatimGeocoding;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class EventCreatorGeolocationFragment extends Fragment {
 
     private static final String NO_LOCATION = "None";
+    private static final int SEARCH_COUNT = 5;
 
     private DeviceLocationProvider locationProvider;
 
@@ -36,13 +41,15 @@ public class EventCreatorGeolocationFragment extends Fragment {
     private GeocodingService geocoding;
 
     private ProgressBar requestLoading;
-    private CompletableFuture<NamedCoordinates> lastRequest;
+    private CompletableFuture<List<NamedCoordinates>> lastRequest;
 
     private EditText locationQuery;
     private TextView locationSelected;
     private TextView locationSelectedFull;
     private Button cancel;
     private Button validate;
+
+    private RecyclerView locationMatches;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,6 +80,10 @@ public class EventCreatorGeolocationFragment extends Fragment {
         this.cancel = getView().findViewById(R.id.buttonCancelGeolocation);
         this.validate = getView().findViewById(R.id.buttonSetGeolocation);
 
+        // Setup recycler view
+        this.locationMatches = (RecyclerView) getView().findViewById(R.id.locationMatchesList);
+        this.locationMatches.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         // Model listeners
         model.coordinates.observe(getViewLifecycleOwner(), coordinates -> {
             boolean valid = coordinates.isPresent();
@@ -102,7 +113,10 @@ public class EventCreatorGeolocationFragment extends Fragment {
             );
         });
 
-        cancel.setOnClickListener(v -> gotoMain());
+        cancel.setOnClickListener(v -> {
+            model.useGeolocation.postValue(false);
+            gotoMain();
+        });
 
         validate.setOnClickListener(v -> {
             model.useGeolocation.postValue(true);
@@ -110,7 +124,11 @@ public class EventCreatorGeolocationFragment extends Fragment {
         });
     }
 
-    synchronized private void setCurrentRequest(CompletableFuture<NamedCoordinates> request) {
+    private Consumer<NamedCoordinates> generateLocationSelectionCallback() {
+        return coordinates -> model.coordinates.postValue(Optional.of(coordinates));
+    }
+
+    synchronized private void setCurrentRequest(CompletableFuture<List<NamedCoordinates>> request) {
         lastRequest.cancel(true);
         requestLoading.setVisibility(View.VISIBLE);
 
@@ -123,24 +141,26 @@ public class EventCreatorGeolocationFragment extends Fragment {
         });
     }
 
-    private CompletableFuture<NamedCoordinates> generateGeocodingRequest(String query){
-        return addGeocodingCallbacks(geocoding.getBestNamedCoordinates(query));
+    private CompletableFuture<List<NamedCoordinates>> generateGeocodingRequest(String query){
+        return addGeocodingCallbacks(geocoding.getNamedCoordinates(query, SEARCH_COUNT));
     }
 
-    private CompletableFuture<NamedCoordinates> generateGeocodingRequest(Coordinates query){
-        return addGeocodingCallbacks(geocoding.getBestNamedCoordinates(query));
+    private CompletableFuture<List<NamedCoordinates>> generateGeocodingRequest(Coordinates query){
+        return addGeocodingCallbacks(geocoding.getBestNamedCoordinates(query)
+                .thenApply(coordinates -> {
+                    List<NamedCoordinates> ls = new ArrayList<>();
+                    ls.add(coordinates);
+                    return ls;
+                }));
     }
 
-    private CompletableFuture<NamedCoordinates> addGeocodingCallbacks(CompletableFuture<NamedCoordinates> future){
+    private CompletableFuture<List<NamedCoordinates>> addGeocodingCallbacks(CompletableFuture<List<NamedCoordinates>> future){
         return future
-            .whenComplete((coordinates, throwable) -> {
-                if(coordinates != null) {
-                    model.coordinates.setValue(Optional.of(coordinates));
-                }
-                else{
-                    model.coordinates.setValue(Optional.empty());
-                }
-            });
+                .whenComplete((coordinates, throwable) -> {
+                    if(coordinates != null) {
+                        this.locationMatches.setAdapter(new LocationsAdapter(coordinates, generateLocationSelectionCallback()));
+                    }
+                });
     }
 
     private void gotoMain() {
