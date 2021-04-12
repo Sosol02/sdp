@@ -3,12 +3,8 @@ package com.github.onedirection.navigation;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,7 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.github.onedirection.EventCreator;
+import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.google.android.material.navigation.NavigationView;

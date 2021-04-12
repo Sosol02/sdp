@@ -1,4 +1,4 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocation;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 /** OpenStreetMap's geocoding service. */
 public final class NominatimGeocoding implements GeocodingService {

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.onedirection.EventCreator;
+import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
 import com.skyhope.eventcalenderlibrary.CalenderEvent;
 import com.skyhope.eventcalenderlibrary.model.Event;
@@ -43,7 +43,7 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    public void addEventToCalendar(com.github.onedirection.Event event, long timeInMillis) {
+    public void addEventToCalendar(com.github.onedirection.events.Event event, long timeInMillis) {
         Objects.requireNonNull(event, "tried to add null Event");
         Event calendarEvent = new Event(timeInMillis, event.getName());
         calendarView.addEvent(calendarEvent);

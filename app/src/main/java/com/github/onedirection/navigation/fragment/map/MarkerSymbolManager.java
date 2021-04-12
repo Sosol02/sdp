@@ -1,13 +1,12 @@
 package com.github.onedirection.navigation.fragment.map;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.github.onedirection.Event;
-import com.github.onedirection.geocoding.Coordinates;
-import com.github.onedirection.geocoding.NominatimGeocoding;
+import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.NominatimGeocoding;
 import com.github.onedirection.utils.Pair;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;

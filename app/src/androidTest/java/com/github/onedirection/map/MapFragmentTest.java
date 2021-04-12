@@ -1,14 +1,12 @@
 package com.github.onedirection.map;
 
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.Event;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
 import com.github.onedirection.WaitAction;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
@@ -18,7 +16,6 @@ import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
@@ -31,7 +28,6 @@ import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;

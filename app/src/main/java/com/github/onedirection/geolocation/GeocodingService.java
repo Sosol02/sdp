@@ -1,7 +1,6 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocation;
 
 import com.github.onedirection.utils.Monads;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -9,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
  * General interface implemented by all geocoding services.
  * Geocoding consist of mapping a name into its geographical coordinates.
  */
-interface GeocodingService {
+public interface GeocodingService {
 
     /**
      * @param locationName Some location's name.
