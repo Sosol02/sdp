@@ -1,7 +1,5 @@
 package com.github.onedirection.utils;
 
-import com.github.onedirection.geocoding.Coordinates;
-
 import org.junit.Test;
 
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocation;
 
 import android.content.Context;
 
@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

@@ -33,6 +33,17 @@
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
+
+    <!-- Strings related to calendar and event creation -->
+    <string name="popup_title"> "" </string>
+    <string name="cancel"> Cancel </string>
+    <string name="day_select_dialog_tag">daySelectedDialog</string>
+    <string name="fragment_map_event_name">Event name</string>
+    <string name="fragment_map_event_time_start">Start time</string>
+    <string name="fragment_map_event_time_end">End time</string>
+    <string name="fragment_map_event_location">Location</string>
+
+    <!-- Strings related to event creator -->
     <string name="create_an_event_title">Create an event:</string>
     <string name="create_event_button_text">Create event</string>
     <string name="event_name_hint">Event name</string>
@@ -40,10 +51,14 @@
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
 
-    <!-- Strings related to calendar and event creation -->
-    <string name= "popup_title"> "" </string>
-    <string name= "cancel"> cancel </string>
-    <string name= "day_select_dialog_tag">daySelectedDialog</string>
-    <string name="my_location_button_desc">My location icon</string>
+    <string name="set_event_location">Set event location</string>
+    <string name="location_name">Location name</string>
+    <string name="search">Search:</string>
+    <string name="search_location">Search location</string>
+    <string name="use_current_location">Use current location</string>
+    <string name="result">Result:</string>
+    <string name="set_geolocation">Set geolocation</string>
+    <string name="use_geolocation">Use geolocation</string>
+    <string name="my_location_button_desc">my_location_button</string>
 
 </resources>
