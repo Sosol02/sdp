@@ -19,8 +19,6 @@ public class DeviceLocationEngine extends DeviceLocationProvider implements Obse
         super.addObserver(this);
     }
 
-
-
     @Override
     public void onObservableUpdate(Observable<Coordinates> subject, Coordinates value) {
         Log.i("hmm", "lat : " + value.latitude + "long:" + value.longitude);

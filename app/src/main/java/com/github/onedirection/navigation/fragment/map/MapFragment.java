@@ -1,7 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 
-import android.annotation.SuppressLint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,16 +16,12 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.LocationComponentOptions;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
@@ -49,16 +45,26 @@ public class MapFragment extends Fragment {
     private TextView event_location;
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
+    private DeviceLocationProvider deviceLocationProvider;
+    private MyLocationSymbolManager myLocationSymbolManager;
     private Symbol clickSymbol;
-    private DeviceLocationEngine deviceLocationEngine;
 
     public static final String SYMBOL_ID = "MARKER_MAP";
+    public static final String MY_LOCATION_ID = "MY_LOCATION_MAP";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        deviceLocationProvider = (DeviceLocationProvider) requireActivity();
+        deviceLocationProvider.startLocationTracking();
+        deviceLocationProvider.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.update(value);
+            }
+        });
+
         Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -68,18 +74,21 @@ public class MapFragment extends Fragment {
             this.mapboxMap = mapboxMap;
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                enableLocationComponent(style);
                 initializeMarkerSymbolManager(style);
+                initializeMyLocationSymbolManager(style);
             });
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
-                //TODO add location service
-                CameraPosition position = new CameraPosition.Builder()
-                        .target(new LatLng(51.50550, -0.07520))
-                        .zoom(15)
-                        .tilt(20)
-                        .build();
-                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+                if (myLocationSymbolManager != null) {
+                    LatLng latLng = myLocationSymbolManager.getPosition();
+                    if (latLng != null) {
+                        CameraPosition position = new CameraPosition.Builder()
+                                .target(latLng)
+                                .zoom(15)
+                                .build();
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+                    }
+                }
             });
 
             mapboxMap.addOnMapClickListener(point -> {
@@ -98,7 +107,6 @@ public class MapFragment extends Fragment {
         event_time_start = view.findViewById(R.id.fragment_map_event_time_start);
         event_time_end = view.findViewById(R.id.fragment_map_event_time_end);
         event_location = view.findViewById(R.id.fragment_map_event_location);
-        this.deviceLocationEngine = new DeviceLocationEngine();
 
         return view;
     }
@@ -159,21 +167,9 @@ public class MapFragment extends Fragment {
         this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
     }
 
-    @SuppressLint("MissingPermission")
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        LocationComponentOptions customLocationComponentOptions =
-                LocationComponentOptions.builder(getContext())
-                        .build();
-
-        LocationComponent locationComponent = mapboxMap.getLocationComponent();
-
-        locationComponent.activateLocationComponent(LocationComponentActivationOptions
-                .builder(getContext(), loadedMapStyle)
-                .locationComponentOptions(customLocationComponentOptions)
-                .build());
-
-        locationComponent.setLocationComponentEnabled(true);
-        locationComponent.setCameraMode(CameraMode.TRACKING);
-        locationComponent.setRenderMode(RenderMode.NORMAL);
+    private void initializeMyLocationSymbolManager(@NonNull Style styleOnLoaded) {
+        styleOnLoaded.addImage(MY_LOCATION_ID, ((BitmapDrawable) getResources().getDrawable(R.drawable.my_location_on_map)).getBitmap());
+        SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
+        this.myLocationSymbolManager = new MyLocationSymbolManager(symbolManager);
     }
 }
