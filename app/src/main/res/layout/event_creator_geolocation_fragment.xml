@@ -44,13 +44,7 @@
             android:inputType="textPersonName"
             android:importantForAutofill="no" />
 
-        <Button
-            android:id="@+id/buttonSearchLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/search_location" />
-
-        <Button
+        <CheckBox
             android:id="@+id/buttonUseCurrentLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

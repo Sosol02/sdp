@@ -177,7 +177,6 @@ public class EventCreatorTest {
 
         onView(withId(R.id.editLocationQuery)).perform(scrollTo(), clearText(), typeText(EPFL_QUERY));
         closeSoftKeyboard();
-        onView(withId(R.id.buttonSearchLocation)).perform(scrollTo(), click());
         onView(nthChild(withId(R.id.locationMatchesList), 0)).perform(scrollTo(), click());
         onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(containsString(EPFL_CANTON))));
     }

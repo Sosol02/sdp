@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
+import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.ObserverPattern;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -125,6 +126,12 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
                     createLocationRequest();
                 }
         });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> stopLocationTracking() {
+        return Monads.toFuture(fusedLocationClient.removeLocationUpdates(locationCallback))
+                .thenApply(aVoid -> true);
     }
 
     @Override
