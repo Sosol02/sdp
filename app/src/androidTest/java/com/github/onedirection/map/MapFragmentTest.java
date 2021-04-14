@@ -178,7 +178,11 @@ public class MapFragmentTest {
     public void testMyLocationIsAppearing() {
         onView(withId(R.id.mapView)).perform(new WaitAction(10000));
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
+        LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
+        onView(withId(R.id.my_location_button)).perform(click());
+        LatLng next = mapboxMap.getCameraPosition().target;
+        assertThat(next.equals(last), is(false));
     }
 
     private MarkerSymbolManager getMarkerSymbolManager() {
