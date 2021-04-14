@@ -77,53 +77,41 @@ public class Event implements Serializable, Storable<Event> {
      * @throws IllegalArgumentException If startTime happens before endTime.
      */
     public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) throws IllegalArgumentException {
-        this(
-                id,
-                name,
-                Objects.requireNonNull(location).name,
-                Optional.of(location.dropName()),
-                startTime,
-                endTime,
-                Optional.empty()
-        );
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.empty());
     }
 
     public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) throws IllegalArgumentException {
-        this(
-                id,
-                name,
-                Objects.requireNonNull(location).name,
-                Optional.of(location.dropName()),
-                startTime,
-                endTime,
-                Optional.of(recurringPeriod)
-        );
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.of(recurringPeriod));
+    }
+
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Instant> recurringPeriod) throws IllegalArgumentException {
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
     }
 
     public Event setName(String new_value) {
-        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, location, startTime, endTime, recurringPeriod);
+        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
     }
 
     public Event setLocation(NamedCoordinates new_value) {
-        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, recurringPeriod);
+        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
     }
 
     public Event setStartTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)
                 ? this
-                : new Event(id, name, locationName, location, new_value, endTime, recurringPeriod);
+                : new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
     }
 
     public Event setEndTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)
                 ? this
-                : new Event(id, name, locationName, location, startTime, new_value, recurringPeriod);
+                : new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
     }
 
     public Event setRecurringPeriod(Instant period) {
-        return Objects.requireNonNull(period).equals(recurringPeriod)
+        return Optional.of(Objects.requireNonNull(period)).equals(getRecurringPeriod())
                 ? this
-                : new Event(id, name, locationName, location,  startTime, endTime, period);
+                : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
     }
 
     @Override
@@ -166,7 +154,7 @@ public class Event implements Serializable, Storable<Event> {
     }
 
     public boolean isRecurrent() {
-        return recurringPeriod != null;
+        return getRecurringPeriod().isPresent();
     }
 
     public Optional<Instant> getRecurringPeriod() {
