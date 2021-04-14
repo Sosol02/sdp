@@ -2,6 +2,7 @@ package com.github.onedirection.geolocation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -34,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public abstract class DeviceLocationProvider extends AppCompatActivity implements Observable<Coordinates>, LocationProvider {
+public abstract class AbstractDeviceLocationProvider implements Observable<Coordinates>, LocationProvider {
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
         LOCATION_REQUEST.setInterval(10000);
@@ -42,50 +43,17 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         LOCATION_REQUEST.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private ArrayList<ObserverPattern.Observer<Coordinates>> observers;
+    private final Context context;
+    private final FusedLocationProviderClient fusedLocationClient;
+    private final ArrayList<ObserverPattern.Observer<Coordinates>> observers;
+    private final LocationCallback locationCallback;
     private Location lastLocation;
-    private LocationCallback locationCallback;
-    private CompletableFuture<Boolean> permissionRequestResult;
 
-    //************************ Setup/Internal methods *****************************************
-
-    private void requestFineLocationPermission() {
-        if (!fineLocationUsageIsAllowed()) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
-        } else{
-            permissionRequestResult.complete(true);
-        }
-    }
-
-    private CompletableFuture<Boolean> createLocationRequest() {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(
-                this,
-                locationSettingsResponse ->
-                        result.complete(locationSettingsResponse.getLocationSettingsStates().isLocationUsable())
-        );
-
-        task.addOnFailureListener(this, e -> result.complete(false));
-
-        return result;
-    }
-
-    private boolean fineLocationUsageIsAllowed() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        observers =  new ArrayList<>();
-        lastLocation = null;
-        locationCallback = new LocationCallback(){
+    public AbstractDeviceLocationProvider(Context ctx){
+        this.context = ctx;
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx);
+        this.observers =  new ArrayList<>();
+        this.locationCallback = new LocationCallback(){
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
@@ -100,25 +68,41 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
                 }
             }
         };
-        permissionRequestResult = CompletableFuture.completedFuture(false);
+        this.lastLocation = null;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == R.integer.location_permission_code){
-            for(int i = 0; i < permissions.length; ++i){
-                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                    permissionRequestResult.complete(true);
-                }
-            }
-        }
+    //************************ Setup/Internal methods *****************************************
 
-        // Will be set only if not obtruded earlier
-        permissionRequestResult.complete(false);
+    private CompletableFuture<Boolean> createLocationRequest() {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
+        SettingsClient client = LocationServices.getSettingsClient(context);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(
+                locationSettingsResponse ->
+                        result.complete(locationSettingsResponse.getLocationSettingsStates().isLocationUsable())
+        );
+
+        task.addOnFailureListener(e -> result.complete(false));
+
+        return result;
+    }
+
+    private boolean fineLocationUsageIsAllowed() {
+        return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     //************************ Methods to be a LocationProvider *****************************************
+
+    /**
+     * Only abstract method; it is so because this is the only thing we can't handle
+     * generally (we need to be an activity to handle this easily).
+     * @see DeviceLocationProviderActivity
+     * @see DeviceLocationProviderNoRequests
+     * @return Whether the request was granted.
+     */
+    public abstract CompletableFuture<Boolean> requestFineLocationPermission();
 
     /**
      * Called to start the tracking after making sure that permission is granted
@@ -127,18 +111,13 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
     @Override
     @SuppressLint("MissingPermission")
     public final CompletableFuture<Boolean> startLocationTracking() {
-        if(!permissionRequestResult.isDone())
-            throw new IllegalStateException("Location tracking is already starting.");
-
-        permissionRequestResult = new CompletableFuture<>();
-        requestFineLocationPermission();
-        return permissionRequestResult.whenComplete( (permission, throwable) -> {
-                if(permission){
-                    fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
-                            locationCallback,
-                            Looper.getMainLooper());
-                    createLocationRequest();
-                }
+        return requestFineLocationPermission().whenComplete( (permission, throwable) -> {
+            if(permission){
+                fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
+                        locationCallback,
+                        Looper.getMainLooper());
+                createLocationRequest();
+            }
         });
     }
 

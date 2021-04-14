@@ -2,34 +2,27 @@ package com.github.onedirection;
 
 import android.Manifest;
 import android.content.Intent;
-import android.util.Log;
-import android.view.View;
 import android.widget.DatePicker;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -230,8 +223,8 @@ public class EventCreatorTest {
 
     @Test
     public void phoneLocationCanBeUsedWithoutUI() throws ExecutionException, InterruptedException {
-        final DeviceLocationProvider[] testClass = new DeviceLocationProvider/*The array is so that it works*/[1];
-        ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProvider)activity);
+        final DeviceLocationProviderActivity[] testClass = new DeviceLocationProviderActivity/*The array is so that it works*/[1];
+        ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProviderActivity)activity);
 
         ObserverPattern.Observer<Coordinates> observer = (subject, value) -> {};
 
