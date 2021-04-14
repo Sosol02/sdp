@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddinTop="8dp"
+        android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:background = "@color/white">
 
@@ -32,6 +32,7 @@
             android:layout_margin="4dp"
             android:layout_weight="3"
             android:text=" CurrentDate"
+            android:id="@+id/currentDate"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textColor="@color/black"
@@ -60,7 +61,6 @@
             android:gravity="center"
             android:text="Mon"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -70,7 +70,6 @@
             android:gravity="center"
             android:text="Tue"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -80,7 +79,6 @@
             android:gravity="center"
             android:text="Wed"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -90,7 +88,6 @@
             android:gravity="center"
             android:text="Thur"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -100,7 +97,6 @@
             android:gravity="center"
             android:text="Fri"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -110,7 +106,6 @@
             android:gravity="center"
             android:text="Sat"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
@@ -120,12 +115,18 @@
             android:gravity="center"
             android:text="Sun"
             android:textAlignment="center"
-            android:background="android:color"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             />
 
     </LinearLayout>
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/bigus_dickus"
+        android:layout_margin = "10dp"
+        />
 
 
     <GridView
