@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public abstract class DeviceLocationProviderActivity extends AppCompatActivity implements Observable<Coordinates>, LocationProvider {
+public abstract class DeviceLocationProviderActivity extends AppCompatActivity implements Observable<Coordinates>, DeviceLocationProvider {
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
         LOCATION_REQUEST.setInterval(10000);
@@ -26,10 +26,6 @@ public abstract class DeviceLocationProviderActivity extends AppCompatActivity i
 
     private AbstractDeviceLocationProvider provider;
     private CompletableFuture<Boolean> permissionRequestResult;
-
-    private boolean fineLocationUsageIsAllowed() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +59,7 @@ public abstract class DeviceLocationProviderActivity extends AppCompatActivity i
     //************************ Methods to be a LocationProvider *****************************************
 
     public CompletableFuture<Boolean> requestFineLocationPermission() {
-        if (!fineLocationUsageIsAllowed()) {
+        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(this)) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
         } else{

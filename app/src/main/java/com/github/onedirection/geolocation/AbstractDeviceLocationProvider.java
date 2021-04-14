@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public abstract class AbstractDeviceLocationProvider implements Observable<Coordinates>, LocationProvider {
+public abstract class AbstractDeviceLocationProvider implements Observable<Coordinates>, DeviceLocationProvider {
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
         LOCATION_REQUEST.setInterval(10000);
@@ -63,12 +63,16 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
             @Override
             public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
                 super.onLocationAvailability(locationAvailability);
-                if(fineLocationUsageIsAllowed()){
+                if(DeviceLocationProvider.fineLocationUsageIsAllowed(ctx)){
                     createLocationRequest();
                 }
             }
         };
         this.lastLocation = null;
+    }
+
+    protected Context getContext() {
+        return context;
     }
 
     //************************ Setup/Internal methods *****************************************
@@ -87,10 +91,6 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
         task.addOnFailureListener(e -> result.complete(false));
 
         return result;
-    }
-
-    private boolean fineLocationUsageIsAllowed() {
-        return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     //************************ Methods to be a LocationProvider *****************************************

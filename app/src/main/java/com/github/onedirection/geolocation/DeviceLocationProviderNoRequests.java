@@ -11,6 +11,7 @@ public class DeviceLocationProviderNoRequests extends AbstractDeviceLocationProv
 
     @Override
     public CompletableFuture<Boolean> requestFineLocationPermission() {
-        return CompletableFuture.completedFuture(false);
+        return CompletableFuture
+                .completedFuture(DeviceLocationProvider.fineLocationUsageIsAllowed(getContext()));
     }
 }
