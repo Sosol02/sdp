@@ -168,7 +168,8 @@ public class MapFragment extends Fragment {
     }
 
     private void initializeMyLocationSymbolManager(@NonNull Style styleOnLoaded) {
-        styleOnLoaded.addImage(MY_LOCATION_ID, ((BitmapDrawable) getResources().getDrawable(R.drawable.my_location_on_map)).getBitmap());
+        Drawable myLocationSymbol = ContextCompat.getDrawable(getContext(), R.drawable.my_location_on_map);
+        styleOnLoaded.addImage(MY_LOCATION_ID, BitmapUtils.getBitmapFromDrawable(myLocationSymbol));
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
         this.myLocationSymbolManager = new MyLocationSymbolManager(symbolManager);
     }

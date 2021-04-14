@@ -1,16 +1,26 @@
 package com.github.onedirection.map;
 
+import android.Manifest;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
 import com.github.onedirection.WaitAction;
+import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
+import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -18,9 +28,11 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,9 +45,13 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -45,7 +61,6 @@ public class MapFragmentTest {
     private MapboxMap mapboxMap;
     private MapFragment fragment;
     private OnMapReadyIdlingResource onMapReadyIdlingResource;
-    private FragmentScenario<MapFragment> scenario;
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
     private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(20f, 09583f);
@@ -53,13 +68,28 @@ public class MapFragmentTest {
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
 
+    @Rule
+    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+
     @Before
     public void setupForTest() {
-        scenario = FragmentScenario.launchInContainer(MapFragment.class);
-        scenario.onFragment(fragment -> {
-            this.fragment = fragment;
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()));
+        onView(withId(R.id.nav_map)).perform(ViewActions.click());
+
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText(R.string.menu_map)));
+        testRule.getScenario().onActivity(activity -> {
+            fragment = (MapFragment) activity.getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment).getChildFragmentManager().getPrimaryNavigationFragment();
             onMapReadyIdlingResource = new OnMapReadyIdlingResource(fragment);
         });
+
         IdlingRegistry.getInstance().register(onMapReadyIdlingResource);
         onView(withId(R.id.mapView)).check(matches(isDisplayed()));
         mapboxMap = onMapReadyIdlingResource.getMapboxMap();
@@ -142,11 +172,28 @@ public class MapFragmentTest {
         onView(withId(R.id.fragment_map_event_name)).check(matches(withText(TEST_EVENT_1.getName())));
     }
 
+    @Test
+    public void testMyLocationIsAppearing() {
+        onView(withId(R.id.mapView)).perform(new WaitAction(10000));
+        MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
+        assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
+    }
+
     private MarkerSymbolManager getMarkerSymbolManager() {
         try {
             Field field = fragment.getClass().getDeclaredField("markerSymbolManager");
             field.setAccessible(true);
             return ((MarkerSymbolManager) field.get(fragment));
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    private MyLocationSymbolManager getMyLocationSymbolManager() {
+        try {
+            Field field = fragment.getClass().getDeclaredField("myLocationSymbolManager");
+            field.setAccessible(true);
+            return ((MyLocationSymbolManager) field.get(fragment));
         } catch (Exception err) {
             throw new RuntimeException(err);
         }
