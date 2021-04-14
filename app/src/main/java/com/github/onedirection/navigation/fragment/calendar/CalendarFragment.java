@@ -1,7 +1,9 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +43,7 @@ public class CalendarFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(CalendarViewModel.class);
         calendarView.initCalderItemClickCallback(dayContainerModel -> {
-            DaySelectPopupFragment popup = new DaySelectPopupFragment(this, dayContainerModel.getDay(), dayContainerModel.getMonthNumber(), dayContainerModel.getYear());
+            DaySelectPopupFragment popup = new DaySelectPopupFragment(this, dayContainerModel.getDay(), dayContainerModel.getMonthNumber() + 1, dayContainerModel.getYear());
             popup.show(getChildFragmentManager(), getResources().getString(R.string.day_select_dialog_tag));
         });
 
@@ -55,8 +57,9 @@ public class CalendarFragment extends Fragment {
 
     public void addEventToCalendar(com.github.onedirection.events.Event event) {
         Objects.requireNonNull(event, "Tried to add null Event");
-        Event calendarEvent = new Event(event.getStartTime().toInstant().toEpochMilli(), event.getName());
+        Event calendarEvent = new Event(event.getStartTime().toInstant().toEpochMilli(), "AAAAAH"/*event.getName()*/);
         calendarView.addEvent(calendarEvent);
+
     }
 
     public void removeEventFromCalendar(Event calendarEvent) {
@@ -66,7 +69,9 @@ public class CalendarFragment extends Fragment {
 
     public void showEventCreationScreen(int day, int month, int year) {
         Intent intent = new Intent(getActivity(), EventCreator.class);
+        Log.d("AAAAAAAAAAAAAAAAAAAAAAAAAAH", "month is AAAAAAAAAAAAA" + month );
         EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
+        new Event(LocalDate.of(year, month, day).toEpochDay(), "OOOH");
         startActivity(intent);
     }
 }
