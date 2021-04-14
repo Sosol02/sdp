@@ -161,23 +161,6 @@ public class Event implements Serializable, Storable<Event> {
         return Optional.ofNullable(recurringPeriod);
     }
 
-    public static ZonedDateTime truncateTimeToWeeks(ZonedDateTime time) {
-        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS)
-                .with(TemporalAdjusters.next(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())).minusWeeks(1);
-    }
-
-    public static ZonedDateTime truncateTimeToDays(ZonedDateTime time) {
-        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS);
-    }
-
-    public static ZonedDateTime truncateTimeToMonths(ZonedDateTime time) {
-        return Objects.requireNonNull(time).truncatedTo(ChronoUnit.DAYS).withDayOfMonth(1);
-    }
-
-    public static ZonedDateTime epochToZonedDateTime(long epoch) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.systemDefault());
-    }
-
     @Override
     public String toString() {
         return "Event" + id +

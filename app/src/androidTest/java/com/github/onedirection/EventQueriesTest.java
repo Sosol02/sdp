@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.database.utils.TimeUtils;
 import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -168,7 +169,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenDayReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime today = Event.truncateTimeToDays(getConventionStartTime());
+        ZonedDateTime today = TimeUtils.truncateTimeToDays(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, today.plusHours(2*i), today.plusHours(2*i+1)));
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, today.minusDays(i+2), today.minusDays(i+1)));
@@ -198,7 +199,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenWeekReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime thisWeek = Event.truncateTimeToWeeks(getConventionStartTime());
+        ZonedDateTime thisWeek = TimeUtils.truncateTimeToWeeks(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusHours(2*i), thisWeek.plusHours(2*i+1)));
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusDays(i), thisWeek.plusDays(i+1)));
@@ -230,7 +231,7 @@ public class EventQueriesTest {
     public void allEventsOnGivenMonthReturned() throws ExecutionException, InterruptedException, ParseException {
         List<Event> eventsAccepted = new ArrayList<Event>();
         List<Event> eventsRejected = new ArrayList<Event>();
-        ZonedDateTime thisMonth = Event.truncateTimeToMonths(getConventionStartTime());
+        ZonedDateTime thisMonth = TimeUtils.truncateTimeToMonths(getConventionStartTime());
         for(int i = 0; i < 5; ++i) {
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.plusDays(2*i+3), thisMonth.plusDays(2*i+4)));
             eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i+2)));

@@ -6,6 +6,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.github.onedirection.Event;
+import com.github.onedirection.database.utils.TimeUtils;
 import com.github.onedirection.geocoding.Coordinates;
 import com.github.onedirection.utils.Id;
 
@@ -80,22 +81,22 @@ public class EventStorer extends Storer<Event> {
         if(coordLatitude == null || coordLongitude == null) {
             if(recurringPeriod == null) {
                 return new Event(new Id(UUID.fromString(id)), name, locationName,
-                        Event.epochToZonedDateTime(epochStartTime),
-                        Event.epochToZonedDateTime(epochEndTime));
+                        TimeUtils.epochToZonedDateTime(epochStartTime),
+                        TimeUtils.epochToZonedDateTime(epochEndTime));
             } else {
                 return new Event(new Id(UUID.fromString(id)), name, locationName,
-                        Event.epochToZonedDateTime(epochStartTime),
-                        Event.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
+                        TimeUtils.epochToZonedDateTime(epochStartTime),
+                        TimeUtils.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
             }
         } else {
             if(recurringPeriod == null) {
                 return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
-                        Event.epochToZonedDateTime(epochStartTime),
-                        Event.epochToZonedDateTime(epochEndTime));
+                        TimeUtils.epochToZonedDateTime(epochStartTime),
+                        TimeUtils.epochToZonedDateTime(epochEndTime));
             } else {
                 return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
-                        Event.epochToZonedDateTime(epochStartTime),
-                        Event.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
+                        TimeUtils.epochToZonedDateTime(epochStartTime),
+                        TimeUtils.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
             }
         }
     }

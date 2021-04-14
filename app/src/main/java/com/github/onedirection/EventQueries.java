@@ -5,6 +5,7 @@ import android.util.Log;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.database.utils.TimeUtils;
 import com.github.onedirection.utils.Id;
 
 import java.text.ParseException;
@@ -65,9 +66,16 @@ public class EventQueries {
                     while((tStart+(x-1)*period) < tf) {
                         long startTime = (tStart+(x-1)*period);
                         long endTime = startTime + duration;
-                        if((startTime >= ti && startTime < tf) || (endTime > ti && endTime <= tf) || (startTime < ti && endTime > tf)) {
-                            r1.add(new Event(Id.generateRandom(), e.getName(), e.getLocationName(), e.getCoordinates(),
-                                    Event.epochToZonedDateTime(startTime), Event.epochToZonedDateTime(endTime), e.getRecurringPeriod()));
+                        Event newEvent = new Event(Id.generateRandom(), e.getName(), e.getLocationName(), e.getCoordinates(),
+                                TimeUtils.epochToZonedDateTime(startTime), TimeUtils.epochToZonedDateTime(endTime), e.getRecurringPeriod());
+                        if(startTime >= ti && startTime < tf) {
+                            r1.add(newEvent);
+                        }
+                        else if(endTime > ti && endTime <= tf) {
+                            r1.add(newEvent);
+                        }
+                        else if(startTime < ti && endTime > tf) {
+                            r1.add(newEvent);
                         }
                         ++x;
                     }
@@ -80,19 +88,19 @@ public class EventQueries {
     }
 
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
-        ZonedDateTime dayStart = Event.truncateTimeToDays(day);
+        ZonedDateTime dayStart = TimeUtils.truncateTimeToDays(day);
         ZonedDateTime dayEnd = dayStart.plusDays(1);
         return getEventsInTimeframe(dayStart, dayEnd);
     }
 
     public CompletableFuture<List<Event>> getEventsByWeek(ZonedDateTime week) {
-        ZonedDateTime weekStart = Event.truncateTimeToWeeks(week);
+        ZonedDateTime weekStart = TimeUtils.truncateTimeToWeeks(week);
         ZonedDateTime weekEnd = weekStart.plusWeeks(1);
         return getEventsInTimeframe(weekStart, weekEnd);
     }
 
     public CompletableFuture<List<Event>> getEventsByMonth(ZonedDateTime month) {
-        ZonedDateTime monthStart = Event.truncateTimeToMonths(month);
+        ZonedDateTime monthStart = TimeUtils.truncateTimeToMonths(month);
         ZonedDateTime monthEnd = monthStart.plusMonths(1);
         return getEventsInTimeframe(monthStart, monthEnd);
     }
