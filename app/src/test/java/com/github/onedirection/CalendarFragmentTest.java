@@ -13,7 +13,7 @@ public class CalendarFragmentTest {
 
     @Test
     public void addEventToCalendarRefusesNullArgTest(){
-        assertThrows(NullPointerException.class, () -> calendar.addEventToCalendar(null, 100));
+        assertThrows(NullPointerException.class, () -> calendar.addEventToCalendar(null));
     }
 
     public void removeEventFromCalendarRefusesNullArgTest(){
