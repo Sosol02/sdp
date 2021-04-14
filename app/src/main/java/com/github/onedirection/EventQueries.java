@@ -1,22 +1,17 @@
 package com.github.onedirection;
 
-import android.util.Log;
-
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.utils.TimeUtils;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.utils.Id;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;

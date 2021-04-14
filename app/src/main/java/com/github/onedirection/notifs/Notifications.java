@@ -10,28 +10,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
-import android.os.SystemClock;
 import android.util.Log;
-import android.util.Pair;
-import android.view.View;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import com.github.onedirection.Event;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.utils.Id;
 
-import java.io.Serializable;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class Notifications {
     public static final String NOTIF_BROADCAST = "notif_broadcast";

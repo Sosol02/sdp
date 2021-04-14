@@ -1,22 +1,14 @@
 package com.github.onedirection.database.store;
 
-
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
-import com.github.onedirection.Event;
 import com.github.onedirection.database.utils.TimeUtils;
-import com.github.onedirection.geocoding.Coordinates;
+import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 public class EventStorer extends Storer<Event> {
@@ -66,7 +58,7 @@ public class EventStorer extends Storer<Event> {
     }
 
     @Override
-    public Event mapToStorable(Map m) {
+    public Event mapToStorable(Map<String, Object> m) {
         Objects.requireNonNull(m, "Argument is null");
 
         String id = (String) m.get(KEY_ID);
@@ -74,8 +66,9 @@ public class EventStorer extends Storer<Event> {
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
         String locationName = (String) m.get(KEY_COORD_NAME);
-        long epochStartTime = (long) m.get(KEY_EPOCH_START_TIME);
-        long epochEndTime = (long) m.get(KEY_EPOCH_END_TIME);
+
+        long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
+        long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
         Long recurringPeriod = (Long) m.getOrDefault(KEY_RECURRING_PERIOD, null);
 
         if(coordLatitude == null || coordLongitude == null) {

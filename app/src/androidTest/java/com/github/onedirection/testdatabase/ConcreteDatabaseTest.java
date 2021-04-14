@@ -2,11 +2,11 @@ package com.github.onedirection.testdatabase;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.Event;
+
+import com.github.onedirection.events.Event;
 import com.github.onedirection.EventQueriesTest;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.geocoding.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Before;
@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;

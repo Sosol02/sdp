@@ -1,4 +1,4 @@
-package com.github.onedirection.geocoding;
+package com.github.onedirection.geolocation;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -9,15 +9,12 @@ import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,11 +140,7 @@ public class DaySelectPopupTest {
                 .atPosition(0);
         materialTextView.perform(click());
 
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.textEventCreatorTitle), withText("Create an event:"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.ScrollView.class))),
-                        isDisplayed()));
-        textView2.check(matches(isDisplayed()));
+        onView(withId(R.id.textEventCreatorTitle)).check(matches(isDisplayed()));
     }
 
 
