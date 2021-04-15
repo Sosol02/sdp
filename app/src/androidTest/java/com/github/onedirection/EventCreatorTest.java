@@ -57,6 +57,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.onedirection.testhelpers.ViewChild.nthChild;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -166,7 +167,7 @@ public class EventCreatorTest {
 
         onView(withId(R.id.editLocationQuery)).perform(scrollTo(), clearText(), typeText(EPFL_QUERY));
         closeSoftKeyboard();
-        onView(withId(R.id.buttonSearchLocation)).perform(scrollTo(), click());
+        onView(nthChild(withId(R.id.locationMatchesList), 0)).perform(scrollTo(), click());
         onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(containsString(EPFL_CANTON))));
     }
 

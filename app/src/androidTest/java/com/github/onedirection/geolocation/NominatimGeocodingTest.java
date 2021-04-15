@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.github.onedirection.utils.Monads;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -17,7 +19,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -36,20 +38,24 @@ public class NominatimGeocodingTest {
 
     private static final String GARBAGE_LOCATION_NAME = "jdfahgfoqaghegaghufagipdhgaofdghaiodgfhoahahid";
     private static final Coordinates GARBAGE_LOCATION_COORDINATEs = new Coordinates(-61.74, -133.41);
+    private static final int QUERY_COUNT = 20;
+
+    private void assertValidResultForEPFL(NamedCoordinates coordinates, boolean withName){
+        assertTrue(EPFL_COORDINATES.areCloseTo(coordinates, EPFL_COORDINATES_PREC));
+
+        // Those tests might seem overly complicated, but the resulting string
+        // seems to vary a bit much.
+        String[] elems = coordinates.name.split(",");
+        if(withName)
+            assertThat(elems[0].trim(), isIn(EPFL_NAME));
+        assertThat(coordinates.name, containsString(EPFL_CANTON));
+        assertThat(elems[elems.length-1].split("/")[0].trim(), isIn(EPFL_COUNTRY));
+    }
 
     @Test
     public void geocodingHasExpectedResultsForEPFL(){
         try {
-            NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get();
-
-            assertTrue(EPFL_COORDINATES.areCloseTo(coords, EPFL_COORDINATES_PREC));
-
-            // Those tests might seem overly complicated, but the resulting string
-            // seems to vary a bit much.
-            String[] elems = coords.name.split(",");
-            assertThat(elems[0].trim(), isIn(EPFL_NAME));
-            assertThat(coords.name, containsString(EPFL_CANTON));
-            assertThat(elems[elems.length-1].split("/")[0].trim(), isIn(EPFL_COUNTRY));
+            assertValidResultForEPFL(GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get(), true);
         }
         catch(Exception e) {
             fail("Unexpected exception: " + e.getMessage());
@@ -57,15 +63,32 @@ public class NominatimGeocodingTest {
     }
 
     @Test
+    public void allGeocodingResultsHaveExpectedResultsForEPFL(){
+        try {
+            List<NamedCoordinates> results = GEOCODING.getNamedCoordinates(EPFL_QUERY, QUERY_COUNT).get();
+            assertThat(results.size(), is(lessThanOrEqualTo(QUERY_COUNT)));
+            results.forEach(r -> assertValidResultForEPFL(r, true));
+        }
+        catch(Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void cannotRequestNoResults() {
+        try{
+            GEOCODING.getNamedCoordinates(EPFL_QUERY, 0);
+            fail("Should have thrown");
+        }
+        catch(Exception e){
+            assertThat(e, is(instanceOf(IllegalArgumentException.class)));
+        }
+    }
+
+    @Test
     public void reverseGeocodingHasExpectedResultForEPFL(){
         try {
-            NamedCoordinates coords = GEOCODING.getBestNamedCoordinates(EPFL_COORDINATES).get();
-
-            assertTrue(coords.areCloseTo(EPFL_COORDINATES, EPFL_COORDINATES_PREC));
-
-            String[] elems = coords.name.split(",");
-            assertThat(coords.name, containsString(EPFL_CANTON));
-            assertThat(elems[elems.length-1].split("/")[0].trim(), isIn(EPFL_COUNTRY));
+            assertValidResultForEPFL(GEOCODING.getBestNamedCoordinates(EPFL_COORDINATES).get(), false);
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getMessage());
         }
@@ -104,6 +127,10 @@ public class NominatimGeocodingTest {
         assertThat(
                 GEOCODING.getBestCoordinates(EPFL_QUERY).get(),
                 is(GEOCODING.getBestNamedCoordinates(EPFL_QUERY).get().dropName())
+        );
+        assertThat(
+                GEOCODING.getCoordinates(EPFL_QUERY, QUERY_COUNT).get(),
+                is(Monads.map(GEOCODING.getNamedCoordinates(EPFL_QUERY, QUERY_COUNT).get(), NamedCoordinates::dropName))
         );
     }
 }
