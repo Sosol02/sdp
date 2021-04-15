@@ -8,7 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
-import com.github.onedirection.WaitAction;
+import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.github.onedirection.utils.Id;
