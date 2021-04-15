@@ -25,16 +25,16 @@ import java.util.Locale;
 public class CustomCalendarView extends LinearLayout {
 
     private static final int MAX_CALENDAR_DAYS = 42;
+    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
     private ImageButton NextButton, PreviousButton;
     private TextView CurrentDate;
     private GridView gridView;
-    private Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+    private final Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
     private Context context;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
-    private SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
-    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-    private List<Date> dates = new ArrayList<>();
-    private List<Event> eventsList = new ArrayList<>();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
+    private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
+    private final List<Date> dates = new ArrayList<>();
+    private final List<Event> eventsList = new ArrayList<>();
     private CalendarGridAdapter calendarGridAdapter;
 
 
@@ -83,8 +83,8 @@ public class CustomCalendarView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    private void InitializeLayout(){
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    private void InitializeLayout() {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.custom_calendar_view, this);
         NextButton = view.findViewById(R.id.nextBtn);
         PreviousButton = view.findViewById(R.id.previousBtn);
@@ -92,7 +92,7 @@ public class CustomCalendarView extends LinearLayout {
         gridView = view.findViewById(R.id.gridView);
     }
 
-    private void SetUpCalendar(){
+    private void SetUpCalendar() {
         String currentDate = dateFormat.format(calendar.getTime());
         CurrentDate.setText(currentDate);
 
@@ -102,7 +102,7 @@ public class CustomCalendarView extends LinearLayout {
         int FirstDayOfMonth = monthCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayOfMonth);
 
-        while(dates.size() < MAX_CALENDAR_DAYS){
+        while (dates.size() < MAX_CALENDAR_DAYS) {
             dates.add(monthCalendar.getTime());
             monthCalendar.add(Calendar.DAY_OF_MONTH, 1);
         }

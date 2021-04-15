@@ -18,17 +18,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class CalendarGridAdapter  extends ArrayAdapter {
-    private List<Date> dates;
+public class CalendarGridAdapter extends ArrayAdapter {
     Calendar currentDate;
     List<Event> events;
     LayoutInflater inflater;
+    private final List<Date> dates;
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
-        this.dates= dates;
-        this.currentDate=currentDate;
-        this.events=events;
+        this.dates = dates;
+        this.currentDate = currentDate;
+        this.events = events;
         inflater = LayoutInflater.from(context);
     }
 
@@ -42,30 +42,27 @@ public class CalendarGridAdapter  extends ArrayAdapter {
         int DayNumber = dateCalendar.get(Calendar.DAY_OF_MONTH);
         int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
         int displayYear = dateCalendar.get(Calendar.YEAR);
-        int currentMonth = currentDate.get(Calendar.MONTH) +1;
+        int currentMonth = currentDate.get(Calendar.MONTH) + 1;
         int currentYear = currentDate.get(Calendar.YEAR);
         View view = convertView;
 
 
-        if(view == null){
+        if (view == null) {
             view = inflater.inflate(R.layout.single_cell_layout, parent, false);
         }
 
 
-        if(displayMonth == currentMonth){
+        if (displayMonth == currentMonth) {
             TextView Day_Number = view.findViewById(R.id.calendar_day);
             Day_Number.setText(String.valueOf(DayNumber));
             Calendar eventCalendar = Calendar.getInstance();
             ArrayList<String> arrayList = new ArrayList<>();
-            for(int i = 0; i < events.size(); ++i){
+            for (int i = 0; i < events.size(); ++i) {
 
             }
         }
         return view;
     }
-
-
-
 
 
     @Override
