@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.github.onedirection.R;
+import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.ObserverPattern;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
@@ -32,38 +33,6 @@ import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
 public abstract class DeviceLocationProvider extends AppCompatActivity implements Observable<Coordinates>, LocationProvider {
-
-    public final CompletableFuture<Coordinates> getNextLocation() {
-        CompletableFuture<Coordinates> result = new CompletableFuture<>();
-
-        startLocationTracking().whenComplete((aBoolean, throwable) -> {
-            if(aBoolean != null && aBoolean){
-                addObserver(new Observer<Coordinates>() {
-                    @Override
-                    public void onObservableUpdate(Observable<Coordinates> subject, Coordinates value) {
-                        result.complete(value);
-                        subject.removeObserver(this);
-                    }
-                });
-            }
-            else{
-                result.completeExceptionally(new IllegalStateException("Could not track location."));
-            }
-        });
-
-
-        return result;
-    }
-
-    public final CompletableFuture<Coordinates> getCurrentLocation() {
-        if(lastLocation == null){
-            return getNextLocation();
-        }
-        else{
-            return CompletableFuture.completedFuture(getLastLocation());
-        }
-    }
-
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
     static {
         LOCATION_REQUEST.setInterval(10000);
@@ -77,6 +46,36 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
     private LocationCallback locationCallback;
     private CompletableFuture<Boolean> permissionRequestResult;
 
+    //************************ Setup/Internal methods *****************************************
+
+    private void requestFineLocationPermission() {
+        if (!fineLocationUsageIsAllowed()) {
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
+        } else{
+            permissionRequestResult.complete(true);
+        }
+    }
+
+    private CompletableFuture<Boolean> createLocationRequest() {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(
+                this,
+                locationSettingsResponse ->
+                        result.complete(locationSettingsResponse.getLocationSettingsStates().isLocationUsable())
+        );
+
+        task.addOnFailureListener(this, e -> result.complete(false));
+
+        return result;
+    }
+
+    private boolean fineLocationUsageIsAllowed() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,29 +100,23 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         };
         permissionRequestResult = CompletableFuture.completedFuture(false);
     }
-
-    protected void initializeDeviceLocationProvider() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        observers =  new ArrayList<>();
-        lastLocation = null;
-        locationCallback = new LocationCallback(){
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                lastLocation = locationResult.getLastLocation();
-                notifyOfLocationChange();
-            }
-            @Override
-            public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
-                super.onLocationAvailability(locationAvailability);
-                if(fineLocationUsageIsAllowed()){
-                    createLocationRequest();
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == R.integer.location_permission_code){
+            for(int i = 0; i < permissions.length; ++i){
+                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                    permissionRequestResult.complete(true);
                 }
             }
-        };
-        permissionRequestResult = CompletableFuture.completedFuture(false);
+        }
+
+        // Will be set only if not obtruded earlier
+        permissionRequestResult.complete(false);
     }
 
+    //************************ Methods to be a LocationProvider *****************************************
 
     /**
      * Called to start the tracking after making sure that permission is granted
@@ -148,59 +141,18 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
     }
 
     @Override
+    public CompletableFuture<Boolean> stopLocationTracking() {
+        return Monads.toFuture(fusedLocationClient.removeLocationUpdates(locationCallback))
+                .thenApply(aVoid -> true);
+    }
+
+    @Override
     public final Coordinates getLastLocation() {
         if(lastLocation == null){
             throw new IllegalStateException("There is no last location currently");
         }
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
-
-
-    private void requestFineLocationPermission() {
-        if (!fineLocationUsageIsAllowed()) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, R.integer.location_permission_code);
-        } else{
-            permissionRequestResult.complete(true);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == R.integer.location_permission_code){
-            for(int i = 0; i < permissions.length; ++i){
-                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                    permissionRequestResult.complete(true);
-                }
-            }
-        }
-
-        // Will be set only if not obtruded earlier
-        permissionRequestResult.complete(false);
-    }
-
-    public boolean fineLocationUsageIsAllowed() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private CompletableFuture<Boolean> createLocationRequest() {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(LOCATION_REQUEST);
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(
-                this,
-                locationSettingsResponse ->
-                    result.complete(locationSettingsResponse.getLocationSettingsStates().isLocationUsable())
-        );
-
-        task.addOnFailureListener(this, e -> result.complete(false));
-
-        return result;
-    }
-
-
 
     //************************ Methods to be Observable *****************************************
 
