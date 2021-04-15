@@ -15,10 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
-import com.skyhope.eventcalenderlibrary.CalenderEvent;
-import com.skyhope.eventcalenderlibrary.model.Event;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
