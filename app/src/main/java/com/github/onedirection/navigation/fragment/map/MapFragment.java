@@ -1,6 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -119,14 +120,14 @@ public class MapFragment extends Fragment {
     public void showBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
-
+    
     public void setBottomSheetEvent(Event event) {
         Objects.requireNonNull(event);
         event_name.setText(event.getName());
         ZonedDateTime start=event.getStartTime();
-        event_time_start.setText(String.format("%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
+        event_time_start.setText(String.format(Locale.getDefault(),"%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
         ZonedDateTime end=event.getEndTime();
-        event_time_end.setText(String.format("%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
+        event_time_end.setText(String.format(Locale.getDefault(),"%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
         event_location.setText(event.getLocationName());
     }
 
