@@ -65,7 +65,6 @@ public class EventCreatorViewModel extends ViewModel {
     }
 
     public Event generateEvent(){
-        // TODO: use coordinates
         return useGeolocation.getValue() ?
             new Event(
                 eventId,
