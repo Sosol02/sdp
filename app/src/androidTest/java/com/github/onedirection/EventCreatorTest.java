@@ -213,6 +213,10 @@ public class EventCreatorTest {
             onView(withId(R.id.buttonGotoGeolocation)).perform(scrollTo(), click());
 
             onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(EVENT.getLocation().get().toString())));
+
+            onView(withId(R.id.buttonCancelGeolocation)).perform(scrollTo(), click());
+
+            onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
         }
     }
 
