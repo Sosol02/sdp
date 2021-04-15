@@ -19,9 +19,9 @@ import java.util.Date;
 import java.util.List;
 
 public class CalendarGridAdapter extends ArrayAdapter {
-    Calendar currentDate;
-    List<Event> events;
-    LayoutInflater inflater;
+    private Calendar currentDate;
+    private List<Event> events;
+    private LayoutInflater inflater;
     private final List<Date> dates;
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
