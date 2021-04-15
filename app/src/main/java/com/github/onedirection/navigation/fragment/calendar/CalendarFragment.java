@@ -56,14 +56,14 @@ public class CalendarFragment extends Fragment {
     }
 
     public void addEventToCalendar(com.github.onedirection.events.Event event) {
-//        Objects.requireNonNull(event, "Tried to add null Event");
+        Objects.requireNonNull(event, "Tried to add null Event");
 //        Event calendarEvent = new Event(event.getStartTime().toInstant().toEpochMilli(), "AAAAAH"/*event.getName()*/);
 //        calendarView.addEvent(calendarEvent);
 
     }
 
     public void removeEventFromCalendar(Event calendarEvent) {
-//        Objects.requireNonNull(calendarEvent, "Tried to remove null calendarEvent");
+        Objects.requireNonNull(calendarEvent, "Tried to remove null calendarEvent");
 //        calendarView.removeEvent(calendarEvent);
     }
 
