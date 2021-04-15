@@ -9,6 +9,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Database {
 
+    static Database getDefaultInstance(){ return ConcreteDatabase.getDatabase(); }
+
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore);
 
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer);
