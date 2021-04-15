@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.R;
+import com.github.onedirection.events.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,15 +25,17 @@ import java.util.Locale;
 public class CustomCalendarView extends LinearLayout {
 
     private static final int MAX_CALENDAR_DAYS = 42;
-    ImageButton NextButton, PreviousButton;
-    TextView CurrentDate;
-    GridView gridView;
-
-
-    Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-    Context context;
-    List<Date> dates = new ArrayList<>();
-    List<CalendarEvents> eventsList = new ArrayList<>();
+    private ImageButton NextButton, PreviousButton;
+    private TextView CurrentDate;
+    private GridView gridView;
+    private Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+    private Context context;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
+    private SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
+    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+    private List<Date> dates = new ArrayList<>();
+    private List<Event> eventsList = new ArrayList<>();
+    private CalendarGridAdapter calendarGridAdapter;
 
 
     public CustomCalendarView(Context context) {
@@ -58,6 +63,20 @@ public class CustomCalendarView extends LinearLayout {
                 SetUpCalendar();
             }
         });
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView EventTime = view.findViewById(R.id.events_id);
+                final String date = dateFormat.format(dates.get(position));
+                final String month = monthFormat.format(dates.get(position));
+                final String year = yearFormat.format(dates.get(position));
+//                DaySelectPopupFragment popup = new DaySelectPopupFragment(Cthis, Calendar.DAY_OF_MONTH, Calendar.MONTH + 1, Calendar.YEAR);
+//                popup.show(getChildFragmentManager(), getResources().getString(R.string.day_select_dialog_tag));
+
+
+            }
+        });
     }
 
     public CustomCalendarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -74,10 +93,21 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void SetUpCalendar(){
-        Date currentDate = calendar.getTime();
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        int monthOfYear = calendar.get(Calendar.MONTH) + 1;
-        int year = calendar.get(Calendar.YEAR);
-        CurrentDate.setText(dayOfMonth + " / " + monthOfYear + " / " + year);
+        String currentDate = dateFormat.format(calendar.getTime());
+        CurrentDate.setText(currentDate);
+
+        dates.clear();
+        Calendar monthCalendar = (Calendar) calendar.clone();
+        monthCalendar.set(Calendar.DAY_OF_MONTH, 1);
+        int FirstDayOfMonth = monthCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+        monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayOfMonth);
+
+        while(dates.size() < MAX_CALENDAR_DAYS){
+            dates.add(monthCalendar.getTime());
+            monthCalendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        calendarGridAdapter = new CalendarGridAdapter(context, dates, calendar, eventsList);
+        gridView.setAdapter(calendarGridAdapter);
     }
 }

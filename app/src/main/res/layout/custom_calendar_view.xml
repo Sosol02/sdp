@@ -121,13 +121,6 @@
 
     </LinearLayout>
 
-    <ImageButton
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@mipmap/bigus_dickus"
-        android:layout_margin = "10dp"
-        />
-
 
     <GridView
         android:layout_width="match_parent"
