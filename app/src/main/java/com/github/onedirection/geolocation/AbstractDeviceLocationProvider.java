@@ -1,23 +1,14 @@
 package com.github.onedirection.geolocation;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import com.github.onedirection.R;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.ObserverPattern;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
@@ -32,11 +23,17 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import static com.github.onedirection.utils.ObserverPattern.Observable;
+
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
-public abstract class AbstractDeviceLocationProvider implements Observable<Coordinates>, DeviceLocationProvider {
+/**
+ * A partial implementation of a device location provider.
+ * Most of the logic can be done in any context (thus this class), except
+ * for the permission request, for whose no general-case solution was found.
+ */
+public abstract class AbstractDeviceLocationProvider implements DeviceLocationProvider {
     private final static LocationRequest LOCATION_REQUEST = LocationRequest.create();
+
     static {
         LOCATION_REQUEST.setInterval(10000);
         LOCATION_REQUEST.setFastestInterval(5000);
@@ -49,21 +46,22 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
     private final LocationCallback locationCallback;
     private Location lastLocation;
 
-    public AbstractDeviceLocationProvider(Context ctx){
+    public AbstractDeviceLocationProvider(Context ctx) {
         this.context = ctx;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx);
-        this.observers =  new ArrayList<>();
-        this.locationCallback = new LocationCallback(){
+        this.observers = new ArrayList<>();
+        this.locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 lastLocation = locationResult.getLastLocation();
                 notifyOfLocationChange();
             }
+
             @Override
             public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
                 super.onLocationAvailability(locationAvailability);
-                if(DeviceLocationProvider.fineLocationUsageIsAllowed(ctx)){
+                if (DeviceLocationProvider.fineLocationUsageIsAllowed(ctx)) {
                     createLocationRequest();
                 }
             }
@@ -98,9 +96,10 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
     /**
      * Only abstract method; it is so because this is the only thing we can't handle
      * generally (we need to be an activity to handle this easily).
+     *
+     * @return Whether the request was granted.
      * @see DeviceLocationProviderActivity
      * @see DeviceLocationProviderNoRequests
-     * @return Whether the request was granted.
      */
     public abstract CompletableFuture<Boolean> requestFineLocationPermission();
 
@@ -111,8 +110,8 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
     @Override
     @SuppressLint("MissingPermission")
     public final CompletableFuture<Boolean> startLocationTracking() {
-        return requestFineLocationPermission().whenComplete( (permission, throwable) -> {
-            if(permission){
+        return requestFineLocationPermission().whenComplete((permission, throwable) -> {
+            if (permission) {
                 fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
                         locationCallback,
                         Looper.getMainLooper());
@@ -129,7 +128,7 @@ public abstract class AbstractDeviceLocationProvider implements Observable<Coord
 
     @Override
     public final Coordinates getLastLocation() {
-        if(lastLocation == null){
+        if (lastLocation == null) {
             throw new IllegalStateException("There is no last location currently");
         }
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
