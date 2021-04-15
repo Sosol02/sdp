@@ -39,7 +39,7 @@ public class EventQueries {
             CompletableFuture<List<Event>> res2 = cdb.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, ti, tf, EventStorer.getInstance()); // ti < eventEndTime <= tf
             CompletableFuture<List<Event>> res3 = cdb.filterWhereLess(EventStorer.KEY_EPOCH_START_TIME, ti, EventStorer.getInstance()); // eventStartTime < ti
             CompletableFuture<List<Event>> res4 = cdb.filterWhereGreater(EventStorer.KEY_EPOCH_END_TIME, tf, EventStorer.getInstance()); // eventEndTime > tf
-            CompletableFuture<List<Event>> recurringEvents = cdb.filterWhereGreaterEq(EventStorer.KEY_RECURRING_PERIOD, new Long(0), EventStorer.getInstance());
+            CompletableFuture<List<Event>> recurringEvents = cdb.filterWhereGreaterEq(EventStorer.KEY_RECURRING_PERIOD, 0L, EventStorer.getInstance());
             return CompletableFuture.allOf(res1, res2, res3, res4, recurringEvents).thenApply(ignoredVoid -> {
                 List<Event> r1 = res1.join();
                 List<Event> r2 = res2 .join();
