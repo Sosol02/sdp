@@ -133,15 +133,15 @@ public class EventCreatorTest {
         onView(withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("location"))));
     }
 
-    @Test
-    public void verifyEventViewIsCorrectlyCalled() {
-        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
-
-        intended(allOf(
-                hasComponent(EventsView.class.getName()),
-                hasExtra(is(EventCreator.EXTRA_EVENT), is(instanceOf(Event.class)))
-        ));
-    }
+//    @Test
+//    public void verifyEventViewIsCorrectlyCalled() {
+//        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+//
+//        intended(allOf(
+//                hasComponent(EventsView.class.getName()),
+//                hasExtra(is(EventCreator.EXTRA_EVENT), is(instanceOf(Event.class)))
+//        ));
+//    }
 
     @Test
     public void geolocationTabIsOpenedWhenNoGeolocationIsSet(){
