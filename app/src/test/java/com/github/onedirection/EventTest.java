@@ -90,9 +90,9 @@ public class EventTest {
 
         assertThrows(NullPointerException.class, () -> EVENT.setRecurringPeriod(null));
         Event eventChanged = EVENT.setRecurringPeriod(recurringPeriod);
-        assertTrue(eventChanged.getRecurringPeriod().isPresent());
-        assertEquals(Optional.of(recurringPeriod), eventChanged.getRecurringPeriod());
-        assertEquals(Optional.of(RECURRING_PERIOD), EVENT.getRecurringPeriod());
+        assertTrue(eventChanged.getRecurrencePeriod().isPresent());
+        assertEquals(Optional.of(recurringPeriod), eventChanged.getRecurrencePeriod());
+        assertEquals(Optional.of(RECURRING_PERIOD), EVENT.getRecurrencePeriod());
         assertThat(EVENT.setRecurringPeriod(RECURRING_PERIOD), sameInstance(EVENT));
     }
 

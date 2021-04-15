@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EventStorer extends Storer<Event> {
@@ -51,7 +52,7 @@ public class EventStorer extends Storer<Event> {
         map.put(KEY_COORD_NAME, storable.getLocationName());
         map.put(KEY_EPOCH_START_TIME, storable.getStartTime().toEpochSecond());
         map.put(KEY_EPOCH_END_TIME, storable.getEndTime().toEpochSecond());
-        storable.getRecurringPeriod().ifPresent(period -> {
+        storable.getRecurrencePeriod().ifPresent(period -> {
             map.put(KEY_RECURRING_PERIOD, period.getEpochSecond());
         });
         return map;
@@ -65,33 +66,17 @@ public class EventStorer extends Storer<Event> {
         String name = (String) m.get(KEY_NAME);
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
+        Coordinates coords = coordLatitude == null || coordLongitude == null ? null : new Coordinates(coordLatitude, coordLongitude);
         String locationName = (String) m.get(KEY_COORD_NAME);
 
         long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
         long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
         Long recurringPeriod = (Long) m.getOrDefault(KEY_RECURRING_PERIOD, null);
+        Instant period = recurringPeriod == null ? null : Instant.ofEpochSecond(recurringPeriod);
 
-        if(coordLatitude == null || coordLongitude == null) {
-            if(recurringPeriod == null) {
-                return new Event(new Id(UUID.fromString(id)), name, locationName,
-                        TimeUtils.epochToZonedDateTime(epochStartTime),
-                        TimeUtils.epochToZonedDateTime(epochEndTime));
-            } else {
-                return new Event(new Id(UUID.fromString(id)), name, locationName,
-                        TimeUtils.epochToZonedDateTime(epochStartTime),
-                        TimeUtils.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
-            }
-        } else {
-            if(recurringPeriod == null) {
-                return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
-                        TimeUtils.epochToZonedDateTime(epochStartTime),
-                        TimeUtils.epochToZonedDateTime(epochEndTime));
-            } else {
-                return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
-                        TimeUtils.epochToZonedDateTime(epochStartTime),
-                        TimeUtils.epochToZonedDateTime(epochEndTime), Instant.ofEpochSecond(recurringPeriod));
-            }
-        }
+        return new Event(new Id(UUID.fromString(id)), name, locationName, Optional.ofNullable(coords),
+                TimeUtils.epochToZonedDateTime(epochStartTime),
+                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(period));
     }
 
 }

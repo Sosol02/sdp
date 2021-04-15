@@ -28,8 +28,11 @@ public class EventQueries {
     public CompletableFuture<List<Event>> getEventsInTimeframe(ZonedDateTime start, ZonedDateTime end) {
         Objects.requireNonNull(start);
         Objects.requireNonNull(end);
-        if(end.toEpochSecond() - start.toEpochSecond() <= 0) {
+        if(end.toEpochSecond() - start.toEpochSecond() == 0) {
             return CompletableFuture.completedFuture(new ArrayList<Event>());
+        }
+        if(end.toEpochSecond() - start.toEpochSecond() < 0) {
+            throw new IllegalArgumentException("end time is less than start time");
         }
         if(db.getClass() == ConcreteDatabase.class) {
             Long ti = start.toEpochSecond();
@@ -56,13 +59,13 @@ public class EventQueries {
                     long tStart = e.getStartTime().toEpochSecond();
                     long tEnd = e.getEndTime().toEpochSecond();
                     long duration = tEnd-tStart;
-                    long period = e.getRecurringPeriod().get().getEpochSecond();
+                    long period = e.getRecurrencePeriod().get().getEpochSecond();
                     long x = Math.max(1, ti/tStart);
                     while((tStart+(x-1)*period) < tf) {
                         long startTime = (tStart+(x-1)*period);
                         long endTime = startTime + duration;
-                        Event newEvent = new Event(Id.generateRandom(), e.getName(), e.getLocationName(), e.getCoordinates(),
-                                TimeUtils.epochToZonedDateTime(startTime), TimeUtils.epochToZonedDateTime(endTime), e.getRecurringPeriod());
+                        Event newEvent = new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(),
+                                TimeUtils.epochToZonedDateTime(startTime), TimeUtils.epochToZonedDateTime(endTime), e.getRecurrencePeriod());
                         if(startTime >= ti && startTime < tf) {
                             r1.add(newEvent);
                         }

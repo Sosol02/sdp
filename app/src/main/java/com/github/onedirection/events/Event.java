@@ -109,7 +109,7 @@ public class Event implements Serializable, Storable<Event> {
     }
 
     public Event setRecurringPeriod(Instant period) {
-        return Optional.of(Objects.requireNonNull(period)).equals(getRecurringPeriod())
+        return Optional.of(Objects.requireNonNull(period)).equals(getRecurrencePeriod())
                 ? this
                 : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
     }
@@ -153,10 +153,10 @@ public class Event implements Serializable, Storable<Event> {
     }
 
     public boolean isRecurrent() {
-        return getRecurringPeriod().isPresent();
+        return getRecurrencePeriod().isPresent();
     }
 
-    public Optional<Instant> getRecurringPeriod() {
+    public Optional<Instant> getRecurrencePeriod() {
         return Optional.ofNullable(recurringPeriod);
     }
 
@@ -181,7 +181,7 @@ public class Event implements Serializable, Storable<Event> {
                 getLocation().equals(event.getLocation()) &&
                 startTime.equals(event.startTime) &&
                 endTime.equals(event.endTime) &&
-                getRecurringPeriod().equals(event.getRecurringPeriod());
+                getRecurrencePeriod().equals(event.getRecurrencePeriod());
     }
 
     @Override
