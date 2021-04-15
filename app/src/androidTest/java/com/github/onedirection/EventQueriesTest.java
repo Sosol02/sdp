@@ -97,7 +97,7 @@ public class EventQueriesTest {
 
         if(b) {
             EventQueries eq = new EventQueries(db);
-            List<Event> e = eq.getEventsInTimeframe(end, start).get();
+            List<Event> e = eq.getEventsInTimeframe(start, start).get();
             assertEquals(0, e.size());
         }
         for(Event e : events) {
