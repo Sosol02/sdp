@@ -25,17 +25,19 @@ import java.util.Locale;
 public class CustomCalendarView extends LinearLayout {
 
     private static final int MAX_CALENDAR_DAYS = 42;
-    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
-    private ImageButton NextButton, PreviousButton;
-    private TextView CurrentDate;
-    private GridView gridView;
+    private final SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
     private final Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-    private Context context;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
     private final List<Event> eventsList = new ArrayList<>();
+
     private CalendarGridAdapter calendarGridAdapter;
+    private Context context;
+    private ImageButton NextButton, PreviousButton;
+    private TextView CurrentDate;
+    private GridView gridView;
+
 
 
     public CustomCalendarView(Context context) {
@@ -61,16 +63,6 @@ public class CustomCalendarView extends LinearLayout {
             public void onClick(View v) {
                 calendar.add(Calendar.MONTH, 1);
                 SetUpCalendar();
-            }
-        });
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView EventTime = view.findViewById(R.id.events_id);
-                final String date = dateFormat.format(dates.get(position));
-                final String month = monthFormat.format(dates.get(position));
-                final String year = yearFormat.format(dates.get(position));
             }
         });
     }

@@ -19,17 +19,17 @@ import java.util.Date;
 import java.util.List;
 
 public class CalendarGridAdapter extends ArrayAdapter {
-    private Calendar currentDate;
-    private List<Event> events;
-    private LayoutInflater inflater;
+    private final Calendar currentDate;
+    private final List<Event> events;
+    private final LayoutInflater inflater;
     private final List<Date> dates;
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
-        this.dates = dates;
         this.currentDate = currentDate;
         this.events = events;
-        inflater = LayoutInflater.from(context);
+        this.inflater = LayoutInflater.from(context);
+        this.dates = dates;
     }
 
     @NonNull
