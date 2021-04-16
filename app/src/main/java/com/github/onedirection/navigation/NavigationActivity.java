@@ -8,9 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,9 +21,10 @@ import androidx.navigation.ui.NavigationUI;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.google.android.material.navigation.NavigationView;
 
-public class NavigationActivity extends AppCompatActivity {
+public class NavigationActivity extends DeviceLocationProvider {
 
     private AppBarConfiguration mAppBarConfiguration;
 
