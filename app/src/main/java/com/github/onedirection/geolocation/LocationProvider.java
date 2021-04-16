@@ -8,4 +8,5 @@ public interface LocationProvider {
 
     Coordinates getLastLocation();
     CompletableFuture<Boolean> startLocationTracking();
+    CompletableFuture<Boolean> stopLocationTracking();
 }

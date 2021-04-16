@@ -96,8 +96,8 @@ public class EventQueriesTest {
         boolean b = db.storeAll(events).get();
         if(b) {
             EventQueries eq = new EventQueries(db);
-            List<Event> noEvents = eq.getEventsInTimeframe(end, start).get();
-            assertEquals(0, noEvents.size());
+            List<Event> e = eq.getEventsInTimeframe(start, start).get();
+            assertEquals(0, e.size());
         }
         for(Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();

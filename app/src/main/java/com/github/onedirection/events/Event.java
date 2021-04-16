@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -30,6 +31,10 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
+
+    /**
+     * A recurrence period of the event. Note that any changes applied to an event of a series of recurring events are also applied to all the events of this series.
+     */
     final private Instant recurringPeriod;
 
     /**

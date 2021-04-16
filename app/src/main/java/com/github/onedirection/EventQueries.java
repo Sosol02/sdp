@@ -5,15 +5,10 @@ import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.utils.TimeUtils;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.utils.Id;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +20,15 @@ public class EventQueries {
         this.db = db;
     }
 
+    /**
+     * Method to query events that take place in a time frame that is non-disjoint with the given time frame [start, end[
+     * The mechanism to handle recurring events is the following : A single event is stored in the database to represent a series of recurring events. It is then retrieved, and evaluated to see if
+     * any of the events from the series of recurring events fall in the given time frame [start, end[. If there are, they are concretely created and added to the returning list. They are however not added to
+     * the database.
+     * @param start (ZonedDateTime) : the start time of the target time frame
+     * @param end (ZonedDateTime) : [exclusive[ the end time of the target time frame
+     * @return (CompletableFuture<List<Event>>) : A list of events queried from the database that have a time frame non-disjoint with [start, end[, available once the query is done.
+     */
     public CompletableFuture<List<Event>> getEventsInTimeframe(ZonedDateTime start, ZonedDateTime end) {
         Objects.requireNonNull(start);
         Objects.requireNonNull(end);
