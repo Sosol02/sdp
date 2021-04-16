@@ -59,6 +59,16 @@
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
     <string name="use_geolocation">Use geolocation</string>
+
     <string name="my_location_button_desc">my_location_button</string>
+
+    <string name="currentdate">CurrentDate</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thur">Thur</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
+    <string name="sun">Sun</string>
 
 </resources>
