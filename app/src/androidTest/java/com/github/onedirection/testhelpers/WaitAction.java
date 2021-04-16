@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.testhelpers;
 
 import android.view.View;
 

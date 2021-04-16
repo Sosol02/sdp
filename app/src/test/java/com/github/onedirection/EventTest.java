@@ -7,6 +7,7 @@ import com.github.onedirection.utils.Id;
 import org.junit.Test;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 public class EventTest {
@@ -29,8 +31,9 @@ public class EventTest {
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
+    private final static Instant RECURRING_PERIOD = Instant.ofEpochSecond(3600*24); //Daily
 
-    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
+    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
 
     @Test
     public void testEventWithNullArgument() {
@@ -82,6 +85,18 @@ public class EventTest {
     }
 
     @Test
+    public void testEventSetRecurringPeriodAndGet() {
+        final Instant recurringPeriod = Instant.ofEpochSecond(3600*24*7); //Weekly
+
+        assertThrows(NullPointerException.class, () -> EVENT.setRecurringPeriod(null));
+        Event eventChanged = EVENT.setRecurringPeriod(recurringPeriod);
+        assertTrue(eventChanged.getRecurrencePeriod().isPresent());
+        assertEquals(Optional.of(recurringPeriod), eventChanged.getRecurrencePeriod());
+        assertEquals(Optional.of(RECURRING_PERIOD), EVENT.getRecurrencePeriod());
+        assertThat(EVENT.setRecurringPeriod(RECURRING_PERIOD), sameInstance(EVENT));
+    }
+
+    @Test
     public void testEventSetEndTimeAndGet() {
         final ZonedDateTime newTime = ZonedDateTime.now().plusYears(1).truncatedTo(Event.TIME_PRECISION);
 
@@ -121,12 +136,13 @@ public class EventTest {
 
     @Test
     public void equalsBehavesAsExpected(){
-        Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
-        Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME);
-        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1));
-        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME);
-        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME);
-        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME);
+        Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1), RECURRING_PERIOD);
+        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event7 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD.plusSeconds(1));
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));
@@ -135,11 +151,12 @@ public class EventTest {
         assertThat(EVENT, not(is(event4)));
         assertThat(EVENT, is(event5));
         assertThat(EVENT, not(is(event6)));
+        assertThat(EVENT, not(is(event7)));
     }
 
     @Test
     public void hashCodeIsEqualCompatible(){
-        Event event = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
+        Event event = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
         assertThat(event, is(EVENT));
         assertThat(event, not(sameInstance(EVENT)));
         assertThat(event.hashCode(), is(EVENT.hashCode()));
