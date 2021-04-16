@@ -29,7 +29,7 @@ public class EventViewAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_sent, parent, false);
-        return new SentMessageHolder(view);
+        return new EventHolder(view);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class EventViewAdapter extends RecyclerView.Adapter {
         return events.size();
     }
 
+    private class EventHolder extends RecyclerView.ViewHolder{
+        EventHolder(View view){
+            super(view);
+        }
+    }
 
 }
