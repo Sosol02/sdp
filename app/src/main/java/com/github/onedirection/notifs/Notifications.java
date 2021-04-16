@@ -17,8 +17,6 @@ import androidx.core.app.NotificationCompat;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +24,7 @@ import java.util.Set;
 public class Notifications {
     public static final String NOTIF_BROADCAST = "notif_broadcast";
     public static final String NOTIF_ID = "notif_id";
-    public static final String PAYLOAD = "notif_payload";
+    public static final String NOTIFICATION_PAYLOAD = "notif_payload";
 
     private static Notifications global = null;
     public static Notifications getInstance(Context context) {
@@ -37,15 +35,15 @@ public class Notifications {
         return global;
     }
 
-    private static final String CHANNEL_ID = "todo";
+    private static final String CHANNEL_ID = "com.1Direction.events";
+    private static final String CHANNEL_NAME = "1directionChannel";
+    private static final String CHANNEL_DESC = "1Direction event notifications";
 
     private static void setupNotifChannel(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            CharSequence name = "1directionChannel";
-            String description = "All 1direction messages";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance);
+            channel.setDescription(CHANNEL_DESC);
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
@@ -55,20 +53,15 @@ public class Notifications {
     private Optional<Event> currentlyScheduled = Optional.empty();
 
     public void schedule(Context context, long whenMillis, int notifId, /* TODO fix that */ Parcelable payload, BroadcastReceiver handler) {
-        Log.d("schedule", "schedule " + whenMillis + " " + new Date(whenMillis).toString() + " " + handler.toString());
-
         long now = System.currentTimeMillis();
-        Log.d("now: ", now + " | " + Date.from(Instant.ofEpochMilli(now)));
-        Log.d("whenMillis: ", whenMillis + " | " + Date.from(Instant.ofEpochMilli(whenMillis)));
         if (whenMillis < now) {
             Log.d("schedule", "Registering notification with due date in the past.");
         }
 
-        context.registerReceiver(handler, new IntentFilter());
-
         Intent intent = new Intent(context, handler.getClass());
         intent.putExtra(NOTIF_ID, notifId);
-        intent.putExtra(PAYLOAD, payload);
+        intent.putExtra(NOTIFICATION_PAYLOAD, payload);
+
         PendingIntent pending = PendingIntent.getBroadcast(context, notifId, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -76,16 +69,17 @@ public class Notifications {
     }
 
     public int scheduleNotif(Context context, long whenMillis, String title, String text) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+        Notification notif = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_menu_home) // TODO: make actual icon
                 .setContentTitle(title)
                 .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // ignored on android 23+
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .build();
 
-        Notification notif = builder.build();
         int id = NotificationIdGenerator.getUniqueId();
-        schedule(context, whenMillis, id, notif, new NotificationPublisher());
+        schedule(context, whenMillis, id, notif, new NotificationPublisher(context));
+        
         return id;
     }
 
