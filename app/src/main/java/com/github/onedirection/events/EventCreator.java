@@ -2,13 +2,11 @@ package com.github.onedirection.events;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
@@ -16,7 +14,6 @@ import com.github.onedirection.R;
 import com.github.onedirection.geolocation.DeviceLocationProvider;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 /**
  * To use to create an event, just start the activity.
@@ -124,7 +121,7 @@ public class EventCreator extends DeviceLocationProvider {
     }
 
     @VisibleForTesting
-    public IdlingResource getIdlingResource(){
+    public CountingIdlingResource getIdlingResource(){
         return model.idling;
     }
 }
