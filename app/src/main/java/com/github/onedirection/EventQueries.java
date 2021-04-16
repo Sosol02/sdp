@@ -1,6 +1,5 @@
 package com.github.onedirection;
 
-import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.utils.TimeUtils;
@@ -38,55 +37,50 @@ public class EventQueries {
         if(end.toEpochSecond() - start.toEpochSecond() < 0) {
             throw new IllegalArgumentException("end time is less than start time");
         }
-        if(db.getClass() == ConcreteDatabase.class) {
-            Long ti = start.toEpochSecond();
-            Long tf = end.toEpochSecond();
-            ConcreteDatabase cdb = (ConcreteDatabase)db;
-            CompletableFuture<List<Event>> res1 = cdb.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, ti, tf, EventStorer.getInstance()); // ti <= eventStartTime < tf
-            CompletableFuture<List<Event>> res2 = cdb.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, ti, tf, EventStorer.getInstance()); // ti < eventEndTime <= tf
-            CompletableFuture<List<Event>> res3 = cdb.filterWhereLess(EventStorer.KEY_EPOCH_START_TIME, ti, EventStorer.getInstance()); // eventStartTime < ti
-            CompletableFuture<List<Event>> res4 = cdb.filterWhereGreater(EventStorer.KEY_EPOCH_END_TIME, tf, EventStorer.getInstance()); // eventEndTime > tf
-            CompletableFuture<List<Event>> recurringEvents = cdb.filterWhereGreaterEq(EventStorer.KEY_RECURRING_PERIOD, 0L, EventStorer.getInstance());
-            return CompletableFuture.allOf(res1, res2, res3, res4, recurringEvents).thenApply(ignoredVoid -> {
-                List<Event> r1 = res1.join();
-                List<Event> r2 = res2 .join();
-                List<Event> r3 = res3.join();
-                List<Event> r4 = res4.join();
-                List<Event> recurring = recurringEvents.join();
-                r1.removeIf(event -> r2.contains(event));
-                r3.removeIf(event -> !r4.contains(event));
-                r1.addAll(r2);
-                r1.addAll(r3);
-                recurring.removeIf(event -> r1.contains(event));
+        Long ti = start.toEpochSecond();
+        Long tf = end.toEpochSecond();
+        CompletableFuture<List<Event>> res1 = db.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, ti, tf, EventStorer.getInstance()); // ti <= eventStartTime < tf
+        CompletableFuture<List<Event>> res2 = db.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, ti, tf, EventStorer.getInstance()); // ti < eventEndTime <= tf
+        CompletableFuture<List<Event>> res3 = db.filterWhereLess(EventStorer.KEY_EPOCH_START_TIME, ti, EventStorer.getInstance()); // eventStartTime < ti
+        CompletableFuture<List<Event>> res4 = db.filterWhereGreater(EventStorer.KEY_EPOCH_END_TIME, tf, EventStorer.getInstance()); // eventEndTime > tf
+        CompletableFuture<List<Event>> recurringEvents = db.filterWhereGreaterEq(EventStorer.KEY_RECURRING_PERIOD, 0L, EventStorer.getInstance());
+        return CompletableFuture.allOf(res1, res2, res3, res4, recurringEvents).thenApply(ignoredVoid -> {
+            List<Event> r1 = res1.join();
+            List<Event> r2 = res2 .join();
+            List<Event> r3 = res3.join();
+            List<Event> r4 = res4.join();
+            List<Event> recurring = recurringEvents.join();
+            r1.removeIf(event -> r2.contains(event));
+            r3.removeIf(event -> !r4.contains(event));
+            r1.addAll(r2);
+            r1.addAll(r3);
+            recurring.removeIf(event -> r1.contains(event));
 
-                for(Event e : recurring) {
-                    long tStart = e.getStartTime().toEpochSecond();
-                    long tEnd = e.getEndTime().toEpochSecond();
-                    long duration = tEnd-tStart;
-                    long period = e.getRecurrencePeriod().get().getEpochSecond();
-                    long x = Math.max(1, ti/tStart);
-                    while((tStart+(x-1)*period) < tf) {
-                        long startTime = (tStart+(x-1)*period);
-                        long endTime = startTime + duration;
-                        Event newEvent = new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(),
-                                TimeUtils.epochToZonedDateTime(startTime), TimeUtils.epochToZonedDateTime(endTime), e.getRecurrencePeriod());
-                        if(startTime >= ti && startTime < tf) {
-                            r1.add(newEvent);
-                        }
-                        else if(endTime > ti && endTime <= tf) {
-                            r1.add(newEvent);
-                        }
-                        else if(startTime < ti && endTime > tf) {
-                            r1.add(newEvent);
-                        }
-                        ++x;
+            for(Event e : recurring) {
+                long tStart = e.getStartTime().toEpochSecond();
+                long tEnd = e.getEndTime().toEpochSecond();
+                long duration = tEnd-tStart;
+                long period = e.getRecurrencePeriod().get().getEpochSecond();
+                long x = Math.max(1, ti/tStart);
+                while((tStart+(x-1)*period) < tf) {
+                    long startTime = (tStart+(x-1)*period);
+                    long endTime = startTime + duration;
+                    Event newEvent = new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(),
+                            TimeUtils.epochToZonedDateTime(startTime), TimeUtils.epochToZonedDateTime(endTime), e.getRecurrencePeriod());
+                    if(startTime >= ti && startTime < tf) {
+                        r1.add(newEvent);
                     }
+                    else if(endTime > ti && endTime <= tf) {
+                        r1.add(newEvent);
+                    }
+                    else if(startTime < ti && endTime > tf) {
+                        r1.add(newEvent);
+                    }
+                    ++x;
                 }
-                return r1;
-            });
-        } else {
-            throw new UnsupportedOperationException("This method is not supported for non firebase database.");
-        }
+            }
+            return r1;
+        });
     }
 
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
