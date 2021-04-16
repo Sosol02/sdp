@@ -2,6 +2,7 @@ package com.github.onedirection.testdatabase;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+
 import com.github.onedirection.events.Event;
 import com.github.onedirection.EventQueriesTest;
 import com.github.onedirection.database.ConcreteDatabase;

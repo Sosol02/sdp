@@ -1,16 +1,15 @@
 package com.github.onedirection.database.store;
 
-
+import com.github.onedirection.database.utils.TimeUtils;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EventStorer extends Storer<Event> {
@@ -23,6 +22,7 @@ public class EventStorer extends Storer<Event> {
     public static final String KEY_COORD_NAME = "locationName";
     public static final String KEY_EPOCH_START_TIME = "epochStartTime";
     public static final String KEY_EPOCH_END_TIME = "epochEndTime";
+    public static final String KEY_RECURRING_PERIOD = "recurringPeriod";
 
     public static EventStorer getInstance() {
         return GLOBAL;
@@ -52,7 +52,9 @@ public class EventStorer extends Storer<Event> {
         map.put(KEY_COORD_NAME, storable.getLocationName());
         map.put(KEY_EPOCH_START_TIME, storable.getStartTime().toEpochSecond());
         map.put(KEY_EPOCH_END_TIME, storable.getEndTime().toEpochSecond());
-
+        storable.getRecurrencePeriod().ifPresent(period -> {
+            map.put(KEY_RECURRING_PERIOD, period.getEpochSecond());
+        });
         return map;
     }
 
@@ -64,19 +66,17 @@ public class EventStorer extends Storer<Event> {
         String name = (String) m.get(KEY_NAME);
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
+        Coordinates coords = coordLatitude == null || coordLongitude == null ? null : new Coordinates(coordLatitude, coordLongitude);
         String locationName = (String) m.get(KEY_COORD_NAME);
+
         long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
         long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
+        Long recurringPeriod = (Long) m.getOrDefault(KEY_RECURRING_PERIOD, null);
+        Instant period = recurringPeriod == null ? null : Instant.ofEpochSecond(recurringPeriod);
 
-        if(coordLatitude == null || coordLongitude == null) {
-            return new Event(new Id(UUID.fromString(id)), name, locationName,
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochStartTime), ZoneId.systemDefault()),
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochEndTime), ZoneId.systemDefault()));
-        } else {
-            return new Event(new Id(UUID.fromString(id)), name, locationName, new Coordinates(coordLatitude, coordLongitude),
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochStartTime), ZoneId.systemDefault()),
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochEndTime), ZoneId.systemDefault()));
-        }
+        return new Event(new Id(UUID.fromString(id)), name, locationName, Optional.ofNullable(coords),
+                TimeUtils.epochToZonedDateTime(epochStartTime),
+                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(period));
     }
 
 }
