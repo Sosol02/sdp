@@ -50,6 +50,7 @@
     <string name="location_hint">Location</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
+
     <string name="set_event_location">Set event location</string>
     <string name="location_name">Location name</string>
     <string name="search">Search:</string>
@@ -58,6 +59,9 @@
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
     <string name="use_geolocation">Use geolocation</string>
+
+    <string name="my_location_button_desc">my_location_button</string>
+
     <string name="currentdate">CurrentDate</string>
     <string name="mon">Mon</string>
     <string name="tue">Tue</string>

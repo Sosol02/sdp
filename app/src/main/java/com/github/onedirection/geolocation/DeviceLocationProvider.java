@@ -2,12 +2,10 @@ package com.github.onedirection.geolocation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import androidx.core.app.ActivityCompat;
 import com.github.onedirection.R;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.ObserverPattern;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
@@ -31,6 +28,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+
 import static com.github.onedirection.utils.ObserverPattern.Observable;
 import static com.github.onedirection.utils.ObserverPattern.Observer;
 
@@ -102,7 +100,7 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
         };
         permissionRequestResult = CompletableFuture.completedFuture(false);
     }
-
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
