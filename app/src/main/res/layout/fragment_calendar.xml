@@ -7,8 +7,7 @@
     android:orientation="vertical"
     tools:context=".navigation.fragment.calendar.CalendarFragment">
 
-
-    <com.skyhope.eventcalenderlibrary.CalenderEvent
+    <com.github.onedirection.navigation.fragment.calendar.CustomCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,5 +15,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
