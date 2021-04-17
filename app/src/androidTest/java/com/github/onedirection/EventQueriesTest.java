@@ -94,7 +94,6 @@ public class EventQueriesTest {
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = db.storeAll(events).get();
-
         if(b) {
             EventQueries eq = new EventQueries(db);
             List<Event> e = eq.getEventsInTimeframe(start, start).get();
