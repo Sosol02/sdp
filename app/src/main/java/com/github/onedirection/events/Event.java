@@ -9,14 +9,8 @@ import com.github.onedirection.utils.Id;
 
 import java.io.Serializable;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,16 +27,16 @@ public class Event implements Serializable, Storable<Event> {
     final private ZonedDateTime endTime;
 
     /**
-     * A recurrence period of the event. Note that any changes applied to an event of a series of recurring events are also applied to all the events of this series.
+     * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series.
      */
-    final private Instant recurringPeriod;
+    final private Recurrence recurringPeriod;
 
     /**
      * Smallest time unit recorded inside the event.
      */
     final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
 
-    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Instant> recurringPeriod) {
+    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.locationName = Objects.requireNonNull(locationName);
@@ -63,11 +57,11 @@ public class Event implements Serializable, Storable<Event> {
         this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.empty());
     }
 
-    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) {
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) {
         this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.of(recurringPeriod));
     }
 
-    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) {
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) {
         this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.of(recurringPeriod));
     }
 
@@ -85,11 +79,11 @@ public class Event implements Serializable, Storable<Event> {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.empty());
     }
 
-    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Instant recurringPeriod) throws IllegalArgumentException {
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) throws IllegalArgumentException {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.of(recurringPeriod));
     }
 
-    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Instant> recurringPeriod) throws IllegalArgumentException {
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) throws IllegalArgumentException {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
     }
 
@@ -113,8 +107,8 @@ public class Event implements Serializable, Storable<Event> {
                 : new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
     }
 
-    public Event setRecurringPeriod(Instant period) {
-        return Optional.of(Objects.requireNonNull(period)).equals(getRecurrencePeriod())
+    public Event setRecurrence(Recurrence period) {
+        return Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())
                 ? this
                 : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
     }
@@ -128,7 +122,7 @@ public class Event implements Serializable, Storable<Event> {
     public Storer<Event> storer() {
         return EventStorer.getInstance();
     }
-  
+
     public Optional<Coordinates> getCoordinates() {
         return Optional.ofNullable(location);
     }
@@ -158,10 +152,10 @@ public class Event implements Serializable, Storable<Event> {
     }
 
     public boolean isRecurrent() {
-        return getRecurrencePeriod().isPresent();
+        return getRecurrence().isPresent();
     }
 
-    public Optional<Instant> getRecurrencePeriod() {
+    public Optional<Recurrence> getRecurrence() {
         return Optional.ofNullable(recurringPeriod);
     }
 
@@ -186,7 +180,7 @@ public class Event implements Serializable, Storable<Event> {
                 getLocation().equals(event.getLocation()) &&
                 startTime.equals(event.startTime) &&
                 endTime.equals(event.endTime) &&
-                getRecurrencePeriod().equals(event.getRecurrencePeriod());
+                getRecurrence().equals(event.getRecurrence());
     }
 
     @Override

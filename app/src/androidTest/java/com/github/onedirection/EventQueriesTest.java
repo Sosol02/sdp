@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.database.utils.TimeUtils;
+import com.github.onedirection.utils.TimeUtils;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
