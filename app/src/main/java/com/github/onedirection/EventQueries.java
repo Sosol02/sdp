@@ -15,19 +15,23 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * A class used to query the events in a database based on different operations
+ */
 public class EventQueries {
 
     private Database db;
 
+    /**
+     * Constructor of EventQueries
+     * @param db (Database) : the database to which the queries are applied
+     */
     public EventQueries(Database db) {
         this.db = db;
     }
 
     /**
      * Method to query events that take place in a time frame that is non-disjoint with the given time frame [start, end[
-     * The mechanism to handle recurring events is the following : A single event is stored in the database to represent a series of recurring events. It is then retrieved, and evaluated to see if
-     * any of the events from the series of recurring events fall in the given time frame [start, end[. If there are, they are concretely created and added to the returning list. They are however not added to
-     * the database.
      * @param start (ZonedDateTime) : the start time of the target time frame
      * @param end (ZonedDateTime) : [exclusive[ the end time of the target time frame
      * @return (CompletableFuture<List<Event>>) : A list of events queried from the database that have a time frame non-disjoint with [start, end[, available once the query is done.
@@ -61,36 +65,72 @@ public class EventQueries {
         });
     }
 
+    /**
+     * Get events that take place during a given day
+     * @param day (ZonedDateTime) : the given day
+     * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given day, once the query is done
+     */
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
         ZonedDateTime dayStart = TimeUtils.truncateTimeToDays(day);
         ZonedDateTime dayEnd = dayStart.plusDays(1);
         return getEventsInTimeframe(dayStart, dayEnd);
     }
 
+    /**
+     * Get events that take place during a given week
+     * @param week (ZonedDateTime) : the given week
+     * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given week, once the query is done
+     */
     public CompletableFuture<List<Event>> getEventsByWeek(ZonedDateTime week) {
         ZonedDateTime weekStart = TimeUtils.truncateTimeToWeeks(week);
         ZonedDateTime weekEnd = weekStart.plusWeeks(1);
         return getEventsInTimeframe(weekStart, weekEnd);
     }
 
+    /**
+     * Get events that take place during a given month
+     * @param month (ZonedDateTime) : the given month
+     * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given month, once the query is done
+     */
     public CompletableFuture<List<Event>> getEventsByMonth(ZonedDateTime month) {
         ZonedDateTime monthStart = TimeUtils.truncateTimeToMonths(month);
         ZonedDateTime monthEnd = monthStart.plusMonths(1);
         return getEventsInTimeframe(monthStart, monthEnd);
     }
 
+    /**
+     * Static version of getEventsByDay
+     * @param db (Database) : the database to which the queries are applied
+     */
     public static CompletableFuture<List<Event>> getEventsByDay(Database db, ZonedDateTime day) {
         return new EventQueries(db).getEventsByDay(day);
     }
 
+    /**
+     * Static version of getEventsByWeek
+     * @param db (Database) : the database to which the queries are applied
+     */
     public static CompletableFuture<List<Event>> getEventsByWeek(Database db, ZonedDateTime week) {
         return new EventQueries(db).getEventsByWeek(week);
     }
 
+    /**
+     * Static version of getEventsByMonth
+     * @param db (Database) : the database to which the queries are applied
+     */
     public static CompletableFuture<List<Event>> getEventsByMonth(Database db, ZonedDateTime month) {
         return new EventQueries(db).getEventsByMonth(month);
     }
 
+    /**
+     * Method to create a full series of recurring events based on the attributes of a given event. The events are recurring from time 'startRecurrence' to time 'endRecurrence' (included),
+     * and the time between each recurrence of the event is based on the period given in the Recurrence attribute of 'event'.
+     * Ex use : storeRecurringEvent(event("tennis"), 2021, 2022, Recurrence(period:"weekly")) means the event "tennis" will occur every week starting at the begining of 2021 and will end at the begining of 2022
+     * @param event (Event) : the given event representing the recurrence series
+     * @param startRecurrence (ZonedDateTime) : the start time limit of the recurrence of the event
+     * @param endRecurrence (ZonedDateTime) : the end time limit of the recurrence of the event
+     * @return (CompletableFuture<Boolean>) : True if the recurrence series has been successfully created and stored into the database
+     */
     public CompletableFuture<Boolean> storeRecurringEvent(Event event, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
@@ -151,6 +191,11 @@ public class EventQueries {
         return db.storeAll(eventsToStore);
     }
 
+    /**
+     * Modifies the existing event having the same Id as parameter 'event' to have the same fields as 'event'
+     * @param event (Event) : the modified event
+     * @return (CompletableFuture<Id>) : the id of the modified event, once the query is done
+     */
     public CompletableFuture<Id> modifyEvent(Event event) {
         return db.retrieve(Objects.requireNonNull(event).getId(), event.storer()).thenCompose(e -> {
             Objects.requireNonNull(e, "Event doesn't exist in the database");
@@ -159,58 +204,86 @@ public class EventQueries {
         });
     }
 
+    /**
+     * Static version of modifyEvent
+     * @param db (Database) : the database to which the queries are applied
+     */
     public static CompletableFuture<Id> modifyEvent(Database db, Event event) {
         return new EventQueries(db).modifyEvent(event);
     }
 
-    public CompletableFuture<Id> removeEvent(Event event) {
-        if(Objects.requireNonNull(event).isRecurrent()) {
-            Optional<Id> prev = event.getRecurrence().get().getPrevEvent();
-            Optional<Id> next = event.getRecurrence().get().getNextEvent();
-
-            if(prev.isPresent() && next.isPresent()) {
-                CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
-                CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
-                return CompletableFuture.allOf(prevEvent, nextEvent).thenCompose(aVoid -> {
-                    Event e = prevEvent.join();
-                    return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(next)));
-                }).thenCompose(m -> {
-                    Event e = nextEvent.join();
-                    return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(prev)));
-                }).thenCompose(n -> db.remove(event.getId(), event.storer()));
-
-            } else if(prev.isPresent()) {
-                CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
-                return CompletableFuture.allOf(prevEvent).thenCompose(aVoid -> {
-                    Event e = prevEvent.join();
-                    if(!e.getRecurrence().get().getPrevEvent().isPresent()) { //Convert to non-recurring event
-                        return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
-                    } else {
-                        return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(Optional.empty())));
-                    }
-                }).thenCompose(n -> db.remove(event.getId(), event.storer()));
-
-            } else { //Impossible to have both prev AND next not present
-                CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
-                return CompletableFuture.allOf(nextEvent).thenCompose(aVoid -> {
-                    Event e = nextEvent.join();
-                    if(!e.getRecurrence().get().getNextEvent().isPresent()) { //Convert to non-recurring event
-                        return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
-                    } else {
-                        return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(Optional.empty())));
-                    }
-                }).thenCompose(n -> db.remove(event.getId(), event.storer()));
+    /**
+     * Removes an event from the database according to its Id.
+     * If the event is recurring (part of a recurrence series) then the previous and next event from the recurrence series need to have their pointers updated,
+     * as the recurrence series is a linked list of recurring events. Else we simple remove the event from the database.
+     * INVARIANT : A recurrence series has always more than 1 element (event). That is, if an event belongs to a recurrence series (i.e. is recurrent) then its pointers to the previous and next events
+     * of the recurrence series are not both null.
+     * This implies that if there is only 1 event left in the recurrence series, then the series is deleted and the single event is transformed into an ordinary non-recurring event.
+     * @param eventId (Id) : The id of the event that has to be removed from the database
+     * @return (CompletableFuture<Id>) : the id of the modified event, once the query is done
+     */
+    public CompletableFuture<Id> removeEvent(Id eventId) {
+        return db.retrieve(eventId, EventStorer.getInstance()).thenCompose(event -> {
+            if(event == null) { //The event doesn't exist in the database so the task is already done
+                return CompletableFuture.completedFuture(eventId);
             }
+            if(event.isRecurrent()) {
+                Optional<Id> prev = event.getRecurrence().get().getPrevEvent();
+                Optional<Id> next = event.getRecurrence().get().getNextEvent();
 
-        } else {
-            return db.remove(event.getId(), event.storer());
-        }
+                if(prev.isPresent() && next.isPresent()) {
+                    CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
+                    CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
+                    return CompletableFuture.allOf(prevEvent, nextEvent).thenCompose(aVoid -> {
+                        Event e = prevEvent.join();
+                        return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(next)));
+                    }).thenCompose(m -> {
+                        Event e = nextEvent.join();
+                        return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(prev)));
+                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
+
+                } else if(prev.isPresent()) {
+                    CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
+                    return CompletableFuture.allOf(prevEvent).thenCompose(aVoid -> {
+                        Event e = prevEvent.join();
+                        if(!e.getRecurrence().get().getPrevEvent().isPresent()) { //Convert to non-recurring event
+                            return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
+                        } else {
+                            return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(Optional.empty())));
+                        }
+                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
+
+                } else { //Impossible to have both prev AND next not present
+                    CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
+                    return CompletableFuture.allOf(nextEvent).thenCompose(aVoid -> {
+                        Event e = nextEvent.join();
+                        if(!e.getRecurrence().get().getNextEvent().isPresent()) { //Convert to non-recurring event
+                            return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
+                        } else {
+                            return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(Optional.empty())));
+                        }
+                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
+                }
+
+            } else {
+                return db.remove(event.getId(), event.storer());
+            }
+        });
     }
 
-    public static CompletableFuture<Id> removeEvent(Database db, Event event) {
-        return new EventQueries(db).removeEvent(event);
+    /**
+     * Static version of removeEvent
+     * @param db (Database) : the database to which the queries are applied
+     */
+    public static CompletableFuture<Id> removeEvent(Database db, Id eventId) {
+        return new EventQueries(db).removeEvent(eventId);
     }
 
+    /**
+     * Returns all the events of the recurrence series to which the 'event' belongs
+     * @param event (Event) : an event belonging to the recurrence series that has to be returned
+     * @return (CompletableFuture<List<Event>>) : A list of all the events belonging to the recurrence series, once the query is done
+     */
     public CompletableFuture<List<Event>> getRecurrEventSeriesOf(Event event) {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
@@ -218,6 +291,11 @@ public class EventQueries {
         return db.filterWhereEquals(EventStorer.KEY_RECURR_ID, event.getRecurrence().get().getGroupId(), event.storer());
     }
 
+    /**
+     * Remove a full recurrence series, i.e. all the events belonging to the recurrence series to which 'event' belongs
+     * @param event (Event) : an event belonging to the recurrence series that has to be removed
+     * @return (CompletableFuture<Boolean>) : True if the operation of removal succeeded
+     */
     public CompletableFuture<Boolean> removeRecurrEvents(Event event) {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
@@ -233,6 +311,13 @@ public class EventQueries {
         });
     }
 
+    /**
+     * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['startRecurrence', 'endRecurrence']
+     * @param event (Event) : The event to convert
+     * @param startRecurrence (ZonedDateTime) : the start time limit of the recurrence of the event
+     * @param endRecurrence (ZonedDateTime) : the end time limit of the recurrence of the event
+     * @return (CompletableFuture<Boolean>) : True if the operation succeeded
+     */
     public CompletableFuture<Boolean> convertToRecurring(Event event, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");

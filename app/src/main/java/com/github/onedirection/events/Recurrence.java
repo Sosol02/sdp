@@ -9,6 +9,14 @@ import java.util.Optional;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
+/**
+ * Class representing the recurrence of an event.
+ * A recurring event is stored as a recurrence series where all its recurring times are stored as individual events.
+ * The recurrence series is abstracted as a linked-list of events, where each event in the linked-list has pointers to its neighboring events. The Recurrence class is thus here to append these informations
+ * to an event whenever this event belongs to a recurrence series.
+ * INVARIANT : A recurrence series has always more than 1 element (event). That is, if an event belongs to a recurrence series (i.e. is recurrent) then its pointers to the previous and next events
+ * of the recurrence series are not both null.
+ */
 public class Recurrence {
 
     private Id groupId;
@@ -16,6 +24,13 @@ public class Recurrence {
     private Id prevEvent;
     private Id nextEvent;
 
+    /**
+     * Constructor of Recurrence
+     * @param groupId (Id) : The id of a specific recurrence series. The event that has this recurrence appended to it belongs to this specific recurrence series
+     * @param period (Duration) : The time interval between each recurrence of the event
+     * @param prev (Id) : The id of the previous event neighbor in the recurrence series
+     * @param next (Id) : The id of the next event neighbor in the recurrence series
+     */
     public Recurrence(Id groupId, Duration period, Optional<Id> prev, Optional<Id> next) {
         this.groupId = Objects.requireNonNull(groupId);
         this.period = Objects.requireNonNull(period);
