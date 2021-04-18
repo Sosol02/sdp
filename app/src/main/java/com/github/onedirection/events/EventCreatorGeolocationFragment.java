@@ -78,6 +78,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
         ////////////////////////////////
         this.locationProvider = (DeviceLocationProviderActivity) requireActivity();
 
+
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
 

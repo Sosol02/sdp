@@ -18,4 +18,5 @@ public interface LocationProvider extends ObserverPattern.Observable<Coordinates
     boolean addObserver(ObserverPattern.Observer<Coordinates> observer);
 
     boolean removeObserver(ObserverPattern.Observer<Coordinates> observer);
+
 }
