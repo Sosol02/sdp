@@ -11,15 +11,23 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class Recurrence {
 
+    private Id groupId;
     private Duration period;
     private Id prevEvent;
     private Id nextEvent;
 
-    public Recurrence(Duration period, Optional<Id> prev, Optional<Id> next) {
+    public Recurrence(Id groupId, Duration period, Optional<Id> prev, Optional<Id> next) {
+        this.groupId = Objects.requireNonNull(groupId);
         this.period = Objects.requireNonNull(period);
         this.prevEvent = Objects.requireNonNull(prev).orElse(null);
         this.nextEvent = Objects.requireNonNull(next).orElse(null);
     }
+
+    public Recurrence(Id groupId, long periodSeconds, Optional<Id> prev, Optional<Id> next) {
+        this(groupId, Duration.ofSeconds(periodSeconds), prev, next);
+    }
+
+    public Id getGroupId() { return groupId; }
 
     public Optional<Id> getPrevEvent() {
         return Optional.ofNullable(prevEvent);
@@ -33,16 +41,20 @@ public class Recurrence {
         return period;
     }
 
+    public Recurrence setGroupId(Id newId) {
+        return Objects.requireNonNull(newId).equals(groupId) ? this : new Recurrence(newId, period, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
+    }
+
     public Recurrence setPrevEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(period, newId, Optional.ofNullable(nextEvent));
+        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(groupId, period, newId, Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setNextEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(period, Optional.ofNullable(prevEvent), newId);
+        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(groupId, period, Optional.ofNullable(prevEvent), newId);
     }
 
     public Recurrence setPeriod(Duration newPeriod) {
-        return Objects.requireNonNull(newPeriod).equals(period) ? this : new Recurrence(newPeriod, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
+        return Objects.requireNonNull(newPeriod).equals(period) ? this : new Recurrence(groupId, newPeriod, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setPeriodFromSeconds(long periodSeconds) {
@@ -52,7 +64,8 @@ public class Recurrence {
 
     @Override
     public String toString() {
-        return "Recurrence period: " + period.toString() +
+        return "[" + groupId.toString() + "] " +
+                "Recurrence period: " + period.toString() +
                 " [" + prevEvent.toString() + ", " + nextEvent.toString() + "]";
     }
 
@@ -60,13 +73,14 @@ public class Recurrence {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Recurrence recurrence = (Recurrence) o;
-        return period.equals(recurrence.period) &&
+        return groupId.equals(recurrence.groupId) &&
+                period.equals(recurrence.period) &&
                 prevEvent.equals(recurrence.prevEvent) &&
                 nextEvent.equals(recurrence.nextEvent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(period, prevEvent, nextEvent);
+        return Objects.hash(groupId, period, prevEvent, nextEvent);
     }
 }

@@ -24,6 +24,7 @@ public class EventStorer extends Storer<Event> {
     public static final String KEY_COORD_NAME = "locName";
     public static final String KEY_EPOCH_START_TIME = "epochStartTime";
     public static final String KEY_EPOCH_END_TIME = "epochEndTime";
+    public static final String KEY_RECURR_ID = "recurrId";
     public static final String KEY_RECURR_PERIOD = "recurrPeriod";
     public static final String KEY_RECURR_PREV_ID = "recurrPrevId";
     public static final String KEY_RECURR_NEXT_ID = "recurrNextId";
@@ -57,6 +58,7 @@ public class EventStorer extends Storer<Event> {
         map.put(KEY_EPOCH_START_TIME, storable.getStartTime().toEpochSecond());
         map.put(KEY_EPOCH_END_TIME, storable.getEndTime().toEpochSecond());
         storable.getRecurrence().ifPresent(recurrence -> {
+            map.put(KEY_RECURR_ID, recurrence.getGroupId().getUuid());
             map.put(KEY_RECURR_PERIOD, recurrence.getPeriod().getSeconds());
             if(recurrence.getPrevEvent().isPresent()) {
                 map.put(KEY_RECURR_PREV_ID, recurrence.getPrevEvent().get().getUuid());
@@ -82,12 +84,13 @@ public class EventStorer extends Storer<Event> {
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
         Coordinates coords = coordLatitude == null || coordLongitude == null ? null : new Coordinates(coordLatitude, coordLongitude);
 
+        String recurrId = (String) m.getOrDefault(KEY_RECURR_ID, null);
         Long recurrPeriod = (Long) m.getOrDefault(KEY_RECURR_PERIOD, null);
         String sPrevId = (String) m.getOrDefault(KEY_RECURR_PREV_ID, null);
         String sNextId = (String) m.getOrDefault(KEY_RECURR_PREV_ID, null);
         Optional<Id> prevId = sPrevId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sPrevId)));
         Optional<Id> nextId = sNextId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sNextId)));
-        Recurrence recurrence = recurrPeriod == null ? null : new Recurrence(Duration.ofSeconds(recurrPeriod), prevId, nextId);
+        Recurrence recurrence = recurrId == null ? null : new Recurrence(new Id(UUID.fromString(recurrId)), Duration.ofSeconds(recurrPeriod), prevId, nextId);
 
         return new Event(new Id(UUID.fromString(id)), name, locationName, Optional.ofNullable(coords),
                 TimeUtils.epochToZonedDateTime(epochStartTime),
