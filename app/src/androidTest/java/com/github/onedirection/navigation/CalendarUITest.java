@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.navigation;
 
 
 import android.view.View;
@@ -6,14 +6,17 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.github.onedirection.R;
 import com.github.onedirection.navigation.NavigationActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,7 +75,7 @@ public class CalendarUITest {
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
-                                allOf(withId(R.id.toolbar),
+                                Matchers.allOf(ViewMatchers.withId(R.id.toolbar),
                                         childAtPosition(
                                                 withClassName(is("com.google.android.material.appbar.AppBarLayout")),
                                                 0)),

@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.events;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,9 +12,11 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
@@ -120,7 +122,7 @@ public class EventCreatorTest {
     }
 
     public void testIsMainFragment(){
-        onView(withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
+        onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
     }
 
     public void testIsGeolocationFragment(){
