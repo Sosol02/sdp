@@ -1,4 +1,4 @@
-package com.github.onedirection.testdatabase;
+package com.github.onedirection.database;
 
 import com.github.onedirection.database.store.DatabaseCollection;
 import com.github.onedirection.database.store.Storer;

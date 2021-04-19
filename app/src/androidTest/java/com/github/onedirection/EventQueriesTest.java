@@ -30,14 +30,14 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class EventQueriesTest {
 
-    private static int emptyCoordProportion = 2; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
+    private static final int emptyCoordProportion = 2; //Proportion of empty coordinates events will be of 1/emptyCoordProportion
 
     public static Event[] makeEvents(int count) {
         Event[] l = new Event[count];
         Random r = new Random();
         for (int i = 0; i < count; ++i) {
-            if(r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
-                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city"+i, ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
+            if (r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
+                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city" + i, ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
             } else {
                 l[i] = new Event(Id.generateRandom(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
             }
@@ -57,7 +57,7 @@ public class EventQueriesTest {
     public void deleteAllEvents() throws ExecutionException, InterruptedException, ParseException {
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
-        for(Event e : events) {
+        for (Event e : events) {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
             assertEquals(e.getId(), id);
         }
@@ -66,40 +66,40 @@ public class EventQueriesTest {
     @Test
     public void returnNoEventsIfNoneInTimeFrame() throws ExecutionException, InterruptedException, ParseException {
         List<Event> events = new ArrayList<Event>();
-        ZonedDateTime start  = getConventionStartTime();
+        ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
-        for(int i = 0; i < 5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent"+2*i, "loc"+2*i, start.plusMinutes(20+2*i), end.plusMinutes(20+2*i+1)));
-            events.add(new Event(Id.generateRandom(), "MyEvent"+2*i+1, "loc"+2*i+1, start.minusMinutes(20+2*i), start.minusMinutes(20+2*i).plusMinutes(1)));
+        for (int i = 0; i < 5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(20 + 2 * i), end.plusMinutes(20 + 2 * i + 1)));
+            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20 + 2 * i), start.minusMinutes(20 + 2 * i).plusMinutes(1)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = db.storeAll(events).get();
-        if(b) {
+        if (b) {
             EventQueries eq = new EventQueries(db);
             List<Event> eventsBetweenStartAndEnd = eq.getEventsInTimeframe(start, end).get();
             assertEquals(0, eventsBetweenStartAndEnd.size());
         }
-        for(Event e : events) {
+        for (Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
 
     @Test
-    public void returnNoEventsWhenTimeFrameIsInvalid() throws ExecutionException, InterruptedException, ParseException  {
+    public void returnNoEventsWhenTimeFrameIsInvalid() throws ExecutionException, InterruptedException, ParseException {
         List<Event> events = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
-        for(int i=0; i<5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent"+i, "loc"+i, start.plusMinutes(5).minusMinutes(i+1), start.plusMinutes(5).plusMinutes(i)));
+        for (int i = 0; i < 5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = db.storeAll(events).get();
-        if(b) {
+        if (b) {
             EventQueries eq = new EventQueries(db);
             List<Event> e = eq.getEventsInTimeframe(start, start).get();
             assertEquals(0, e.size());
         }
-        for(Event e : events) {
+        for (Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
@@ -110,10 +110,10 @@ public class EventQueriesTest {
         List<Event> eventsRejected = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
-        for(int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent"+2*i, "loc"+2*i, start.plusMinutes(5+i), start.plusMinutes(20+i)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent"+2*i+1, "loc"+2*i+1, start.minusMinutes(20), start.plusMinutes(5).minusMinutes(i)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent"+(-2)*i, "loc"+2*i, start.minusMinutes(i+1), end.plusMinutes(i+1)));
+        for (int i = 0; i < 5; ++i) {
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(5 + i), start.plusMinutes(20 + i)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20), start.plusMinutes(5).minusMinutes(i)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + (-2) * i, "loc" + 2 * i, start.minusMinutes(i + 1), end.plusMinutes(i + 1)));
         }
         eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent", "loc", start, end));
         eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", end, end.plusMinutes(1)));
@@ -122,7 +122,7 @@ public class EventQueriesTest {
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
-        if(b) {
+        if (b) {
             EventQueries eq = new EventQueries(db);
             List<Event> eventsBetweenStartAndEnd = eq.getEventsInTimeframe(start, end).get();
             assertEquals(eventsAccepted.size(), eventsBetweenStartAndEnd.size());
@@ -131,10 +131,10 @@ public class EventQueriesTest {
                 assertTrue(!eventsRejected.contains(e));
             }
         }
-        for(Event e : eventsAccepted) {
+        for (Event e : eventsAccepted) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
-        for(Event e : eventsRejected) {
+        for (Event e : eventsRejected) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
@@ -144,17 +144,17 @@ public class EventQueriesTest {
         List<Event> events = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
-        for(int i=0; i<5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent"+i, "loc"+i, start.plusMinutes(5).minusMinutes(i+1), start.plusMinutes(5).plusMinutes(i)));
+        for (int i = 0; i < 5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = db.storeAll(events).get();
-        if(b) {
+        if (b) {
             EventQueries eq = new EventQueries(db);
             List<Event> eventsBetweenStartAndEnd = eq.getEventsInTimeframe(start, end).get();
             assertEquals(events.size(), eventsBetweenStartAndEnd.size());
         }
-        for(Event e : events) {
+        for (Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
@@ -165,16 +165,16 @@ public class EventQueriesTest {
         List<Event> eventsRejected = new ArrayList<Event>();
         ZonedDateTime today = TimeUtils.truncateTimeToDays(getConventionStartTime());
 
-        for(int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, today.plusHours(2*i), today.plusHours(2*i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, today.minusDays(i+2), today.minusDays(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, today.plusDays(i+1), today.plusDays(i+2)));
+        for (int i = 0; i < 5; ++i) {
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, today.plusHours(2 * i), today.plusHours(2 * i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.minusDays(i + 2), today.minusDays(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.plusDays(i + 1), today.plusDays(i + 2)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
-        if(b) {
+        if (b) {
             List<Event> eventsOnDay = EventQueries.getEventsByDay(db, today).get();
             assertEquals(eventsAccepted.size(), eventsOnDay.size());
             for (Event e : eventsOnDay) {
@@ -182,10 +182,10 @@ public class EventQueriesTest {
                 assertTrue(!eventsRejected.contains(e));
             }
         }
-        for(Event e : eventsAccepted) {
+        for (Event e : eventsAccepted) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
-        for(Event e : eventsRejected) {
+        for (Event e : eventsRejected) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
@@ -196,18 +196,18 @@ public class EventQueriesTest {
         List<Event> eventsRejected = new ArrayList<Event>();
         ZonedDateTime thisWeek = TimeUtils.truncateTimeToWeeks(getConventionStartTime());
 
-        for(int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusHours(2*i), thisWeek.plusHours(2*i+1)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisWeek.plusDays(i), thisWeek.plusDays(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisWeek.minusDays(i+2), thisWeek.minusDays(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisWeek.minusWeeks(i+2), thisWeek.minusWeeks(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisWeek.plusWeeks(i+1), thisWeek.plusWeeks(i+2)));
+        for (int i = 0; i < 5; ++i) {
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusHours(2 * i), thisWeek.plusHours(2 * i + 1)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusDays(i), thisWeek.plusDays(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusDays(i + 2), thisWeek.minusDays(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusWeeks(i + 2), thisWeek.minusWeeks(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.plusWeeks(i + 1), thisWeek.plusWeeks(i + 2)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
-        if(b) {
+        if (b) {
             List<Event> eventsOnWeek = EventQueries.getEventsByWeek(db, thisWeek).get();
             assertEquals(eventsAccepted.size(), eventsOnWeek.size());
             for (Event e : eventsOnWeek) {
@@ -215,10 +215,10 @@ public class EventQueriesTest {
                 assertTrue(!eventsRejected.contains(e));
             }
         }
-        for(Event e : eventsAccepted) {
+        for (Event e : eventsAccepted) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
-        for(Event e : eventsRejected) {
+        for (Event e : eventsRejected) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
@@ -229,18 +229,18 @@ public class EventQueriesTest {
         List<Event> eventsRejected = new ArrayList<Event>();
         ZonedDateTime thisMonth = TimeUtils.truncateTimeToMonths(getConventionStartTime());
 
-        for(int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.plusDays(2*i+3), thisMonth.plusDays(2*i+4)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent"+i, "validLoc"+i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i+2)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisMonth.minusDays(i+2), thisMonth.minusDays(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisMonth.minusWeeks(i+2), thisMonth.minusWeeks(i+1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent"+i, "nopeLoc"+i, thisMonth.plusMonths(i+1), thisMonth.plusMonths(i+2)));
+        for (int i = 0; i < 5; ++i) {
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.plusDays(2 * i + 3), thisMonth.plusDays(2 * i + 4)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i + 2)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusDays(i + 2), thisMonth.minusDays(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusWeeks(i + 2), thisMonth.minusWeeks(i + 1)));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.plusMonths(i + 1), thisMonth.plusMonths(i + 2)));
         }
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
-        if(b) {
+        if (b) {
             List<Event> eventsOnMonth = EventQueries.getEventsByMonth(db, thisMonth).get();
             assertEquals(eventsAccepted.size(), eventsOnMonth.size());
             for (Event e : eventsOnMonth) {
@@ -248,21 +248,21 @@ public class EventQueriesTest {
                 assertTrue(!eventsRejected.contains(e));
             }
         }
-        for(Event e : eventsAccepted) {
+        for (Event e : eventsAccepted) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
-        for(Event e : eventsRejected) {
+        for (Event e : eventsRejected) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
 
     @Test
-    public void recurringEventsLoadedFromDbAsMultipleEvents() throws ExecutionException, InterruptedException, ParseException  {
+    public void recurringEventsLoadedFromDbAsMultipleEvents() throws ExecutionException, InterruptedException, ParseException {
         List<Event> events = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
-        for(int i=0; i<5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent"+i, "loc"+i, start.plusMinutes(5).minusMinutes(i+1), start.plusMinutes(5).plusMinutes(i), Instant.ofEpochSecond(3600)));
+        for (int i = 0; i < 5; ++i) {
+            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i), Instant.ofEpochSecond(3600)));
         }
         Event recurrEvent = new Event(Id.generateRandom(), "RecurrentEvent", "locationRec", start.minusMinutes(20), start.minusMinutes(19), Instant.ofEpochSecond(120));
         events.add(recurrEvent);
@@ -270,12 +270,12 @@ public class EventQueriesTest {
         events.add(recurrEventOutOfBounds);
         ConcreteDatabase db = ConcreteDatabase.getDatabase();
         boolean b = db.storeAll(events).get();
-        if(b) {
+        if (b) {
             EventQueries eq = new EventQueries(db);
             List<Event> eventsRec = eq.getEventsInTimeframe(start, end).get();
-            assertEquals(events.size()+5-2, eventsRec.size()); //+5 because recurrEvent will have 5 recurring events in the interval, and -2 because recurrEvent and recurrEventOutOfBounds should not be in the return list
+            assertEquals(events.size() + 5 - 2, eventsRec.size()); //+5 because recurrEvent will have 5 recurring events in the interval, and -2 because recurrEvent and recurrEventOutOfBounds should not be in the return list
         }
-        for(Event e : events) {
+        for (Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
     }
