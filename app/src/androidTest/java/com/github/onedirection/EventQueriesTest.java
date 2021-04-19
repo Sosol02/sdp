@@ -299,6 +299,7 @@ public class EventQueriesTest {
         recurrEvents.sort((e1, e2) -> {
             return Long.compare(e1.getStartTime().toEpochSecond(), e2.getStartTime().toEpochSecond());
         });
+
         for(int i=1; i<recurrEvents.size()-1; ++i) {
             assertEquals(recurrEvents.get(i-1).getId(), recurrEvents.get(i).getRecurrence().get().getPrevEvent().orElse(null));
             assertEquals(recurrEvents.get(i+1).getId(), recurrEvents.get(i).getRecurrence().get().getNextEvent().orElse(null));
@@ -373,8 +374,8 @@ public class EventQueriesTest {
         recurrEvents.sort((e1, e2) -> {
             return Long.compare(e1.getStartTime().toEpochSecond(), e2.getStartTime().toEpochSecond());
         });
-        assertEquals(null, recurrEvents.get(0).getRecurrence().get().getPrevEvent().get());
-        assertEquals(null, recurrEvents.get(1).getRecurrence().get().getNextEvent().get());
+        assertFalse(recurrEvents.get(0).getRecurrence().get().getPrevEvent().isPresent());
+        assertFalse(recurrEvents.get(1).getRecurrence().get().getNextEvent().isPresent());
         assertEquals(recurrEvents.get(1).getId(), recurrEvents.get(0).getRecurrence().get().getNextEvent().get());
         assertEquals(recurrEvents.get(0).getId(), recurrEvents.get(1).getRecurrence().get().getPrevEvent().get());
         if(storeRecurrEvent != 0) {

@@ -167,7 +167,7 @@ public class EventQueries {
             nextId = (--x) <= 1 ? event.getId() : Id.generateRandom();
             tmpStartTime = event.getStartTime().toEpochSecond() - x * period;
         }
-        newEventRecurrence.setPrevEvent(Optional.ofNullable(prevId));
+        newEventRecurrence = newEventRecurrence.setPrevEvent(Optional.ofNullable(prevId));
 
         x = (recurrenceLimitUp - refStartTime)/period;
         nextId = null;
@@ -182,8 +182,9 @@ public class EventQueries {
             nextId = currId;
             currId = prevId;
             prevId = (--x) <= 1 ? event.getId() : Id.generateRandom();
+            tmpStartTime = refStartTime + x * period;
         }
-        newEventRecurrence.setNextEvent(Optional.ofNullable(nextId));
+        newEventRecurrence = newEventRecurrence.setNextEvent(Optional.ofNullable(nextId));
 
         eventsToStore.add(event.setRecurrence(newEventRecurrence));
 

@@ -87,7 +87,7 @@ public class EventStorer extends Storer<Event> {
         String recurrId = (String) m.getOrDefault(KEY_RECURR_ID, null);
         Long recurrPeriod = (Long) m.getOrDefault(KEY_RECURR_PERIOD, null);
         String sPrevId = (String) m.getOrDefault(KEY_RECURR_PREV_ID, null);
-        String sNextId = (String) m.getOrDefault(KEY_RECURR_PREV_ID, null);
+        String sNextId = (String) m.getOrDefault(KEY_RECURR_NEXT_ID, null);
         Optional<Id> prevId = sPrevId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sPrevId)));
         Optional<Id> nextId = sNextId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sNextId)));
         Recurrence recurrence = recurrId == null ? null : new Recurrence(new Id(UUID.fromString(recurrId)), Duration.ofSeconds(recurrPeriod), prevId, nextId);
