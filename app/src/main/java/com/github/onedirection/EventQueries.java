@@ -1,5 +1,7 @@
 package com.github.onedirection;
 
+import android.util.Log;
+
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.events.Event;
@@ -7,6 +9,7 @@ import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,9 +132,9 @@ public class EventQueries {
      * @param event (Event) : the given event representing the recurrence series
      * @param startRecurrence (ZonedDateTime) : the start time limit of the recurrence of the event
      * @param endRecurrence (ZonedDateTime) : the end time limit of the recurrence of the event
-     * @return (CompletableFuture<Boolean>) : True if the recurrence series has been successfully created and stored into the database
+     * @return (CompletableFuture<Integer>) : If the recurrence series has been successfully created and stored into the database it returns the number of stored events, else it returns 0
      */
-    public CompletableFuture<Boolean> storeRecurringEvent(Event event, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
+    public CompletableFuture<Integer> storeRecurringEvent(Event event, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
         }
@@ -164,7 +167,7 @@ public class EventQueries {
             nextId = (--x) <= 1 ? event.getId() : Id.generateRandom();
             tmpStartTime = event.getStartTime().toEpochSecond() - x * period;
         }
-        newEventRecurrence.setPrevEvent(Optional.of(prevId));
+        newEventRecurrence.setPrevEvent(Optional.ofNullable(prevId));
 
         x = (recurrenceLimitUp - refStartTime)/period;
         nextId = null;
@@ -180,15 +183,15 @@ public class EventQueries {
             currId = prevId;
             prevId = (--x) <= 1 ? event.getId() : Id.generateRandom();
         }
-        newEventRecurrence.setNextEvent(Optional.of(nextId));
+        newEventRecurrence.setNextEvent(Optional.ofNullable(nextId));
 
         eventsToStore.add(event.setRecurrence(newEventRecurrence));
 
         if(eventsToStore.size() == 1) { //Preserve the invariant that an event series has more than 1 element.
             return db.store(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty()))
-                    .thenApply(id -> id == event.getId());
+                    .thenApply(id -> id == event.getId() ? 1 : 0);
         }
-        return db.storeAll(eventsToStore);
+        return db.storeAll(eventsToStore).thenApply(b -> b ? eventsToStore.size() : 0);
     }
 
     /**
@@ -200,7 +203,8 @@ public class EventQueries {
         return db.retrieve(Objects.requireNonNull(event).getId(), event.storer()).thenCompose(e -> {
             Objects.requireNonNull(e, "Event doesn't exist in the database");
 
-            return db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence()));
+            return e.equals(event) ? CompletableFuture.completedFuture(e.getId())
+                    : db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence()));
         });
     }
 
@@ -237,15 +241,14 @@ public class EventQueries {
                     return CompletableFuture.allOf(prevEvent, nextEvent).thenCompose(aVoid -> {
                         Event e = prevEvent.join();
                         return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(next)));
-                    }).thenCompose(m -> {
+                    }).thenCompose(id1 -> {
                         Event e = nextEvent.join();
                         return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(prev)));
-                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
+                    }).thenCompose(id2 -> db.remove(event.getId(), event.storer()));
 
                 } else if(prev.isPresent()) {
                     CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
-                    return CompletableFuture.allOf(prevEvent).thenCompose(aVoid -> {
-                        Event e = prevEvent.join();
+                    return prevEvent.thenCompose(e -> {
                         if(!e.getRecurrence().get().getPrevEvent().isPresent()) { //Convert to non-recurring event
                             return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
                         } else {
@@ -255,8 +258,7 @@ public class EventQueries {
 
                 } else { //Impossible to have both prev AND next not present
                     CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
-                    return CompletableFuture.allOf(nextEvent).thenCompose(aVoid -> {
-                        Event e = nextEvent.join();
+                    return nextEvent.thenCompose(e -> {
                         if(!e.getRecurrence().get().getNextEvent().isPresent()) { //Convert to non-recurring event
                             return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
                         } else {
@@ -280,15 +282,12 @@ public class EventQueries {
     }
 
     /**
-     * Returns all the events of the recurrence series to which the 'event' belongs
-     * @param event (Event) : an event belonging to the recurrence series that has to be returned
+     * Returns all the events of the recurrence series defined by the Id 'groupId'
+     * @param groupId (Id) : The id of the recurrence series that has to be returned
      * @return (CompletableFuture<List<Event>>) : A list of all the events belonging to the recurrence series, once the query is done
      */
-    public CompletableFuture<List<Event>> getRecurrEventSeriesOf(Event event) {
-        if(!Objects.requireNonNull(event).isRecurrent()) {
-            throw new IllegalArgumentException("The given event is not recurrent");
-        }
-        return db.filterWhereEquals(EventStorer.KEY_RECURR_ID, event.getRecurrence().get().getGroupId(), event.storer());
+    public CompletableFuture<List<Event>> getRecurrEventSeriesOf(Id groupId) {
+        return db.filterWhereEquals(EventStorer.KEY_RECURR_ID, Objects.requireNonNull(groupId).getUuid(), EventStorer.getInstance());
     }
 
     /**
@@ -300,7 +299,25 @@ public class EventQueries {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
         }
-        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(event);
+        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(event.getRecurrence().get().getGroupId());
+        return eventsToRemove.thenCompose(events -> {
+            List<CompletableFuture<Id>> removedEvents = new ArrayList<>();
+            for(Event e : events) {
+                removedEvents.add(db.remove(e.getId(), e.storer()));
+            }
+            //Combine all results. We don't care about the Ids returned we just care about if exceptions are thrown.
+            return CompletableFuture.allOf(removedEvents.toArray(new CompletableFuture[removedEvents.size()])).thenApply(t -> true);
+        });
+    }
+
+    /**
+     * Remove a full recurrence series based on the id of the series
+     * @param groupId (Id) : the id of the recurrence series that has to be removed
+     * @return (CompletableFuture<Boolean>) : True if the operation of removal succeeded
+     */
+    public CompletableFuture<Boolean> removeRecurrEvents(Id groupId) {
+        Objects.requireNonNull(groupId);
+        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(groupId);
         return eventsToRemove.thenCompose(events -> {
             List<CompletableFuture<Id>> removedEvents = new ArrayList<>();
             for(Event e : events) {
@@ -314,15 +331,20 @@ public class EventQueries {
     /**
      * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['startRecurrence', 'endRecurrence']
      * @param event (Event) : The event to convert
+     * @param groupId (Id) : the group id of the recurrence series
+     * @param period (Duration) : the time between each recurrence of the event
      * @param startRecurrence (ZonedDateTime) : the start time limit of the recurrence of the event
      * @param endRecurrence (ZonedDateTime) : the end time limit of the recurrence of the event
-     * @return (CompletableFuture<Boolean>) : True if the operation succeeded
+     * @return (CompletableFuture<Integer>) : The number of events in the recurrence series
      */
-    public CompletableFuture<Boolean> convertToRecurring(Event event, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
+    public CompletableFuture<Integer> convertToRecurring(Event event, Id groupId, Duration period, ZonedDateTime startRecurrence, ZonedDateTime endRecurrence) {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");
         }
-        return storeRecurringEvent(event, startRecurrence, endRecurrence);
+        Objects.requireNonNull(period);
+        Objects.requireNonNull(groupId);
+        Recurrence newRecurrenceSeries = new Recurrence(groupId, period, Optional.empty(), Optional.empty());
+        return storeRecurringEvent(event.setRecurrence(newRecurrenceSeries), startRecurrence, endRecurrence);
     }
 
 }

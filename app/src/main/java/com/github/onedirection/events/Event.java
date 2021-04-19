@@ -167,7 +167,7 @@ public class Event implements Serializable, Storable<Event> {
                 (location == null ? "" : "[" + location + "]") +
                 ':' + startTime +
                 "-" + endTime +
-                ')' + (recurringPeriod == null ? "" : " recurring every " + recurringPeriod.toString());
+                ')' + (recurringPeriod == null ? "" : " recurrence: " + recurringPeriod);
     }
 
     @Override

@@ -61,11 +61,11 @@ public class Recurrence {
     }
 
     public Recurrence setPrevEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(groupId, period, newId, Optional.ofNullable(nextEvent));
+        return Objects.requireNonNull(newId).equals(Optional.ofNullable(prevEvent)) ? this : new Recurrence(groupId, period, newId, Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setNextEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(prevEvent) ? this : new Recurrence(groupId, period, Optional.ofNullable(prevEvent), newId);
+        return Objects.requireNonNull(newId).equals(Optional.ofNullable(nextEvent)) ? this : new Recurrence(groupId, period, Optional.ofNullable(prevEvent), newId);
     }
 
     public Recurrence setPeriod(Duration newPeriod) {
@@ -79,9 +79,10 @@ public class Recurrence {
 
     @Override
     public String toString() {
-        return "[" + groupId.toString() + "] " +
-                "Recurrence period: " + period.toString() +
-                " [" + prevEvent.toString() + ", " + nextEvent.toString() + "]";
+        return "[" + groupId + "] " +
+                "Recurrence period: " + period +
+                " [" + (prevEvent == null ? "" : prevEvent) + ", " +
+                (nextEvent == null ? "" : nextEvent) + "]";
     }
 
     @Override
@@ -90,8 +91,8 @@ public class Recurrence {
         Recurrence recurrence = (Recurrence) o;
         return groupId.equals(recurrence.groupId) &&
                 period.equals(recurrence.period) &&
-                prevEvent.equals(recurrence.prevEvent) &&
-                nextEvent.equals(recurrence.nextEvent);
+                getPrevEvent().equals(recurrence.getPrevEvent()) &&
+                getNextEvent().equals(recurrence.getNextEvent());
     }
 
     @Override
