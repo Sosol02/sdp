@@ -2,6 +2,7 @@ package com.github.onedirection.events;
 
 import com.github.onedirection.utils.Id;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import javax.annotation.concurrent.Immutable;
  * INVARIANT : A recurrence series has always more than 1 element (event). That is, if an event belongs to a recurrence series (i.e. is recurrent) then its pointers to the previous and next events
  * of the recurrence series are not both null.
  */
-public class Recurrence {
+public class Recurrence implements Serializable {
 
     private Id groupId;
     private Duration period;
@@ -54,10 +55,6 @@ public class Recurrence {
 
     public Duration getPeriod() {
         return period;
-    }
-
-    public Recurrence setGroupId(Id newId) {
-        return Objects.requireNonNull(newId).equals(groupId) ? this : new Recurrence(newId, period, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setPrevEvent(Optional<Id> newId) {
