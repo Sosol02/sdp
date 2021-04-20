@@ -132,7 +132,7 @@ public abstract class DeviceLocationProvider extends AppCompatActivity implement
 
         permissionRequestResult = new CompletableFuture<>();
         requestFineLocationPermission();
-        return permissionRequestResult.whenComplete( (permission, throwable) -> {
+        return permissionRequestResult.whenComplete((permission, throwable) -> {
                 if(permission){
                     fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
                             locationCallback,
