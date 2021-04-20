@@ -18,14 +18,15 @@ public class NotificationPublisher extends BroadcastReceiver {
 
     private static final String LOG_TAG = "NotificationPublisher";
 
-    public NotificationPublisher(Context context) {
-        // Register to allow it to be called by the broadcast intent of the broadcast manager
-        context.registerReceiver(this, new IntentFilter());
-    }
+    // need public 0 argument constructor to exist otherwise it crashes
+    public NotificationPublisher() {}
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(LOG_TAG, "onReceive");
+
+        // Register to allow it to be called by the broadcast intent of the broadcast manager
+        //context.registerReceiver(this, new IntentFilter());
 
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 

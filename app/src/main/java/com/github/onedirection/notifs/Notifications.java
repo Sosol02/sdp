@@ -39,10 +39,10 @@ public class Notifications {
     private static final String LOG_TAG = "NOTIFICATIONS";
     private static Notifications global = null;
 
-    private Map<Integer, Event> eventIdMap = new HashMap<>();
-    private Map<Integer, Notification> notifMap = new HashMap<>();
+    private final Map<Integer, Event> eventIdMap = new HashMap<>();
+    private final Map<Integer, Notification> notifMap = new HashMap<>();
     // The pending intent allows canceling the alarm manager trigger
-    private Map<Integer, PendingIntent> notifIntentMap = new HashMap<>();
+    private final Map<Integer, PendingIntent> notifIntentMap = new HashMap<>();
     private Integer currentlyScheduledId = null;
 
     public static Notifications getInstance(Context context) {
@@ -165,12 +165,13 @@ public class Notifications {
         return Optional.empty(); */
 
         ZonedDateTime now = ZonedDateTime.now();
-        Log.d(LOG_TAG, "schedultClosestEvent: " + now);
+        Log.d(LOG_TAG, "scheduleClosestEvent: " + now);
         CompletableFuture<List<Event>> events = EventQueries.getEventsByDay(Database.getDefaultInstance(), now);
 
         CompletableFuture<Integer> future = new CompletableFuture<>();
 
         events.whenComplete((ls, err) -> {
+            Log.d(LOG_TAG, "whenComplete: err:" + err + " ls: " + ls);
             if (err != null) {
                 Log.d(LOG_TAG, "DB query had an exception: " + err);
                 future.completeExceptionally(err);
@@ -178,13 +179,22 @@ public class Notifications {
 
             Optional<Event> closestOpt = getClosestEvent(ls, now);
             if (!closestOpt.isPresent()) {
-                Log.d(LOG_TAG, "No closest event.");
+                Log.d(LOG_TAG, "No closest event. " + ls);
                 return; // Don't schedule anything
             }
             Event closest = closestOpt.get();
             int id = getEventId(closest); // register to the eventIdMap
 
-            if (currentlyScheduledId == null || currentlyScheduledId != id) {
+            if (currentlyScheduledId == null) {
+                currentlyScheduledId = id;
+                Log.d(LOG_TAG, "currentlyScheduledId was null, now id: " + currentlyScheduledId);
+                long whenMillis = closest.getStartTime().toInstant().toEpochMilli();
+                schedule(context, whenMillis, id, getNotification(closest, context), new NotificationPublisher() /* maybe should not recreate one ever time?*/);
+                future.complete(id);
+                return;
+            }
+
+            if (currentlyScheduledId != id) {
                 Event currentlyScheduledEvent = eventIdMap.get(currentlyScheduledId);
                 if (currentlyScheduledEvent.getStartTime().isBefore(closest.getStartTime())) {
                     Log.d(LOG_TAG, "Currently scheduled event is before earliest event in DB.");
@@ -198,7 +208,7 @@ public class Notifications {
 
                     long whenMillis = closest.getStartTime().toInstant().toEpochMilli();
                     Log.d(LOG_TAG, "Canceling old event and scheduling new one.");
-                    schedule(context, whenMillis, id, getNotification(closest, context), new NotificationPublisher(context) /* maybe should not recreate one ever time?*/);
+                    schedule(context, whenMillis, id, getNotification(closest, context), new NotificationPublisher() /* maybe should not recreate one ever time?*/);
                 }
             } else {
                 // Already scheduled, nothing to do
@@ -220,7 +230,7 @@ public class Notifications {
                 .build();
 
         int id = NotificationIdGenerator.getUniqueId();
-        schedule(context, whenMillis, id, notif, new NotificationPublisher(context));
+        schedule(context, whenMillis, id, notif, new NotificationPublisher());
 
         return id;
     }
