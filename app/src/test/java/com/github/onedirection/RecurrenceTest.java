@@ -67,17 +67,6 @@ public class RecurrenceTest {
     }
 
     @Test
-    public void testSetGroupIdAndGet() {
-        final Id newId = Id.generateRandom();
-
-        assertThrows(NullPointerException.class, () -> RECURRENCE.setGroupId(null));
-        Recurrence recurrChanged = RECURRENCE.setGroupId(newId);
-        assertEquals(newId, recurrChanged.getGroupId());
-        assertEquals(GROUP_ID, RECURRENCE.getGroupId());
-        assertThat(RECURRENCE.setGroupId(GROUP_ID), sameInstance(RECURRENCE));
-    }
-
-    @Test
     public void testSetPeriodAndGet() {
         final Duration newPeriod = Duration.ofHours(24); //1 day
 
