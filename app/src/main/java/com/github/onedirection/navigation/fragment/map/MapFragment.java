@@ -1,5 +1,8 @@
 package com.github.onedirection.navigation.fragment.map;
 
+
+import android.annotation.SuppressLint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,10 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.github.onedirection.events.Event;
 import com.github.onedirection.R;
+import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
@@ -28,6 +35,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 
+
 public class MapFragment extends Fragment {
 
     private MapView mapView;
@@ -38,14 +46,26 @@ public class MapFragment extends Fragment {
     private TextView event_location;
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
+    private DeviceLocationProvider deviceLocationProvider;
+    private MyLocationSymbolManager myLocationSymbolManager;
     private Symbol clickSymbol;
+
     public static final String SYMBOL_ID = "MARKER_MAP";
+    public static final String MY_LOCATION_ID = "MY_LOCATION_MAP";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        deviceLocationProvider = (DeviceLocationProvider) requireActivity();
+        deviceLocationProvider.startLocationTracking();
+        deviceLocationProvider.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.update(value);
+            }
+        });
+
         Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -54,7 +74,23 @@ public class MapFragment extends Fragment {
         mapView.getMapAsync(mapboxMap -> {
             this.mapboxMap = mapboxMap;
 
-            mapboxMap.setStyle(Style.MAPBOX_STREETS, this::initializeMarkerSymbolManager);
+            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                initializeMarkerSymbolManager(style);
+                initializeMyLocationSymbolManager(style);
+            });
+
+            view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
+                if (myLocationSymbolManager != null) {
+                    LatLng latLng = myLocationSymbolManager.getPosition();
+                    if (latLng != null) {
+                        CameraPosition position = new CameraPosition.Builder()
+                                .target(latLng)
+                                .zoom(15)
+                                .build();
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+                    }
+                }
+            });
 
             mapboxMap.addOnMapClickListener(point -> {
                 if (clickSymbol != null)
@@ -84,14 +120,14 @@ public class MapFragment extends Fragment {
     public void showBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
-
+    
     public void setBottomSheetEvent(Event event) {
         Objects.requireNonNull(event);
         event_name.setText(event.getName());
         ZonedDateTime start=event.getStartTime();
-        event_time_start.setText(String.format("%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
+        event_time_start.setText(String.format(Locale.getDefault(),"%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
         ZonedDateTime end=event.getEndTime();
-        event_time_end.setText(String.format("%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
+        event_time_end.setText(String.format(Locale.getDefault(),"%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
         event_location.setText(event.getLocationName());
     }
 
@@ -130,5 +166,12 @@ public class MapFragment extends Fragment {
         styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
         this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
+    }
+
+    private void initializeMyLocationSymbolManager(@NonNull Style styleOnLoaded) {
+        Drawable myLocationSymbol = ContextCompat.getDrawable(getContext(), R.drawable.my_location_on_map);
+        styleOnLoaded.addImage(MY_LOCATION_ID, BitmapUtils.getBitmapFromDrawable(myLocationSymbol));
+        SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
+        this.myLocationSymbolManager = new MyLocationSymbolManager(symbolManager);
     }
 }

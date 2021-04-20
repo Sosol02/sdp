@@ -2,21 +2,18 @@ package com.github.onedirection.events;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 /**
  * To use to create an event, just start the activity.
@@ -33,7 +30,7 @@ import java.util.Arrays;
  * A date can also be passed to specify the initial date
  * of the event. Ignored if an event is also given.
  */
-public class EventCreator extends DeviceLocationProvider {
+public class EventCreator extends DeviceLocationProviderActivity {
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final String EXTRA_DATE = "DATE";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;

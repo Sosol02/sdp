@@ -1,10 +1,13 @@
-package com.github.onedirection;
+package com.github.onedirection.events;
 
 import android.content.Intent;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.matcher.ViewMatchers;
 
+import com.github.onedirection.EventsView;
+import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.NamedCoordinates;
@@ -37,7 +40,7 @@ public class EventViewTest {
         EventCreator.putEventExtra(intent, EVENT);
 
         try (ActivityScenario<EventsView> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.textViewNameView)).check(matches(withText(EVENT.getName())));
+            onView(ViewMatchers.withId(R.id.textViewNameView)).check(matches(withText(EVENT.getName())));
         }
     }
 }

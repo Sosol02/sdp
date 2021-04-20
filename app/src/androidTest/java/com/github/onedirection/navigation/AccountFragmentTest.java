@@ -1,13 +1,15 @@
-package com.github.onedirection;
+package com.github.onedirection.navigation;
 
 import android.widget.TextView;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.onedirection.R;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.account.CustomExpandableListAdapter;
 
@@ -38,7 +40,7 @@ public class AccountFragmentTest {
 
     @Test
     public void testAccountExpandable() {
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_account)).perform(click());
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
