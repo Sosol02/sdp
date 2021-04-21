@@ -32,7 +32,7 @@ public class EventTest {
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-    private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), Optional.of(Id.generateRandom()), Optional.of(Id.generateRandom())); //Daily
+    private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME, Optional.of(Id.generateRandom()), Optional.of(Id.generateRandom())); //Daily
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
 
@@ -87,7 +87,7 @@ public class EventTest {
 
     @Test
     public void testEventSetRecurringPeriodAndGet() {
-        final Recurrence recurringPeriod = new Recurrence(RECURRING_PERIOD.getGroupId(), Duration.ofDays(7), RECURRING_PERIOD.getPrevEvent(), RECURRING_PERIOD.getNextEvent());
+        final Recurrence recurringPeriod = new Recurrence(RECURRING_PERIOD.getGroupId(), Duration.ofDays(7), END_TIME, RECURRING_PERIOD.getPrevEvent(), RECURRING_PERIOD.getNextEvent());
 
         assertThrows(NullPointerException.class, () -> EVENT.setRecurrence(null));
         Event eventChanged = EVENT.setRecurrence(recurringPeriod);

@@ -4,6 +4,7 @@ import com.github.onedirection.utils.Id;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ public class Recurrence implements Serializable {
 
     private Id groupId;
     private Duration period;
+    private ZonedDateTime endTime;
     private Id prevEvent;
     private Id nextEvent;
 
@@ -32,15 +34,16 @@ public class Recurrence implements Serializable {
      * @param prev (Id) : The id of the previous event neighbor in the recurrence series
      * @param next (Id) : The id of the next event neighbor in the recurrence series
      */
-    public Recurrence(Id groupId, Duration period, Optional<Id> prev, Optional<Id> next) {
+    public Recurrence(Id groupId, Duration period, ZonedDateTime endTime, Optional<Id> prev, Optional<Id> next) {
         this.groupId = Objects.requireNonNull(groupId);
         this.period = Objects.requireNonNull(period);
+        this.endTime = Objects.requireNonNull(endTime);
         this.prevEvent = Objects.requireNonNull(prev).orElse(null);
         this.nextEvent = Objects.requireNonNull(next).orElse(null);
     }
 
-    public Recurrence(Id groupId, long periodSeconds, Optional<Id> prev, Optional<Id> next) {
-        this(groupId, Duration.ofSeconds(periodSeconds), prev, next);
+    public Recurrence(Id groupId, long periodSeconds, ZonedDateTime endTime, Optional<Id> prev, Optional<Id> next) {
+        this(groupId, Duration.ofSeconds(periodSeconds), endTime, prev, next);
     }
 
     public Id getGroupId() { return groupId; }
@@ -57,16 +60,22 @@ public class Recurrence implements Serializable {
         return period;
     }
 
+    public ZonedDateTime getEndTime() { return endTime; }
+
     public Recurrence setPrevEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(Optional.ofNullable(prevEvent)) ? this : new Recurrence(groupId, period, newId, Optional.ofNullable(nextEvent));
+        return Objects.requireNonNull(newId).equals(Optional.ofNullable(prevEvent)) ? this : new Recurrence(groupId, period, endTime, newId, Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setNextEvent(Optional<Id> newId) {
-        return Objects.requireNonNull(newId).equals(Optional.ofNullable(nextEvent)) ? this : new Recurrence(groupId, period, Optional.ofNullable(prevEvent), newId);
+        return Objects.requireNonNull(newId).equals(Optional.ofNullable(nextEvent)) ? this : new Recurrence(groupId, period, endTime, Optional.ofNullable(prevEvent), newId);
     }
 
     public Recurrence setPeriod(Duration newPeriod) {
-        return Objects.requireNonNull(newPeriod).equals(period) ? this : new Recurrence(groupId, newPeriod, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
+        return Objects.requireNonNull(newPeriod).equals(period) ? this : new Recurrence(groupId, newPeriod, endTime, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
+    }
+
+    public Recurrence setEndTime(ZonedDateTime newEndTime) {
+        return Objects.requireNonNull(newEndTime).equals(endTime) ? this : new Recurrence(groupId, period, newEndTime, Optional.ofNullable(prevEvent), Optional.ofNullable(nextEvent));
     }
 
     public Recurrence setPeriodFromSeconds(long periodSeconds) {
@@ -79,7 +88,8 @@ public class Recurrence implements Serializable {
         return "[" + groupId + "] " +
                 "Recurrence period: " + period +
                 " [" + (prevEvent == null ? "" : prevEvent) + ", " +
-                (nextEvent == null ? "" : nextEvent) + "]";
+                (nextEvent == null ? "" : nextEvent) + "] " +
+                "Ending: " + endTime;
     }
 
     @Override
@@ -88,12 +98,13 @@ public class Recurrence implements Serializable {
         Recurrence recurrence = (Recurrence) o;
         return groupId.equals(recurrence.groupId) &&
                 period.equals(recurrence.period) &&
+                endTime.equals(recurrence.endTime) &&
                 getPrevEvent().equals(recurrence.getPrevEvent()) &&
                 getNextEvent().equals(recurrence.getNextEvent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, period, prevEvent, nextEvent);
+        return Objects.hash(groupId, period, endTime, prevEvent, nextEvent);
     }
 }

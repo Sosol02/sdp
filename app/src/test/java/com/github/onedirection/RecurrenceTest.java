@@ -26,29 +26,32 @@ public class RecurrenceTest {
     private final static long SECONDS_WEEK = 3600*24*7;
     private final static Id GROUP_ID = Id.generateRandom();
     private final static Duration DURATION_WEEK = Duration.ofDays(7);
+    private final static ZonedDateTime END_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Id PREV_EVENT_ID = Id.generateRandom();
     private final static Id NEXT_EVENT_ID = Id.generateRandom();
-    private final static Recurrence RECURRENCE = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+    private final static Recurrence RECURRENCE = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
 
     @Test
     public void testRecurrenceWithNullArgument() {
-        assertThrows(NullPointerException.class, () -> new Recurrence(null, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID)));
-        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, null, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID)));
-        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, DURATION_WEEK, null, Optional.of(NEXT_EVENT_ID)));
-        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), null));
+        assertThrows(NullPointerException.class, () -> new Recurrence(null, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID)));
+        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, null, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID)));
+        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, DURATION_WEEK, null, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID)));
+        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, null, Optional.of(NEXT_EVENT_ID)));
+        assertThrows(NullPointerException.class, () -> new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), null));
     }
 
     @Test
     public void gettersAreCorrect() {
         assertEquals(GROUP_ID, RECURRENCE.getGroupId());
         assertEquals(DURATION_WEEK, RECURRENCE.getPeriod());
+        assertEquals(END_TIME, RECURRENCE.getEndTime());
         assertEquals(PREV_EVENT_ID, RECURRENCE.getPrevEvent().orElse(null));
         assertEquals(NEXT_EVENT_ID, RECURRENCE.getNextEvent().orElse(null));
     }
 
     @Test
     public void durationFromSecondsIsCorrect() {
-        Recurrence fromSeconds = new Recurrence(GROUP_ID, SECONDS_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence fromSeconds = new Recurrence(GROUP_ID, SECONDS_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertEquals(RECURRENCE, fromSeconds);
     }
 
@@ -61,7 +64,7 @@ public class RecurrenceTest {
 
     @Test
     public void recurrenceHasNullEventPointers() {
-        Recurrence nullEventPointers = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.ofNullable(null), Optional.ofNullable(null));
+        Recurrence nullEventPointers = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.ofNullable(null), Optional.ofNullable(null));
         assertEquals(Optional.empty(), nullEventPointers.getPrevEvent());
         assertEquals(Optional.empty(), nullEventPointers.getNextEvent());
     }
@@ -76,6 +79,17 @@ public class RecurrenceTest {
         assertEquals(DURATION_WEEK, RECURRENCE.getPeriod());
         assertThat(RECURRENCE.setPeriod(DURATION_WEEK), sameInstance(RECURRENCE));
         assertThat(RECURRENCE.setPeriodFromSeconds(SECONDS_WEEK), sameInstance(RECURRENCE));
+    }
+
+    @Test
+    public void testSetEndTimeAndGet() {
+        final ZonedDateTime newEndTime = END_TIME.plusDays(4);
+
+        assertThrows(NullPointerException.class, () -> RECURRENCE.setEndTime(null));
+        Recurrence recurrChanged = RECURRENCE.setEndTime(newEndTime);
+        assertEquals(newEndTime, recurrChanged.getEndTime());
+        assertEquals(END_TIME, RECURRENCE.getEndTime());
+        assertThat(RECURRENCE.setEndTime(END_TIME), sameInstance(RECURRENCE));
     }
 
     @Test
@@ -109,34 +123,37 @@ public class RecurrenceTest {
         String str = RECURRENCE.toString();
         assertThat(str, containsString(GROUP_ID.toString()));
         assertThat(str, containsString(DURATION_WEEK.toString()));
+        assertThat(str, containsString(END_TIME.toString()));
         assertThat(str, containsString(PREV_EVENT_ID.toString()));
         assertThat(str, containsString(NEXT_EVENT_ID.toString()));
     }
 
     @Test
     public void equalsBehavesAsExpected() {
-        Recurrence recurr1 = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr1 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertThat(RECURRENCE, is(RECURRENCE));
         assertThat(RECURRENCE, is(recurr1));
-        Recurrence recurr2 = new Recurrence(Id.generateRandom(), DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr2 = new Recurrence(Id.generateRandom(), DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertThat(RECURRENCE, not(is(recurr2)));
-        Recurrence recurr3 = new Recurrence(GROUP_ID, SECONDS_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr3 = new Recurrence(GROUP_ID, SECONDS_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertThat(RECURRENCE, is(recurr3));
-        Recurrence recurr4 = new Recurrence(GROUP_ID, DURATION_WEEK.minusMinutes(4), Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr4 = new Recurrence(GROUP_ID, DURATION_WEEK.minusMinutes(4), END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertThat(RECURRENCE, not(is(recurr4)));
-        Recurrence recurr5 = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(Id.generateRandom()), Optional.of(NEXT_EVENT_ID));
-        Recurrence recurr6 = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(Id.generateRandom()));
-        Recurrence recurr7 = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.ofNullable(null), Optional.of(NEXT_EVENT_ID));
-        Recurrence recurr8 = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.ofNullable(null));
+        Recurrence recurr5 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(Id.generateRandom()), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr6 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(Id.generateRandom()));
+        Recurrence recurr7 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.ofNullable(null), Optional.of(NEXT_EVENT_ID));
+        Recurrence recurr8 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.ofNullable(null));
         assertThat(RECURRENCE, not(is(recurr5)));
         assertThat(RECURRENCE, not(is(recurr6)));
         assertThat(RECURRENCE, not(is(recurr7)));
         assertThat(RECURRENCE, not(is(recurr8)));
+        Recurrence recurr9 = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME.plusHours(2), Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        assertThat(RECURRENCE, not(is(recurr9)));
     }
 
     @Test
     public void hashCodeIsEqualCompatible(){
-        Recurrence event = new Recurrence(GROUP_ID, DURATION_WEEK, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
+        Recurrence event = new Recurrence(GROUP_ID, DURATION_WEEK, END_TIME, Optional.of(PREV_EVENT_ID), Optional.of(NEXT_EVENT_ID));
         assertThat(event, is(RECURRENCE));
         assertThat(event, not(sameInstance(RECURRENCE)));
         assertThat(event.hashCode(), is(RECURRENCE.hashCode()));
