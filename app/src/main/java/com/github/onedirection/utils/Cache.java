@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.utils;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -7,6 +7,14 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 
+/**
+ * A simple cache that will call the provided function to generate elements,
+ * and keep maxHistory elements in a map.
+ * get(k) is O(backing) if k not computed yet, O(1) otherwise.
+ * Note that the cache does not keep null values
+ * @param <K> The type of the keys
+ * @param <V> The type of the values
+ */
 public class Cache<K, V> {
 
     private static final int MAX_HISTORY_DEFAULT = 32;
@@ -28,6 +36,10 @@ public class Cache<K, V> {
         this.backing = backing;
         this.maxHistory = maxHistory;
         this.history = new LinkedBlockingQueue<>(maxHistory);
+    }
+
+    public int getMaxHistory() {
+        return maxHistory;
     }
 
     public V get(K key) {
