@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -29,9 +32,21 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
+import com.mapquest.mapping.maps.RoutePolylinePresenter;
+import com.mapquest.navigation.dataclient.RouteService;
+import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteOptionType;
+import com.mapquest.navigation.model.RouteOptions;
+import com.mapquest.navigation.model.SystemOfMeasurement;
+import com.mapquest.navigation.model.location.Coordinate;
+import com.mapquest.navigation.model.location.Destination;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -49,6 +64,9 @@ public class MapFragment extends Fragment {
     private DeviceLocationProvider deviceLocationProvider;
     private MyLocationSymbolManager myLocationSymbolManager;
     private Symbol clickSymbol;
+
+    private RouteService mRouteService;
+    private RoutePolylinePresenter mRoutePolylinePresenter;
 
     public static final String SYMBOL_ID = "MARKER_MAP";
     public static final String MY_LOCATION_ID = "MY_LOCATION_MAP";
@@ -77,6 +95,9 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeMarkerSymbolManager(style);
                 initializeMyLocationSymbolManager(style);
+                mRouteService = new RouteService.Builder().build(getContext().getApplicationContext(),
+                        BuildConfig.API_KEY);
+                fetchRoute();
             });
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
@@ -174,4 +195,40 @@ public class MapFragment extends Fragment {
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
         this.myLocationSymbolManager = new MyLocationSymbolManager(symbolManager);
     }
+
+    private void fetchRoute() {
+        Coordinate nyc = new Coordinate(40.7326808, -73.9843407);
+        Coordinate tmp = new Coordinate(42.355097, -71.055464);
+        List<Destination> boston = Arrays.asList(new Destination(tmp, null));
+
+        RouteOptions routeOptions = new RouteOptions.Builder()
+                .maxRoutes(3)
+                .systemOfMeasurementForDisplayText(SystemOfMeasurement.UNITED_STATES_CUSTOMARY) // or specify METRIC
+                .language("en_US") // NOTE: alternately, specify "es_US" for Spanish in the US
+                .highways(RouteOptionType.ALLOW)
+                .tolls(RouteOptionType.ALLOW)
+                .ferries(RouteOptionType.DISALLOW)
+                .internationalBorders(RouteOptionType.DISALLOW)
+                .unpaved(RouteOptionType.DISALLOW)
+                .seasonalClosures(RouteOptionType.AVOID)
+                .build();
+
+        mRouteService.requestRoutes(nyc, boston, routeOptions, new RoutesResponseListener() {
+            @Override
+            public void onRoutesRetrieved(List<Route> routes) {
+                if (routes.size() > 0) {
+                    Log.v("hmm", routes.get(0).toString());
+
+                }
+            }
+
+            @Override
+            public void onRequestFailed(@Nullable Integer httpStatusCode, @Nullable IOException exception) {}
+
+            @Override
+            public void onRequestMade() {}
+        });
+    }
+
+    
 }

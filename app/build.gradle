@@ -18,6 +18,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    configurations {
+        implementation.exclude module:'protobuf-javalite' //Needed because of conflict between firestore and mapquest
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -27,10 +31,22 @@ android {
             testCoverageEnabled true
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.buildConfigField "String", "API_KEY", getApiKey() // Provides key for the Navigation SDK
+        variant.resValue "string", "API_KEY", getApiKey()         // Provides key for the MapView used in app layouts
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+}
+
+def getApiKey() {
+    def props = new Properties()
+    file("../local.properties").withInputStream { props.load(it) }
+    return "\"" + props.getProperty("MAPQUEST_API_TOKEN") + "\""
 }
 
 dependencies {
@@ -54,6 +70,8 @@ dependencies {
     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+    implementation 'com.mapquest:navigation:3.4.0'
+    implementation 'com.mapquest:mapping-android-sdk:2.0.10'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.1'

@@ -33,6 +33,9 @@ allprojects {
                 password = properties.getProperty('MAPBOX_DOWNLOADS_TOKEN')
             }
         }
+        maven {
+            url "http://artifactory.cloud.mapquest.com/artifactory/et-android-binaries"
+        }
     }
 }
 
