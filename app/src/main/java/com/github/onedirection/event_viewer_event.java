@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import com.github.onedirection.utils.EventViewAdapter;
 
+import java.util.concurrent.ExecutionException;
+
 public class event_viewer_event extends AppCompatActivity {
 
     private RecyclerView eventRecycler;
@@ -19,7 +21,13 @@ public class event_viewer_event extends AppCompatActivity {
         setContentView(R.layout.activity_event_viewer_event);
 
         eventRecycler = (RecyclerView) findViewById(R.id.recycler_gchat);
-        eventAdapter = new EventViewAdapter(this, eventList);
+        try {
+            eventAdapter = new EventViewAdapter(this);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         eventRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
 }
