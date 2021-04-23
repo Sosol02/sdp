@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -12,7 +13,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.github.onedirection.R;
-import com.github.onedirection.navigation.NavigationActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,19 +22,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -43,10 +43,66 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class CalendarUITest {
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
-
     @Rule
-    public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<NavigationActivity>(NavigationActivity.class);
+
+    @Test
+    public void monthChangingWorks() {
+
+
+        ViewInteraction appCompatImageButton = onView(
+                allOf(withContentDescription("Open navigation drawer"),
+                        childAtPosition(
+                                allOf(withId(R.id.toolbar),
+                                        childAtPosition(
+                                                withClassName(is("com.google.android.material.appbar.AppBarLayout")),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton.perform(click());
+
+        ViewInteraction navigationMenuItemView = onView(
+                allOf(withId(R.id.nav_calendar),
+                        childAtPosition(
+                                allOf(withId(R.id.design_navigation_view),
+                                        childAtPosition(
+                                                withId(R.id.nav_view),
+                                                0)),
+                                2),
+                        isDisplayed()));
+        navigationMenuItemView.perform(click());
+
+        ViewInteraction date1View = onView(
+                allOf(withId(R.id.currentDate),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.LinearLayout")),
+                                        0),
+                                2),
+                        isDisplayed()));
+
+        ViewInteraction appCompatImageButton2 = onView(
+                allOf(withId(R.id.nextBtn),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.LinearLayout")),
+                                        0),
+                                2),
+                        isDisplayed()));
+        appCompatImageButton2.perform(click());
+
+        ViewInteraction date2 = onView(
+                allOf(withId(R.id.currentDate),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.LinearLayout")),
+                                        0),
+                                2),
+                        isDisplayed()));
+        assertThat(date1View.toString(), not(date2.toString()));
+    }
+
+
 
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
@@ -68,10 +124,7 @@ public class CalendarUITest {
     }
 
     @Test
-    public void changingMonthsCorrectlyUpdatesCalendarTest() {
-        String firstDate;
-        String nextMonthDate;
-
+    public void addEventWorks() throws InterruptedException {
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -93,30 +146,49 @@ public class CalendarUITest {
                                 2),
                         isDisplayed()));
         navigationMenuItemView.perform(click());
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.currentDate),
-                        withParent(withParent(withId(R.id.activity_custom_calendar))),
-                        isDisplayed()));
-        textView.check(matches(isDisplayed()));
-        firstDate = textView.toString();
+        Thread.sleep(20000);
 
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withId(R.id.nextBtn),
+        DataInteraction date = onData(anything())
+                .inAdapterView(allOf(withId(R.id.gridView),
+                        childAtPosition(
+                                withClassName(is("android.widget.LinearLayout")),
+                                2)))
+                .atPosition(15);
+        date.perform(click());
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.addEvent), withText("Add Event"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.activity_custom_calendar),
+                                        withId(R.id.custom),
                                         0),
-                                2),
+                                0),
                         isDisplayed()));
-        appCompatImageButton2.perform(click());
+        materialButton.perform(click());
 
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.currentDate),
-                        withParent(withParent(withId(R.id.activity_custom_calendar))),
-                        isDisplayed()));
-        textView2.check(matches(isDisplayed()));
-        nextMonthDate = textView2.toString();
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.editEventName),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                2)));
+        appCompatEditText.perform(scrollTo(), replaceText("Donkey"), closeSoftKeyboard());
 
-        assertThat(firstDate, not(nextMonthDate));
+        ViewInteraction materialButton2 = onView(
+                allOf(withId(R.id.buttonEventAdd), withText("Create event"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                10)));
+        materialButton2.perform(scrollTo(), click());
+        Thread.sleep(20000);
+        DataInteraction linearLayout = onData(anything())
+                .inAdapterView(allOf(withId(R.id.gridView),
+                        childAtPosition(
+                                withClassName(is("android.widget.LinearLayout")),
+                                2)))
+                .atPosition(15);
     }
 }

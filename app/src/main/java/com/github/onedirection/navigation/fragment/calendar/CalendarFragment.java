@@ -10,9 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-
-import java.util.Objects;
 
 public class CalendarFragment extends Fragment {
 
@@ -25,6 +22,7 @@ public class CalendarFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
         calendarView = root.findViewById(R.id.calendarView);
+        calendarView.setParentFragment(this);
         return root;
     }
 
@@ -33,4 +31,9 @@ public class CalendarFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        calendarView.refreshCalendarView();
+    }
 }
