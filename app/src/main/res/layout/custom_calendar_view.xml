@@ -22,7 +22,7 @@
             android:id = "@+id/previousBtn"
             android:background="@mipmap/shrek_dab_left"
             android:layout_margin = "10dp"
-            android:contentDescription="Our lord and savior dabbing to the left"
+            android:contentDescription="@string/shrek_left"
             />
 
         <TextView
@@ -44,7 +44,7 @@
             android:id = "@+id/nextBtn"
             android:background="@mipmap/shrek_dab_right"
             android:layout_margin = "10dp"
-            android:contentDescription="Our lord and savior dabbing to the right"
+            android:contentDescription="@string/shrek_right"
             />
     </LinearLayout>
 
