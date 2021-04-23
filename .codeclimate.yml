@@ -12,6 +12,9 @@ checks:
   argument-count:
     config:
       threshold: 6
+  file-lines:
+    config:
+      threshold: 400
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
