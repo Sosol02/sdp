@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import androidx.annotation.Nullable;
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
     private final LayoutInflater inflater;
     private final List<Date> dates;
 
+
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
         this.currentDate = currentDate;
@@ -32,6 +34,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         this.dates = dates;
     }
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -39,7 +42,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         Calendar dateCalendar = Calendar.getInstance();
         dateCalendar.setTime(monthDate);
 
-        int DayNumber = dateCalendar.get(Calendar.DAY_OF_MONTH);
+        int dayNumber = dateCalendar.get(Calendar.DAY_OF_MONTH);
         int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
         int displayYear = dateCalendar.get(Calendar.YEAR);
         int currentMonth = currentDate.get(Calendar.MONTH) + 1;
@@ -51,14 +54,24 @@ public class CalendarGridAdapter extends ArrayAdapter {
             view = inflater.inflate(R.layout.single_cell_layout, parent, false);
         }
 
-
         if (displayMonth == currentMonth) {
             TextView Day_Number = view.findViewById(R.id.calendar_day);
-            Day_Number.setText(String.valueOf(DayNumber));
-            Calendar eventCalendar = Calendar.getInstance();
-            ArrayList<String> arrayList = new ArrayList<>();
-            for (int i = 0; i < events.size(); ++i) {
+            TextView EventNumber = view.findViewById(R.id.events_id);
 
+            Day_Number.setText(String.valueOf(dayNumber));
+            Calendar eventCalendar = Calendar.getInstance();
+            int nbOfEventsInDay = 0;
+            for (int i = 0; i < events.size(); ++i) {
+                eventCalendar.setTime(Date.from(Instant.ofEpochSecond(events.get(i).getStartTime().toEpochSecond())));
+                if (dayNumber == eventCalendar.get(Calendar.DAY_OF_MONTH) && displayMonth == eventCalendar.get(Calendar.MONTH) + 1
+                        && displayYear == eventCalendar.get(Calendar.YEAR)) {
+                    nbOfEventsInDay++;
+                    if (nbOfEventsInDay == 1) {
+                        EventNumber.setText(nbOfEventsInDay + " Event");
+                    } else {
+                        EventNumber.setText(nbOfEventsInDay + " Events");
+                    }
+                }
             }
         }
         return view;
