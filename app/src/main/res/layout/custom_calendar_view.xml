@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/activity_custom_calendar"
     tools:context=".navigation.fragment.calendar.CustomCalendarView">
 
     <LinearLayout
@@ -23,10 +22,11 @@
             android:id = "@+id/previousBtn"
             android:background="@mipmap/shrek_dab_left"
             android:layout_margin = "10dp"
+            android:contentDescription="@string/shrek_left"
             />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
@@ -44,6 +44,7 @@
             android:id = "@+id/nextBtn"
             android:background="@mipmap/shrek_dab_right"
             android:layout_margin = "10dp"
+            android:contentDescription="@string/shrek_right"
             />
     </LinearLayout>
 
@@ -126,7 +127,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/gridView"
-        android:numColumns="7"></GridView>
+        android:numColumns="7" />
 
 
 </LinearLayout>

@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.concurrent.CompletableFuture;
 
+
 /**
  * Location provider relying on Android's location capabilities, and
  * as such requires permissions from the system/user.
