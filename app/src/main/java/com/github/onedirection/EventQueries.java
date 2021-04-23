@@ -379,15 +379,7 @@ public class EventQueries {
         if(!Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is not recurrent");
         }
-        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(event.getRecurrence().get().getGroupId());
-        return eventsToRemove.thenCompose(events -> {
-            List<CompletableFuture<Id>> removedEvents = new ArrayList<>();
-            for(Event e : events) {
-                removedEvents.add(db.remove(e.getId(), e.storer()));
-            }
-            //Combine all results. We don't care about the Ids returned we just care about if exceptions are thrown.
-            return CompletableFuture.allOf(removedEvents.toArray(new CompletableFuture[removedEvents.size()])).thenApply(t -> true);
-        });
+        return removeRecurrEvents(event.getRecurrence().get().getGroupId());
     }
 
     /**
@@ -396,8 +388,7 @@ public class EventQueries {
      * @return (CompletableFuture<Boolean>) : True if the operation of removal succeeded
      */
     public CompletableFuture<Boolean> removeRecurrEvents(Id groupId) {
-        Objects.requireNonNull(groupId);
-        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(groupId);
+        CompletableFuture<List<Event>> eventsToRemove = getRecurrEventSeriesOf(Objects.requireNonNull(groupId));
         return eventsToRemove.thenCompose(events -> {
             List<CompletableFuture<Id>> removedEvents = new ArrayList<>();
             for(Event e : events) {
@@ -420,10 +411,7 @@ public class EventQueries {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");
         }
-        Objects.requireNonNull(period);
-        Objects.requireNonNull(groupId);
-        Objects.requireNonNull(endRecurrence);
-        Recurrence newRecurrenceSeries = new Recurrence(groupId, period, endRecurrence, Optional.empty(), Optional.empty());
+        Recurrence newRecurrenceSeries = new Recurrence(Objects.requireNonNull(groupId), Objects.requireNonNull(period), Objects.requireNonNull(endRecurrence), Optional.empty(), Optional.empty());
         return addRecurringEvent(event.setRecurrence(newRecurrenceSeries));
     }
 
