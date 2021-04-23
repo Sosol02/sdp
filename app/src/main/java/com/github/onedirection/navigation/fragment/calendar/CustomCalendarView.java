@@ -151,7 +151,7 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void setUpGridView(int monthNumber, int year) {
-        CalendarGridAdapter calendarGridAdapter = new CalendarGridAdapter(context, dates, calendar, eventsList, monthNumber, year);
+        CalendarGridAdapter calendarGridAdapter = new CalendarGridAdapter(context, dates, calendar, eventsList);
         gridView.setAdapter(calendarGridAdapter);
     }
 
