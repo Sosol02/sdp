@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -21,7 +22,7 @@ import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 import com.google.android.material.navigation.NavigationView;
 
-public class NavigationActivity extends DeviceLocationProviderActivity {
+public class NavigationActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
