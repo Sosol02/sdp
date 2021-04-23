@@ -85,4 +85,40 @@ public class CacheTest {
         assertThat(new Cache<>((x) -> x).getMaxHistory(), is(not(0)));
     }
 
+    @Test
+    public void cacheSetWorks() {
+        Map<Integer, String> map = makeMap();
+
+        Cache<Integer, String> cache = new Cache<>(
+                (k) -> map.get(k),
+                (k, v) -> {
+                    map.put(k, v);
+                    return true;
+                },
+                10
+        );
+
+        cache.set(21, "21");
+        assertThat(map.getOrDefault(21, "wrong"), is("21"));
+        assertThat(map.getOrDefault(21, "wrong"), is(cache.get(21)));
+    }
+
+    @Test
+    public void cacheInvalidateWorks() {
+        final int[] counter = {0};
+        Cache<Integer, String> cache = new Cache<>((x) -> {
+            counter[0] += 1;
+            return Integer.toString(x);
+        }, 5);
+
+        cache.get(0);
+        assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
+        assertThat(counter[0], is(1));
+
+        cache.invalidate();
+
+        cache.get(0);
+        assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
+        assertThat(counter[0], is(2));
+    }
 }
