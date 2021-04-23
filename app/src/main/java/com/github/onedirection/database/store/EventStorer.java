@@ -1,10 +1,12 @@
 package com.github.onedirection.database.store;
 
-import com.github.onedirection.database.utils.TimeUtils;
+import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.utils.TimeUtils;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +19,16 @@ public class EventStorer extends Storer<Event> {
     private static final EventStorer GLOBAL = new EventStorer();
     public static final String KEY_ID = "id";
     public static final String KEY_NAME = "name";
-    public static final String KEY_COORD_LATITUDE = "coordLatitude";
-    public static final String KEY_COORD_LONGITUDE = "coordLongitude";
-    public static final String KEY_COORD_NAME = "locationName";
+    public static final String KEY_COORD_LATITUDE = "coordLat";
+    public static final String KEY_COORD_LONGITUDE = "coordLong";
+    public static final String KEY_COORD_NAME = "locName";
     public static final String KEY_EPOCH_START_TIME = "epochStartTime";
     public static final String KEY_EPOCH_END_TIME = "epochEndTime";
-    public static final String KEY_RECURRING_PERIOD = "recurringPeriod";
+    public static final String KEY_RECURR_ID = "recurrId";
+    public static final String KEY_RECURR_END_TIME = "recurrEndTime";
+    public static final String KEY_RECURR_PERIOD = "recurrPeriod";
+    public static final String KEY_RECURR_PREV_ID = "recurrPrevId";
+    public static final String KEY_RECURR_NEXT_ID = "recurrNextId";
 
     public static EventStorer getInstance() {
         return GLOBAL;
@@ -52,8 +58,16 @@ public class EventStorer extends Storer<Event> {
         map.put(KEY_COORD_NAME, storable.getLocationName());
         map.put(KEY_EPOCH_START_TIME, storable.getStartTime().toEpochSecond());
         map.put(KEY_EPOCH_END_TIME, storable.getEndTime().toEpochSecond());
-        storable.getRecurrencePeriod().ifPresent(period -> {
-            map.put(KEY_RECURRING_PERIOD, period.getEpochSecond());
+        storable.getRecurrence().ifPresent(recurrence -> {
+            map.put(KEY_RECURR_ID, recurrence.getGroupId().getUuid());
+            map.put(KEY_RECURR_PERIOD, recurrence.getPeriod().getSeconds());
+            map.put(KEY_RECURR_END_TIME, recurrence.getEndTime().toEpochSecond());
+            if(recurrence.getPrevEvent().isPresent()) {
+                map.put(KEY_RECURR_PREV_ID, recurrence.getPrevEvent().get().getUuid());
+            }
+            if(recurrence.getNextEvent().isPresent()) {
+                map.put(KEY_RECURR_NEXT_ID, recurrence.getNextEvent().get().getUuid());
+            }
         });
         return map;
     }
@@ -64,19 +78,27 @@ public class EventStorer extends Storer<Event> {
 
         String id = (String) m.get(KEY_ID);
         String name = (String) m.get(KEY_NAME);
+        String locationName = (String) m.get(KEY_COORD_NAME);
+        long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
+        long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
+
         Double coordLatitude = (Double) m.getOrDefault(KEY_COORD_LATITUDE, null);
         Double coordLongitude = (Double) m.getOrDefault(KEY_COORD_LONGITUDE, null);
         Coordinates coords = coordLatitude == null || coordLongitude == null ? null : new Coordinates(coordLatitude, coordLongitude);
-        String locationName = (String) m.get(KEY_COORD_NAME);
 
-        long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
-        long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
-        Long recurringPeriod = (Long) m.getOrDefault(KEY_RECURRING_PERIOD, null);
-        Instant period = recurringPeriod == null ? null : Instant.ofEpochSecond(recurringPeriod);
+        String recurrId = (String) m.getOrDefault(KEY_RECURR_ID, null);
+        Long recurrPeriod = (Long) m.getOrDefault(KEY_RECURR_PERIOD, null);
+        Long recurrEpochEndTime = (Long) m.getOrDefault(KEY_RECURR_END_TIME, null);
+        String sPrevId = (String) m.getOrDefault(KEY_RECURR_PREV_ID, null);
+        String sNextId = (String) m.getOrDefault(KEY_RECURR_NEXT_ID, null);
+        Optional<Id> prevId = sPrevId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sPrevId)));
+        Optional<Id> nextId = sNextId == null ? Optional.empty() : Optional.of(new Id(UUID.fromString(sNextId)));
+        Recurrence recurrence = recurrId == null ? null : new Recurrence(new Id(UUID.fromString(recurrId)), Duration.ofSeconds(recurrPeriod),
+                TimeUtils.epochToZonedDateTime(recurrEpochEndTime), prevId, nextId);
 
         return new Event(new Id(UUID.fromString(id)), name, locationName, Optional.ofNullable(coords),
                 TimeUtils.epochToZonedDateTime(epochStartTime),
-                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(period));
+                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(recurrence));
     }
 
 }
