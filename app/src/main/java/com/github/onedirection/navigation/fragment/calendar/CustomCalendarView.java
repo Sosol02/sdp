@@ -103,11 +103,12 @@ public class CustomCalendarView extends LinearLayout {
     }
 
 
+
     public void setParentFragment(Fragment fragment) {
         this.parentFragment = fragment;
     }
 
-    public void refreshCalendarView() {
+    public void refreshCalendarView(){
         setUpCalendar();
     }
 
@@ -174,7 +175,7 @@ public class CustomCalendarView extends LinearLayout {
         //@TODO when the events list is implemented;
     }
 
-    private int getMonthNumber(Calendar cal) {
+    private int getMonthNumber(Calendar cal){
         return cal.get(Calendar.MONTH) + 1;
     }
 }
