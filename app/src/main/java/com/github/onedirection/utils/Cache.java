@@ -43,9 +43,8 @@ public class Cache<K, V> {
     {
         // avoid edge case where functions expect a non empty cache
         if (maxHistory < 1) throw new IllegalArgumentException();
-        Objects.requireNonNull(getFunction);
-        this.getFunction = getFunction;
-        this.setFunction = setFunction;
+        this.getFunction = Objects.requireNonNull(getFunction);
+        this.setFunction = Objects.requireNonNull(setFunction);
         this.maxHistory = maxHistory;
         this.history = new LinkedBlockingQueue<>(maxHistory);
     }
