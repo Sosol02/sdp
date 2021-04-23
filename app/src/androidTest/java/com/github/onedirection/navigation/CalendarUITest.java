@@ -1,22 +1,18 @@
 package com.github.onedirection.navigation;
 
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
 import com.github.onedirection.R;
-import com.github.onedirection.navigation.NavigationActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
