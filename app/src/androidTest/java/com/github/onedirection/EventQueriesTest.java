@@ -587,31 +587,8 @@ public class EventQueriesTest {
         assertEquals(7, storeRecurrEvent);
         List<Event> events = queries.getRecurrEventSeriesOf(groupId).get();
         assertEquals(7, events.size());
-        if(storeRecurrEvent != 0) {
+        if (storeRecurrEvent != 0) {
             assertTrue(queries.removeRecurrEvents(groupId).get());
-
-    public void recurringEventsLoadedFromDbAsMultipleEvents() throws ExecutionException, InterruptedException, ParseException {
-        List<Event> events = new ArrayList<Event>();
-        ZonedDateTime start = getConventionStartTime();
-        ZonedDateTime end = start.plusMinutes(10);
-        for (int i = 0; i < 5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i), Instant.ofEpochSecond(3600)));
         }
-        Event recurrEvent = new Event(Id.generateRandom(), "RecurrentEvent", "locationRec", start.minusMinutes(20), start.minusMinutes(19), Instant.ofEpochSecond(120));
-        events.add(recurrEvent);
-        Event recurrEventOutOfBounds = new Event(Id.generateRandom(), "RecurrentEvent", "locationRec", start.minusMinutes(20), start.minusMinutes(19), Instant.ofEpochSecond(7200));
-        events.add(recurrEventOutOfBounds);
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
-        boolean b = db.storeAll(events).get();
-        if (b) {
-            EventQueries eq = new EventQueries(db);
-            List<Event> eventsRec = eq.getEventsInTimeframe(start, end).get();
-            assertEquals(events.size() + 5 - 2, eventsRec.size()); //+5 because recurrEvent will have 5 recurring events in the interval, and -2 because recurrEvent and recurrEventOutOfBounds should not be in the return list
-        }
-        for (Event e : events) {
-            db.remove(e.getId(), EventStorer.getInstance()).get();
-        }
-        List<Event> noEvents = queries.getRecurrEventSeriesOf(groupId).get();
-        assertEquals(0, noEvents.size());
     }
 }
