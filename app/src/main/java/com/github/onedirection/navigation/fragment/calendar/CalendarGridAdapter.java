@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,19 +24,17 @@ public class CalendarGridAdapter extends ArrayAdapter {
     private final List<Event> events;
     private final LayoutInflater inflater;
     private final List<Date> dates;
-    private final int currentMonthNb;
-    private final int currentYear;
 
-    public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events, int monthNumber, int year) {
+
+    public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
         this.currentDate = currentDate;
         this.events = events;
         this.inflater = LayoutInflater.from(context);
         this.dates = dates;
-        this.currentMonthNb = monthNumber;
-        this.currentYear = year;
     }
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

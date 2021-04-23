@@ -70,5 +70,7 @@
     <string name="fri">Fri</string>
     <string name="sat">Sat</string>
     <string name="sun">Sun</string>
+    <string name="add_event">Add Event</string>
+    <string name="view_events">View Events</string>
 
 </resources>
