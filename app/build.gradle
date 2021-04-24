@@ -69,9 +69,9 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
     implementation 'com.mapquest:navigation:3.5.0'
-    implementation('com.mapquest:mapping-android-sdk:2.0.10') {
+    implementation('com.mapquest:mapping-android-sdk:3.0.2') { //this library might not be needed
         exclude group: 'com.android.support'
-        exclude group: 'com.android.util'
+        exclude group: 'com.mapbox.mapboxsdk' //change when navigation is done
     }
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     testImplementation 'junit:junit:4.13.2'
