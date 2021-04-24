@@ -71,6 +71,7 @@ dependencies {
     implementation 'com.mapquest:navigation:3.5.0'
     implementation('com.mapquest:mapping-android-sdk:2.0.10') {
         exclude group: 'com.android.support'
+        exclude group: 'com.android.util'
     }
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     testImplementation 'junit:junit:4.13.2'
