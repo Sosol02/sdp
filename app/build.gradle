@@ -18,10 +18,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    lintOptions { // needed for mapquest and firestore to work together
-        disable "LogNotTimber", "StringFormatInTimber", "ThrowableNotAtBeginning", "BinaryOperationInTimber", "TimberArgCount", "TimberArgTypes", "TimberTagLength", "TimberExceptionLogging"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
