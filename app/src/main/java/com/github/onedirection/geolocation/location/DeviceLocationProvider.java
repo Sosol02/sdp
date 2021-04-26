@@ -1,4 +1,4 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.location;
 
 
 import android.Manifest;

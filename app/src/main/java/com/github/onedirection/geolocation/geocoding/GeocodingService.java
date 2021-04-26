@@ -1,5 +1,7 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.geocoding;
 
+import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Monads;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

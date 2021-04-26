@@ -1,5 +1,6 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.location;
 
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.ObserverPattern;
 
 import java.util.concurrent.CompletableFuture;

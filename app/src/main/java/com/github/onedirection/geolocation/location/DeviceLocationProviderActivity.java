@@ -1,4 +1,4 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.location;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.onedirection.R;
+import com.github.onedirection.geolocation.Coordinates;
 import com.google.android.gms.location.LocationRequest;
 
 import java.util.concurrent.CompletableFuture;

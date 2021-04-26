@@ -2,9 +2,6 @@ package com.github.onedirection.navigation.fragment.map;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,8 +18,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.geolocation.AbstractDeviceLocationProvider;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
