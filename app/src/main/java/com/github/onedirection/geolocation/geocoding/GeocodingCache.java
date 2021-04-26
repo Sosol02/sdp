@@ -8,7 +8,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+/**  A wrapper for geocoding providing caching. */
 public final class GeocodingCache implements GeocodingService {
+    /**
+     * Note: As you will see, this class has a particular (unexpected) way
+     * of dealing with the number of results. This is so due to the Cache
+     * interface, which wasn't designed for this kind of special cases.
+     *
+     * BUT geocoding will usually always be used with the same number of results,
+     * so this shouldn't be a real issue.
+     */
+
     private static class Key{
         public final String str;
         public final int i;
@@ -41,7 +51,7 @@ public final class GeocodingCache implements GeocodingService {
                 key -> underlying.getNamedCoordinates(key.str, key.i)
         );
         coordinatesCache = new Cache<>(
-                coordinates -> underlying.getBestNamedCoordinates(coordinates)
+                underlying::getBestNamedCoordinates
         );
     }
 
