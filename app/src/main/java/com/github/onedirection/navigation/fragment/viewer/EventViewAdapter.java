@@ -1,4 +1,4 @@
-package com.github.onedirection.utils;
+package com.github.onedirection.navigation.fragment.viewer;
 
 import android.content.Context;
 import android.view.LayoutInflater;

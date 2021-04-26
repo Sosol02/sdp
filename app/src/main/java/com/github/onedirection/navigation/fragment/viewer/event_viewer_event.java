@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.navigation.fragment.viewer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import com.github.onedirection.utils.EventViewAdapter;
+import com.github.onedirection.R;
 
 import java.util.concurrent.ExecutionException;
 
