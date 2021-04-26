@@ -12,7 +12,7 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
 

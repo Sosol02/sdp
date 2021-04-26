@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.NominatimGeocoding;
+import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
 import com.github.onedirection.utils.Pair;
 import com.google.type.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;

@@ -17,10 +17,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
