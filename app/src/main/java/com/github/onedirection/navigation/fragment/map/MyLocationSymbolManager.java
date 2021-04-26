@@ -14,7 +14,6 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.util.Objects;
@@ -45,6 +44,12 @@ public class MyLocationSymbolManager {
         } else {
             myLocation.setLatLng(latLng);
             symbolManager.update(myLocation);
+        }
+    }
+
+    public void SetEnableSymbol(boolean enable) {
+        if (myLocation != null) {
+            myLocation.setIconOpacity(enable ? 1f : 0f);
         }
     }
 

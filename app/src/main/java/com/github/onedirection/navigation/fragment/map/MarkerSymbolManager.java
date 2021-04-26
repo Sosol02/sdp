@@ -70,14 +70,6 @@ public class MarkerSymbolManager {
         return marker;
     }
 
-    public List<Symbol> addMarkers(LatLng... positions) {
-        List<Symbol> markers = new ArrayList<>();
-        for (LatLng position : positions) {
-            markers.add(addMarker(position));
-        }
-        return markers;
-    }
-
     public CompletableFuture<Pair<Symbol, LatLng>> addGeocodedEventMarker(@NonNull Event event) {
         Optional<Coordinates> optCoords = event.getCoordinates();
         if (optCoords.isPresent()) {
@@ -92,7 +84,7 @@ public class MarkerSymbolManager {
             geocoding.getBestNamedCoordinates(event.getLocationName())
                     .thenApply(namedCoordinates -> {
                         LatLng latLng = new LatLng(namedCoordinates.latitude, namedCoordinates.longitude);
-                        fragment.getActivity().runOnUiThread(() -> future.complete(new Pair<>(addEventMarkerAt(event, latLng), latLng)));
+                        fragment.requireActivity().runOnUiThread(() -> future.complete(new Pair<>(addEventMarkerAt(event, latLng), latLng)));
                         return null;
                     }).exceptionally(future::completeExceptionally);
 

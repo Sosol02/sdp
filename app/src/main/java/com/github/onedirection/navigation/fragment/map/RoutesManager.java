@@ -1,7 +1,6 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -19,7 +18,6 @@ import com.mapquest.navigation.model.Route;
 import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteOptionType;
 import com.mapquest.navigation.model.RouteOptions;
-import com.mapquest.navigation.model.RouteType;
 import com.mapquest.navigation.model.SystemOfMeasurement;
 import com.mapquest.navigation.model.location.Coordinate;
 import com.mapquest.navigation.model.location.Destination;
@@ -27,7 +25,6 @@ import com.mapquest.navigation.model.location.Destination;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,6 +1,5 @@
 package com.github.onedirection.navigation.fragment.map;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -28,9 +26,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
-import com.mapquest.navigation.NavigationManager;
-import com.mapquest.navigation.v3.service.model.Navigation;
 
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -42,46 +37,31 @@ import java.util.concurrent.CompletableFuture;
 public class MapFragment extends Fragment {
 
     private MapView mapView;
+    private MapboxMap mapboxMap;
+    private MarkerSymbolManager markerSymbolManager;
+    private MyLocationSymbolManager myLocationSymbolManager;
+    private RoutesManager routesManager;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView event_name;
     private TextView event_time_start;
     private TextView event_time_end;
     private TextView event_location;
-    private MapboxMap mapboxMap;
-    private MarkerSymbolManager markerSymbolManager;
     private DeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
-    private MyLocationSymbolManager myLocationSymbolManager;
-    private Symbol clickSymbol;
-
-    private NavigationManager mNavigationManager;
-    private RoutesManager routesManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        this.deviceLocationProvider = new AbstractDeviceLocationProvider(getContext().getApplicationContext()) {
-            @Override
-            public CompletableFuture<Boolean> requestFineLocationPermission() {
-                return requestLocationPermission();
-            }
-        };
-        this.permissionRequestResult = CompletableFuture.completedFuture(false);
-        this.requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                result -> {permissionRequestResult.complete(result); });
+        Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token));
 
-        deviceLocationProvider.startLocationTracking();
-        deviceLocationProvider.addObserver((subject, value) -> {
-            if (myLocationSymbolManager != null) {
-                myLocationSymbolManager.update(value);
-            }
-        });
-
-        Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        permissionRequestResult = CompletableFuture.completedFuture(false);
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                result -> {permissionRequestResult.complete(result); });
 
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -90,32 +70,15 @@ public class MapFragment extends Fragment {
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeManagers(style);
-                Coordinates coordinates = deviceLocationProvider.getLastLocation();
                 //LatLng from = new LatLng(40.7326808, -73.9843407);
-                LatLng from = new LatLng(coordinates.latitude, coordinates.longitude);
-                LatLng to = new LatLng(42.355097, -71.055464);
-                routesManager.findRoute(from, to);
+                //LatLng to = new LatLng(42.355097, -71.055464);
             });
 
+            initializeDeviceLocationProvider();
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
-                if (myLocationSymbolManager != null) {
-                    LatLng latLng = myLocationSymbolManager.getPosition();
-                    if (latLng != null) {
-                        CameraPosition position = new CameraPosition.Builder()
-                                .target(latLng)
-                                .zoom(15)
-                                .build();
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
-                    }
-                }
+                OnMyLocationButtonClickResponse();
             });
 
-            mapboxMap.addOnMapClickListener(point -> {
-                if (clickSymbol != null)
-                    markerSymbolManager.removeMarker(clickSymbol);
-                clickSymbol = markerSymbolManager.addMarker(point);
-                return false;
-            });
         });
 
         View bottomSheet = view.findViewById(R.id.fragment_map_bottom_sheet);
@@ -142,10 +105,16 @@ public class MapFragment extends Fragment {
     public void setBottomSheetEvent(Event event) {
         Objects.requireNonNull(event);
         event_name.setText(event.getName());
-        ZonedDateTime start=event.getStartTime();
-        event_time_start.setText(String.format(Locale.getDefault(),"%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
-        ZonedDateTime end=event.getEndTime();
-        event_time_end.setText(String.format(Locale.getDefault(),"%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
+        ZonedDateTime start = event.getStartTime();
+        event_time_start.setText(String.format(Locale.getDefault(),
+                "%s %s %dh%d",
+                start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                start.getDayOfMonth(), start.getHour(), start.getMinute()));
+        ZonedDateTime end = event.getEndTime();
+        event_time_end.setText(String.format(Locale.getDefault(),
+                "%s %s %dh%d",
+                end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                end.getDayOfMonth(), end.getHour(), end.getMinute()));
         event_location.setText(event.getLocationName());
     }
 
@@ -180,7 +149,7 @@ public class MapFragment extends Fragment {
     }
 
     private CompletableFuture<Boolean> requestLocationPermission() {
-        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(getContext().getApplicationContext())) {
+        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
@@ -194,6 +163,36 @@ public class MapFragment extends Fragment {
         routesManager = new RoutesManager(context, mapView, mapboxMap, style);
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
+    }
+
+    private void initializeDeviceLocationProvider() {
+        deviceLocationProvider = new AbstractDeviceLocationProvider(requireContext().getApplicationContext()) {
+            @Override
+            public CompletableFuture<Boolean> requestFineLocationPermission() {
+                return requestLocationPermission();
+            }
+        };
+
+        deviceLocationProvider.startLocationTracking();
+        deviceLocationProvider.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.update(value);
+            }
+        });
+
+    }
+
+    private void OnMyLocationButtonClickResponse() {
+        if (myLocationSymbolManager != null) {
+            LatLng latLng = myLocationSymbolManager.getPosition();
+            if (latLng != null) {
+                CameraPosition position = new CameraPosition.Builder()
+                        .target(latLng)
+                        .zoom(15)
+                        .build();
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+            }
+        }
     }
 
 }
