@@ -52,24 +52,22 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        try{
+        try {
             CompletableFuture<User> fUser = auth.loginUser(TEST_EMAIL, TEST_PSW);
             User user = fUser.join();
             assertTrue(auth.getCurrentUser().isPresent());
             assertThat(auth.getCurrentUser().get(), is(user));
             assertThat(user.getEmail(), is(TEST_EMAIL));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
-    private void authFails(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> expected){
-        try{
+    private void authFails(CompletableFuture<User> fUser, AuthenticationService auth, Class<?> expected) {
+        try {
             User user = fUser.get();
             fail("User " + user + " should not have been able to login.");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             assertThat(e.getCause(), is(instanceOf(expected)));
             assertFalse(auth.getCurrentUser().isPresent());
         }
@@ -82,8 +80,7 @@ public class FirebaseAuthenticationTest {
 
         try {
             authFails(auth.loginUser(DISABLED_EMAIL, TEST_PSW), auth, FailedLoginException.class);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             fail(e.getMessage());
         }
     }
@@ -93,11 +90,10 @@ public class FirebaseAuthenticationTest {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
         assertFalse(auth.getCurrentUser().isPresent());
 
-        try{
+        try {
             authFails(auth.registerUser(DISABLED_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
             authFails(auth.registerUser(TEST_EMAIL, TEST_PSW), auth, FailedRegistrationException.class);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail(e.getMessage());
         }
     }
@@ -113,8 +109,7 @@ public class FirebaseAuthenticationTest {
             assertThat(auth.getCurrentUser().get().getName(), is(TEST_NAME1));
             assertThat(auth.updateDisplayName(TEST_NAME2).get().getName(), is(TEST_NAME2));
             assertThat(auth.getCurrentUser().get().getName(), is(TEST_NAME2));
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             fail(e.getMessage());
         }
 
@@ -123,11 +118,10 @@ public class FirebaseAuthenticationTest {
     @Test
     public void profileCannotBeUpdatedWithoutUser() {
         AuthenticationService auth = FirebaseAuthentication.getInstance();
-        try{
+        try {
             auth.updateDisplayName(TEST_NAME1).get();
             fail("Display name update should have failed.");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             assertThat(e.getCause(), is(instanceOf(NoUserLoggedInException.class)));
         }
     }

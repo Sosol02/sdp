@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -16,12 +15,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 import com.google.android.material.navigation.NavigationView;
 
-public class NavigationActivity extends AppCompatActivity {
+public class NavigationActivity extends DeviceLocationProviderActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -42,7 +42,7 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(getApplicationContext(), EventCreator.class);

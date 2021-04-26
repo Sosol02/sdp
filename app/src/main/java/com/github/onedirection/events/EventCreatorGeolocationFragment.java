@@ -1,7 +1,6 @@
 package com.github.onedirection.events;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 import com.github.onedirection.geolocation.GeocodingService;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.NominatimGeocoding;
@@ -42,7 +40,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
     // TODO: research this threshold a bit more
     private static final double COORDINATES_TOLERANCE = 5e-3;
 
-    private DeviceLocationProvider locationProvider;
+    private DeviceLocationProviderActivity locationProvider;
 
     private EventCreatorViewModel model;
     private GeocodingService geocoding;
@@ -78,7 +76,8 @@ public class EventCreatorGeolocationFragment extends Fragment {
         ////////////////////////////////
         //  Attributs initialization  //
         ////////////////////////////////
-        this.locationProvider = (DeviceLocationProvider) requireActivity();
+        this.locationProvider = (DeviceLocationProviderActivity) requireActivity();
+
 
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
