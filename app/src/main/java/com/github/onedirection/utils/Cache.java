@@ -28,7 +28,7 @@ import java.util.function.Function;
  */
 public class Cache<K, V> {
 
-    private static final int MAX_HISTORY_DEFAULT = 32;
+    public static final int MAX_HISTORY_DEFAULT = 32;
 
     private final int maxHistory;
     private final Function<? super K, ? extends V> getFunction;
@@ -57,11 +57,19 @@ public class Cache<K, V> {
     }
 
     public Cache(Function<? super K, ? extends V> getFunction, int maxHistory) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("Read only cache."); }, maxHistory);
+        this(getFunction, (k, v) -> { throw new RuntimeException("Unreachable, set cache, k: " + k + ", v: " + v); }, maxHistory);
     }
 
     public Cache(Function<? super K, ? extends V> getFunction) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("Read only cache."); }, MAX_HISTORY_DEFAULT);
+        this(getFunction, (k, v) -> { throw new RuntimeException("Unreachable, set cache, k: " + k + ", v: " + v); }, MAX_HISTORY_DEFAULT);
+    }
+
+    public Cache(int maxHistory) {
+        this(k -> { throw new RuntimeException("Unreachable, get cache, k: " + k); }, maxHistory);
+    }
+
+    public Cache() {
+        this(k -> { throw new RuntimeException("Unreachable, get cache, k: " + k); });
     }
 
     public int getMaxHistory() {
@@ -72,13 +80,29 @@ public class Cache<K, V> {
         map.clear();
         history.clear();
     }
+    
+    public void invalidate(K key) {
+        map.remove(key);
+        // Do we actually want to suffer a fat O(n) cost here? maxHistory can be very large.
+        // We could not remove the key from the history, and when evicting keys, check if the
+        // removal failed (key was invalidated) and move on.
+        // Problems could happen because in this case, the number of useful history slots
+        // can only be at max maxHistory - #invalidate, which may be bad (force a lot of
+        // undue evictions).
+
+        //history.remove(key);
+    }
 
     public V get(K key) {
+        return get(key, getFunction);
+    }
+
+    public V get(K key, Function<? super K, ? extends V> f) {
         if (map.containsKey(key)) {
             return map.get(key);
         }
 
-        V res = getFunction.apply(key);
+        V res = f.apply(key);
         if (res == null) {
             // Don't store null: map and queue don't accept null keys
             // Should it be an exception? In case of a backing function that
@@ -96,18 +120,21 @@ public class Cache<K, V> {
 
         if (!history.offer(key)) {
             // the history is full
-            K oldest = history.remove();
-            map.remove(oldest);
+            K oldest;
+            // while because invalidated may still be in the history and need to be skipped
+            do {
+                oldest = history.remove();
+            } while (map.remove(oldest) == null);
             history.offer(key);
         }
     }
 
     public boolean set(K key, V value) {
-        return set(key, value, true);
+        return set(key, value, setFunction, true);
     }
 
-    public boolean set(K key, V value, boolean writeAllocate) {
-        boolean wasInserted = setFunction.apply(key, value);
+    public boolean set(K key, V value, BiFunction<? super K, ? super V, Boolean> f, boolean writeAllocate) {
+        boolean wasInserted = f.apply(key, value);
         if (wasInserted && writeAllocate) {
             putInMap(key, value);
         }
