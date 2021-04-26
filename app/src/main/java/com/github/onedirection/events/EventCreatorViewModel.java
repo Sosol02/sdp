@@ -21,11 +21,17 @@ public class EventCreatorViewModel extends ViewModel {
     private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
 
     public MutableLiveData<String> name;
-    public MutableLiveData<String> customLocation;
-    public MutableLiveData<Optional<NamedCoordinates>> coordinates;
     public MutableLiveData<ZonedDateTime> startTime;
     public MutableLiveData<ZonedDateTime> endTime;
+
     public MutableLiveData<Boolean> useGeolocation;
+    public MutableLiveData<String> customLocation;
+    public MutableLiveData<Optional<NamedCoordinates>> coordinates;
+
+    public MutableLiveData<Boolean> isRecurrent;
+    public MutableLiveData<Duration> recurrencePeriod;
+    public MutableLiveData<ZonedDateTime> recurrenceEnd;
+
     public Id eventId;
     public boolean isEditing;
     public CountingIdlingResource idling;
@@ -64,6 +70,14 @@ public class EventCreatorViewModel extends ViewModel {
         this.idling = new CountingIdlingResource("Event creator is loading.");
     }
 
+    public Optional<Recurrence> generateRecurrence(){
+        // TODO: ask remi what id to use...
+        Id recId = new Id();
+        return isRecurrent.getValue() ?
+                Optional.of(new Recurrence(recId, recurrencePeriod.getValue(), recurrenceEnd.getValue())):
+                Optional.empty();
+    }
+
     public Event generateEvent(){
         return useGeolocation.getValue() ?
             new Event(
@@ -71,14 +85,16 @@ public class EventCreatorViewModel extends ViewModel {
                 name.getValue(),
                 coordinates.getValue().get(),
                 startTime.getValue(),
-                endTime.getValue()
+                endTime.getValue(),
+                generateRecurrence()
             ) :
             new Event(
                 eventId,
                 name.getValue(),
                 customLocation.getValue(),
                 startTime.getValue(),
-                endTime.getValue()
+                endTime.getValue(),
+                generateRecurrence()
             );
     }
 
