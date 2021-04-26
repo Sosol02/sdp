@@ -1,17 +1,25 @@
 package com.github.onedirection.navigation.fragment.map;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
+import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
 import com.github.onedirection.utils.Pair;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,9 +39,13 @@ public class MarkerSymbolManager {
     private final Map<Symbol, Event> eventMap = new HashMap<>();
     private final MapFragment fragment;
 
-    public MarkerSymbolManager(SymbolManager symbolManager, MapFragment fragment) {
+    private final String SYMBOL_ID = "MARKER_MAP";
+
+    public MarkerSymbolManager(Context context, MapView mapView, MapboxMap mapboxMap, Style style, MapFragment fragment) {
         Objects.requireNonNull(fragment);
-        this.symbolManager = symbolManager;
+        Objects.requireNonNull(context);
+        initializeSymbolImage(context, style);
+        this.symbolManager = new SymbolManager(mapView, mapboxMap, style);
         this.markers = new ArrayList<>();
         this.fragment = fragment;
         symbolManager.setIconAllowOverlap(true);
@@ -50,7 +62,7 @@ public class MarkerSymbolManager {
         Log.d(LOG_TAG, "Adding marker at LatLng: "  + position.toString());
         Symbol marker = symbolManager.create(new SymbolOptions()
                 .withLatLng(position)
-                .withIconImage(MapFragment.SYMBOL_ID)
+                .withIconImage(SYMBOL_ID)
                 .withIconSize(2f)
                 );
         Log.d(LOG_TAG, "Finished adding marker at LatLng: "  + position.toString());
@@ -121,6 +133,11 @@ public class MarkerSymbolManager {
         symbolManager.deleteAll();
         markers.clear();
         eventMap.clear();
+    }
+
+    private void initializeSymbolImage(Context context, Style style) {
+        Drawable marker = ContextCompat.getDrawable(context, R.drawable.ic_marker_map);
+        style.addImage(SYMBOL_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(marker)));
     }
 
     public List<Symbol> getAllMarkers() {
