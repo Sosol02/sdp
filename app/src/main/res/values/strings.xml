@@ -35,9 +35,7 @@
     <string name="add_event">Add Event</string>
 
     <!-- Strings related to calendar and event creation -->
-    <string name="popup_title"> "" </string>
     <string name="cancel"> Cancel </string>
-    <string name="day_select_dialog_tag">daySelectedDialog</string>
     <string name="fragment_map_event_name">Event name</string>
     <string name="fragment_map_event_time_start">Start time</string>
     <string name="fragment_map_event_time_end">End time</string>
@@ -54,7 +52,6 @@
     <string name="set_event_location">Set event location</string>
     <string name="location_name">Location name</string>
     <string name="search">Search:</string>
-    <string name="search_location">Search location</string>
     <string name="use_current_location">Use current location</string>
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
@@ -70,5 +67,8 @@
     <string name="fri">Fri</string>
     <string name="sat">Sat</string>
     <string name="sun">Sun</string>
+    <string name="view_events">View Events</string>
+    <string name="shrek_left">Our lord and savior dabbing to the left</string>
+    <string name="shrek_right">Our lord and savior dabbing to the right</string>
 
 </resources>

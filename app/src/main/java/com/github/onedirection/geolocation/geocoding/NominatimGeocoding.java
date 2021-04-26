@@ -1,4 +1,4 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.geocoding;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.HTTP;
 import com.github.onedirection.utils.Monads;
 

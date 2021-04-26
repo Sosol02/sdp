@@ -5,6 +5,9 @@ import android.Manifest;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.geolocation.location.DeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderNoRequests;
+
 import org.junit.Rule;
 import org.junit.Test;
 

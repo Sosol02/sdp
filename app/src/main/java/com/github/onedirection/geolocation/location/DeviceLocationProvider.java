@@ -1,4 +1,4 @@
-package com.github.onedirection.geolocation;
+package com.github.onedirection.geolocation.location;
 
 
 import android.Manifest;
@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 
 import java.util.concurrent.CompletableFuture;
+
 
 /**
  * Location provider relying on Android's location capabilities, and
