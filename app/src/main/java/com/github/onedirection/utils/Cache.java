@@ -14,14 +14,14 @@ import java.util.function.Function;
  * get(k) is O(backing) if k not computed yet, O(1) otherwise.
  * Note that the cache does not keep null values.
  *
- * getFunction is the function called to get elements,
- * setFunction is called when setting elements through the cache.
+ * getFunction is the default function called to get elements,
+ * setFunction is the default function called when setting elements through the cache.
  * It is imperative that setFunction(k, v); getFunction(k) == v
  * since in set(), the cache can remember (k, v) without calling
  * getFunction afterwards.
  *
- * If not specified, the default setFunction will throw a RuntimeException
- * and make the cache read-only.
+ * If not specified, the default get/setFunction will throw a RuntimeException
+ * and thus you will have to use the overloads of get and set that can accept a function.
  *
  * @param <K> The type of the keys
  * @param <V> The type of the values
@@ -83,20 +83,25 @@ public class Cache<K, V> {
     
     public void invalidate(K key) {
         map.remove(key);
-        // Do we actually want to suffer a fat O(n) cost here? maxHistory can be very large.
-        // We could not remove the key from the history, and when evicting keys, check if the
-        // removal failed (key was invalidated) and move on.
-        // Problems could happen because in this case, the number of useful history slots
-        // can only be at max maxHistory - #invalidate, which may be bad (force a lot of
-        // undue evictions).
-
-        //history.remove(key);
     }
 
+    /**
+     * Same as get(k, f) but using the default getFunction.
+     * @param key
+     * @return
+     */
     public V get(K key) {
         return get(key, getFunction);
     }
 
+    /**
+     * Get the value at key and use the function f to get it if it wasn't already in the cache.
+     * If the value corresponding to key is null, it is not stored in the cache.
+     * Complexity O(F) where F is the complexity of f.
+     * @param key
+     * @param f The function called if key is not in the cache.
+     * @return The value corresponding to key.
+     */
     public V get(K key, Function<? super K, ? extends V> f) {
         if (map.containsKey(key)) {
             return map.get(key);
@@ -129,14 +134,45 @@ public class Cache<K, V> {
         }
     }
 
+    /**
+     * Same as set(k, v, wa, f) but using the default setFunction and writeAllocate = true.
+     * @param key
+     * @param value
+     * @return
+     */
     public boolean set(K key, V value) {
         return set(key, value, setFunction, true);
     }
 
+    /**
+     * Same as set(k, v, wa, f) but using the default setFunction.
+     * @param key
+     * @param value
+     * @param writeAllocate
+     * @return
+     */
+    public boolean set(K key, V value, boolean writeAllocate)  {
+        return set(key, value, setFunction, writeAllocate);
+    }
+
+    /**
+     * Assign a value to a key in the cache. The function passed as argument is called with the provided
+     * key and value, and is supposed to insert the same k,v pair into the cache's backing store.
+     * If f doesn't propagate the set() and ignores it, the cache may become inconsistent.
+     * @param key
+     * @param value
+     * @param f
+     * @param writeAllocate If true, the cache will also immediatly store the value. If false, it will only invalidate the cache at key.
+     * @return
+     */
     public boolean set(K key, V value, BiFunction<? super K, ? super V, Boolean> f, boolean writeAllocate) {
         boolean wasInserted = f.apply(key, value);
-        if (wasInserted && writeAllocate) {
-            putInMap(key, value);
+        if (wasInserted) {
+            if (writeAllocate) {
+                putInMap(key, value);
+            } else {
+                invalidate(key);
+            }
         }
         return wasInserted;
     }

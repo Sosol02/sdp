@@ -176,4 +176,26 @@ public class CacheTest {
         cache.get(4);
         assertThat(counter[0], is(4));
     }
+
+    @Test
+    public void writeAllocateWorks() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> {
+            counter[0] += 1;
+            return null;
+        }, (k, v) -> true);
+
+        cache.set(0, "0", false);
+        assertThat(counter[0], is(0));
+        cache.get(0);
+        assertThat(counter[0], is(1));
+        
+        cache.invalidate();
+        counter[0] = 0;
+
+        cache.set(0, "0", true);
+        assertThat(counter[0], is(0));
+        cache.get(0);
+        assertThat(counter[0], is(0));
+    }
 }
