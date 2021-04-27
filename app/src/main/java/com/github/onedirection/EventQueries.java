@@ -149,31 +149,17 @@ public class EventQueries {
         long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
         long refStartTime = event.getStartTime().toEpochSecond();
 
-        newEventRecurrence = newEventRecurrence.setPrevEvent(Optional.ofNullable(null));
-
         long x = (recurrenceLimit - refStartTime)/period;
-        Id nextId = null;
-        Id currId = Id.generateRandom();
-        Id prevId = x <= 1 ? event.getId() : Id.generateRandom();
         long tmpStartTime = refStartTime + x * period;
         while(x > 0) {
-            Recurrence r = new Recurrence(groupId, newEventRecurrence.getPeriod(), newEventRecurrence.getEndTime(), Optional.of(prevId), Optional.ofNullable(nextId));
-            Event newEvent = new Event(currId, event.getName(), event.getLocationName(), event.getCoordinates(),
-                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(r));
+            Event newEvent = new Event(Id.generateRandom(), event.getName(), event.getLocationName(), event.getCoordinates(),
+                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newEventRecurrence));
             eventsToStore.add(newEvent);
-            nextId = currId;
-            currId = prevId;
-            prevId = (--x) <= 1 ? event.getId() : Id.generateRandom();
-            tmpStartTime = refStartTime + x * period;
+            tmpStartTime = refStartTime + (--x) * period;
         }
-        newEventRecurrence = newEventRecurrence.setNextEvent(Optional.ofNullable(nextId));
 
-        eventsToStore.add(event.setRecurrence(newEventRecurrence));
+        eventsToStore.add(event);
 
-        if(eventsToStore.size() == 1) { //Preserve the invariant that an event series has more than 1 element.
-            return db.store(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty()))
-                    .thenApply(id -> id == event.getId() ? 1 : 0);
-        }
         return db.storeAll(eventsToStore).thenApply(b -> b ? eventsToStore.size() : 0);
     }
 
@@ -191,7 +177,6 @@ public class EventQueries {
 
     /**
      * Changes the end time of the recurring event series. This operation may delete the recurring event series, if the new end time is less than the start time of the first recurring event.
-     * If the end time is such that only 1 event is left in the recurrence series, then the series is deleted and the lasting event is converted to a non-recurring event
      * @param event (Event) : A recurring event belonging to the target recurrence series
      * @param newEndTime (ZonedDateTime) : The new end time of the recurrence series
      * @return (CompletableFuture<Boolean>) : True if the operation completed successfully
@@ -208,70 +193,50 @@ public class EventQueries {
             throw new IllegalArgumentException("The recurring series doesn't exist");
             }
             ZonedDateTime prevEndTime = eventSeries.get(0).getRecurrence().get().getEndTime();
+            Long period = eventSeries.get(0).getRecurrence().get().getPeriod().getSeconds();
+            Recurrence newRecurrence = new Recurrence(groupId, period, newEndTime);
 
             if(newEndTime.toEpochSecond() < prevEndTime.toEpochSecond()) { //Remove some events
                 List<CompletableFuture<Id>> changedEvents = new ArrayList<>();
-                long smallestEpochSecond = prevEndTime.toEpochSecond();
-                Id latestEventId = null;
                 for(Event e : eventSeries) {
                     if(e.getStartTime().toEpochSecond() > newEndTime.toEpochSecond()) {
                         changedEvents.add(db.remove(e.getId(), e.storer()));
-                        if(e.getStartTime().toEpochSecond() < smallestEpochSecond) {
-                            smallestEpochSecond = e.getStartTime().toEpochSecond();
-                            latestEventId = e.getRecurrence().get().getPrevEvent().orElse(null);
-                        }
-                    }
-                }
-                if(latestEventId != null) { //Update next event pointer of last event in series
-                    Event target = null;
-                    for(Event e : eventSeries) {
-                        if(e.getId().equals(latestEventId)) {
-                            target = e;
-                        }
-                    }
-                    if(!target.getRecurrence().get().getPrevEvent().isPresent()) {
-                        changedEvents.add(db.store(new Event(target.getId(), target.getName(), target.getLocationName(), target.getCoordinates(), target.getStartTime(), target.getEndTime(), Optional.empty())));
                     } else {
-                        changedEvents.add(db.store(target.setRecurrence(target.getRecurrence().get().setNextEvent(Optional.empty()))));
+                        changedEvents.add(db.store(e.setRecurrence(newRecurrence)));
                     }
                 }
+
                 return CompletableFuture.allOf(changedEvents.toArray(new CompletableFuture[changedEvents.size()])).thenApply(t -> true);
 
             } else { //Add some events
-                List<Event> eventsToStore = new ArrayList<Event>();
+                List<Event> changedEvents = new ArrayList<Event>();
                 Event lastEvent = null;
+                long largestStartTime = Long.MIN_VALUE;
                 for(Event e : eventSeries) {
-                    if(!e.getRecurrence().get().getNextEvent().isPresent()) {
+                    if(e.getStartTime().toEpochSecond() > largestStartTime) {
                         lastEvent = e;
+                        largestStartTime = e.getStartTime().toEpochSecond();
                     }
+                    changedEvents.add(e.setRecurrence(newRecurrence));
                 }
-                long period = event.getRecurrence().get().getPeriod().getSeconds();
                 long refStartTime = lastEvent.getStartTime().toEpochSecond();
                 long x = (newEndTime.toEpochSecond() - refStartTime)/period;
-                Id nextId = null;
-                Id currId = Id.generateRandom();
-                Id prevId = x <= 1 ? lastEvent.getId() : Id.generateRandom();
                 long tmpStartTime = refStartTime + x * period;
                 while(x > 0) {
-                    Recurrence r = new Recurrence(groupId, event.getRecurrence().get().getPeriod(), newEndTime, Optional.of(prevId), Optional.ofNullable(nextId));
-                    Event newEvent = new Event(currId, event.getName(), event.getLocationName(), event.getCoordinates(),
-                            TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(r));
-                    eventsToStore.add(newEvent);
-                    nextId = currId;
-                    currId = prevId;
-                    prevId = (--x) <= 1 ? lastEvent.getId() : Id.generateRandom();
-                    tmpStartTime = refStartTime + x * period;
+                    Event newEvent = new Event(Id.generateRandom(), lastEvent.getName(), lastEvent.getLocationName(), lastEvent.getCoordinates(),
+                            TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newRecurrence));
+                    changedEvents.add(newEvent);
+                    tmpStartTime = refStartTime + (--x) * period;
                 }
-                eventsToStore.add(lastEvent.setRecurrence(lastEvent.getRecurrence().get().setNextEvent(Optional.ofNullable(nextId))));
 
-                return db.storeAll(eventsToStore);
+                return db.storeAll(changedEvents);
             }
         });
     }
 
     /**
      * Modifies the existing event having the same Id as parameter 'event' to have the same fields as 'event'
-     * @throws IllegalArgumentException if the recurrence attributes of the event are changed
+     * @throws IllegalArgumentException if the recurrence period of the event is changed or if the recurrence series id is changed
      * @param event (Event) : the modified event
      * @return (CompletableFuture<Id>) : the id of the modified event, once the query is done
      */
@@ -298,59 +263,11 @@ public class EventQueries {
 
     /**
      * Removes an event from the database according to its Id.
-     * If the event is recurring (part of a recurrence series) then the previous and next event from the recurrence series need to have their pointers updated,
-     * as the recurrence series is a linked list of recurring events. Else we simple remove the event from the database.
-     * INVARIANT : A recurrence series has always more than 1 element (event). That is, if an event belongs to a recurrence series (i.e. is recurrent) then its pointers to the previous and next events
-     * of the recurrence series are not both null.
-     * This implies that if there is only 1 event left in the recurrence series, then the series is deleted and the single event is transformed into an ordinary non-recurring event.
      * @param eventId (Id) : The id of the event that has to be removed from the database
-     * @return (CompletableFuture<Id>) : the id of the modified event, once the query is done
+     * @return (CompletableFuture<Id>) : the id of the removed event, once the query is done
      */
     public CompletableFuture<Id> removeEvent(Id eventId) {
-        return db.retrieve(eventId, EventStorer.getInstance()).thenCompose(event -> {
-            if(event == null) { //The event doesn't exist in the database so the task is already done
-                return CompletableFuture.completedFuture(eventId);
-            }
-            if(event.isRecurrent()) {
-                Optional<Id> prev = event.getRecurrence().get().getPrevEvent();
-                Optional<Id> next = event.getRecurrence().get().getNextEvent();
-
-                if(prev.isPresent() && next.isPresent()) {
-                    CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
-                    CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
-                    return CompletableFuture.allOf(prevEvent, nextEvent).thenCompose(aVoid -> {
-                        Event e = prevEvent.join();
-                        return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(next)));
-                    }).thenCompose(id1 -> {
-                        Event e = nextEvent.join();
-                        return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(prev)));
-                    }).thenCompose(id2 -> db.remove(event.getId(), event.storer()));
-
-                } else if(prev.isPresent()) {
-                    CompletableFuture<Event> prevEvent = db.retrieve(prev.get(), event.storer());
-                    return prevEvent.thenCompose(e -> {
-                        if(!e.getRecurrence().get().getPrevEvent().isPresent()) { //Convert to non-recurring event
-                            return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
-                        } else {
-                            return db.store(e.setRecurrence(e.getRecurrence().get().setNextEvent(Optional.empty())));
-                        }
-                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
-
-                } else { //Impossible to have both prev AND next not present
-                    CompletableFuture<Event> nextEvent = db.retrieve(next.get(), event.storer());
-                    return nextEvent.thenCompose(e -> {
-                        if(!e.getRecurrence().get().getNextEvent().isPresent()) { //Convert to non-recurring event
-                            return db.store(new Event(e.getId(), e.getName(), e.getLocationName(), e.getCoordinates(), e.getStartTime(), e.getEndTime(), Optional.empty()));
-                        } else {
-                            return db.store(e.setRecurrence(e.getRecurrence().get().setPrevEvent(Optional.empty())));
-                        }
-                    }).thenCompose(n -> db.remove(event.getId(), event.storer()));
-                }
-
-            } else {
-                return db.remove(event.getId(), event.storer());
-            }
-        });
+        return db.remove(Objects.requireNonNull(eventId), EventStorer.getInstance());
     }
 
     /**
@@ -400,7 +317,7 @@ public class EventQueries {
     }
 
     /**
-     * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['startRecurrence', 'endRecurrence']
+     * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['eventStart', 'endRecurrence']
      * @param event (Event) : The event to convert
      * @param groupId (Id) : the group id of the recurrence series
      * @param period (Duration) : the time between each recurrence of the event
@@ -411,7 +328,7 @@ public class EventQueries {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");
         }
-        Recurrence newRecurrenceSeries = new Recurrence(Objects.requireNonNull(groupId), Objects.requireNonNull(period), Objects.requireNonNull(endRecurrence), Optional.empty(), Optional.empty());
+        Recurrence newRecurrenceSeries = new Recurrence(Objects.requireNonNull(groupId), Objects.requireNonNull(period), Objects.requireNonNull(endRecurrence));
         return addRecurringEvent(event.setRecurrence(newRecurrenceSeries));
     }
 
