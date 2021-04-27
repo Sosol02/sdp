@@ -19,6 +19,8 @@ import java.util.Optional;
 
 public class EventCreatorViewModel extends ViewModel {
     private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
+    private final static Duration DEFAULT_EVENT_RECURRENCE_PERIOD = Duration.of(1, ChronoUnit.HOURS);
+    private final static Duration DEFAULT_EVENT_RECURRENCE_DURATION = Duration.of(1, ChronoUnit.DAYS);
 
     public MutableLiveData<String> name;
     public MutableLiveData<ZonedDateTime> startTime;
@@ -38,11 +40,16 @@ public class EventCreatorViewModel extends ViewModel {
 
     private void init(ZonedDateTime start){
         this.name = new MutableLiveData<>("");
-        this.customLocation = new MutableLiveData<>("");
-        this.coordinates = new MutableLiveData<>(Optional.empty());
         this.startTime = new MutableLiveData<>(start);
         this.endTime = new MutableLiveData<>(start.plus(DEFAULT_EVENT_DURATION));
+
         this.useGeolocation = new MutableLiveData<>(false);
+        this.customLocation = new MutableLiveData<>("");
+        this.coordinates = new MutableLiveData<>(Optional.empty());
+
+        this.isRecurrent = new MutableLiveData<>(false);
+        this.recurrencePeriod = new MutableLiveData<>(DEFAULT_EVENT_RECURRENCE_PERIOD);
+        this.recurrenceEnd = new MutableLiveData<>(start.plus(DEFAULT_EVENT_RECURRENCE_DURATION));
 
         this.eventId = Id.generateRandom();
         this.isEditing = false;
