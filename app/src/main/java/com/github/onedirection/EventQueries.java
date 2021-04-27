@@ -244,12 +244,39 @@ public class EventQueries {
         return db.retrieve(Objects.requireNonNull(event).getId(), event.storer()).thenCompose(e -> {
             Objects.requireNonNull(e, "Event doesn't exist in the database");
 
-            if(!e.getRecurrence().equals(event.getRecurrence())) {
-                throw new IllegalArgumentException("Cannot change the recurrence attributes of the event");
+            CompletableFuture<Boolean> changedRecurringEndTime = CompletableFuture.completedFuture(true);
+            if(e.getRecurrence().isPresent() && event.getRecurrence().isPresent()) {
+                if(!e.getRecurrence().get().getPeriod().equals(event.getRecurrence().get().getPeriod())) {
+                    throw new IllegalArgumentException("Cannot change the period of the recurrence series");
+                }
+                if(!e.getRecurrence().get().getGroupId().equals(event.getRecurrence().get().getGroupId())) {
+                    throw new IllegalArgumentException("Cannot change the recurrence id of the event");
+                }
+                if(!e.getRecurrence().get().getEndTime().equals(event.getRecurrence().get().getEndTime())) {
+                    changedRecurringEndTime = changedRecurringEndTime.thenCompose(t -> changeRecurringSeriesEndTime(e, event.getRecurrence().get().getEndTime()));
+                }
             }
 
-            return e.equals(event) ? CompletableFuture.completedFuture(e.getId())
-                    : db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence()));
+            return changedRecurringEndTime.thenCompose(t -> {
+                if(t) {
+                    if(e.getRecurrence().isPresent() && !event.getRecurrence().isPresent()) { //Remove from recurrence series
+                        return db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty()));
+                    } else if(!e.getRecurrence().isPresent() && event.getRecurrence().isPresent()) { //Convert to recurring
+                        Event newEvent = new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty());
+                        return convertToRecurring(newEvent, event.getRecurrence().get()).thenApply(n -> n != 0 ? e.getId() : null);
+                    } else { //No changes on the recurrence option
+                        if(e.getRecurrence().isPresent() && event.getRecurrence().isPresent()) {
+                            if(e.getRecurrence().get().getEndTime().toEpochSecond() > event.getRecurrence().get().getEndTime().toEpochSecond()) {
+                                return CompletableFuture.completedFuture(e.getId()); //The event has been removed when changing the recurrence end time, so it is not modified in the database
+                            }
+                        }
+                        return e.equals(event) ? CompletableFuture.completedFuture(e.getId())
+                                : db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence()));
+                    }
+                } else {
+                    throw new IllegalArgumentException("An error occurred while changing the recurrence end time");
+                }
+            });
         });
     }
 
@@ -319,17 +346,14 @@ public class EventQueries {
     /**
      * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['eventStart', 'endRecurrence']
      * @param event (Event) : The event to convert
-     * @param groupId (Id) : the group id of the recurrence series
-     * @param period (Duration) : the time between each recurrence of the event
-     * @param endRecurrence (ZonedDateTime) : the end time limit of the recurrence of the event
+     * @param newRecurrenceSeries (Recurrence) : the new recurrence series of the event
      * @return (CompletableFuture<Integer>) : The number of events in the recurrence series
      */
-    public CompletableFuture<Integer> convertToRecurring(Event event, Id groupId, Duration period, ZonedDateTime endRecurrence) {
+    public CompletableFuture<Integer> convertToRecurring(Event event, Recurrence newRecurrenceSeries) {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");
         }
-        Recurrence newRecurrenceSeries = new Recurrence(Objects.requireNonNull(groupId), Objects.requireNonNull(period), Objects.requireNonNull(endRecurrence));
-        return addRecurringEvent(event.setRecurrence(newRecurrenceSeries));
+        return addRecurringEvent(event.setRecurrence(Objects.requireNonNull(newRecurrenceSeries)));
     }
 
 }

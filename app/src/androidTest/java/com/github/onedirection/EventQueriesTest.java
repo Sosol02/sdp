@@ -301,6 +301,67 @@ public class EventQueriesTest {
     }
 
     @Test
+    public void modifyEndTimeOfRecurringEventChangesEndTimeOfSeries() throws ExecutionException, InterruptedException {
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
+        ZonedDateTime end = start.plusHours(1);
+        Duration period = Duration.ofDays(1);
+        Recurrence recurrence = new Recurrence(Id.generateRandom(), period, start.plusDays(6));
+        Event recurrEvent = new Event(Id.generateRandom(), "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
+        assertEquals(7, storeRecurrEvent);
+
+        Event changedRecurrEvent = recurrEvent.setName("changedName");
+        assertTrue(EventQueries.modifyEvent(db, changedRecurrEvent.setRecurrence(recurrence.setEndTime(start.plusDays(2)))).get().equals(recurrEvent.getId()));
+        List<Event> eventSeries = queries.getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
+        assertEquals(3, eventSeries.size());
+
+        if(storeRecurrEvent != 0) {
+            assertTrue(queries.removeRecurrEvents(recurrence.getGroupId()).get());
+        }
+    }
+
+    @Test
+    public void modifyEventToRecurringConvertsItToRecurring() throws ExecutionException, InterruptedException {
+        ZonedDateTime time = ZonedDateTime.now();
+        Duration period = Duration.ofDays(1);
+        Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
+        assertEquals(event.getId(), ConcreteDatabase.getDatabase().store(event).get());
+        Recurrence recurrence = new Recurrence(Id.generateRandom(), period, time.plusDays(6));
+        Event recurrEvent = event.setRecurrence(recurrence);
+        assertTrue(EventQueries.modifyEvent(ConcreteDatabase.getDatabase(), recurrEvent).get().equals(event.getId()));
+        List<Event> eventSeries = new EventQueries(ConcreteDatabase.getDatabase()).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
+        assertEquals(7, eventSeries.size());
+
+        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeRecurrEvents(recurrence.getGroupId()).get());
+    }
+
+    @Test
+    public void modifyRecurrEventByRemovingRecurrenceIsAllowed() throws ExecutionException, InterruptedException {
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
+        ZonedDateTime end = start.plusHours(1);
+        Duration period = Duration.ofDays(1);
+        Recurrence recurrence = new Recurrence(Id.generateRandom(), period, start.plusDays(6));
+        Event recurrEvent = new Event(Id.generateRandom(), "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
+        assertEquals(7, storeRecurrEvent);
+
+        Event nonRecurrEvent = new Event(recurrEvent.getId(), recurrEvent.getName(), recurrEvent.getLocationName(), recurrEvent.getCoordinates(),
+                recurrEvent.getStartTime(), recurrEvent.getEndTime(), Optional.empty());
+        assertTrue(EventQueries.modifyEvent(db, nonRecurrEvent).get().equals(recurrEvent.getId()));
+
+        List<Event> eventSeries = new EventQueries(db).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
+        assertEquals(6, eventSeries.size());
+        assertTrue(ConcreteDatabase.getDatabase().contains(nonRecurrEvent).get());
+
+        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeRecurrEvents(recurrence.getGroupId()).get());
+        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeEvent(nonRecurrEvent.getId()).get().equals(nonRecurrEvent.getId()));
+    }
+
+    @Test
     public void removeNonRecurringEventRemovesItFromDatabase() throws ExecutionException, InterruptedException {
         ZonedDateTime time = ZonedDateTime.now();
         Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
@@ -491,7 +552,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Event nonRecurrEvent = new Event(Id.generateRandom(), "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.empty());
         Id groupId = Id.generateRandom();
-        int storeRecurrEvent = queries.convertToRecurring(nonRecurrEvent, groupId, period, start.plusDays(6)).get();
+        int storeRecurrEvent = queries.convertToRecurring(nonRecurrEvent, new Recurrence(groupId, period, start.plusDays(6))).get();
         assertEquals(7, storeRecurrEvent);
         List<Event> events = queries.getRecurrEventSeriesOf(groupId).get();
         assertEquals(7, events.size());
