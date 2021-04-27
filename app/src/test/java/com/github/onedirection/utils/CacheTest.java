@@ -81,8 +81,9 @@ public class CacheTest {
     }
 
     @Test
-    public void cacheDefaultMaxHistoryNotZero() {
-        assertThat(new Cache<>((x) -> x).getMaxHistory(), is(not(0)));
+    public void cacheDefaultMaxHistoryIsCorrect() {
+        assertThat(new Cache<>().getMaxHistory(), is(not(0)));
+        assertThat(new Cache<>(75).getMaxHistory(), is(75));
     }
 
     @Test
@@ -120,5 +121,59 @@ public class CacheTest {
         cache.get(0);
         assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
         assertThat(counter[0], is(2));
+        
+        cache.invalidate();
+
+        // test other overload
+        counter[0] = 0;
+        cache.get(0);
+        cache.get(1);
+        cache.get(2);
+
+        assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
+        assertThat(cache.getMap().getOrDefault(1, "wrong"), is("1"));
+        assertThat(cache.getMap().getOrDefault(2, "wrong"), is("2"));
+        assertThat(counter[0], is(3));
+
+        cache.invalidate(1);
+        cache.get(1);
+
+        assertThat(counter[0], is(4));
+    }
+    
+    @Test
+    public void testCacheSetFunction() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> Integer.toString(k), (k, v) -> {
+            counter[0] += 1;
+            return true;
+        });
+        
+        cache.set(3, "3");
+        cache.set(5, "5");
+        cache.set(324, "324");
+        cache.get(3);
+        cache.get(6);
+        cache.get(32465);
+
+        assertThat(counter[0], is(3));
+    }
+    
+    @Test
+    public void testCacheNullValuesArentCached() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> {
+            counter[0] += 1;
+            return null;
+        });
+
+        cache.get(3);
+        assertThat(counter[0], is(1));
+        cache.get(4);
+        assertThat(counter[0], is(2));
+        cache.get(3);
+        assertThat(counter[0], is(3));
+        cache.get(4);
+        assertThat(counter[0], is(4));
     }
 }
