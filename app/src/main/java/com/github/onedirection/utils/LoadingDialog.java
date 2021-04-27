@@ -1,5 +1,6 @@
 package com.github.onedirection.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ public class LoadingDialog {
         activity = hostActivity;
     }
 
+    @SuppressLint("InflateParams")
     public void startLoadingAnimation() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
