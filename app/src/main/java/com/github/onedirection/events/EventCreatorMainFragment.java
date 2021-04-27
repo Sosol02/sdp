@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,16 +23,29 @@ import com.github.onedirection.database.Database;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.concurrent.CompletableFuture;
 
 public class EventCreatorMainFragment extends Fragment {
 
     private EventCreatorViewModel model;
-    private CompletableFuture<?> lastRequest;
     private EditText name;
     private EditText customLocation;
     private Button geolocation;
     private CheckBox useGeolocation;
+    private CheckBox isRecurrent;
+
+    private void setupDateTimeButtons(MutableLiveData<ZonedDateTime> data, int nameId, int viewId){
+        View dateTime = getView().findViewById(viewId);
+        ((TextView) dateTime.findViewById(R.id.label)).setText(nameId);
+        data.observe(getViewLifecycleOwner(), zonedDateTime -> {
+            Button startTimeBtn = dateTime.findViewById(R.id.time);
+            Button startDateBtn = dateTime.findViewById(R.id.date);
+            startTimeBtn.setText(LocalTime.of(zonedDateTime.getHour(), zonedDateTime.getMinute()).toString());
+            startDateBtn.setText(zonedDateTime.toLocalDate().toString());
+        });
+
+        dateTime.findViewById(R.id.time).setOnClickListener(v -> showTimePicker(v, data));
+        dateTime.findViewById(R.id.date).setOnClickListener(v -> showDatePicker(v, data));
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -44,11 +58,11 @@ public class EventCreatorMainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
-        this.lastRequest = CompletableFuture.completedFuture(null);
         this.name = getView().findViewById(R.id.editEventName);
         this.customLocation = getView().findViewById(R.id.editEventLocationName);
         this.geolocation = getView().findViewById(R.id.buttonGotoGeolocation);
         this.useGeolocation = getView().findViewById(R.id.checkGeolocation);
+        this.isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
 
         // Model listeners
         model.name.observe(getViewLifecycleOwner(), str -> name.setText(str));
@@ -65,25 +79,8 @@ public class EventCreatorMainFragment extends Fragment {
             }
         });
 
-        model.startTime.observe(getViewLifecycleOwner(), zonedDateTime -> {
-            Button startTimeBtn = getView().findViewById(R.id.buttonStartTime);
-            Button startDateBtn = getView().findViewById(R.id.buttonStartDate);
-            startTimeBtn.setText(LocalTime.of(zonedDateTime.getHour(), zonedDateTime.getMinute()).toString());
-            startDateBtn.setText(zonedDateTime.toLocalDate().toString());
-        });
-
-        model.endTime.observe(getViewLifecycleOwner(), zonedDateTime -> {
-            Button endTimeBtn = getView().findViewById(R.id.buttonEndTime);
-            Button endDateBtn = getView().findViewById(R.id.buttonEndDate);
-            endTimeBtn.setText(LocalTime.of(zonedDateTime.getHour(), zonedDateTime.getMinute()).toString());
-            endDateBtn.setText(zonedDateTime.toLocalDate().toString());
-        });
-
-        // Click listeners
-        getView().findViewById(R.id.buttonStartTime).setOnClickListener(v -> showTimePicker(v, model.startTime));
-        getView().findViewById(R.id.buttonEndTime).setOnClickListener(v -> showTimePicker(v, model.endTime));
-        getView().findViewById(R.id.buttonStartDate).setOnClickListener(v -> showDatePicker(v, model.startTime));
-        getView().findViewById(R.id.buttonEndTime).setOnClickListener(v -> showDatePicker(v, model.endTime));
+        setupDateTimeButtons(model.startTime, R.string.start_time_text, R.id.startDateTime);
+        setupDateTimeButtons(model.endTime, R.string.end_time_text, R.id.endDateTime);
 
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
@@ -118,6 +115,16 @@ public class EventCreatorMainFragment extends Fragment {
                 model.useGeolocation.postValue(false);
             }
         });
+
+        // Recurrence setup
+        isRecurrent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            model.isRecurrent.postValue(isChecked);
+        });
+
+        model.isRecurrent.observe(getViewLifecycleOwner(), aBoolean -> {
+            getView().findViewById(R.id.recurrenceUntil).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
+        });
+        setupDateTimeButtons(model.recurrenceEnd, R.string.recurrence_end_text, R.id.recurrenceUntil);
     }
 
     private void gotoGeolocation() {

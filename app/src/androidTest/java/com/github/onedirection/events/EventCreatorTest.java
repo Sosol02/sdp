@@ -45,6 +45,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -184,7 +185,8 @@ public class EventCreatorTest {
         EventCreator.putDateExtra(intent, date);
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.buttonStartDate)).check(matches(withText(date.toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(date.toString())));
         }
     }
 
@@ -198,11 +200,15 @@ public class EventCreatorTest {
 
             onView(withId(R.id.checkGeolocation)).check(matches(isChecked()));
 
-            onView(withId(R.id.buttonStartDate)).check(matches(withText(EVENT.getStartTime().toLocalDate().toString())));
-            onView(withId(R.id.buttonStartTime)).check(matches(withText(EVENT.getStartTime().toLocalTime().toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(EVENT.getStartTime().toLocalDate().toString())));
+            onView(allOf(withId(R.id.time), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(EVENT.getStartTime().toLocalTime().toString())));
 
-            onView(withId(R.id.buttonEndDate)).check(matches(withText(EVENT.getEndTime().toLocalDate().toString())));
-            onView(withId(R.id.buttonEndTime)).check(matches(withText(EVENT.getEndTime().toLocalTime().toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("End")))))
+                    .check(matches(withText(EVENT.getEndTime().toLocalDate().toString())));
+            onView(allOf(withId(R.id.time), hasSibling(withText(containsString("End")))))
+                    .check(matches(withText(EVENT.getEndTime().toLocalTime().toString())));
 
             onView(withId(R.id.buttonGotoGeolocation)).perform(scrollTo(), click());
 

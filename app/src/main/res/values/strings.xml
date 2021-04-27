@@ -48,6 +48,7 @@
     <string name="location_hint">Location</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
+    <string name="recurrence_end_text">Repeat until:</string>
 
     <string name="set_event_location">Set event location</string>
     <string name="location_name">Location name</string>
