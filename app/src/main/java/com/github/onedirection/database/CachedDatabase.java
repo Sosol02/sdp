@@ -1,11 +1,14 @@
 package com.github.onedirection.database;
 
+import android.util.Log;
+
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.utils.Cache;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -14,7 +17,7 @@ public class CachedDatabase implements Database {
 
     private final Database innerDatabase;
     // sadly, we can't have a concrete type for the values.
-    private final Cache<Id, CompletableFuture<?>> storeCache;
+    private final Cache<Id, CompletableFuture<? extends Storable<?>>> storeCache;
     private final Cache<Query, CompletableFuture<? extends List<?>>> queryCache;
 
     public CachedDatabase(Database innerDatabase, int cacheMaxHistory) {
@@ -31,16 +34,48 @@ public class CachedDatabase implements Database {
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
         Objects.requireNonNull(toStore);
         queryCache.invalidate();
-        return storeCache.get(toStore.getId(), id -> innerDatabase.store(toStore))
-                .thenApply(res -> (Id) res);
+        return innerDatabase.store(toStore)
+                .thenApply(id -> {
+                    CompletableFuture<Storable<?>> fut = new CompletableFuture<>();
+                    fut.complete(toStore);
+                    storeCache.set(id, fut, (k, v) -> true, true);
+                    return id;
+                });
+        /* CompletableFuture<T> fut = new CompletableFuture<>();
+        CompletableFuture<Id> futId = new CompletableFuture<>();
+        storeCache.set(toStore.getId(), fut, (k, v) -> {
+            innerDatabase.store(toStore).handle((id, err) -> {
+                if (err != null) {
+                    futId.complete(id);
+                    fut.complete(toStore);
+                } else {
+                    futId.completeExceptionally(err);
+                    fut.completeExceptionally(err);
+                    // required otherwise the cache would hold on to this broken future forever
+                    storeCache.invalidate(id);
+                }
+                return true;
+            });
+            return true;
+        }, true);
+        return futId; */
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(storer);
+        Log.d("ABC", "retrieve: Id: " + id + ", type: " + storer.classTag().getCanonicalName());
         return storeCache.get(id, sameId -> innerDatabase.retrieve(id, storer))
-                .thenApply(res -> (T) res);
+                .thenApply(res -> {
+                    Log.d("ABC", "retrieve callback: Id: " + id + ", type: " + storer.classTag().getCanonicalName());
+                    if (res != null) {
+                        Log.d("ABC", "res non null res: " + res + "restype: " + res.getClass().getCanonicalName());
+                    } else {
+                        Log.d("ABC", "res null");
+                    }
+                    return (T) res;
+                });
     }
 
     @Override
@@ -71,13 +106,15 @@ public class CachedDatabase implements Database {
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
         Objects.requireNonNull(listToStore);
+        // make sure that listToStore doesnt change under our feet
+        List<T> listToStoreSame = new ArrayList(listToStore);
         queryCache.invalidate();
-        return innerDatabase.storeAll(listToStore)
+        return innerDatabase.storeAll(listToStoreSame)
                 // This is kinda dumb because the inner db will always return true, it should really
                 // be Void: either it is exceptionally completed or it succeeded, there is no Success(false).
                 .thenApply(res -> {
-                    for (T t : listToStore) {
-                        CompletableFuture<Object> fut = new CompletableFuture<>();
+                    for (T t : listToStoreSame) {
+                        CompletableFuture<Storable<?>> fut = new CompletableFuture<>();
                         fut.complete(t);
                         storeCache.set(t.getId(), fut, (k, v) -> true, true);
                     }
@@ -88,11 +125,10 @@ public class CachedDatabase implements Database {
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
         Objects.requireNonNull(storer);
-        //return completeOnList(innerDatabase.retrieveAll(storer));
         return innerDatabase.retrieveAll(storer)
                 .thenApply(res -> {
                     for (T t : res) {
-                        CompletableFuture<Object> fut = new CompletableFuture<>();
+                        CompletableFuture<Storable<?>> fut = new CompletableFuture<>();
                         fut.complete(t);
                         storeCache.set(t.getId(), fut, (k, v) -> true, true);
                     }
