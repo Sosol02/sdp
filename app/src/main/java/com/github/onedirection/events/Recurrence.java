@@ -37,6 +37,14 @@ public class Recurrence implements Serializable {
     public Recurrence(Id groupId, long periodSeconds, ZonedDateTime endTime) {
         this(groupId, Duration.ofSeconds(periodSeconds), endTime);
     }
+  
+    public Recurrence(Id groupId, Duration period, ZonedDateTime endTime) {
+        this(groupId, period, endTime, Optional.empty(), Optional.empty());
+    }
+
+    public Recurrence(Id groupId, long periodSeconds, ZonedDateTime endTime, Optional<Id> prev, Optional<Id> next) {
+        this(groupId, Duration.ofSeconds(periodSeconds), endTime, prev, next);
+    }
 
     public Id getGroupId() { return groupId; }
 

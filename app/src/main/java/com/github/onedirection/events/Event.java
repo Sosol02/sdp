@@ -49,6 +49,14 @@ public class Event implements Serializable, Storable<Event> {
         }
     }
 
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
+        this(id, name, locationName, Optional.of(location), startTime, endTime, recurringPeriod);
+    }
+
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
+        this(id, name, locationName, Optional.empty(), startTime, endTime, recurringPeriod);
+    }
+
     public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime) {
         this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.empty());
     }

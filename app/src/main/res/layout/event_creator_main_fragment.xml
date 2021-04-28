@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,77 +61,57 @@
             android:text="@string/set_geolocation"
             android:visibility="gone" />
 
-        <LinearLayout
-            style="?android:attr/buttonBarStyle"
+        <include
+            android:id="@+id/startDateTime"
+            layout="@layout/date_time_buttons" />
+
+
+        <include
+            android:id="@+id/endDateTime"
+            layout="@layout/date_time_buttons" />
+
+        <CheckBox
+            android:id="@+id/checkEventRecurrence"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/startTimeText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/start_time_text" />
-
-            <Button
-                android:id="@+id/buttonStartTime"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_weight="1"
-                android:textColor="?colorPrimary" />
-
-            <Button
-                android:id="@+id/buttonStartDate"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_weight="2"
-                android:textColor="?colorPrimary" />
-        </LinearLayout>
+            android:text="@string/repeat_event" />
 
         <LinearLayout
-            style="?android:attr/buttonBarStyle"
+            android:id="@+id/recurrencePeriod"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:visibility="gone">
 
             <TextView
-                android:id="@+id/endTimeText"
+                android:id="@+id/textRecurrencePeriod"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/end_time_text" />
-
-            <Button
-                android:id="@+id/buttonEndTime"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_weight="1"
-                android:textColor="?colorPrimary" />
-
-            <Button
-                android:id="@+id/buttonEndDate"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
                 android:layout_weight="2"
-                android:textColor="?colorPrimary" />
+                android:text="@string/repeat_every" />
+
+            <EditText
+                android:id="@+id/editRecurrenceAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/amount"
+                android:inputType="number"
+                android:textAlignment="textEnd" />
+
+            <Spinner
+                android:id="@+id/spinnerRecurrencePeriodType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="80dp" />
+        <include
+            android:id="@+id/recurrenceUntil"
+            layout="@layout/date_time_buttons"
+            android:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -141,7 +122,7 @@
 
         <Button
             android:id="@+id/buttonEventAdd"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_event_button_text" />
     </LinearLayout>
