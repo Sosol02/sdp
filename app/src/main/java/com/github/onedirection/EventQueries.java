@@ -131,6 +131,7 @@ public class EventQueries {
      * given in the Recurrence attribute of 'event', and the time between each recurrence of the event is based on the period given in the Recurrence attribute of 'event'.
      * Ex use : addRecurringEvent(event("tennis", startTime: "Jan 1 2021).Recurrence(period:"weekly", endTime: " Jan 1 2022")) means the event "tennis" will occur every week
      * starting at the begining of 2021 and will end at the begining of 2022
+     * Note : the new recurrence series should have as id the given 'event' id (this event is called the root of the recurrence series).
      * @param event (Event) : the given event representing the recurrence series
      * @return (CompletableFuture<Integer>) : If the recurrence series has been successfully created and stored into the database it returns the number of stored events, else it returns 0
      */
@@ -140,6 +141,9 @@ public class EventQueries {
         }
         if(event.getStartTime().toEpochSecond() > event.getRecurrence().get().getEndTime().toEpochSecond()) {
             throw new IllegalArgumentException("The end time is invalid");
+        }
+        if(!event.getRecurrence().get().getGroupId().equals(event.getId())) {
+            throw new IllegalArgumentException("The given recurrence series id does not match the root event id");
         }
         List<Event> eventsToStore = new ArrayList<Event>();
         Recurrence newEventRecurrence = event.getRecurrence().get();
@@ -346,13 +350,15 @@ public class EventQueries {
     /**
      * Converts an existing non-recurring event to a recurring-event, by creating its recurrence series in the time interval ['eventStart', 'endRecurrence']
      * @param event (Event) : The event to convert
-     * @param newRecurrenceSeries (Recurrence) : the new recurrence series of the event
+     * @param recurrenceSeries (Recurrence) : the new recurrence series of the event
      * @return (CompletableFuture<Integer>) : The number of events in the recurrence series
      */
-    public CompletableFuture<Integer> convertToRecurring(Event event, Recurrence newRecurrenceSeries) {
+    public CompletableFuture<Integer> convertToRecurring(Event event, Recurrence recurrenceSeries) {
         if(Objects.requireNonNull(event).isRecurrent()) {
             throw new IllegalArgumentException("The given event is already recurrent");
         }
+        Recurrence newRecurrenceSeries = recurrenceSeries.getGroupId().equals(event.getId()) ? recurrenceSeries
+                : new Recurrence(event.getId(), recurrenceSeries.getPeriod(), recurrenceSeries.getEndTime());
         return addRecurringEvent(event.setRecurrence(Objects.requireNonNull(newRecurrenceSeries)));
     }
 
