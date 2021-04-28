@@ -24,8 +24,8 @@ public class CommonDatabaseTests {
     public static void canStoreAndRetrieveAndRemoveEvents(Database db) throws ExecutionException, InterruptedException {
         Event[] events = EventQueriesTest.makeEvents(count);
         ArrayList<Id> ids = new ArrayList<Id>();
-        for (int i = 0; i < events.length; ++i) {
-            ids.add(db.store(events[i]).get());
+        for (Event event : events) {
+            ids.add(db.store(event).get());
         }
         for (int i = 0; i < events.length; ++i) {
             Event e = db.retrieve(ids.get(i), EventStorer.getInstance()).get();
@@ -41,36 +41,36 @@ public class CommonDatabaseTests {
 
     public static void containsOnEventObject(Database db) throws ExecutionException, InterruptedException {
         Event[] events = EventQueriesTest.makeEvents(count);
-        for (int i = 0; i < events.length; ++i) {
-            Id id = db.store(events[i]).get();
-            assertEquals(events[i].getId(), id);
+        for (Event event : events) {
+            Id id = db.store(event).get();
+            assertEquals(event.getId(), id);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Boolean contains = db.contains(events[i]).get();
+        for (Event event : events) {
+            Boolean contains = db.contains(event).get();
             assertTrue(contains);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i]).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event).get();
             assertFalse(contains);
         }
     }
 
     public static void containsOnEventId(Database db) throws ExecutionException, InterruptedException {
         Event[] events = EventQueriesTest.makeEvents(count);
-        for (int i = 0; i < events.length; ++i) {
-            Id id = db.store(events[i]).get();
-            assertEquals(events[i].getId(), id);
+        for (Event event : events) {
+            Id id = db.store(event).get();
+            assertEquals(event.getId(), id);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertTrue(contains);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -79,14 +79,14 @@ public class CommonDatabaseTests {
         Event[] events = EventQueriesTest.makeEvents(count);
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
-        for(int i = 0; i < events.length; ++i) {
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertTrue(contains);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -102,19 +102,19 @@ public class CommonDatabaseTests {
         assertTrue(stored);
         List<Event> res = db.retrieveAll(EventStorer.getInstance()).get();
         assertEquals(events.length, res.size());
-        for(int i = 0; i < events.length; ++i) {
-            Boolean contains = false;
-            for(Event e : res) {
-                if(e.equals(events[i])) {
+        for (Event event : events) {
+            boolean contains = false;
+            for (Event e : res) {
+                if (e.equals(event)) {
                     contains = true;
                 }
             }
             assertTrue(contains);
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -130,10 +130,10 @@ public class CommonDatabaseTests {
                 assertEquals(events[i], e.get(0));
             }
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -146,10 +146,10 @@ public class CommonDatabaseTests {
         assertTrue(stored);
         List<Event> eventsInDb= db.retrieveAll(EventStorer.getInstance()).get();
         assertEquals(events.length, eventsInDb.size());
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -165,10 +165,10 @@ public class CommonDatabaseTests {
                 assertEquals(events[j], e.get(j-i-1));
             }
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -184,10 +184,10 @@ public class CommonDatabaseTests {
                 assertEquals(events[j], e.get(j-i));
             }
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -203,10 +203,10 @@ public class CommonDatabaseTests {
                 assertEquals(events[j], e.get(j));
             }
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -222,10 +222,10 @@ public class CommonDatabaseTests {
                 assertEquals(events[j], e.get(j));
             }
         }
-        for(int i = 0; i < events.length; ++i) {
-            Id id = db.remove(events[i].getId(), EventStorer.getInstance()).get();
-            assertEquals(events[i].getId(), id);
-            Boolean contains = db.contains(events[i].getId(), EventStorer.getInstance()).get();
+        for (Event event : events) {
+            Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
+            assertEquals(event.getId(), id);
+            Boolean contains = db.contains(event.getId(), EventStorer.getInstance()).get();
             assertFalse(contains);
         }
     }
@@ -234,7 +234,7 @@ public class CommonDatabaseTests {
         ZonedDateTime s = ZonedDateTime.now();
         Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
         Id stored = db.store(event).get();
-        assertTrue(stored.equals(event.getId()));
+        assertEquals(stored, event.getId());
         List<Event> e = db.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, event.getStartTime().minusHours(1).toEpochSecond(), event.getStartTime().plusHours(1).toEpochSecond(), EventStorer.getInstance()).get();
         assertEquals(1, e.size());
         Id id = db.remove(event.getId(), EventStorer.getInstance()).get();
@@ -247,7 +247,7 @@ public class CommonDatabaseTests {
         ZonedDateTime s = ZonedDateTime.now();
         Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
         Id stored = db.store(event).get();
-        assertTrue(stored.equals(event.getId()));
+        assertEquals(stored, event.getId());
         List<Event> e = db.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, event.getEndTime().minusHours(1).toEpochSecond(), event.getEndTime().toEpochSecond(), EventStorer.getInstance()).get();
         assertEquals(1, e.size());
         Id id = db.remove(event.getId(), EventStorer.getInstance()).get();

@@ -41,24 +41,6 @@ public class CachedDatabase implements Database {
                     storeCache.set(id, fut, (k, v) -> true, true);
                     return id;
                 });
-        /* CompletableFuture<T> fut = new CompletableFuture<>();
-        CompletableFuture<Id> futId = new CompletableFuture<>();
-        storeCache.set(toStore.getId(), fut, (k, v) -> {
-            innerDatabase.store(toStore).handle((id, err) -> {
-                if (err != null) {
-                    futId.complete(id);
-                    fut.complete(toStore);
-                } else {
-                    futId.completeExceptionally(err);
-                    fut.completeExceptionally(err);
-                    // required otherwise the cache would hold on to this broken future forever
-                    storeCache.invalidate(id);
-                }
-                return true;
-            });
-            return true;
-        }, true);
-        return futId; */
     }
 
     @Override
