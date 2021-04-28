@@ -142,8 +142,10 @@ public class EventCreatorMainFragment extends Fragment {
             model.isRecurrent.postValue(isChecked);
         });
 
+
+        getView().findViewById(R.id.recurrencePeriod).setEnabled(!model.isEditing);
         model.isRecurrent.observe(getViewLifecycleOwner(), aBoolean -> {
-            getView().findViewById(R.id.recurrencePeriod).setVisibility(aBoolean && !model.isEditing ? View.VISIBLE : View.GONE);
+            getView().findViewById(R.id.recurrencePeriod).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
             getView().findViewById(R.id.recurrenceUntil).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
         });
 

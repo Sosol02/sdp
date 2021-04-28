@@ -47,6 +47,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -187,6 +188,12 @@ public class EventCreatorTest {
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
             onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
                     .check(matches(withText(date.toString())));
+
+            // The recurrence period be editable
+            onView(withId(R.id.recurrencePeriod)).check(matches(not( isDisplayed() )));
+            onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+            onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
+            onView(withId(R.id.recurrencePeriod)).check(matches(isEnabled()));
         }
     }
 
@@ -215,6 +222,10 @@ public class EventCreatorTest {
             onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(EVENT.getLocation().get().toString())));
 
             onView(withId(R.id.buttonCancelGeolocation)).perform(scrollTo(), click());
+
+            // The recurrence period should not be editable
+            onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+            onView(withId(R.id.recurrencePeriod)).check(matches(not( isEnabled() )));
 
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
         }
