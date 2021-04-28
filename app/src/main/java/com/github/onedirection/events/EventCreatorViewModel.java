@@ -60,7 +60,7 @@ public class EventCreatorViewModel extends ViewModel {
         );
 
         this.eventId = event.getId();
-        this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
+        this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
         this.isEditing = isEditing;
         this.idling = new CountingIdlingResource("Event creator is loading.");
     }
@@ -82,8 +82,6 @@ public class EventCreatorViewModel extends ViewModel {
     }
 
     public Optional<Recurrence> generateRecurrence(){
-        // TODO: ask remi what id to use...
-        Id recId = new Id();
         return isRecurrent.getValue() ?
                 Optional.of(new Recurrence(recId, recurrencePeriod.getValue(), recurrenceEnd.getValue())):
                 Optional.empty();

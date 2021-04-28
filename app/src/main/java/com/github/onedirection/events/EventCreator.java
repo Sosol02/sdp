@@ -103,7 +103,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         return intent.putExtra(ON_CREATE, uri);
     }
 
-    EventCreatorViewModel model;
+    private EventCreatorViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
