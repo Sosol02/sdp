@@ -71,5 +71,8 @@
     <string name="view_events">View Events</string>
     <string name="shrek_left">Our lord and savior dabbing to the left</string>
     <string name="shrek_right">Our lord and savior dabbing to the right</string>
+    <string name="repeat_event">Repeat event ?</string>
+    <string name="repeat_every">Repeat every:</string>
+    <string name="amount">Amount</string>
 
 </resources>
