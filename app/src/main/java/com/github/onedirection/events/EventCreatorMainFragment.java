@@ -3,12 +3,16 @@ package com.github.onedirection.events;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,8 +27,21 @@ import com.github.onedirection.database.Database;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class EventCreatorMainFragment extends Fragment {
+
+    private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
+            ChronoUnit.MINUTES,
+            ChronoUnit.HOURS,
+            ChronoUnit.WEEKS,
+            ChronoUnit.YEARS
+    ));
+    public static final String LOGCAT_TAG = "EventCreator";
 
     private EventCreatorViewModel model;
     private EditText name;
@@ -32,6 +49,8 @@ public class EventCreatorMainFragment extends Fragment {
     private Button geolocation;
     private CheckBox useGeolocation;
     private CheckBox isRecurrent;
+    private Spinner recurrencePeriodType;
+    private EditText recurrencePeriodAmount;
 
     private void setupDateTimeButtons(MutableLiveData<ZonedDateTime> data, int nameId, int viewId){
         View dateTime = getView().findViewById(viewId);
@@ -63,6 +82,8 @@ public class EventCreatorMainFragment extends Fragment {
         this.geolocation = getView().findViewById(R.id.buttonGotoGeolocation);
         this.useGeolocation = getView().findViewById(R.id.checkGeolocation);
         this.isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
+        this.recurrencePeriodType = getView().findViewById(R.id.spinnerRecurrencePeriodType);
+        this.recurrencePeriodAmount = getView().findViewById(R.id.editRecurrenceAmount);
 
         // Model listeners
         model.name.observe(getViewLifecycleOwner(), str -> name.setText(str));
@@ -122,9 +143,25 @@ public class EventCreatorMainFragment extends Fragment {
         });
 
         model.isRecurrent.observe(getViewLifecycleOwner(), aBoolean -> {
+            getView().findViewById(R.id.recurrencePeriod).setVisibility(aBoolean && !model.isEditing ? View.VISIBLE : View.GONE);
             getView().findViewById(R.id.recurrenceUntil).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
         });
+
         setupDateTimeButtons(model.recurrenceEnd, R.string.recurrence_end_text, R.id.recurrenceUntil);
+
+        recurrencePeriodType.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, PERIODS));
+        recurrencePeriodType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateRecurrencePeriod();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.wtf(LOGCAT_TAG, "Nothing should not be a selectable.");
+            }
+        });
+
     }
 
     private void gotoGeolocation() {
@@ -132,6 +169,19 @@ public class EventCreatorMainFragment extends Fragment {
                 .replace(R.id.eventCreatorFragmentContainer, EventCreatorGeolocationFragment.class, null)
                 .setReorderingAllowed(true)
                 .commit();
+    }
+
+    private void updateRecurrencePeriod() {
+        TemporalUnit unit = PERIODS.get(recurrencePeriodType.getSelectedItemPosition());
+        int amount = 1;
+        try {
+            amount = Integer.parseUnsignedInt(recurrencePeriodAmount.getText().toString());
+        }
+        catch(NumberFormatException e){
+            recurrencePeriodAmount.setText(String.format("%s", amount));
+        }
+
+        model.recurrencePeriod.postValue(unit.getDuration().multipliedBy(amount));
     }
 
     private void showTimePicker(View v, MutableLiveData<ZonedDateTime> time) {

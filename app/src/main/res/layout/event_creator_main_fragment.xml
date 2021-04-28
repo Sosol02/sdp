@@ -76,13 +76,40 @@
             android:layout_height="wrap_content"
             android:text="Repeat event ?" />
 
+        <LinearLayout
+            android:id="@+id/recurrencePeriod"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:visibility="gone">
+
+            <TextView
+                android:id="@+id/textRecurrencePeriod"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Repeat every:" />
+
+            <EditText
+                android:id="@+id/editRecurrenceAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="number"
+                android:textAlignment="textEnd" />
+
+            <Spinner
+                android:id="@+id/spinnerRecurrencePeriodType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
+        </LinearLayout>
+
         <include
             android:id="@+id/recurrenceUntil"
-            layout="@layout/date_time_buttons" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="80dp" />
+            layout="@layout/date_time_buttons"
+            android:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -93,7 +120,7 @@
 
         <Button
             android:id="@+id/buttonEventAdd"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_event_button_text" />
     </LinearLayout>

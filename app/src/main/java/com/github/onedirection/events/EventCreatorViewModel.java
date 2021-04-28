@@ -41,7 +41,7 @@ public class EventCreatorViewModel extends ViewModel {
 
 
 
-    public void init(Event event){
+    public void init(Event event, boolean isEditing){
         this.name = new MutableLiveData<>(event.getName());
         this.startTime = new MutableLiveData<>(event.getStartTime());
         this.endTime = new MutableLiveData<>(event.getEndTime());
@@ -51,6 +51,7 @@ public class EventCreatorViewModel extends ViewModel {
         this.coordinates = new MutableLiveData<>(event.getLocation());
 
         this.isRecurrent = new MutableLiveData<>(event.isRecurrent());
+        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
         this.recurrencePeriod = new MutableLiveData<>(
                 event.getRecurrence().map(Recurrence::getPeriod).orElse(DEFAULT_EVENT_RECURRENCE_PERIOD)
         );
@@ -60,12 +61,16 @@ public class EventCreatorViewModel extends ViewModel {
 
         this.eventId = event.getId();
         this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
-        this.isEditing = true;
+        this.isEditing = isEditing;
         this.idling = new CountingIdlingResource("Event creator is loading.");
     }
 
+    public void init(Event event) {
+        init(event, true);
+    }
+
     private void init(ZonedDateTime start){
-        init(new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)));
+        init(new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)), false);
     }
 
     public void init(){
