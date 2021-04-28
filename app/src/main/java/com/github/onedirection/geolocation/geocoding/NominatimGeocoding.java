@@ -115,13 +115,6 @@ public final class NominatimGeocoding implements GeocodingService {
     }
 
     @Override
-    public CompletableFuture<NamedCoordinates> getBestNamedCoordinates(String locationName) {
-        return Monads.flatten(
-                sendArrayRequest(generateSearchRequestURL(locationName, 1)).thenApply(r -> parseResult(r, 0))
-        );
-    }
-
-    @Override
     public CompletableFuture<List<NamedCoordinates>> getNamedCoordinates(String locationName, int count) {
         if(count > MAX_RESULTS){
             Log.w(LOGCAT_TAG, "The specified number of results is over Nominatim's limit (which is 50).");
