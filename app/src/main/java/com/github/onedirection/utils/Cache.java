@@ -57,19 +57,19 @@ public class Cache<K, V> {
     }
 
     public Cache(Function<? super K, ? extends V> getFunction, int maxHistory) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("Unreachable, set cache, k: " + k + ", v: " + v); }, maxHistory);
+        this(getFunction, (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); }, maxHistory);
     }
 
     public Cache(Function<? super K, ? extends V> getFunction) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("Unreachable, set cache, k: " + k + ", v: " + v); }, MAX_HISTORY_DEFAULT);
+        this(getFunction, (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); }, MAX_HISTORY_DEFAULT);
     }
 
     public Cache(int maxHistory) {
-        this(k -> { throw new RuntimeException("Unreachable, get cache, k: " + k); }, maxHistory);
+        this(k -> { throw new RuntimeException("No default getFunction provided. k: " + k); }, maxHistory);
     }
 
     public Cache() {
-        this(k -> { throw new RuntimeException("Unreachable, get cache, k: " + k); });
+        this(k -> { throw new RuntimeException("No default getFunction provided. k: " + k); });
     }
 
     public int getMaxHistory() {
