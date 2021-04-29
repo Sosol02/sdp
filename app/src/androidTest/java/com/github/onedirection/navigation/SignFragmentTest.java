@@ -1,4 +1,4 @@
-package com.github.onedirection;
+package com.github.onedirection.navigation;
 
 import android.content.Context;
 import android.widget.TextView;
@@ -6,9 +6,11 @@ import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.onedirection.R;
 import com.github.onedirection.navigation.NavigationActivity;
 
 import org.junit.Rule;
@@ -38,7 +40,7 @@ public class SignFragmentTest {
 
     @Test
     public void testNormalSignInAndLogout() throws InterruptedException {
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
         onView(withId(R.id.nav_sign)).perform(click());
 

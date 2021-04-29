@@ -1,22 +1,22 @@
 package com.github.onedirection.events;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 /**
  * To use to create an event, just start the activity.
@@ -33,11 +33,13 @@ import java.util.Arrays;
  * A date can also be passed to specify the initial date
  * of the event. Ignored if an event is also given.
  */
-public class EventCreator extends DeviceLocationProvider {
+public class EventCreator extends DeviceLocationProviderActivity {
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final String EXTRA_DATE = "DATE";
+    public static final String ON_CREATE = "CREATE_CALLBACK";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
     public static final Class<LocalDate> EXTRA_DATE_TYPE = LocalDate.class;
+    public static final Class<Uri> EXTRA_ON_CREATE_TYPE = Uri.class;
 
     public static boolean hasEventExtra(Intent intent){
         return intent.hasExtra(EXTRA_EVENT);
@@ -89,7 +91,19 @@ public class EventCreator extends DeviceLocationProvider {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
-    EventCreatorViewModel model;
+    public static boolean hasCallbackExtra(Intent intent){
+        return intent.hasExtra(ON_CREATE);
+    }
+
+    public static Uri getCallbackExtra(Intent intent) {
+        return EXTRA_ON_CREATE_TYPE.cast(intent.getSerializableExtra(ON_CREATE));
+    }
+
+    public static Intent putDateExtra(Intent intent, Uri uri) {
+        return intent.putExtra(ON_CREATE, uri);
+    }
+
+    private EventCreatorViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +111,9 @@ public class EventCreator extends DeviceLocationProvider {
         setContentView(R.layout.event_creator);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         Intent intent = getIntent();
 
