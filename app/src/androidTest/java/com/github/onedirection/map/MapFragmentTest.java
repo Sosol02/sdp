@@ -209,6 +209,20 @@ public class MapFragmentTest {
     }
 
     @Test
+    public void testRoutesManagerInit() {
+        RoutesManager routesManager = getRoutesManager();
+        List<Line> lines = getRoutesManagerLines(routesManager);
+        List<Route> routes = getRoutesManagerRoutes(routesManager);
+
+        assertThat(lines, is(nullValue()));
+        assertThat(routes, is(nullValue()));
+
+        runOnUiThreadAndWaitEndExecution(() -> {
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4);
+        });
+    }
+
+    @Test
     @Ignore("Cirrus reject")
     public void testRoutesManagerFindMethod() {
         RoutesManager routesManager = getRoutesManager();
