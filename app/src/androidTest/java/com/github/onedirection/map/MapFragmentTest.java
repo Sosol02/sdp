@@ -196,7 +196,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Cirrus test")
+    @Ignore("Cirrus reject")
     public void testMyLocationIsAppearing() {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
         LatLng last = mapboxMap.getCameraPosition().target;
@@ -207,6 +207,7 @@ public class MapFragmentTest {
     }
 
     @Test
+    @Ignore("Cirrus reject")
     public void testRoutesManagerFindMethod() {
         RoutesManager routesManager = getRoutesManager();
         Semaphore semaphore = new Semaphore(0);
