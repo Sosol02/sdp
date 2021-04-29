@@ -27,7 +27,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapquest.navigation.model.Route;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,6 +56,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(AndroidJUnit4.class)
 public class MapFragmentTest {
@@ -62,13 +65,11 @@ public class MapFragmentTest {
     private MapFragment fragment;
     private OnMapReadyIdlingResource onMapReadyIdlingResource;
     private EspressoIdlingResource espressoIdlingResource;
-    private final MapFragmentTest self = this;
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
-    private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(20f, 09583f);
-    private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(40.7326808, -73.9843407);
-    private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(42.355097, -71.055464);
+    private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
+    private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
     private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", "Paris",
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
@@ -205,6 +206,34 @@ public class MapFragmentTest {
         assertThat(next.equals(last), is(false));
     }
 
+    @Test
+    public void testRoutesManagerFindMethod() {
+        RoutesManager routesManager = getRoutesManager();
+        Semaphore semaphore = new Semaphore(0);
+        runOnUiThreadAndWaitEndExecution(() -> {
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, semaphore::release);
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<Line> lines = getRoutesManagerLines(routesManager);
+        List<Route> routes = getRoutesManagerRoutes(routesManager);
+
+        assertThat(lines, is(notNullValue()));
+        assertThat(routes, is(notNullValue()));
+
+        runOnUiThreadAndWaitEndExecution(routesManager::clearRoutesManager);
+
+        lines = getRoutesManagerLines(routesManager);
+        routes = getRoutesManagerRoutes(routesManager);
+
+        assertThat(lines, is(nullValue()));
+        assertThat(routes, is(nullValue()));
+    }
+
     private void runOnUiThreadAndWaitEndExecution(BlockingCustomCodeOnRuiUiThread blockingCustomCodeOnRuiUiThread) {
         Runnable runnable = new Runnable() {
             @Override
@@ -250,6 +279,26 @@ public class MapFragmentTest {
             Field field = fragment.getClass().getDeclaredField("routesManager");
             field.setAccessible(true);
             return ((RoutesManager) field.get(fragment));
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    private List<Line> getRoutesManagerLines(RoutesManager routesManager) {
+        try {
+            Field field = routesManager.getClass().getDeclaredField("lines");
+            field.setAccessible(true);
+            return ((List<Line>) field.get(routesManager));
+        } catch (Exception err) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    private List<Route> getRoutesManagerRoutes(RoutesManager routesManager) {
+        try {
+            Field field = routesManager.getClass().getDeclaredField("routes");
+            field.setAccessible(true);
+            return ((List<Route>) field.get(routesManager));
         } catch (Exception err) {
             throw new RuntimeException(err);
         }

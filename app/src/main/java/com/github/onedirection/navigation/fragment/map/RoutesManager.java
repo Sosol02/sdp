@@ -1,10 +1,13 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
+import android.os.Handler;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.BuildConfig;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -28,6 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.opencensus.internal.DefaultVisibilityForTesting;
+
 public class RoutesManager {
 
     private LineManager lineManager;
@@ -47,6 +52,11 @@ public class RoutesManager {
     }
 
     public void findRoute(LatLng start, LatLng finish) {
+        findRoute(start, finish, () -> {});
+    }
+
+    @VisibleForTesting
+    public void findRoute(LatLng start, LatLng finish, Runnable runnableOnSuccess) {
         clearRoute();
         clearLines();
         Coordinate from = new Coordinate(start.getLatitude(), start.getLongitude());
@@ -72,6 +82,7 @@ public class RoutesManager {
                     self.routes = routes;
                     displayRoute(routes.get(0));
                 }
+                runnableOnSuccess.run();
             }
 
             @Override
@@ -91,10 +102,15 @@ public class RoutesManager {
         lineManager.deleteAll();
     }
 
+    public void clearRoutesManager() {
+        clearLines();
+        clearRoute();
+    }
+
     private void displayRoute(Route selectedRoute) {
         clearLines();
         if (routes == null) {
-            throw new IllegalStateException("Routes shoudln't be empty when trying to display a route");
+            throw new IllegalStateException("Routes should't be empty when trying to display a route");
         }
 
         if (!routes.contains(selectedRoute)) {
