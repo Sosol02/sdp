@@ -1,6 +1,5 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
@@ -177,7 +176,7 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private LoadingDialog startLoadingAnimation() {
-        LoadingDialog loadingDialog = new LoadingDialog((Activity) this.getContext());
+        LoadingDialog loadingDialog = new LoadingDialog(this.getContext());
         loadingDialog.startLoadingAnimation();
         return loadingDialog;
     }
