@@ -42,7 +42,6 @@ public class CustomCalendarView extends LinearLayout {
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
     private List<Event> eventsList = new ArrayList<>();
-    private final Activity parentActivity = (Activity) this.getContext();
 
     private Context context;
     private ImageButton nextButton, previousButton;
@@ -164,9 +163,9 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void callEventCreator(int year, int month, int day) {
-        Intent intent = new Intent(parentActivity, EventCreator.class);
+        Intent intent = new Intent(this.getContext(), EventCreator.class);
         EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
-        parentActivity.startActivity(intent);
+        this.getContext().startActivity(intent);
     }
 
     private void callDayEventsList() {
@@ -178,7 +177,7 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private LoadingDialog startLoadingAnimation() {
-        LoadingDialog loadingDialog = new LoadingDialog(parentActivity);
+        LoadingDialog loadingDialog = new LoadingDialog((Activity) this.getContext());
         loadingDialog.startLoadingAnimation();
         return loadingDialog;
     }
