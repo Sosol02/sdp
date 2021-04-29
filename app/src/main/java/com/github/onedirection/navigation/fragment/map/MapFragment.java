@@ -18,6 +18,7 @@ import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -61,20 +62,33 @@ public class MapFragment extends Fragment {
 
         permissionRequestResult = CompletableFuture.completedFuture(false);
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                result -> {permissionRequestResult.complete(result); });
+                result -> {
+                    permissionRequestResult.complete(result);
+                    if (result) {
+                        deviceLocationProvider.startLocationTracking();
+                        if (myLocationSymbolManager != null) {
+                            myLocationSymbolManager.SetEnableSymbol(true);
+                        }
+                    } else {
+                        if (myLocationSymbolManager != null) {
+                            myLocationSymbolManager.SetEnableSymbol(false);
+                        }
+                    }
+                });
 
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
             this.mapboxMap = mapboxMap;
 
+            EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeManagers(style);
-                //LatLng from = new LatLng(40.7326808, -73.9843407);
-                //LatLng to = new LatLng(42.355097, -71.055464);
+                EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
             initializeDeviceLocationProvider();
+
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
                 OnMyLocationButtonClickResponse();
             });
@@ -173,7 +187,12 @@ public class MapFragment extends Fragment {
             }
         };
 
-        deviceLocationProvider.startLocationTracking();
+        if (DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+            deviceLocationProvider.startLocationTracking();
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.SetEnableSymbol(true);
+            }
+        }
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 myLocationSymbolManager.update(value);
@@ -184,6 +203,10 @@ public class MapFragment extends Fragment {
 
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
+            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+                permissionRequestResult = new CompletableFuture<>();
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
             LatLng latLng = myLocationSymbolManager.getPosition();
             if (latLng != null) {
                 CameraPosition position = new CameraPosition.Builder()

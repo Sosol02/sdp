@@ -11,6 +11,7 @@ import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Pair;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -49,12 +50,15 @@ public class MarkerSymbolManager {
         this.markers = new ArrayList<>();
         this.fragment = fragment;
         symbolManager.setIconAllowOverlap(true);
+
         symbolManager.addClickListener(symbol -> {
             Log.d(LOG_TAG, "Symbol clicked: " + symbol);
             Event event = eventMap.get(symbol);
             assert event != null;
+
             fragment.setBottomSheetEvent(event);
             fragment.showBottomSheet();
+
         });
     }
 
