@@ -70,5 +70,15 @@
     <string name="view_events">View Events</string>
     <string name="shrek_left">Our lord and savior dabbing to the left</string>
     <string name="shrek_right">Our lord and savior dabbing to the right</string>
+    <string name="title_activity_event_view_activity">event_view_activity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_event_view_front">event_view_activity_front</string>
 
 </resources>

@@ -22,7 +22,7 @@ public class EventsView extends AppCompatActivity {
         Intent intent = getIntent();
         Event event = EventCreator.getEventExtra(intent);
 
-        TextView textViewName = findViewById(R.id.textViewNameView);
+        /*TextView textViewName = findViewById(R.id.textViewNameView);
         textViewName.setText(event.getName());
 
         TextView textViewLocation = findViewById(R.id.textViewLocationView);
@@ -32,7 +32,7 @@ public class EventsView extends AppCompatActivity {
         textViewStartTime.setText(event.getStartTime().toString());
 
         TextView textViewEndTime = findViewById(R.id.textViewEndTimeView);
-        textViewEndTime.setText(event.getEndTime().toString());
+        textViewEndTime.setText(event.getEndTime().toString());*/
 
         HashSet<Event> eventHashSet = new HashSet<>();
         eventHashSet.add(event);

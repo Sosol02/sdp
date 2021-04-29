@@ -19,6 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.navigation.fragment.viewer.ViewEventFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class NavigationActivity extends AppCompatActivity {
@@ -35,7 +36,7 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_calendar, R.id.nav_map)
+                R.id.nav_home, R.id.nav_calendar, R.id.nav_map,R.id.nav_event_view)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

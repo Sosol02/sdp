@@ -24,7 +24,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        mText = root.findViewById(R.id.textExampleHome);
+        //mText = root.findViewById(R.id.textExampleHome);
         return root;
     }
 
@@ -33,11 +33,11 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        /*mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 mText.setText(s);
             }
-        });
+        });*/
     }
 }

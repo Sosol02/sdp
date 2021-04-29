@@ -12,7 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
-
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -22,11 +21,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
         <activity android:name=".events.EventCreator" />
         <activity android:name=".EventsView" />
 
         <receiver android:name=".notifs.NotificationPublisher" />
     </application>
+
 </manifest>

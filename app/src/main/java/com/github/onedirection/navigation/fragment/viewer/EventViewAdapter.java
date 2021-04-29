@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,22 +19,18 @@ import java.util.concurrent.ExecutionException;
 
 public class EventViewAdapter extends RecyclerView.Adapter {
     private Context context;
-    ConcreteDatabase db;
     private List<Event> events;
 
-    public EventViewAdapter(Context context) throws ExecutionException, InterruptedException {
+    public EventViewAdapter(Context context, List<Event> events)  {
         this.context = context;
-        db = ConcreteDatabase.getDatabase();
-        events = db.retrieveAll(EventStorer.getInstance()).get();
+        this.events = events;
     }
-
-
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_event_viewer_event, parent, false);
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_viewer, parent, false);
         return new EventHolder(view);
     }
 
@@ -49,12 +46,13 @@ public class EventViewAdapter extends RecyclerView.Adapter {
     }
 
     private class EventHolder extends RecyclerView.ViewHolder{
-
+        TextView eventName;
         EventHolder(View view){
             super(view);
+            eventName = view.findViewById(R.id.name);
         }
         void bind(Event event){
-
+            eventName.setText(event.getName());
         }
     }
 
