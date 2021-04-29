@@ -19,28 +19,58 @@ import java.util.Optional;
 
 public class EventCreatorViewModel extends ViewModel {
     private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
+    private final static Duration DEFAULT_EVENT_RECURRENCE_PERIOD = Duration.of(1, ChronoUnit.HOURS);
+    private final static Duration DEFAULT_EVENT_RECURRENCE_DURATION = Duration.of(1, ChronoUnit.DAYS);
 
     public MutableLiveData<String> name;
-    public MutableLiveData<String> customLocation;
-    public MutableLiveData<Optional<NamedCoordinates>> coordinates;
     public MutableLiveData<ZonedDateTime> startTime;
     public MutableLiveData<ZonedDateTime> endTime;
+
     public MutableLiveData<Boolean> useGeolocation;
+    public MutableLiveData<String> customLocation;
+    public MutableLiveData<Optional<NamedCoordinates>> coordinates;
+
+    public MutableLiveData<Boolean> isRecurrent;
+    public MutableLiveData<Duration> recurrencePeriod;
+    public MutableLiveData<ZonedDateTime> recurrenceEnd;
+
     public Id eventId;
+    public Id recId;
     public boolean isEditing;
     public CountingIdlingResource idling;
 
-    private void init(ZonedDateTime start){
-        this.name = new MutableLiveData<>("");
-        this.customLocation = new MutableLiveData<>("");
-        this.coordinates = new MutableLiveData<>(Optional.empty());
-        this.startTime = new MutableLiveData<>(start);
-        this.endTime = new MutableLiveData<>(start.plus(DEFAULT_EVENT_DURATION));
-        this.useGeolocation = new MutableLiveData<>(false);
 
-        this.eventId = Id.generateRandom();
-        this.isEditing = false;
+
+    public void init(Event event, boolean isEditing){
+        this.name = new MutableLiveData<>(event.getName());
+        this.startTime = new MutableLiveData<>(event.getStartTime());
+        this.endTime = new MutableLiveData<>(event.getEndTime());
+
+        this.useGeolocation = new MutableLiveData<>(event.getCoordinates().isPresent());
+        this.customLocation = new MutableLiveData<>(event.getLocationName());
+        this.coordinates = new MutableLiveData<>(event.getLocation());
+
+        this.isRecurrent = new MutableLiveData<>(event.isRecurrent());
+        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
+        this.recurrencePeriod = new MutableLiveData<>(
+                event.getRecurrence().map(Recurrence::getPeriod).orElse(DEFAULT_EVENT_RECURRENCE_PERIOD)
+        );
+        this.recurrenceEnd = new MutableLiveData<>(
+                event.getRecurrence().map(Recurrence::getEndTime).orElse(event.getStartTime().plus(DEFAULT_EVENT_RECURRENCE_DURATION))
+        );
+
+        this.eventId = event.getId();
+        this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
+        this.isEditing = isEditing;
         this.idling = new CountingIdlingResource("Event creator is loading.");
+    }
+
+    public void init(Event event) {
+        init(event, true);
+    }
+
+    private void init(ZonedDateTime start){
+        init(new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)), false);
     }
 
     public void init(){
@@ -51,17 +81,10 @@ public class EventCreatorViewModel extends ViewModel {
         init(ZonedDateTime.of(date, LocalTime.now(), ZoneId.systemDefault()));
     }
 
-    public void init(Event event){
-        this.name = new MutableLiveData<>(event.getName());
-        this.customLocation = new MutableLiveData<>(event.getLocationName());
-        this.coordinates = new MutableLiveData<>(event.getLocation());
-        this.startTime = new MutableLiveData<>(event.getStartTime());
-        this.endTime = new MutableLiveData<>(event.getEndTime());
-        this.useGeolocation = new MutableLiveData<>(event.getCoordinates().isPresent());
-
-        this.eventId = event.getId();
-        this.isEditing = true;
-        this.idling = new CountingIdlingResource("Event creator is loading.");
+    public Optional<Recurrence> generateRecurrence(){
+        return isRecurrent.getValue() ?
+                Optional.of(new Recurrence(recId, recurrencePeriod.getValue(), recurrenceEnd.getValue())):
+                Optional.empty();
     }
 
     public Event generateEvent(){
@@ -71,14 +94,16 @@ public class EventCreatorViewModel extends ViewModel {
                 name.getValue(),
                 coordinates.getValue().get(),
                 startTime.getValue(),
-                endTime.getValue()
+                endTime.getValue(),
+                generateRecurrence()
             ) :
             new Event(
                 eventId,
                 name.getValue(),
                 customLocation.getValue(),
                 startTime.getValue(),
-                endTime.getValue()
+                endTime.getValue(),
+                generateRecurrence()
             );
     }
 
