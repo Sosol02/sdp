@@ -18,8 +18,8 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
 import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
 
@@ -42,9 +42,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -121,16 +118,16 @@ public class EventCreatorTest {
         onView(withId(android.R.id.button1)).perform(ViewActions.click());
     }
 
-    public void testIsMainFragment(){
+    public void testIsMainFragment() {
         onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
     }
 
-    public void testIsGeolocationFragment(){
+    public void testIsGeolocationFragment() {
         onView(withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("location"))));
     }
 
     @Test
-    public void geolocationTabIsOpenedWhenNoGeolocationIsSet(){
+    public void geolocationTabIsOpenedWhenNoGeolocationIsSet() {
         onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
 
         testIsGeolocationFragment();
@@ -138,7 +135,7 @@ public class EventCreatorTest {
     }
 
     @Test
-    public void geolocationTabIsNotOpenedIfGeolocationAlreadySet(){
+    public void geolocationTabIsNotOpenedIfGeolocationAlreadySet() {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
         EventCreator.putEventExtra(intent, EVENT);
 
@@ -190,7 +187,7 @@ public class EventCreatorTest {
                     .check(matches(withText(date.toString())));
 
             // The recurrence period be editable
-            onView(withId(R.id.recurrencePeriod)).check(matches(not( isDisplayed() )));
+            onView(withId(R.id.recurrencePeriod)).check(matches(not(isDisplayed())));
             onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
             onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
             onView(withId(R.id.recurrencePeriod)).check(matches(isEnabled()));
@@ -225,7 +222,7 @@ public class EventCreatorTest {
 
             // The recurrence period should not be editable
             onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
-            onView(withId(R.id.recurrencePeriod)).check(matches(not( isEnabled() )));
+            onView(withId(R.id.recurrencePeriod)).check(matches(not(isEnabled())));
 
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
         }
@@ -235,9 +232,10 @@ public class EventCreatorTest {
     @Test
     public void phoneLocationCanBeUsedWithoutUI() throws ExecutionException, InterruptedException {
         final DeviceLocationProviderActivity[] testClass = new DeviceLocationProviderActivity/*The array is so that it works*/[1];
-        ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = (DeviceLocationProviderActivity)activity);
+        ActivityScenario.launch(EventCreator.class).onActivity(activity -> testClass[0] = activity);
 
-        ObserverPattern.Observer<Coordinates> observer = (subject, value) -> {};
+        ObserverPattern.Observer<Coordinates> observer = (subject, value) -> {
+        };
 
         assertThat(testClass[0].addObserver(observer), is(true));
         assertThat(testClass[0].removeObserver(observer), is(true));
@@ -247,8 +245,7 @@ public class EventCreatorTest {
         assertThat(testClass[0].startLocationTracking().get(), not(nullValue()));
         try {
             testClass[0].getLastLocation();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             assertThat(e, is(instanceOf(IllegalStateException.class)));
         }
     }

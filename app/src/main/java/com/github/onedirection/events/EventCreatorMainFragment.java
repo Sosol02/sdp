@@ -22,7 +22,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -52,7 +51,7 @@ public class EventCreatorMainFragment extends Fragment {
     private Spinner recurrencePeriodType;
     private EditText recurrencePeriodAmount;
 
-    private void setupDateTimeButtons(MutableLiveData<ZonedDateTime> data, int nameId, int viewId){
+    private void setupDateTimeButtons(MutableLiveData<ZonedDateTime> data, int nameId, int viewId) {
         View dateTime = getView().findViewById(viewId);
         ((TextView) dateTime.findViewById(R.id.label)).setText(nameId);
         data.observe(getViewLifecycleOwner(), zonedDateTime -> {
@@ -106,8 +105,7 @@ public class EventCreatorMainFragment extends Fragment {
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
         getView().findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
-            Event event = generateEvent();
-            Database.getDefaultInstance().store(event);
+            model.callback.accept(generateEvent(), model.isEditing);
             requireActivity().finish();
         });
 
@@ -178,8 +176,7 @@ public class EventCreatorMainFragment extends Fragment {
         int amount = 1;
         try {
             amount = Integer.parseUnsignedInt(recurrencePeriodAmount.getText().toString());
-        }
-        catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             recurrencePeriodAmount.setText(String.format("%s", amount));
         }
 
