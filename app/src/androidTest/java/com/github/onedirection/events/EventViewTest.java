@@ -6,10 +6,8 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers;
 
-import com.github.onedirection.EventsView;
+import com.github.onedirection.eventviewer.EventView;
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -36,10 +34,10 @@ public class EventViewTest {
 
     @Test
     public void eventNameIsDisplayed() {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventsView.class);
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventView.class);
         EventCreator.putEventExtra(intent, EVENT);
 
-        try (ActivityScenario<EventsView> scenario = ActivityScenario.launch(intent)) {
+        try (ActivityScenario<EventView> scenario = ActivityScenario.launch(intent)) {
             onView(ViewMatchers.withId(R.id.textViewNameView)).check(matches(withText(EVENT.getName())));
         }
     }

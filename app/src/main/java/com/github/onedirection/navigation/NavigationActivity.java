@@ -18,6 +18,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.eventviewer.EventView;
 import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -51,6 +52,15 @@ public class NavigationActivity extends DeviceLocationProviderActivity {
             }
         });
 
+        navigationView.getMenu().findItem(R.id.nav_event_viewer).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Intent intent = new Intent(getApplicationContext(), EventView.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);
 
@@ -66,6 +76,8 @@ public class NavigationActivity extends DeviceLocationProviderActivity {
             }
         });
     }
+
+
 
     @Override
     public boolean onSupportNavigateUp() {

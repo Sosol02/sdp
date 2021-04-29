@@ -34,5 +34,9 @@
             android:icon="@drawable/ic_menu_logout"
             android:visible="false"
             android:title="@string/menu_logout" />
+        <item
+            android:id="@+id/nav_event_viewer"
+            android:icon="@drawable/ic_menu_sign"
+            android:title="@string/menu_sign" />
     </group>
 </menu>
