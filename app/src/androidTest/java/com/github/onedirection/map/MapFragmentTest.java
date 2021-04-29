@@ -18,6 +18,7 @@ import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
+import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
@@ -196,7 +197,7 @@ public class MapFragmentTest {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
-        onView(withId(R.id.my_location_button)).perform(click());
+        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(10000));
         LatLng next = mapboxMap.getCameraPosition().target;
         assertThat(next.equals(last), is(false));
     }
