@@ -1,6 +1,8 @@
 package com.github.onedirection.database;
 
 import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.database.store.Storable;
+import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.utils.Id;
 
@@ -8,9 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CachedDatabaseTest {
     private static int count = 10;
@@ -94,4 +100,65 @@ public class CachedDatabaseTest {
     public void filterWhereGreaterLessEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
         CommonDatabaseTests.filterWhereGreaterLessEqFiltersLikeRDB(ConcreteDatabase.getDatabase());
     }
+
+    @Test
+    public void failedFutureInvalidatesCache() throws ExecutionException, InterruptedException {
+        int[] counter = new int[] {0};
+        CompletableFuture<? extends Storable<?>> fut = new CompletableFuture<>();
+        final ConcreteDatabase realdb = ConcreteDatabase.getDatabase();
+        final CachedDatabase cdb = new CachedDatabase(new MockDatabase() {
+            @Override
+            public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
+                return realdb.store(toStore);
+            }
+
+            @Override
+            public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
+                if (counter[0] == 1) {
+                    return (CompletableFuture<T>) fut;
+                }
+                return realdb.retrieve(id, storer);
+            }
+        });
+
+        Item[] items = getItems(10);
+
+        CompletableFuture<Id> storeF = cdb.store(items[0]);
+        storeF.get();
+        assertThat(cdb.storeCache.getMap().containsKey(items[0].getId()), is(true));
+
+        CompletableFuture<Item> retrieveF = cdb.retrieve(items[0].getId(), items[0].storer());
+        retrieveF.completeExceptionally(new RuntimeException("ZA WARUDO!!")); // ignored since future is already completed by db on the storeF.get()
+        retrieveF.get();
+        assertThat(cdb.storeCache.getMap().containsKey(items[0].getId()), is(true)); // future was cached
+
+        // ---
+
+        cdb.storeCache.invalidate(items[0].getId());
+        counter[0] = 1;
+
+        Id brokenId = Id.generateRandom();
+
+        assertThat(cdb.storeCache.getMap().containsKey(brokenId), is(false)); // future was not cached and removed from cache
+
+        CompletableFuture<Item> retrieveF2 = cdb.retrieve(brokenId, items[0].storer());
+        fut.completeExceptionally(new RuntimeException("ZA WARUDO!!"));
+        boolean ok = false;
+        try {
+            retrieveF2.get();
+        } catch (ExecutionException ignored) {
+            ok = true;
+        }
+        assertTrue(ok);
+        assertThat(cdb.storeCache.getMap().containsKey(brokenId), is(false)); // future was not cached and removed from cache
+    }
+
+    private Item[] getItems(int n) {
+        Item[] items = new Item[n];
+        for (int i = 0; i < n; ++i) {
+            items[i] = new Item(i, Integer.toString(i));
+        }
+        return items;
+    }
+    
 }
