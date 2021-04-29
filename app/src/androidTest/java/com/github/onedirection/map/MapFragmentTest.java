@@ -147,6 +147,8 @@ public class MapFragmentTest {
 
     @Test
     public void testAddEventPutsMarkerOnMap() {
+        // Wait acton to make getMarkerSymbolManager work.
+        onView(withId(R.id.mapView)).perform(new WaitAction(1000));
         MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
         Pair<Symbol, LatLng> pair;
         try {
