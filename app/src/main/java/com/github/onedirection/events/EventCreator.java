@@ -2,6 +2,7 @@ package com.github.onedirection.events;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,9 @@ import java.util.function.BiConsumer;
  * of the event. Ignored if an event is also given.
  */
 public class EventCreator extends DeviceLocationProviderActivity {
+    // Package private
+    static final String LOGCAT_TAG = "EventCreator";
+
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final String EXTRA_DATE = "DATE";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
@@ -115,6 +119,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
     }
 
     private static void putEventToDatabase(Event event, boolean edited) {
+        Log.d(LOGCAT_TAG, event.toString());
         EventQueries db = new EventQueries(Database.getDefaultInstance());
         if (edited) {
             db.modifyEvent(event);
