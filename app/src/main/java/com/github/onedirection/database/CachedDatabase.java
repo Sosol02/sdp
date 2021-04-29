@@ -2,6 +2,8 @@ package com.github.onedirection.database;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.utils.Cache;
@@ -17,7 +19,8 @@ public class CachedDatabase implements Database {
 
     private final Database innerDatabase;
     // sadly, we can't have a concrete type for the values.
-    private final Cache<Id, CompletableFuture<? extends Storable<?>>> storeCache;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    final Cache<Id, CompletableFuture<? extends Storable<?>>> storeCache;
     private final Cache<Query, CompletableFuture<? extends List<?>>> queryCache;
 
     public CachedDatabase(Database innerDatabase, int cacheMaxHistory) {
@@ -47,17 +50,15 @@ public class CachedDatabase implements Database {
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(storer);
-        Log.d("ABC", "retrieve: Id: " + id + ", type: " + storer.classTag().getCanonicalName());
         return storeCache.get(id, sameId -> innerDatabase.retrieve(id, storer))
-                .thenApply(res -> {
-                    Log.d("ABC", "retrieve callback: Id: " + id + ", type: " + storer.classTag().getCanonicalName());
-                    if (res != null) {
-                        Log.d("ABC", "res non null res: " + res + "restype: " + res.getClass().getCanonicalName());
-                    } else {
-                        Log.d("ABC", "res null");
+                .whenComplete((res, err) -> {
+                    Log.d("CachedDatabase", "retrieve: whenComplete: res: " + res + ", err: " + err);
+                    if (err != null) {
+                        Log.d("CachedDatabase", "retrieve: future failed at id: " + id + ", err: " + err);
+                        storeCache.invalidate(id);
                     }
-                    return (T) res;
-                });
+                })
+                .thenApply(res -> (T) res);
     }
 
     @Override
@@ -167,50 +168,61 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.Eq, key, value), query ->
-            innerDatabase.filterWhereEquals(key, value, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.Eq, key, value);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereEquals(key, value, storer))
+                .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.Gr, key, value), query ->
-                innerDatabase.filterWhereGreater(key, value, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.Gr, key, value);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreater(key, value, storer))
+                .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.GrEq, key, value), query ->
-                innerDatabase.filterWhereGreaterEq(key, value, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.GrEq, key, value);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterEq(key, value, storer))
+                .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.Le, key, value), query ->
-                innerDatabase.filterWhereLess(key, value, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.Le, key, value);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereLess(key, value, storer))
+                .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.LeEq, key, value), query ->
-                innerDatabase.filterWhereLessEq(key, value, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.LeEq, key, value);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereLessEq(key, value, storer))
+                .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.GrEqLe, key, valueGreaterEq, valueLess), query ->
-                innerDatabase.filterWhereGreaterEqLess(key, valueGreaterEq, valueLess, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.GrEqLe, key, valueGreaterEq, valueLess);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterEqLess(key, valueGreaterEq, valueLess, storer))
+                .whenComplete((res, err) -> {
+                    if (err != null) queryCache.invalidate(query);
+                })
+                .thenApply(res -> (List<T>) res);
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
-        return queryCache.get(new Query(storer.classTag(), Query.QueryType.GrLeEq, key, valueGreater, valueLessEq), query ->
-                innerDatabase.filterWhereGreaterLessEq(key, valueGreater, valueLessEq, storer)
-        ).thenApply(res -> (List<T>) res);
+        final Query query = new Query(storer.classTag(), Query.QueryType.GrLeEq, key, valueGreater, valueLessEq);
+        return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterLessEq(key, valueGreater, valueLessEq, storer))
+                .whenComplete((res, err) -> {
+                    if (err != null) queryCache.invalidate(query);
+                })
+                .thenApply(res -> (List<T>) res);
     }
 }
