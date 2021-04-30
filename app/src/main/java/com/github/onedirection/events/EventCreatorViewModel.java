@@ -1,7 +1,5 @@
 package com.github.onedirection.events;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.test.espresso.idling.CountingIdlingResource;
@@ -16,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class EventCreatorViewModel extends ViewModel {
     private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
@@ -37,11 +36,11 @@ public class EventCreatorViewModel extends ViewModel {
     public Id eventId;
     public Id recId;
     public boolean isEditing;
+    public BiConsumer<Event, Boolean> callback;
     public CountingIdlingResource idling;
 
 
-
-    public void init(Event event, boolean isEditing){
+    public void init(Event event, BiConsumer<Event, Boolean> callback, boolean isEditing) {
         this.name = new MutableLiveData<>(event.getName());
         this.startTime = new MutableLiveData<>(event.getStartTime());
         this.endTime = new MutableLiveData<>(event.getEndTime());
@@ -62,56 +61,61 @@ public class EventCreatorViewModel extends ViewModel {
         this.eventId = event.getId();
         this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
         this.isEditing = isEditing;
+        this.callback = callback;
         this.idling = new CountingIdlingResource("Event creator is loading.");
     }
 
-    public void init(Event event) {
-        init(event, true);
+    public void init(Event event, BiConsumer<Event, Boolean> callback) {
+        init(event, callback, true);
     }
 
-    private void init(ZonedDateTime start){
-        init(new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)), false);
+    private void init(ZonedDateTime start, BiConsumer<Event, Boolean> callback) {
+        init(
+                new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)),
+                callback,
+                false
+        );
     }
 
-    public void init(){
-        init(ZonedDateTime.now());
+    public void init(BiConsumer<Event, Boolean> callback) {
+        init(ZonedDateTime.now(), callback);
     }
 
-    public void init(LocalDate date){
-        init(ZonedDateTime.of(date, LocalTime.now(), ZoneId.systemDefault()));
+    public void init(LocalDate date, BiConsumer<Event, Boolean> callback) {
+        init(ZonedDateTime.of(date, LocalTime.now(), ZoneId.systemDefault()), callback);
     }
 
-    public Optional<Recurrence> generateRecurrence(){
+    public Optional<Recurrence> generateRecurrence() {
         return isRecurrent.getValue() ?
-                Optional.of(new Recurrence(recId, recurrencePeriod.getValue(), recurrenceEnd.getValue())):
+                Optional.of(new Recurrence(recId, recurrencePeriod.getValue(), recurrenceEnd.getValue())) :
                 Optional.empty();
     }
 
-    public Event generateEvent(){
+    public Event generateEvent() {
         return useGeolocation.getValue() ?
-            new Event(
-                eventId,
-                name.getValue(),
-                coordinates.getValue().get(),
-                startTime.getValue(),
-                endTime.getValue(),
-                generateRecurrence()
-            ) :
-            new Event(
-                eventId,
-                name.getValue(),
-                customLocation.getValue(),
-                startTime.getValue(),
-                endTime.getValue(),
-                generateRecurrence()
-            );
+                new Event(
+                        eventId,
+                        name.getValue(),
+                        coordinates.getValue().get(),
+                        startTime.getValue(),
+                        endTime.getValue(),
+                        generateRecurrence()
+                ) :
+                new Event(
+                        eventId,
+                        name.getValue(),
+                        customLocation.getValue(),
+                        startTime.getValue(),
+                        endTime.getValue(),
+                        generateRecurrence()
+                );
     }
 
-    public void incrementLoad(){
+    public void incrementLoad() {
         idling.increment();
     }
 
-    public void decrementLoad(){
+    public void decrementLoad() {
         idling.decrement();
     }
 }
