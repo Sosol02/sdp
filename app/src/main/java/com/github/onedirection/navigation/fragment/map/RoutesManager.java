@@ -43,8 +43,6 @@ public class RoutesManager {
     private final String LINE_COLOR = "Blue";
     private final float LINE_WIDTH = 2f;
 
-    private final RoutesManager self = this;
-
     public RoutesManager(Context context, MapView mapView, MapboxMap mapboxMap, Style style) {
         this.lineManager = new LineManager(mapView, mapboxMap, style);
         this.routeService = new RouteService.Builder().build(context,
@@ -77,9 +75,9 @@ public class RoutesManager {
 
         routeService.requestRoutes(from, to, routeOptions, new RoutesResponseListener() {
             @Override
-            public void onRoutesRetrieved(List<Route> routes) {
+            public void onRoutesRetrieved(List<Route> routes1) {
                 if (routes.size() > 0) {
-                    self.routes = routes;
+                    routes = routes1;
                     displayRoute(routes.get(0));
                 }
                 runnableOnSuccess.run();

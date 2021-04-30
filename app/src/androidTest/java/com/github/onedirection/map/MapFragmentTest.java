@@ -169,8 +169,8 @@ public class MapFragmentTest {
         });
         try {
             semaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         getBottomSheetBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -189,8 +189,8 @@ public class MapFragmentTest {
         onView(withId(R.id.mapView)).perform(click());
         try {
             semaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
@@ -203,7 +203,7 @@ public class MapFragmentTest {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
-        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(10000));
+        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(3000));
         LatLng next = mapboxMap.getCameraPosition().target;
         assertThat(next.equals(last), is(false));
     }
@@ -211,7 +211,7 @@ public class MapFragmentTest {
     @Test
     public void testMyLocationButton() {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
-        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(10000));
+        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(3000));
         assertThat(myLocationSymbolManager.getPosition(), is(nullValue()));
     }
 
@@ -239,8 +239,8 @@ public class MapFragmentTest {
         });
         try {
             semaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         List<Line> lines = getRoutesManagerLines(routesManager);
