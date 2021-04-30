@@ -12,6 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.eventviewer.EventViewerAdapter;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
@@ -169,7 +170,7 @@ public class EventViewTest {
             ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
             Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
             ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-            Instant RECURRING_PERIOD = Instant.ofEpochSecond(3600*24); //Daily
+            Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
             Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
             events.add(e);
@@ -210,7 +211,7 @@ public class EventViewTest {
             ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
             Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
             ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-            Instant RECURRING_PERIOD = Instant.ofEpochSecond(3600*24); //Daily
+            Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
             Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
             events.add(e);

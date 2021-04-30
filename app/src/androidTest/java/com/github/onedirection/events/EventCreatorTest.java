@@ -17,10 +17,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
@@ -47,7 +45,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -186,7 +186,14 @@ public class EventCreatorTest {
         EventCreator.putDateExtra(intent, date);
 
         try (ActivityScenario<EventCreator> scenario = ActivityScenario.launch(intent)) {
-            onView(withId(R.id.buttonStartDate)).check(matches(withText(date.toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(date.toString())));
+
+            // The recurrence period be editable
+            onView(withId(R.id.recurrencePeriod)).check(matches(not( isDisplayed() )));
+            onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+            onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
+            onView(withId(R.id.recurrencePeriod)).check(matches(isEnabled()));
         }
     }
 
@@ -200,17 +207,25 @@ public class EventCreatorTest {
 
             onView(withId(R.id.checkGeolocation)).check(matches(isChecked()));
 
-            onView(withId(R.id.buttonStartDate)).check(matches(withText(EVENT.getStartTime().toLocalDate().toString())));
-            onView(withId(R.id.buttonStartTime)).check(matches(withText(EVENT.getStartTime().toLocalTime().toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(EVENT.getStartTime().toLocalDate().toString())));
+            onView(allOf(withId(R.id.time), hasSibling(withText(containsString("Start")))))
+                    .check(matches(withText(EVENT.getStartTime().toLocalTime().toString())));
 
-            onView(withId(R.id.buttonEndDate)).check(matches(withText(EVENT.getEndTime().toLocalDate().toString())));
-            onView(withId(R.id.buttonEndTime)).check(matches(withText(EVENT.getEndTime().toLocalTime().toString())));
+            onView(allOf(withId(R.id.date), hasSibling(withText(containsString("End")))))
+                    .check(matches(withText(EVENT.getEndTime().toLocalDate().toString())));
+            onView(allOf(withId(R.id.time), hasSibling(withText(containsString("End")))))
+                    .check(matches(withText(EVENT.getEndTime().toLocalTime().toString())));
 
             onView(withId(R.id.buttonGotoGeolocation)).perform(scrollTo(), click());
 
             onView(withId(R.id.textSelectedLocationFull)).check(matches(withText(EVENT.getLocation().get().toString())));
 
             onView(withId(R.id.buttonCancelGeolocation)).perform(scrollTo(), click());
+
+            // The recurrence period should not be editable
+            onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+            onView(withId(R.id.recurrencePeriod)).check(matches(not( isEnabled() )));
 
             onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
         }

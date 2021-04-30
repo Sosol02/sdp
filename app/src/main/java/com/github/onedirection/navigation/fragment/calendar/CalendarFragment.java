@@ -22,7 +22,6 @@ public class CalendarFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
         calendarView = root.findViewById(R.id.calendarView);
-        calendarView.setParentFragment(this);
         return root;
     }
 
