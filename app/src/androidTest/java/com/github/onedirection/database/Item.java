@@ -12,7 +12,7 @@ public class Item implements Storable<Item> {
     private final String s;
 
     // used by storer
-    private Item(Id id, int number, String s) {
+    Item(Id id, int number, String s) {
         this.id = id;
         this.number = number;
         this.s = s;

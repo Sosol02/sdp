@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.DeviceLocationProviderActivity;
-import com.github.onedirection.geolocation.GeocodingService;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
+import com.github.onedirection.geolocation.geocoding.GeocodingService;
 import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.geolocation.NominatimGeocoding;
+import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
 
 import java.util.ArrayList;
 import java.util.List;

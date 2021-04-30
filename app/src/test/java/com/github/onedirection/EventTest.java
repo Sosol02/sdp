@@ -1,6 +1,7 @@
 package com.github.onedirection;
 
 import com.github.onedirection.events.Event;
+import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -31,7 +32,7 @@ public class EventTest {
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-    private final static Instant RECURRING_PERIOD = Instant.ofEpochSecond(3600*24); //Daily
+    private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
 
@@ -86,14 +87,14 @@ public class EventTest {
 
     @Test
     public void testEventSetRecurringPeriodAndGet() {
-        final Instant recurringPeriod = Instant.ofEpochSecond(3600*24*7); //Weekly
+        final Recurrence recurringPeriod = new Recurrence(RECURRING_PERIOD.getGroupId(), Duration.ofDays(7), END_TIME);
 
-        assertThrows(NullPointerException.class, () -> EVENT.setRecurringPeriod(null));
-        Event eventChanged = EVENT.setRecurringPeriod(recurringPeriod);
-        assertTrue(eventChanged.getRecurrencePeriod().isPresent());
-        assertEquals(Optional.of(recurringPeriod), eventChanged.getRecurrencePeriod());
-        assertEquals(Optional.of(RECURRING_PERIOD), EVENT.getRecurrencePeriod());
-        assertThat(EVENT.setRecurringPeriod(RECURRING_PERIOD), sameInstance(EVENT));
+        assertThrows(NullPointerException.class, () -> EVENT.setRecurrence(null));
+        Event eventChanged = EVENT.setRecurrence(recurringPeriod);
+        assertTrue(eventChanged.getRecurrence().isPresent());
+        assertEquals(Optional.of(recurringPeriod), eventChanged.getRecurrence());
+        assertEquals(Optional.of(RECURRING_PERIOD), EVENT.getRecurrence());
+        assertThat(EVENT.setRecurrence(RECURRING_PERIOD), sameInstance(EVENT));
     }
 
     @Test
@@ -132,6 +133,7 @@ public class EventTest {
         assertThat(str, containsString(LOCATION.name));
         assertThat(str, containsString(START_TIME.toString()));
         assertThat(str, containsString(END_TIME.toString()));
+        assertThat(str, containsString(RECURRING_PERIOD.toString()));
     }
 
     @Test
@@ -142,7 +144,7 @@ public class EventTest {
         Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME, RECURRING_PERIOD);
         Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
         Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event7 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD.plusSeconds(1));
+        Event event7 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD.setPeriod(RECURRING_PERIOD.getPeriod().plusMinutes(1)));
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));

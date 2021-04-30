@@ -1,4 +1,4 @@
-package com.github.onedirection.database.utils;
+package com.github.onedirection.utils;
 
 import java.time.Instant;
 import java.time.ZoneId;

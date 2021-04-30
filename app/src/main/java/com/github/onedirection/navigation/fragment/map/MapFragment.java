@@ -1,8 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 
-import android.annotation.SuppressLint;
-import android.graphics.drawable.BitmapDrawable;
+import android.Manifest;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -17,7 +18,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.geolocation.DeviceLocationProvider;
+import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -34,6 +36,7 @@ import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 
 public class MapFragment extends Fragment {
@@ -47,6 +50,8 @@ public class MapFragment extends Fragment {
     private MapboxMap mapboxMap;
     private MarkerSymbolManager markerSymbolManager;
     private DeviceLocationProvider deviceLocationProvider;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+    private CompletableFuture<Boolean> permissionRequestResult;
     private MyLocationSymbolManager myLocationSymbolManager;
     private Symbol clickSymbol;
 
@@ -58,7 +63,16 @@ public class MapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        deviceLocationProvider = (DeviceLocationProvider) requireActivity();
+        this.deviceLocationProvider = new AbstractDeviceLocationProvider(getContext().getApplicationContext()) {
+            @Override
+            public CompletableFuture<Boolean> requestFineLocationPermission() {
+                return requestLocationPermission();
+            }
+        };
+        this.permissionRequestResult = CompletableFuture.completedFuture(false);
+        this.requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                result -> {permissionRequestResult.complete(result); });
+
         deviceLocationProvider.startLocationTracking();
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
@@ -159,6 +173,16 @@ public class MapFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
+    }
+
+    public CompletableFuture<Boolean> requestLocationPermission() {
+        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(getContext().getApplicationContext())) {
+            permissionRequestResult = new CompletableFuture<>();
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            permissionRequestResult = CompletableFuture.completedFuture(true);
+        }
+        return permissionRequestResult;
     }
 
     private void initializeMarkerSymbolManager(@NonNull Style styleOnLoaded) {
