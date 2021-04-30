@@ -76,7 +76,7 @@ public class RoutesManager {
         routeService.requestRoutes(from, to, routeOptions, new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(List<Route> routes1) {
-                if (routes.size() > 0) {
+                if (routes1.size() > 0) {
                     routes = routes1;
                     displayRoute(routes.get(0));
                 }
