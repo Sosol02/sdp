@@ -46,8 +46,7 @@ public class EventView extends AppCompatActivity {
         CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
-            eventViewerAdapter = new EventViewerAdapter(events);
-            eventList.setAdapter(eventViewerAdapter);
+            updateResults(monthEvents);
         });
         eventViewerAdapter = new EventViewerAdapter(events);
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
@@ -55,7 +54,6 @@ public class EventView extends AppCompatActivity {
     }
 
     private void updateResults(List<Event> events){
-
         eventList.setAdapter(new EventViewerAdapter(events));
     }
 
