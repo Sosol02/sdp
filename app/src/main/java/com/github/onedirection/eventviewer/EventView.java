@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
+import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
+import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.events.LocationsAdapter;
@@ -17,37 +19,39 @@ import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.notifs.Notifications;
 import com.github.onedirection.utils.Id;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class EventView extends AppCompatActivity {
 
     RecyclerView eventList;
     EventViewerAdapter eventViewerAdapter;
+    List<Event> events = new ArrayList<Event>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.event_viewer);
 
-        Id ID = Id.generateRandom();
-        String NAME = "Event name";
-        String LOCATION_NAME = "Location name";
-        NamedCoordinates LOCATION = new NamedCoordinates(0, 0, LOCATION_NAME);
-        ZonedDateTime START_TIME = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime END_TIME = ZonedDateTime.now().plusDays(2);
-        Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
 
-        List<Event> events = new ArrayList<Event>();
-        events.add(e);
-
+        ConcreteDatabase database = ConcreteDatabase.getDatabase();
+        EventQueries queryManager = new EventQueries(database);
+        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 4, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            events = monthEvents;
+            eventViewerAdapter = new EventViewerAdapter(events);
+            eventList.setAdapter(eventViewerAdapter);
+        });
         eventViewerAdapter = new EventViewerAdapter(events);
-
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
         eventList.setLayoutManager(new LinearLayoutManager(this));
-        eventList.setAdapter(eventViewerAdapter);
     }
 
     private void updateResults(List<Event> events){

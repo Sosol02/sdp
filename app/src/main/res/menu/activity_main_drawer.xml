@@ -37,6 +37,6 @@
         <item
             android:id="@+id/nav_event_viewer"
             android:icon="@drawable/ic_menu_sign"
-            android:title="@string/menu_sign" />
+            android:title="Your event list"/>
     </group>
 </menu>
