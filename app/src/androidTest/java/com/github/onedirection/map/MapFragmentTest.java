@@ -211,7 +211,7 @@ public class MapFragmentTest {
     @Test
     public void testMyLocationButton() {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
-        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(3000));
+        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(5000));
         assertThat(myLocationSymbolManager.getPosition(), is(nullValue()));
     }
 
