@@ -32,6 +32,12 @@ android {
             testCoverageEnabled true
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.buildConfigField "String", "API_KEY", getApiKey() // Provides key for the Navigation SDK
+        variant.resValue "string", "API_KEY", getApiKey()         // Provides key for the MapView used in app layouts
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -84,7 +90,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
     androidTestImplementation "androidx.navigation:navigation-testing:2.3.5"
-    debugImplementation "androidx.fragment:fragment-testing:1.3.2"
+    debugImplementation "androidx.fragment:fragment-testing:1.3.3"
 }
 
 tasks.withType(Test) {

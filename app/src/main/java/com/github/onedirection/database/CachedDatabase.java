@@ -17,8 +17,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class CachedDatabase implements Database {
 
+    private static final CachedDatabase globalCachedDb = new CachedDatabase(ConcreteDatabase.getDatabase());
+
+    public static CachedDatabase getInstance() {
+        return globalCachedDb;
+    }
+
     private final Database innerDatabase;
-    // sadly, we can't have a concrete type for the values.
+    // sadly, we can't have a concrete type for the values. This comment is useful: don't try to refactor this type,
+    // I already thought about it and it was the best i found.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     final Cache<Id, CompletableFuture<? extends Storable<?>>> storeCache;
     private final Cache<Query, CompletableFuture<? extends List<?>>> queryCache;
@@ -89,8 +96,7 @@ public class CachedDatabase implements Database {
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
         Objects.requireNonNull(listToStore);
-        // make sure that listToStore doesnt change under our feet
-        List<T> listToStoreSame = new ArrayList(listToStore);
+        List<T> listToStoreSame = new ArrayList<>(listToStore);
         queryCache.invalidate();
         return innerDatabase.storeAll(listToStoreSame)
                 // This is kinda dumb because the inner db will always return true, it should really

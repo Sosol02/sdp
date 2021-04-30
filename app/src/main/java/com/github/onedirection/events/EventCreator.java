@@ -1,22 +1,23 @@
 package com.github.onedirection.events;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
+import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
+import com.github.onedirection.database.Database;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
+import java.util.function.BiConsumer;
 
 /**
  * To use to create an event, just start the activity.
@@ -34,14 +35,15 @@ import java.time.LocalDate;
  * of the event. Ignored if an event is also given.
  */
 public class EventCreator extends DeviceLocationProviderActivity {
+    // Package private
+    static final String LOGCAT_TAG = "EventCreator";
+
     public static final String EXTRA_EVENT = "EVENT_ID";
     public static final String EXTRA_DATE = "DATE";
-    public static final String ON_CREATE = "CREATE_CALLBACK";
     public static final Class<Event> EXTRA_EVENT_TYPE = Event.class;
     public static final Class<LocalDate> EXTRA_DATE_TYPE = LocalDate.class;
-    public static final Class<Uri> EXTRA_ON_CREATE_TYPE = Uri.class;
 
-    public static boolean hasEventExtra(Intent intent){
+    public static boolean hasEventExtra(Intent intent) {
         return intent.hasExtra(EXTRA_EVENT);
     }
 
@@ -66,7 +68,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         return intent.putExtra(EXTRA_EVENT, event);
     }
 
-    public static boolean hasDateExtra(Intent intent){
+    public static boolean hasDateExtra(Intent intent) {
         return intent.hasExtra(EXTRA_DATE);
     }
 
@@ -91,18 +93,6 @@ public class EventCreator extends DeviceLocationProviderActivity {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
-    public static boolean hasCallbackExtra(Intent intent){
-        return intent.hasExtra(ON_CREATE);
-    }
-
-    public static Uri getCallbackExtra(Intent intent) {
-        return EXTRA_ON_CREATE_TYPE.cast(intent.getSerializableExtra(ON_CREATE));
-    }
-
-    public static Intent putDateExtra(Intent intent, Uri uri) {
-        return intent.putExtra(ON_CREATE, uri);
-    }
-
     private EventCreatorViewModel model;
 
     @Override
@@ -111,7 +101,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         setContentView(R.layout.event_creator);
 
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -119,14 +109,25 @@ public class EventCreator extends DeviceLocationProviderActivity {
 
         this.model = new ViewModelProvider(this).get(EventCreatorViewModel.class);
 
-        if(hasEventExtra(intent)){
-            this.model.init(getEventExtra(intent));
+        if (hasEventExtra(intent)) {
+            this.model.init(getEventExtra(intent), EventCreator::putEventToDatabase);
+        } else if (hasDateExtra(intent)) {
+            this.model.init(getDateExtra(intent), EventCreator::putEventToDatabase);
+        } else {
+            this.model.init(EventCreator::putEventToDatabase);
         }
-        else if(hasDateExtra(intent)){
-            this.model.init(getDateExtra(intent));
+    }
+
+    private static void putEventToDatabase(Event event, boolean edited) {
+        Log.d(LOGCAT_TAG, event.toString());
+        EventQueries db = new EventQueries(Database.getDefaultInstance());
+        if (edited) {
+            db.modifyEvent(event);
+        } else if(event.isRecurrent()) {
+            db.addRecurringEvent(event);
         }
-        else{
-            this.model.init();
+        else {
+            db.addNonRecurringEvent(event);
         }
     }
 
@@ -140,7 +141,12 @@ public class EventCreator extends DeviceLocationProviderActivity {
     }
 
     @VisibleForTesting
-    public IdlingResource getIdlingResource(){
+    public IdlingResource getIdlingResource() {
         return model.idling;
+    }
+
+    @VisibleForTesting
+    public void setCreationCallback(BiConsumer<Event, Boolean> callback) {
+        model.callback = callback;
     }
 }

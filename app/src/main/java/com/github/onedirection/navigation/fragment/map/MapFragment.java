@@ -1,8 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
-
 import android.Manifest;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +12,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -28,9 +27,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -42,76 +38,61 @@ import java.util.concurrent.CompletableFuture;
 public class MapFragment extends Fragment {
 
     private MapView mapView;
+    private MapboxMap mapboxMap;
+    private MarkerSymbolManager markerSymbolManager;
+    private MyLocationSymbolManager myLocationSymbolManager;
+    private RoutesManager routesManager;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView event_name;
     private TextView event_time_start;
     private TextView event_time_end;
     private TextView event_location;
-    private MapboxMap mapboxMap;
-    private MarkerSymbolManager markerSymbolManager;
     private DeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
-    private MyLocationSymbolManager myLocationSymbolManager;
-    private Symbol clickSymbol;
-
-    public static final String SYMBOL_ID = "MARKER_MAP";
-    public static final String MY_LOCATION_ID = "MY_LOCATION_MAP";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        this.deviceLocationProvider = new AbstractDeviceLocationProvider(getContext().getApplicationContext()) {
-            @Override
-            public CompletableFuture<Boolean> requestFineLocationPermission() {
-                return requestLocationPermission();
-            }
-        };
-        this.permissionRequestResult = CompletableFuture.completedFuture(false);
-        this.requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                result -> {permissionRequestResult.complete(result); });
+        Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token));
 
-        deviceLocationProvider.startLocationTracking();
-        deviceLocationProvider.addObserver((subject, value) -> {
-            if (myLocationSymbolManager != null) {
-                myLocationSymbolManager.update(value);
-            }
-        });
-
-        Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        permissionRequestResult = CompletableFuture.completedFuture(false);
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                result -> {
+                    permissionRequestResult.complete(result);
+                    if (result) {
+                        deviceLocationProvider.startLocationTracking();
+                        if (myLocationSymbolManager != null) {
+                            myLocationSymbolManager.SetEnableSymbol(true);
+                        }
+                    } else {
+                        if (myLocationSymbolManager != null) {
+                            myLocationSymbolManager.SetEnableSymbol(false);
+                        }
+                    }
+                });
 
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
             this.mapboxMap = mapboxMap;
 
+            EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                initializeMarkerSymbolManager(style);
-                initializeMyLocationSymbolManager(style);
+                initializeManagers(style);
+                EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
+
+            initializeDeviceLocationProvider();
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
-                if (myLocationSymbolManager != null) {
-                    LatLng latLng = myLocationSymbolManager.getPosition();
-                    if (latLng != null) {
-                        CameraPosition position = new CameraPosition.Builder()
-                                .target(latLng)
-                                .zoom(15)
-                                .build();
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
-                    }
-                }
+                OnMyLocationButtonClickResponse();
             });
 
-            mapboxMap.addOnMapClickListener(point -> {
-                if (clickSymbol != null)
-                    markerSymbolManager.removeMarker(clickSymbol);
-                clickSymbol = markerSymbolManager.addMarker(point);
-                return false;
-            });
         });
 
         View bottomSheet = view.findViewById(R.id.fragment_map_bottom_sheet);
@@ -138,10 +119,16 @@ public class MapFragment extends Fragment {
     public void setBottomSheetEvent(Event event) {
         Objects.requireNonNull(event);
         event_name.setText(event.getName());
-        ZonedDateTime start=event.getStartTime();
-        event_time_start.setText(String.format(Locale.getDefault(),"%s %s %dh%d",start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),start.getDayOfMonth(),start.getHour(),start.getMinute()));
-        ZonedDateTime end=event.getEndTime();
-        event_time_end.setText(String.format(Locale.getDefault(),"%s %s %dh%d",end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.getDefault()),end.getDayOfMonth(),end.getHour(),end.getMinute()));
+        ZonedDateTime start = event.getStartTime();
+        event_time_start.setText(String.format(Locale.getDefault(),
+                "%s %s %dh%d",
+                start.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                start.getDayOfMonth(), start.getHour(), start.getMinute()));
+        ZonedDateTime end = event.getEndTime();
+        event_time_end.setText(String.format(Locale.getDefault(),
+                "%s %s %dh%d",
+                end.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                end.getDayOfMonth(), end.getHour(), end.getMinute()));
         event_location.setText(event.getLocationName());
     }
 
@@ -175,8 +162,8 @@ public class MapFragment extends Fragment {
         mapView.onSaveInstanceState(outState);
     }
 
-    public CompletableFuture<Boolean> requestLocationPermission() {
-        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(getContext().getApplicationContext())) {
+    private CompletableFuture<Boolean> requestLocationPermission() {
+        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
@@ -185,17 +172,50 @@ public class MapFragment extends Fragment {
         return permissionRequestResult;
     }
 
-    private void initializeMarkerSymbolManager(@NonNull Style styleOnLoaded) {
-        Drawable marker = ContextCompat.getDrawable(getContext(), R.drawable.ic_marker_map);
-        styleOnLoaded.addImage(SYMBOL_ID, BitmapUtils.getBitmapFromDrawable(marker));
-        SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
-        this.markerSymbolManager = new MarkerSymbolManager(symbolManager, this);
+    private void initializeManagers(@NonNull Style style) {
+        Context context = requireContext().getApplicationContext();
+        routesManager = new RoutesManager(context, mapView, mapboxMap, style);
+        markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
+        myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
     }
 
-    private void initializeMyLocationSymbolManager(@NonNull Style styleOnLoaded) {
-        Drawable myLocationSymbol = ContextCompat.getDrawable(getContext(), R.drawable.my_location_on_map);
-        styleOnLoaded.addImage(MY_LOCATION_ID, BitmapUtils.getBitmapFromDrawable(myLocationSymbol));
-        SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, styleOnLoaded);
-        this.myLocationSymbolManager = new MyLocationSymbolManager(symbolManager);
+    private void initializeDeviceLocationProvider() {
+        deviceLocationProvider = new AbstractDeviceLocationProvider(requireContext().getApplicationContext()) {
+            @Override
+            public CompletableFuture<Boolean> requestFineLocationPermission() {
+                return requestLocationPermission();
+            }
+        };
+
+        if (DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+            deviceLocationProvider.startLocationTracking();
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.SetEnableSymbol(true);
+            }
+        }
+        deviceLocationProvider.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                myLocationSymbolManager.update(value);
+            }
+        });
+
     }
+
+    private void OnMyLocationButtonClickResponse() {
+        if (myLocationSymbolManager != null) {
+            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+                permissionRequestResult = new CompletableFuture<>();
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            LatLng latLng = myLocationSymbolManager.getPosition();
+            if (latLng != null) {
+                CameraPosition position = new CameraPosition.Builder()
+                        .target(latLng)
+                        .zoom(15)
+                        .build();
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+            }
+        }
+    }
+
 }
