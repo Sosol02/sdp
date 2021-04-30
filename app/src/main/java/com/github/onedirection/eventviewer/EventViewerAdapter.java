@@ -35,6 +35,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
         public void setPosition(int position){
             this.name.setText(events[position].getName());
         }
+
     }
 
     private final Event[] events;
@@ -50,7 +51,6 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         return new ViewHolder(parent);
     }
 

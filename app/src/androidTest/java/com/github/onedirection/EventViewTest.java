@@ -4,9 +4,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.events.Event;
+import com.github.onedirection.eventviewer.EventViewerAdapter;
 import com.github.onedirection.navigation.NavigationActivity;
 
 import org.hamcrest.Description;
@@ -14,6 +18,12 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -24,10 +34,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 public class EventViewTest {
     @Rule
     public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<NavigationActivity>(NavigationActivity.class);
+    List<Event> events = new ArrayList<Event>();
+    RecyclerView eventList;
+    EventViewerAdapter eventViewerAdapter;
 
     @Test
     public void viewingEventsWork() {
@@ -58,6 +72,20 @@ public class EventViewTest {
         ViewInteraction eventIsDisplayed = onView(
                 allOf(withId(R.id.recyclerEventView),
                         isDisplayed()));
+
+
+        ConcreteDatabase database = ConcreteDatabase.getDatabase();
+        EventQueries queryManager = new EventQueries(database);
+        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 4, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            events = monthEvents;
+            eventViewerAdapter = new EventViewerAdapter(events);
+            eventList.setAdapter(eventViewerAdapter);
+        });
+
+        assertEquals(eventViewerAdapter.getItemCount(), events.size());
+        //eventViewerAdapter.onBindViewHolder( new EventViewerAdapter.ViewHolder(this),0);
     }
 
     private static Matcher<View> childAtPosition(
