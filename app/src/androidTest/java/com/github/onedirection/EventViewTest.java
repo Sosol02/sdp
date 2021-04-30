@@ -9,6 +9,7 @@ import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.rule.ActivityTestRule;
 
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
@@ -38,6 +39,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -51,11 +53,85 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 public class EventViewTest {
+
     @Rule
-    public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<NavigationActivity>(NavigationActivity.class);
-    List<Event> events = new ArrayList<Event>();
-    RecyclerView eventList;
-    EventViewerAdapter eventViewerAdapter;
+    public ActivityTestRule<NavigationActivity> mActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
+
+    @Test
+    public void testUiEventViewer() {
+        ViewInteraction appCompatImageButton = onView(
+                allOf(withContentDescription("Open navigation drawer"),
+                        childAtPosition(
+                                allOf(withId(R.id.toolbar),
+                                        childAtPosition(
+                                                withClassName(is("com.google.android.material.appbar.AppBarLayout")),
+                                                0)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton.perform(click());
+
+        ViewInteraction navigationMenuItemView = onView(
+                allOf(withId(R.id.nav_create_event),
+                        childAtPosition(
+                                allOf(withId(R.id.design_navigation_view),
+                                        childAtPosition(
+                                                withId(R.id.nav_view),
+                                                0)),
+                                5),
+                        isDisplayed()));
+        navigationMenuItemView.perform(click());
+
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.editEventName),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                2)));
+        appCompatEditText.perform(scrollTo(), replaceText("jj"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.editEventName), withText("jj"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                2)));
+        appCompatEditText2.perform(pressImeActionButton());
+
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.editEventLocationName),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                4)));
+        appCompatEditText3.perform(pressImeActionButton());
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.buttonEventAdd), withText("Create event"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.FrameLayout")),
+                                        0),
+                                12)));
+        materialButton.perform(scrollTo(), click());
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ViewInteraction navigationMenuItemView2 = onView(
+                allOf(withId(R.id.nav_event_viewer),
+                        childAtPosition(
+                                allOf(withId(R.id.design_navigation_view),
+                                        childAtPosition(
+                                                withId(R.id.nav_view),
+                                                0)),
+                                7),
+                        isDisplayed()));
+        navigationMenuItemView2.perform(click());
+    }
 
 
 
