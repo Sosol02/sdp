@@ -25,7 +25,7 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.fullView = itemView;
-            this.name = itemView.findViewById(R.id.eventName);
+            this.name = itemView.findViewById(R.id.locationName);
         }
 
         public ViewHolder(@NonNull ViewGroup parent) {

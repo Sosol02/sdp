@@ -117,7 +117,7 @@ public class EventViewTest {
                                 12)));
         materialButton.perform(scrollTo(), click());
         try {
-            Thread.sleep(60000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -166,7 +166,7 @@ public class EventViewTest {
                 allOf(withId(R.id.recyclerEventView),
                         isDisplayed()));
 
-
+        onView(isDisplayed());
     }
 
     private static Matcher<View> childAtPosition(
