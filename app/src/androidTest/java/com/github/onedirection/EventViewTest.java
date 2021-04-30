@@ -58,78 +58,11 @@ public class EventViewTest {
     EventViewerAdapter eventViewerAdapter;
 
 
+
     @Test
-    public void viewingEventsWork() {
+    public void eventViewerTest(){
 
         ViewInteraction appCompatImageButton = onView(
-                allOf(withContentDescription("Open navigation drawer"),
-                        childAtPosition(
-                                Matchers.allOf(ViewMatchers.withId(R.id.toolbar),
-                                        childAtPosition(
-                                                withClassName(is("com.google.android.material.appbar.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
-
-        ViewInteraction navigationMenuItemView = onView(
-                allOf(withId(R.id.nav_calendar),
-                        childAtPosition(
-                                allOf(withId(R.id.design_navigation_view),
-                                        childAtPosition(
-                                                withId(R.id.nav_view),
-                                                0)),
-                                2),
-                        isDisplayed()));
-        navigationMenuItemView.perform(click());
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        DataInteraction date = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withClassName(is("android.widget.LinearLayout")),
-                                2)))
-                .atPosition(15);
-        date.perform(click());
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.addEvent), withText("Add Event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton.perform(click());
-
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.editEventName),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.FrameLayout")),
-                                        0),
-                                2)));
-        appCompatEditText.perform(scrollTo(), replaceText("Donkey"), closeSoftKeyboard());
-
-        ViewInteraction materialButton2 = onView(
-                allOf(withId(R.id.buttonEventAdd), withText("Create event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.FrameLayout")),
-                                        0),
-                                10)));
-        materialButton2.perform(scrollTo(), click());
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction appCompatImageButton2 = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
                                 allOf(withId(R.id.toolbar),
@@ -140,7 +73,7 @@ public class EventViewTest {
                         isDisplayed()));
         appCompatImageButton.perform(click());
 
-        ViewInteraction navigationMenuItemView2 = onView(
+        ViewInteraction navigationMenuItemView = onView(
                 withId(R.id.nav_event_viewer));
         navigationMenuItemView.perform(click());
 
@@ -158,25 +91,6 @@ public class EventViewTest {
                         isDisplayed()));
 
 
-        ConcreteDatabase database = ConcreteDatabase.getDatabase();
-        EventQueries queryManager = new EventQueries(database);
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 4, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            events = monthEvents;
-            Id ID = Id.generateRandom();
-            String NAME = "Event name";
-            NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
-            ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
-            Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
-            ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-            Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
-
-            Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
-            events.add(e);
-            eventViewerAdapter = new EventViewerAdapter(events);
-            eventList.setAdapter(eventViewerAdapter);
-        });
     }
 
     private static Matcher<View> childAtPosition(
@@ -197,59 +111,5 @@ public class EventViewTest {
             }
         };
     }
-    @Test
-    public void viewingEventsWorkNoUi() {
-        ConcreteDatabase database = ConcreteDatabase.getDatabase();
-        EventQueries queryManager = new EventQueries(database);
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 4, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            events = monthEvents;
-            Id ID = Id.generateRandom();
-            String NAME = "Event name";
-            NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
-            ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
-            Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
-            ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-            Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
-            Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
-            events.add(e);
-            eventViewerAdapter = new EventViewerAdapter(events);
-            eventList.setAdapter(eventViewerAdapter);
-        });
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withContentDescription("Open navigation drawer"),
-                        childAtPosition(
-                                allOf(withId(R.id.toolbar),
-                                        childAtPosition(
-                                                withClassName(is("com.google.android.material.appbar.AppBarLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
-
-        ViewInteraction navigationMenuItemView = onView(
-                withId(R.id.nav_event_viewer));
-        navigationMenuItemView.perform(click());
-
-        ViewInteraction checkHasEvent = onView(
-                allOf(withContentDescription("check has event"),
-                        childAtPosition(
-                                allOf(withId(R.id.recyclerEventView),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        ViewInteraction eventIsDisplayed = onView(
-                allOf(withId(R.id.recyclerEventView),
-                        isDisplayed()));
-    }
 }
