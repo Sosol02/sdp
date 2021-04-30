@@ -223,7 +223,6 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Cirrus reject")
     public void testRoutesManagerFindMethod() {
         RoutesManager routesManager = getRoutesManager();
         Semaphore semaphore = new Semaphore(0);
