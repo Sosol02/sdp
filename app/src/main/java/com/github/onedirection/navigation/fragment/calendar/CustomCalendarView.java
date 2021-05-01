@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -16,7 +17,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.events.DayEventsView;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
@@ -76,19 +78,20 @@ public class CustomCalendarView extends LinearLayout {
             Button addEvent = onDaySelectedPopup.findViewById(R.id.addEvent);
             Button viewEvents = onDaySelectedPopup.findViewById(R.id.viewEvents);
             int dateOfMonth = dateOfMonthAtPosition(position);
+            LocalDate localDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
 
             addEvent.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callEventCreator(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
+                    callEventCreator(localDate);
                     alertDialog.cancel();
                 }
             });
             viewEvents.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callDayEventsList();
                     alertDialog.cancel();
+                    callDayEventsList(parent, localDate.atStartOfDay(ZoneId.systemDefault()));
                 }
             });
             builder.setView(onDaySelectedPopup);
@@ -140,9 +143,10 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private CompletableFuture<List<Event>> collectEventsPerMonth(int monthNumber, int year) {
-        ConcreteDatabase database = ConcreteDatabase.getDatabase();
+        Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(year, monthNumber, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        LocalDate localDate = LocalDate.of(year, monthNumber, 1);
+        ZonedDateTime firstInstantOfMonth = localDate.atStartOfDay(ZoneId.systemDefault());
         CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
         return monthEventsFuture;
     }
@@ -161,14 +165,19 @@ public class CustomCalendarView extends LinearLayout {
         return monthCalendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private void callEventCreator(int year, int month, int day) {
+    private void callEventCreator(LocalDate date) {
         Intent intent = new Intent(this.getContext(), EventCreator.class);
-        EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
+        EventCreator.putDateExtra(intent, date);
         this.getContext().startActivity(intent);
     }
 
-    private void callDayEventsList() {
-        //@TODO when the events list is implemented;
+    private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(true);
+        DayEventsView dayEventsView = new DayEventsView(getContext(), day);
+        builder.setView(dayEventsView);
+        alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private int getMonthNumber(Calendar cal) {

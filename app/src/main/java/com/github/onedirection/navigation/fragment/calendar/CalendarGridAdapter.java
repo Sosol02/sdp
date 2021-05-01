@@ -34,6 +34,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         this.dates = dates;
     }
 
+
     @SuppressLint("SetTextI18n")
     @NonNull
     @Override
