@@ -1,4 +1,4 @@
-package com.github.onedirection.notifs;
+package com.github.onedirection.notification;
 
 import android.content.Context;
 
@@ -20,9 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;

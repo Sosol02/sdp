@@ -29,6 +29,6 @@
         <activity android:name=".events.EventCreator" />
         <activity android:name=".EventsView" />
 
-        <receiver android:name=".notifs.NotificationPublisher" />
+        <receiver android:name=".notification.NotificationPublisher" />
     </application>
 </manifest>
