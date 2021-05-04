@@ -50,7 +50,7 @@ public class Notifications {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-        schedule(context, ZonedDateTime.now().plusSeconds(3).toInstant().toEpochMilli(), new NotificationPublisher());
+        schedule(context, ZonedDateTime.now().plusSeconds(3), new NotificationPublisher());
     }
     
     Notification getNotification(Event event, Context context) {
@@ -68,17 +68,19 @@ public class Notifications {
                 .build();
     }
     
-    void schedule(Context context, long whenMillis, BroadcastReceiver handler) {
-        long now = System.currentTimeMillis();
-        if (whenMillis < now) {
-            Log.d("schedule", "Registering handler with due date in the past: now: " + now + ", whenMillis: " + whenMillis);
+    void schedule(Context context, ZonedDateTime when, BroadcastReceiver handler) {
+        ZonedDateTime now = ZonedDateTime.now();
+        if (when.isBefore(now)) {
+            Log.d("schedule", "Registering handler with due date in the past: now: " + now + ", when: " + when);
         }
 
         Intent intent = new Intent(context, handler.getClass());
-        // TODO: check what requestCode does. used to be notifId.
+        // check what requestCode does. used to be notifId.
+        // https://stackoverflow.com/questions/21526319/whats-requestcode-used-for-on-pendingintent
+        // actually seems to not really matter for our usecase.
         PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, whenMillis, pending);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when.toInstant().toEpochMilli(), pending);
     }
 }

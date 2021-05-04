@@ -103,6 +103,4 @@ public class NavigationActivity extends AppCompatActivity {
                 });
         confirmationWindows.show();
     }
-
-
 }

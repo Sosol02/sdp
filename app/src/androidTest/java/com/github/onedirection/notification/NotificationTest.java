@@ -58,11 +58,8 @@ public class NotificationTest {
                     Optional.empty())).get();
         }
 
-        Notifications notifs = Notifications.getInstance(ctx);
-        notifs.scheduleClosestEvent(ctx);
+        // now notifs should eventually show up
 
-        onView(withId(R.id.textExampleHome)).perform(new WaitAction(600000));
-
+        onView(withId(R.id.textExampleHome)).perform(new WaitAction(NotificationPublisher.SLACK * 4));
     }
-
 }

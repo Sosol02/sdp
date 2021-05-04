@@ -29,7 +29,7 @@ public class NotificationPublisher extends BroadcastReceiver {
      * Delta time in seconds within which we consider an event to trigger.
      * Consider looking at onRecieve to get the full picture.
      */
-    private static final int SLACK = 60;
+    public static final int SLACK = 30;
 
     // need public 0 argument constructor to exist otherwise it crashes
     public NotificationPublisher() {}
@@ -75,7 +75,7 @@ public class NotificationPublisher extends BroadcastReceiver {
                     }
                     if (e.getStartTime().isAfter(upperBound)) {
                         Log.d(LOG_TAG, "First event that happens after now+slack: " + e);
-                        notifications.schedule(appContext, e.getStartTime().toInstant().toEpochMilli(), this);
+                        notifications.schedule(appContext, e.getStartTime(), this);
                         scheduledNextTime = true;
                         break;
                     }
@@ -88,7 +88,7 @@ public class NotificationPublisher extends BroadcastReceiver {
                 if (!scheduledNextTime) {
                     Log.d(LOG_TAG, "No event was available for scheduling the next call, " +
                             "schdeling for slack = " + SLACK + "seconds * 2.");
-                    notifications.schedule(appContext, now.plusSeconds(SLACK * 2).toInstant().toEpochMilli(), this);
+                    notifications.schedule(appContext, now.plusSeconds(SLACK * 2), this);
                 }
             }
         });
