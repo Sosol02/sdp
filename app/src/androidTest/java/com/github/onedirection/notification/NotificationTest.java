@@ -45,6 +45,7 @@ public class NotificationTest {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
             assertEquals(e.getId(), id);
         }
+        NotificationPublisher.SLACK = 5;
     }
 
     @Test

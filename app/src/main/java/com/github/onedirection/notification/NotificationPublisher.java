@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
@@ -29,7 +31,8 @@ public class NotificationPublisher extends BroadcastReceiver {
      * Delta time in seconds within which we consider an event to trigger.
      * Consider looking at onRecieve to get the full picture.
      */
-    public static final int SLACK = 30;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static int SLACK = 30;
 
     // need public 0 argument constructor to exist otherwise it crashes
     public NotificationPublisher() {}
