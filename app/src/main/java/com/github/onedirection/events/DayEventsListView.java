@@ -1,6 +1,7 @@
 package com.github.onedirection.events;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,22 @@ public class DayEventsListView extends LinearLayout {
         refreshView();
     }
 
+    public void refreshView(){
+        LoadingDialog loadingDialog = new LoadingDialog(context);
+        loadingDialog.startLoadingAnimation();
+        CompletableFuture dayEvents = getDayEvents(day);
+        dayEvents.whenComplete((events, throwable) -> {
+            loadingDialog.dismissDialog();
+            if(((List<Event>)events).size() == 0){
+                view = inflater.inflate(R.layout.empty_event_list_screen, this);
+            } else {
+                view = inflater.inflate(R.layout.day_events_list, this);
+                setupEventsListView((List<Event>) events, view);
+            }
+        });
+    }
+
+
     private CompletableFuture<List<Event>> getDayEvents(ZonedDateTime day){
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
@@ -55,18 +72,4 @@ public class DayEventsListView extends LinearLayout {
         refreshView();
     }
 
-    private void refreshView(){
-        LoadingDialog loadingDialog = new LoadingDialog(context);
-        loadingDialog.startLoadingAnimation();
-        CompletableFuture dayEvents = getDayEvents(day);
-        dayEvents.whenComplete((events, throwable) -> {
-            loadingDialog.dismissDialog();
-            if(((List<Event>)events).size() == 0){
-                view = inflater.inflate(R.layout.empty_event_list_screen, this);
-            } else {
-                view = inflater.inflate(R.layout.day_events_list, this);
-                setupEventsListView((List<Event>) events, view);
-            }
-        });
-    }
 }

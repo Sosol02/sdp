@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
+import com.github.onedirection.events.DayEventsListView;
 
 public class CalendarFragment extends Fragment {
 
@@ -34,5 +35,9 @@ public class CalendarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         calendarView.refreshCalendarView();
+        DayEventsListView eventsListView = calendarView.getDayEventView();
+        if(eventsListView != null){
+            eventsListView.refreshView();
+        }
     }
 }

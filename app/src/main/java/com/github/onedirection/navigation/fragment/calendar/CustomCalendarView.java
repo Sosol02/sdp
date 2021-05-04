@@ -43,6 +43,7 @@ public class CustomCalendarView extends LinearLayout {
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
     private List<Event> eventsList = new ArrayList<>();
+    private DayEventsListView dayEventsView = null;
 
     private Context context;
     private ImageButton nextButton, previousButton;
@@ -106,6 +107,10 @@ public class CustomCalendarView extends LinearLayout {
 
     public void refreshCalendarView() {
         setUpCalendar();
+    }
+
+    public DayEventsListView getDayEventView(){
+        return dayEventsView;
     }
 
 
@@ -174,11 +179,12 @@ public class CustomCalendarView extends LinearLayout {
     private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
-        DayEventsListView dayEventsView = new DayEventsListView(getContext(), day);
+        dayEventsView = new DayEventsListView(getContext(), day);
         builder.setView(dayEventsView);
         alertDialog = builder.create();
         alertDialog.show();
         alertDialog.getWindow().setLayout(1000, 1200);
+        alertDialog.setOnDismissListener(dialog -> refreshCalendarView());
     }
 
     private int getMonthNumber(Calendar cal) {
@@ -194,6 +200,4 @@ public class CustomCalendarView extends LinearLayout {
     private void stopLoadingAnimation(LoadingDialog loadingDialog) {
         loadingDialog.dismissDialog();
     }
-
-
 }

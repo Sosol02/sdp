@@ -2,6 +2,7 @@ package com.github.onedirection.events;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,11 @@ import android.widget.TextView;
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.utils.Id;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class EventsListAdapter extends ArrayAdapter {
     private Context context;
@@ -72,6 +75,9 @@ public class EventsListAdapter extends ArrayAdapter {
 
         eventEditButton.setOnClickListener(v -> {
             if(onEditEvent != null){
+                Intent intent = new Intent(this.getContext(), EventCreator.class);
+                EventCreator.putEventExtra(intent, event);
+                this.getContext().startActivity(intent);
                 onEditEvent.run();
             }
         });
@@ -79,10 +85,12 @@ public class EventsListAdapter extends ArrayAdapter {
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
         eventDeleteButton.setOnClickListener(v -> {
-            queryManager.removeEvent(event.getId());
-            if(onDeleteEvent != null){
-                onDeleteEvent.run();
-            }
+            CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
+            eventDeleted.whenComplete((id, throwable) -> {
+                if (onDeleteEvent != null) {
+                    onDeleteEvent.run();
+                }
+            });
         });
         return convertView;
 

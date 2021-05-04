@@ -16,6 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_gravity="center"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/name"
             android:textAlignment="center" />
 
@@ -57,6 +60,8 @@
             android:id="@+id/eventLocation"
             android:layout_width="match_parent"
             android:layout_height="20dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/location" />
 
 
