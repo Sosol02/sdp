@@ -18,7 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.DayEventsView;
+import com.github.onedirection.events.DayEventsListView;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
@@ -174,10 +174,11 @@ public class CustomCalendarView extends LinearLayout {
     private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
-        DayEventsView dayEventsView = new DayEventsView(getContext(), day);
+        DayEventsListView dayEventsView = new DayEventsListView(getContext(), day);
         builder.setView(dayEventsView);
         alertDialog = builder.create();
         alertDialog.show();
+        alertDialog.getWindow().setLayout(1000, 1200);
     }
 
     private int getMonthNumber(Calendar cal) {

@@ -1,9 +1,11 @@
 package com.github.onedirection.events;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,7 +17,7 @@ import com.github.onedirection.database.Database;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class EventsListAdapter extends BaseAdapter {
+public class EventsListAdapter extends ArrayAdapter {
     private Context context;
     private List<Event> events;
     private LayoutInflater layoutInflater;
@@ -23,7 +25,10 @@ public class EventsListAdapter extends BaseAdapter {
     private Runnable onDeleteEvent;
 
     public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent){
-        this.context = context;
+        super(applicationContext, R.layout.event_view_in_list);
+        this.context = applicationContext;
+        this.onEditEvent = onEditEvent;
+        this.onDeleteEvent = onDeleteEvent;
         this.events = events;
         this.layoutInflater = LayoutInflater.from(context);
     }
@@ -43,13 +48,9 @@ public class EventsListAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        View view = convertView;
-        if (view == null) {
-            view = layoutInflater.inflate(R.layout.event_view_in_list, parent, false);
-        }
 
         convertView = layoutInflater.inflate(R.layout.event_view_in_list, null);
         TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
@@ -60,11 +61,13 @@ public class EventsListAdapter extends BaseAdapter {
         Button eventEditButton = (Button) convertView.findViewById(R.id.eventEditButton);
         Button eventDeleteButton = (Button) convertView.findViewById(R.id.eventDeleteButton);
 
+
+
         Event event = events.get(position);
         eventName.setText(event.getName());
-        eventDate.setText(event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        eventStartTime.setText(event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        eventEndTime.setText(event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        eventDate.setText("Date: " + event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        eventStartTime.setText("From: " + event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        eventEndTime.setText("To: " + event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         eventLocation.setText(event.getLocationName());
 
         eventEditButton.setOnClickListener(v -> {
@@ -81,7 +84,7 @@ public class EventsListAdapter extends BaseAdapter {
                 onDeleteEvent.run();
             }
         });
-        return view;
+        return convertView;
 
 
 

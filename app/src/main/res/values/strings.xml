@@ -81,5 +81,6 @@
     <string name="location">Location</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="no_events_scheduled_today">No events scheduled today!</string>
 
 </resources>

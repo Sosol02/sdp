@@ -50,7 +50,6 @@ public class CalendarGridAdapter extends ArrayAdapter {
         int currentYear = currentDate.get(Calendar.YEAR);
         View view = convertView;
 
-
         if (view == null) {
             view = inflater.inflate(R.layout.single_cell_layout, parent, false);
         }
