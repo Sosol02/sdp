@@ -66,10 +66,6 @@ public class NavigationActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        // Starts the notifications handler.
-        // DO NOT REMOVE THIS LINE otherwise notifications wont work!
-        Notifications.getInstance(getApplicationContext());
     }
 
     @Override

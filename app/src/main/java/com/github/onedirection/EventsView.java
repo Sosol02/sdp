@@ -35,6 +35,5 @@ public class EventsView extends AppCompatActivity {
 
         HashSet<Event> eventHashSet = new HashSet<>();
         eventHashSet.add(event);
-        //Notifications.getInstance(getApplicationContext()).scheduleEventNotifs(getApplicationContext(), eventHashSet);
     }
 }

@@ -43,6 +43,9 @@ public class Notifications {
     }
 
     private void setupNotifChannel(Context context) {
+        // Only need to register NotificationChannel for android O and later.
+        // Other versions don't need to register them.
+        // This is taken straight from Android docs
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance);
@@ -75,9 +78,8 @@ public class Notifications {
         }
 
         Intent intent = new Intent(context, handler.getClass());
-        // check what requestCode does. used to be notifId.
         // https://stackoverflow.com/questions/21526319/whats-requestcode-used-for-on-pendingintent
-        // actually seems to not really matter for our usecase.
+        // The request code seems to not really matter for our usecase.
         PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
