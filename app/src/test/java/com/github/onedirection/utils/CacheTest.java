@@ -243,7 +243,7 @@ public class CacheTest {
 
         Cache<Integer, Integer> serialized = maybeSerialized.get();
 
-        for (Integer k : ref.getMap().keySet()) {
+        for(Integer k: ref.getMap().keySet()){
             assertThat(serialized.isCached(k), is(true));
         }
 
