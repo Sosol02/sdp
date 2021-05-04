@@ -2,12 +2,26 @@ package com.github.onedirection.utils;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNot.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIn.in;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 
 public class CacheTest {
 
@@ -121,7 +135,7 @@ public class CacheTest {
         cache.get(0);
         assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
         assertThat(counter[0], is(2));
-        
+
         cache.invalidate();
 
         // test other overload
@@ -140,7 +154,7 @@ public class CacheTest {
 
         assertThat(counter[0], is(4));
     }
-    
+
     @Test
     public void testCacheSetFunction() {
         final int[] counter = {0};
@@ -148,7 +162,7 @@ public class CacheTest {
             counter[0] += 1;
             return true;
         });
-        
+
         cache.set(3, "3");
         cache.set(5, "5");
         cache.set(324, "324");
@@ -158,7 +172,7 @@ public class CacheTest {
 
         assertThat(counter[0], is(3));
     }
-    
+
     @Test
     public void testCacheNullValuesArentCached() {
         final int[] counter = {0};
@@ -189,7 +203,7 @@ public class CacheTest {
         assertThat(counter[0], is(0));
         cache.get(0);
         assertThat(counter[0], is(1));
-        
+
         cache.invalidate();
         counter[0] = 0;
 
@@ -197,5 +211,78 @@ public class CacheTest {
         assertThat(counter[0], is(0));
         cache.get(0);
         assertThat(counter[0], is(0));
+    }
+
+
+    ///////////////////////////////////////
+    //           Persistence             //
+    ///////////////////////////////////////
+
+    @Test
+    public void canBeStoredAndLoaded() throws UnsupportedEncodingException {
+        Set<Integer> shouldBeCached = new TreeSet<>();
+
+        List<Integer> requests = new ArrayList<>(20);
+        Function<Integer, Integer> get = i -> {
+            requests.add(i);
+            return i;
+        };
+        Supplier<Integer> lastRequest = () -> requests.isEmpty() ? -1: requests.get(requests.size() - 1);
+        Runnable clearRequests = requests::clear;
+
+        Cache<Integer, Integer> ref = new Cache<>(get, 2);
+        for (int i = 0; i <= 9; ++i) {
+            ref.get(i);
+            assertThat(lastRequest.get(), is(i));
+        }
+        shouldBeCached.add(8);
+        shouldBeCached.add(9);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        boolean dumpSuccess = ref.dumpToStream(output, i -> i, i -> i);
+        assertThat(dumpSuccess, is(true));
+
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        Optional<Cache<Integer, Integer>> maybeSerialized = Cache.loadFromStream(
+                input,
+                get,
+                (Integer i) -> i,
+                (Integer i) -> i
+        );
+        assertThat(maybeSerialized.isPresent(), is(true));
+
+        Cache<Integer, Integer> serialized = maybeSerialized.get();
+
+        BiConsumer<Integer, Integer> bothRequest = (i, old) -> {
+            assertThat(i, not(in(shouldBeCached)));
+            ref.get(i);
+            assertThat(lastRequest.get(), is(i));
+            clearRequests.run();
+            serialized.get(i);
+            assertThat(lastRequest.get(), is(i));
+            shouldBeCached.add(i);
+            shouldBeCached.remove(old);
+        };
+
+        Consumer<Integer> noneRequest = i -> {
+            clearRequests.run();
+            assertThat(i, is(in(shouldBeCached)));
+            ref.get(i);
+            assertThat(lastRequest.get(), is(not(i)));
+            serialized.get(i);
+            assertThat(lastRequest.get(), is(not(i)));
+        };
+
+        bothRequest.accept(7, 8);
+
+        noneRequest.accept(9);
+
+        noneRequest.accept(7);
+
+        noneRequest.accept(9);
+
+        bothRequest.accept(0, 9);
+
+        bothRequest.accept(9, 7);
     }
 }

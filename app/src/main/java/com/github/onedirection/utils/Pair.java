@@ -1,5 +1,6 @@
 package com.github.onedirection.utils;
 
+import java.util.Map;
 import java.util.Objects;
 
 public final class Pair<S, T> {
@@ -9,6 +10,10 @@ public final class Pair<S, T> {
     public Pair(S first, T second){
         this.first = first;
         this.second = second;
+    }
+
+    public static<S, T> Pair<S, T> of(S first, T second){
+        return new Pair(first, second);
     }
 
     @Override
@@ -30,5 +35,24 @@ public final class Pair<S, T> {
     @Override
     public int hashCode() {
         return Objects.hash(first, second);
+    }
+
+    public Map.Entry<S, T> toEntry() {
+        return new Map.Entry<S, T>() {
+            @Override
+            public S getKey() {
+                return first;
+            }
+
+            @Override
+            public T getValue() {
+                return second;
+            }
+
+            @Override
+            public T setValue(T value) {
+                throw new UnsupportedOperationException("This entry is backed by a Pair");
+            }
+        };
     }
 }
