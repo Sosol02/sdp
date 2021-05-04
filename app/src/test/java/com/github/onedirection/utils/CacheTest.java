@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static org.junit.Assert.assertThrows;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIn.in;
@@ -31,6 +32,13 @@ public class CacheTest {
             map.put(i, Integer.toString(i));
         }
         return map;
+    }
+
+    @Test
+    public void defaultFunctionsThrow() {
+        Cache<Integer, Integer> cache = new Cache<>();
+        assertThrows(RuntimeException.class, () -> cache.get(0));
+        assertThrows(RuntimeException.class, () -> cache.set(0, 0));
     }
 
     @Test
@@ -252,6 +260,10 @@ public class CacheTest {
         assertThat(maybeSerialized.isPresent(), is(true));
 
         Cache<Integer, Integer> serialized = maybeSerialized.get();
+
+        for(Integer v: shouldBeCached){
+            assertThat(serialized.isCached(v), is(true));
+        }
 
         BiConsumer<Integer, Integer> bothRequest = (i, old) -> {
             assertThat(i, not(in(shouldBeCached)));
