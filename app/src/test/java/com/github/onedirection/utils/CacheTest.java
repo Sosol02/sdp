@@ -227,24 +227,14 @@ public class CacheTest {
     ///////////////////////////////////////
 
     @Test
-    public void canBeStoredAndLoaded() throws UnsupportedEncodingException {
-        Set<Integer> shouldBeCached = new TreeSet<>();
-
-        List<Integer> requests = new ArrayList<>(20);
-        Function<Integer, Integer> get = i -> {
-            requests.add(i);
-            return i;
-        };
-        Supplier<Integer> lastRequest = () -> requests.isEmpty() ? -1: requests.get(requests.size() - 1);
-        Runnable clearRequests = requests::clear;
+    public void canBeStoredAndLoaded() {
+        Function<Integer, Integer> get = i -> i;
 
         Cache<Integer, Integer> ref = new Cache<>(get, 2);
         for (int i = 0; i <= 9; ++i) {
             ref.get(i);
-            assertThat(lastRequest.get(), is(i));
         }
-        shouldBeCached.add(8);
-        shouldBeCached.add(9);
+
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         boolean dumpSuccess = ref.dumpToStream(output, i -> i, i -> i);
@@ -261,40 +251,29 @@ public class CacheTest {
 
         Cache<Integer, Integer> serialized = maybeSerialized.get();
 
-        for(Integer v: shouldBeCached){
-            assertThat(serialized.isCached(v), is(true));
+        for(Integer k: ref.getMap().keySet()){
+            assertThat(serialized.isCached(k), is(true));
         }
 
         BiConsumer<Integer, Integer> bothRequest = (i, old) -> {
-            assertThat(i, not(in(shouldBeCached)));
+            assertThat(ref.isCached(i), is(false));
+            assertThat(serialized.isCached(i), is(false));
             ref.get(i);
-            assertThat(lastRequest.get(), is(i));
-            clearRequests.run();
             serialized.get(i);
-            assertThat(lastRequest.get(), is(i));
-            shouldBeCached.add(i);
-            shouldBeCached.remove(old);
+            assertThat(ref.isCached(i), is(true));
+            assertThat(serialized.isCached(i), is(true));
         };
 
         Consumer<Integer> noneRequest = i -> {
-            clearRequests.run();
-            assertThat(i, is(in(shouldBeCached)));
-            ref.get(i);
-            assertThat(lastRequest.get(), is(not(i)));
-            serialized.get(i);
-            assertThat(lastRequest.get(), is(not(i)));
+            assertThat(ref.isCached(i), is(true));
+            assertThat(serialized.isCached(i), is(true));
         };
 
         bothRequest.accept(7, 8);
-
         noneRequest.accept(9);
-
         noneRequest.accept(7);
-
         noneRequest.accept(9);
-
         bothRequest.accept(0, 9);
-
         bothRequest.accept(9, 7);
     }
 }
