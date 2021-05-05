@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.events.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
-public class EventCreatorGeolocationFragment extends Fragment {
+public class GeolocationFragment extends Fragment {
 
     private static final String NO_LOCATION = "None";
     private static final int SEARCH_COUNT = 5;
@@ -42,7 +42,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
     private DeviceLocationProviderActivity locationProvider;
 
-    private EventCreatorViewModel model;
+    private ViewModel model;
     private GeocodingService geocoding;
 
     private CheckBox usePhoneLocation;
@@ -79,7 +79,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
         this.locationProvider = (DeviceLocationProviderActivity) requireActivity();
 
 
-        this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
+        this.model = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
 
         this.usePhoneLocation = getView().findViewById(R.id.buttonUseCurrentLocation);
@@ -201,7 +201,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
     private void gotoMain() {
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.eventCreatorFragmentContainer, EventCreatorMainFragment.class, null)
+                .replace(R.id.eventCreatorFragmentContainer, MainFragment.class, null)
                 .setReorderingAllowed(true)
                 .commit();
     }

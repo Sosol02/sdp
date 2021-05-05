@@ -8,8 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 
 import com.github.onedirection.EventsView;
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 

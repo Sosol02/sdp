@@ -18,7 +18,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
 public class NavigationActivity extends AppCompatActivity {
