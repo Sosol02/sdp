@@ -82,6 +82,7 @@ public class EventView extends AppCompatActivity {
     }
 
     private void updateResults(List<Event> events){
+        this.events = events;
         eventList.setAdapter(new EventViewerAdapter(events));
     }
 
