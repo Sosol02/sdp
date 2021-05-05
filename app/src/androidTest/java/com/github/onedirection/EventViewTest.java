@@ -99,11 +99,6 @@ public class EventViewTest {
     @Test
     public void testUiEventViewer() {
 
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventView.class);
-
-        ActivityScenario.launch(intent).onActivity(a -> {
-            EventView activity = (EventView) a;
-        });
 
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
