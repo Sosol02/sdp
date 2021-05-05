@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EventsListAdapter extends ArrayAdapter {
-    private Context context;
-    private List<Event> events;
-    private LayoutInflater layoutInflater;
-    private Runnable onEditEvent;
-    private Runnable onDeleteEvent;
+    private final Context context;
+    private final List<Event> events;
+    private final LayoutInflater layoutInflater;
+    private final Runnable onEditEvent;
+    private final Runnable onDeleteEvent;
 
     public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent){
         super(applicationContext, R.layout.event_view_in_list);
@@ -51,7 +51,7 @@ public class EventsListAdapter extends ArrayAdapter {
         return 0;
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "ViewHolder", "InflateParams"})
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

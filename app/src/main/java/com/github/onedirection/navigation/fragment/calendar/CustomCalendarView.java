@@ -13,12 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.DayEventsListView;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
@@ -44,12 +46,14 @@ public class CustomCalendarView extends LinearLayout {
     private final List<Date> dates = new ArrayList<>();
     private List<Event> eventsList = new ArrayList<>();
     private DayEventsListView dayEventsView = null;
+    public CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
 
     private Context context;
     private ImageButton nextButton, previousButton;
     private TextView CurrentDate;
     private GridView gridView;
     private AlertDialog alertDialog;
+
 
 
     public CustomCalendarView(Context context) {
@@ -138,12 +142,14 @@ public class CustomCalendarView extends LinearLayout {
         }
         gridView.setAdapter(null);
 
+        idling.increment();
         CompletableFuture<List<Event>> monthEventsFuture = collectEventsPerMonth(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
         LoadingDialog loadingDialog = startLoadingAnimation();
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             eventsList = monthEvents;
             setUpGridView(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
             stopLoadingAnimation(loadingDialog);
+            idling.decrement();
         });
     }
 
@@ -179,7 +185,7 @@ public class CustomCalendarView extends LinearLayout {
     private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
-        dayEventsView = new DayEventsListView(getContext(), day);
+        dayEventsView = new DayEventsListView(getContext(), day, idling);
         builder.setView(dayEventsView);
         alertDialog = builder.create();
         alertDialog.show();
@@ -199,5 +205,10 @@ public class CustomCalendarView extends LinearLayout {
 
     private void stopLoadingAnimation(LoadingDialog loadingDialog) {
         loadingDialog.dismissDialog();
+    }
+
+    @VisibleForTesting
+    public CountingIdlingResource getIdlingResource(){
+        return idling;
     }
 }
