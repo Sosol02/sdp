@@ -73,7 +73,7 @@ public class NavigationActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(getApplicationContext(), EventView.class);
                 ArrayList<Event> events = new ArrayList<>();
-                EventView.putEventExtra(intent, events);
+                EventView.putEventListExtra(intent, events);
                 startActivity(intent);
                 return false;
             }

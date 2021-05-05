@@ -91,7 +91,7 @@ public class EventViewTest {
 
         ArrayList<Event> events = new ArrayList<Event>();
         events.add(event);
-        Intent intent = EventView.putEventExtra(i,events);
+        Intent intent = EventView.putEventListExtra(i,events);
         ActivityScenario.launch(intent).onActivity(a -> {});
         onView(ViewMatchers.withId(R.id.eventName)).check(matches(withText(containsString("Event nameZZZ"))));
     }
