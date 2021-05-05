@@ -1,7 +1,6 @@
 package com.github.onedirection.events.ui;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.events.Event;
