@@ -3,6 +3,7 @@ package com.github.onedirection.eventviewer;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,29 +28,56 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * To use to view a list of events, just start the activity
+ */
+
 public class EventView extends AppCompatActivity {
 
     RecyclerView eventList;
     EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
+    public static final String EXTRA_LIST_EVENT = "EVENT_LIST_ID";
+
+    public static boolean hasEventListExtra(Intent intent) {
+        return intent.hasExtra(EXTRA_LIST_EVENT);
+    }
+
+    /**
+     * Extract the event list extra.
+     *
+     * @param intent The intent.
+     * @return The contained event list.
+     */
+    public static ArrayList<Event> getEventListExtra(Intent intent) {
+        return (ArrayList<Event>) (intent.getSerializableExtra(EXTRA_LIST_EVENT));
+    }
+
+    /**
+     * Put an event extra for the Event creator.
+     *
+     * @param intent The intent which will carry the event.
+     * @param eventList  The event list to put.
+     * @return The passed intent.
+     */
+    public static Intent putEventExtra(Intent intent, ArrayList<Event> eventList) {
+        return intent.putExtra(EXTRA_LIST_EVENT, eventList);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+
+        if(hasEventListExtra(intent)){
+            events = getEventListExtra(intent);
+        }
         setContentView(R.layout.event_viewer);
 
-
-        ConcreteDatabase database = ConcreteDatabase.getDatabase();
-        EventQueries queryManager = new EventQueries(database);
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 4, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            events = monthEvents;
-            updateResults(monthEvents);
-        });
         eventViewerAdapter = new EventViewerAdapter(events);
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
+        eventList.setAdapter(eventViewerAdapter);
         eventList.setLayoutManager(new LinearLayoutManager(this));
     }
 
