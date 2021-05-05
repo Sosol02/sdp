@@ -136,12 +136,13 @@ public class MainFragment extends Fragment {
         });
 
         // Recurrence setup
+        isRecurrent.setChecked(model.isRecurrent.getValue());
         isRecurrent.setOnCheckedChangeListener((buttonView, isChecked) -> {
             model.isRecurrent.postValue(isChecked);
         });
 
 
-        getView().findViewById(R.id.recurrencePeriod).setEnabled(!model.isEditing);
+        getView().findViewById(R.id.recurrencePeriod).setEnabled(!(model.isEditing && model.isRecurrent.getValue()));
         model.isRecurrent.observe(getViewLifecycleOwner(), aBoolean -> {
             getView().findViewById(R.id.recurrencePeriod).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
             getView().findViewById(R.id.recurrenceUntil).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
