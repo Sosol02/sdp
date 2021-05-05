@@ -1,6 +1,8 @@
 package com.github.onedirection.eventviewer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.idling.CountingIdlingResource;
@@ -23,6 +25,8 @@ import com.github.onedirection.utils.Id;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +37,18 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class EventView extends AppCompatActivity {
+
+    private final static Id ID = Id.generateRandom();
+    private final static String NAME = "Event name";
+    private final static String LOCATION_NAME = "Location name";
+    private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, LOCATION_NAME);
+    private final static ZonedDateTime START_TIME = ZonedDateTime.now().plusDays(1);
+    private final static ZonedDateTime END_TIME = ZonedDateTime.now().plusDays(2);
+
+    private final static String EPFL_QUERY = "EPFL";
+    private final static String EPFL_CANTON = "Vaud";
+
+    private final static Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
 
     RecyclerView eventList;
     EventViewerAdapter eventViewerAdapter;
@@ -75,10 +91,20 @@ public class EventView extends AppCompatActivity {
         }
         setContentView(R.layout.event_viewer);
 
+        events.add(e);
+        events.add(e);
+        events.add(e);
+        events.add(e);
+
+
         eventViewerAdapter = new EventViewerAdapter(events);
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
         eventList.setAdapter(eventViewerAdapter);
         eventList.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(eventList);
+
     }
 
     private void updateResults(List<Event> events){
@@ -86,4 +112,24 @@ public class EventView extends AppCompatActivity {
         eventList.setAdapter(new EventViewerAdapter(events));
     }
 
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
+            ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+
+            Collections.swap(events,fromPosition,toPosition);
+
+            recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
 }

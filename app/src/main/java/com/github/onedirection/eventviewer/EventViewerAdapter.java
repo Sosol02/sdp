@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,20 +21,34 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
         private final View fullView;
         private final TextView name;
+        private final TextView location;
+        private final TextView startTime;
+        private final TextView endTime;
+
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.fullView = itemView;
             this.name = itemView.findViewById(R.id.eventName);
+            this.location = itemView.findViewById(R.id.eventLocation);
+            this.startTime = itemView.findViewById(R.id.eventStartTime);
+            this.endTime = itemView.findViewById(R.id.eventEndTime);
         }
 
         public ViewHolder(@NonNull ViewGroup parent) {
             this(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recyclerview_event_viewer_adapter, parent, false));
+                    .inflate(R.layout.recycler_view_event_viewer_adapter, parent, false));
         }
 
         public void setPosition(int position){
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss");
+
             this.name.setText(events[position].getName());
+            this.location.setText(events[position].getLocationName());
+            this.startTime.setText(events[position].getStartTime().format(formatter));
+            this.endTime.setText(events[position].getEndTime().format(formatter));
+
         }
 
     }
