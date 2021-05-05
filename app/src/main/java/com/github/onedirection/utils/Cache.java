@@ -1,12 +1,22 @@
 package com.github.onedirection.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * A simple cache that will call the provided function to generate elements,
@@ -33,20 +43,42 @@ public class Cache<K, V> {
     private final int maxHistory;
     private final Function<? super K, ? extends V> getFunction;
     private final BiFunction<? super K, ? super V, Boolean> setFunction;
-    private final Map<K, V> map = new HashMap<>();
+    private final Map<K, V> map;
     private final LinkedBlockingQueue<K> history;
+
+    private static<K, V> BiFunction<? super K, ? super V, Boolean> defaultSetFunction() {
+        return (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); };
+    }
+
+    private static<K, V> Function<? super K, ? extends V> defaultGetFunction() {
+        return k -> { throw new RuntimeException("No default getFunction provided. k: " + k); };
+    }
+
+    private Cache(
+            Function<? super K, ? extends V> getFunction,
+            BiFunction<? super K, ? super V, Boolean> setFunction,
+            int maxHistory,
+            LinkedBlockingQueue<K> history,
+            Map<K, V> map
+    ) {
+        // avoid edge case where functions expect a non empty cache
+        if (maxHistory < 1) throw new IllegalArgumentException();
+        this.getFunction = Objects.requireNonNull(getFunction);
+        this.setFunction = Objects.requireNonNull(setFunction);
+        this.maxHistory = maxHistory;
+        this.map = map;
+        this.history = history;
+
+        // Note: I did not a find a way to verify that the capacity of the queue
+        // is indeed maxHistory...
+    }
 
     public Cache(
             Function<? super K, ? extends V> getFunction,
             BiFunction<? super K, ? super V, Boolean> setFunction,
             int maxHistory)
     {
-        // avoid edge case where functions expect a non empty cache
-        if (maxHistory < 1) throw new IllegalArgumentException();
-        this.getFunction = Objects.requireNonNull(getFunction);
-        this.setFunction = Objects.requireNonNull(setFunction);
-        this.maxHistory = maxHistory;
-        this.history = new LinkedBlockingQueue<>(maxHistory);
+        this(getFunction, setFunction, maxHistory, new LinkedBlockingQueue<>(maxHistory), new HashMap<>());
     }
 
     public Cache(
@@ -57,19 +89,19 @@ public class Cache<K, V> {
     }
 
     public Cache(Function<? super K, ? extends V> getFunction, int maxHistory) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); }, maxHistory);
+        this(getFunction, defaultSetFunction(), maxHistory);
     }
 
     public Cache(Function<? super K, ? extends V> getFunction) {
-        this(getFunction, (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); }, MAX_HISTORY_DEFAULT);
+        this(getFunction, defaultSetFunction(), MAX_HISTORY_DEFAULT);
     }
 
     public Cache(int maxHistory) {
-        this(k -> { throw new RuntimeException("No default getFunction provided. k: " + k); }, maxHistory);
+        this(defaultGetFunction(), maxHistory);
     }
 
     public Cache() {
-        this(k -> { throw new RuntimeException("No default getFunction provided. k: " + k); });
+        this(defaultGetFunction());
     }
 
     public int getMaxHistory() {
@@ -177,7 +209,108 @@ public class Cache<K, V> {
         return wasInserted;
     }
 
+    public boolean isCached(K key){
+        return map.containsKey(key);
+    }
+
     public Map<K, V> getMap() {
         return Collections.unmodifiableMap(map);
+    }
+
+
+
+    ///////////////////////////////////////
+    //           Persistence             //
+    ///////////////////////////////////////
+
+    private static <K1, V1, K2, V2> BiFunction<K1, V1, Map.Entry<K2, V2>> combine(Function<K1, K2> keyMap, Function<V1, V2> valMap) {
+        return (k, v) -> Pair.of(keyMap.apply(k), valMap.apply(v)).toEntry();
+    }
+
+    /**
+     * Serialize this cache into a stream.
+     *
+     * Note that the get/set functions of the cache cannot be serialized and must
+     * be specified when de-serializing to obtain the exact same cache.
+     * @param target The stream where to serialize.
+     * @param keyMap Convert the keys into a serializable type.
+     * @param valMap Convert the values into a serializable type.
+     * @param <KS> The serializable key type.
+     * @param <VS> The serializable value type.
+     * @return True if serialization succeeded, false otherwise.
+     */
+    public <KS extends Serializable, VS extends Serializable>
+    boolean dumpToStream(
+            OutputStream target,
+            Function<K, KS> keyMap,
+            Function<V, VS> valMap
+    ){
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(target)) {
+            outputStream.writeInt(maxHistory);
+            outputStream.writeObject(Monads.map(map, combine(keyMap, valMap)));
+            outputStream.writeObject( history.stream().map(keyMap).collect(toList()) );
+
+            outputStream.flush();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Create a cache from a serialized version.
+     * @param src The stream containing the serialized version.
+     * @param getFunction The default get function the cache will use.
+     * @param setFunction The default set function the cache will use.
+     * @param keyMap Convert the serialized keys to keys.
+     * @param valMap Convert the serialized values to values.
+     * @param <K> The "key" type of the cache.
+     * @param <V> The "value" type of the cache.
+     * @param <KS> The type of the serialized keys.
+     * @param <VS> The type of the serialized values.
+     * @return The cache if de-serialization succeeded.
+     */
+    public static<K, V, KS extends Serializable, VS extends Serializable>
+    Optional<Cache<K, V>> loadFromStream(
+            InputStream src,
+            Function<? super K, ? extends V> getFunction,
+            BiFunction<? super K, ? super V, Boolean> setFunction,
+            Function<KS, K> keyMap,
+            Function<VS, V> valMap
+    ){
+        try(ObjectInputStream inputStream = new ObjectInputStream(src)){
+            int maxHistory = inputStream.readInt();
+            @SuppressWarnings("unchecked")
+            Map<KS, VS> rawMap = (Map<KS, VS>) inputStream.readObject();
+            @SuppressWarnings("unchecked")
+            List<KS> rawHistory = (List<KS>) inputStream.readObject();
+
+            LinkedBlockingQueue<K> history = new LinkedBlockingQueue<>(maxHistory);
+            history.addAll( Monads.map(rawHistory, keyMap) );
+            Map<K, V> map = Monads.map(rawMap, combine(keyMap, valMap));
+
+            return Optional.of(new Cache<K, V>(
+                    getFunction,
+                    setFunction,
+                    maxHistory,
+                    history,
+                    map
+            ));
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Same as the other version, but generate a cache without default set function.
+     */
+    public static<K, V, KS extends Serializable, VS extends Serializable>
+    Optional<Cache<K, V>> loadFromStream(
+            InputStream src,
+            Function<? super K, ? extends V> getFunction,
+            Function<KS, K> keyMap,
+            Function<VS, V> valMap
+    ){
+        return loadFromStream(src, getFunction, defaultSetFunction(), keyMap, valMap);
     }
 }
