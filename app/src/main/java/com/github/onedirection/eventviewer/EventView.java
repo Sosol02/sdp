@@ -60,8 +60,8 @@ public class EventView extends AppCompatActivity {
      * @param eventList  The event list to put.
      * @return The passed intent.
      */
-    public static Intent putEventExtra(Intent intent, ArrayList<Event> eventList) {
-        return intent.putExtra(EXTRA_LIST_EVENT, eventList);
+    public static Intent putEventExtra(Intent intent, List<Event> eventList) {
+        return intent.putExtra(EXTRA_LIST_EVENT, new ArrayList<Event>(eventList));
     }
 
     @Override
