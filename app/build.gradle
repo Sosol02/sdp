@@ -80,6 +80,7 @@ dependencies {
         exclude group: 'com.mapbox.mapboxsdk' //change when navigation is done
     }
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation "androidx.startup:startup-runtime:1.0.0"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

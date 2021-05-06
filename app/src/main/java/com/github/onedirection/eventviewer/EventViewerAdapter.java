@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.eventviewer;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.events.Event;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.ViewHolder> {
+public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -25,30 +24,28 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.fullView = itemView;
-            this.name = itemView.findViewById(R.id.locationName);
+            this.name = itemView.findViewById(R.id.eventName);
         }
 
         public ViewHolder(@NonNull ViewGroup parent) {
             this(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recyclerview_location_adapter, parent, false));
+                    .inflate(R.layout.recyclerview_event_viewer_adapter, parent, false));
         }
 
         public void setPosition(int position){
-            this.name.setText(locations[position].name);
-            this.fullView.setOnClickListener(v -> callback.accept(locations[position]));
+            this.name.setText(events[position].getName());
         }
+
     }
 
-    private final NamedCoordinates[] locations;
-    private final Consumer<NamedCoordinates> callback;
+    private final Event[] events;
 
-    private LocationsAdapter(NamedCoordinates[] locations, Consumer<NamedCoordinates> callback){
-        this.locations = Arrays.copyOf(locations, locations.length);
-        this.callback = callback;
+    private EventViewerAdapter(Event[] events){
+        this.events = Arrays.copyOf(events, events.length);
     }
 
-    public LocationsAdapter(List<NamedCoordinates> locations, Consumer<NamedCoordinates> callback){
-        this(locations.toArray(new NamedCoordinates[0]), callback);
+    public EventViewerAdapter(List<Event> events){
+        this(events.toArray(new Event[0]));
     }
 
     @NonNull
@@ -64,6 +61,6 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 
     @Override
     public int getItemCount() {
-        return locations.length;
+        return events.length;
     }
 }
