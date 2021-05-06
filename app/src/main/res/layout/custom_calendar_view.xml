@@ -17,13 +17,12 @@
         android:background = "@color/white">
 
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:id = "@+id/previousBtn"
-            android:background="@mipmap/shrek_dab_left"
-            android:layout_margin = "10dp"
-            android:contentDescription="@string/shrek_left"
-            />
+            android:id="@+id/previousBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:background="@mipmap/left_arrow"
+            android:contentDescription="@string/shrek_left" />
 
         <TextView
             android:layout_width="0dp"
@@ -39,13 +38,12 @@
             />
 
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:id = "@+id/nextBtn"
-            android:background="@mipmap/shrek_dab_right"
-            android:layout_margin = "10dp"
-            android:contentDescription="@string/shrek_right"
-            />
+            android:id="@+id/nextBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:background="@mipmap/right_arrow"
+            android:contentDescription="@string/shrek_right" />
     </LinearLayout>
 
     <LinearLayout
