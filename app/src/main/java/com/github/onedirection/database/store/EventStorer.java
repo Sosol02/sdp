@@ -36,6 +36,9 @@ public class EventStorer extends Storer<Event> {
         return GLOBAL;
     }
 
+    private EventStorer() {
+    }
+
     @Override
     public DatabaseCollection getCollection() {
         return DatabaseCollection.Event;
