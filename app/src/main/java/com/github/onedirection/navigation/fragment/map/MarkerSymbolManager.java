@@ -11,7 +11,6 @@ import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
-import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Pair;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -31,6 +30,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * MarkerSymbolManager is used with mapbox to be able to display marker that represent events,
+ * on the map in mapfragment
+ */
 public class MarkerSymbolManager {
 
     public static final String LOG_TAG = "MarkerSymbolManager";

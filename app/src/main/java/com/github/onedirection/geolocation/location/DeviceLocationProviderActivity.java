@@ -3,6 +3,7 @@ package com.github.onedirection.geolocation.location;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.onedirection.R;
 import com.github.onedirection.geolocation.Coordinates;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 
 import java.util.concurrent.CompletableFuture;
@@ -107,4 +109,13 @@ public abstract class DeviceLocationProviderActivity extends AppCompatActivity i
     public boolean removeObserver(Observer<Coordinates> observer) {
         return provider.removeObserver(observer);
     }
+
+
+    public Location getLastAndroidLocation() {
+        return null;
+    }
+
+    public void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {}
+
+    public void clearLocationCallBackNavigation() {}
 }
