@@ -16,7 +16,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/eventCreatorFragmentContainer"
-            android:name="com.github.onedirection.events.EventCreatorMainFragment"
+            android:name="com.github.onedirection.event.EventCreatorMainFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
