@@ -144,50 +144,44 @@ public class CalendarUITest {
         assertThat(date.onChildView(allOf(withId(R.id.events_id))).toString(), not(""));
     }
 
-//    @Test
-//    public void testViewEvents(){
-//        DataInteraction date = onData(anything())
-//                .inAdapterView(allOf(withId(R.id.gridView),
-//                        childAtPosition(
-//                                withId(R.id.custom_calendar_view),
-//                                2)))
-//                .atPosition(9);
-//        date.perform(click());
-//
-//        ViewInteraction materialButton = onView(
-//                allOf(withId(R.id.addEvent), withText("Add Event"),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withId(R.id.custom),
-//                                        0),
-//                                0),
-//                        isDisplayed()));
-//        materialButton.perform(click());
-//
-//        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
-//        materialButton2.perform(scrollTo(), click());
-//
-//        date.perform(click());
-//        DataInteraction linearLayout = onData(anything())
-//                .inAdapterView(allOf(withId(R.id.gridView),
-//                        childAtPosition(
-//                                withId(R.id.custom_calendar_view),
-//                                2)))
-//                .atPosition(9);
-//        linearLayout.perform(click());
-//
-//        ViewInteraction viewEventsButton = onView(
-//                allOf(withId(R.id.viewEvents), withText(R.string.view_events),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withId(R.id.custom),
-//                                        0),
-//                                1),
-//                        isDisplayed()));
-//        materialButton.perform(click());
-//
-//        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
-//    }
+    @Test
+    public void testViewEvents(){
+        DataInteraction date = onData(anything())
+                .inAdapterView(allOf(withId(R.id.gridView),
+                        childAtPosition(
+                                withId(R.id.custom_calendar_view),
+                                2)))
+                .atPosition(9);
+        date.perform(click());
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.addEvent), withText("Add Event"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                0),
+                        isDisplayed()));
+        materialButton.perform(click());
+
+        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
+        materialButton2.perform(scrollTo(), click());
+
+        date.perform(click());
+
+
+        ViewInteraction viewEventsButton = onView(
+                allOf(withId(R.id.viewEvents), withText(R.string.view_events),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.custom),
+                                        0),
+                                1),
+                        isDisplayed()));
+        viewEventsButton.perform(click());
+
+        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
+    }
 
 
 

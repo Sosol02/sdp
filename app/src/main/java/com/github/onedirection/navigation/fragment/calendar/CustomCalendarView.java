@@ -96,7 +96,7 @@ public class CustomCalendarView extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     alertDialog.cancel();
-                    callDayEventsList(parent, localDate.atStartOfDay(ZoneId.systemDefault()));
+                    callDayEventsList(localDate.atStartOfDay(ZoneId.systemDefault()));
                 }
             });
             builder.setView(onDaySelectedPopup);
@@ -182,7 +182,7 @@ public class CustomCalendarView extends LinearLayout {
         this.getContext().startActivity(intent);
     }
 
-    private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
+    private void callDayEventsList(ZonedDateTime day) {
         dayEventsView = new DayEventsListView(getContext(), day);
         dayEventsView.setOnDialogDismissFunction(() -> refreshCalendarView());
 
