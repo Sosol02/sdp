@@ -74,5 +74,6 @@
     <string name="repeat_event">Repeat event ?</string>
     <string name="repeat_every">Repeat every:</string>
     <string name="amount">Amount</string>
+    <string name="menu_event_viewer">menu_event_viewer</string>
 
 </resources>

@@ -81,7 +81,7 @@ public class EventCreatorTest {
             ZonedDateTime.now().plusHours(10)
     );
 
-    static class Wrapper<T> {
+    public static class Wrapper<T> {
         public T val;
 
         public Wrapper(T val) {
