@@ -27,7 +27,7 @@
 
         </activity>
 
-        <activity android:name=".events.ui.EventCreator" />
+        <activity android:name=".event.ui.EventCreator" />
         <activity android:name=".eventviewer.EventView" />
 
         <receiver android:name=".notification.NotificationPublisher" />
