@@ -5,48 +5,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.ActivityTestRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
-import com.github.onedirection.events.EventCreatorTest;
-import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.eventviewer.EventView;
-import com.github.onedirection.eventviewer.EventViewerAdapter;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.utils.Id;
-import com.github.onedirection.utils.Pair;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -60,10 +39,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 
 public class EventViewTest {
 
@@ -86,13 +63,14 @@ public class EventViewTest {
 
     @Test
 
-    public void testActivityWithIntent(){
+    public void testActivityWithIntent() {
         Intent i = new Intent(ApplicationProvider.getApplicationContext(), EventView.class);
 
         ArrayList<Event> events = new ArrayList<Event>();
         events.add(event);
-        Intent intent = EventView.putEventListExtra(i,events);
-        ActivityScenario.launch(intent).onActivity(a -> {});
+        Intent intent = EventView.putEventListExtra(i, events);
+        ActivityScenario.launch(intent).onActivity(a -> {
+        });
         onView(ViewMatchers.withId(R.id.eventName)).check(matches(withText(containsString("Event nameZZZ"))));
     }
 
@@ -176,9 +154,8 @@ public class EventViewTest {
     }
 
 
-
     @Test
-    public void eventViewerTest(){
+    public void eventViewerTest() {
 
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),

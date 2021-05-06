@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.events.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,13 +14,20 @@ import androidx.test.espresso.IdlingResource;
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
- * To use to create an event, just start the activity.
+ * Activity allowing to create/edit events.
+ *
+ * Push events to database once done.
+ *
+ * To create an event, just start the activity.
  * To edit an event, start using the following code
  * <pre>
  * {@code
@@ -32,7 +39,7 @@ import java.util.function.BiConsumer;
  * }
  * </pre>
  * A date can also be passed to specify the initial date
- * of the event. Ignored if an event is also given.
+ * of the event. Ignored if an event is also provided.
  */
 public class EventCreator extends DeviceLocationProviderActivity {
     // Package private
@@ -93,7 +100,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
-    private EventCreatorViewModel model;
+    private ViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +114,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
 
         Intent intent = getIntent();
 
-        this.model = new ViewModelProvider(this).get(EventCreatorViewModel.class);
+        this.model = new ViewModelProvider(this).get(ViewModel.class);
 
         if (hasEventExtra(intent)) {
             this.model.init(getEventExtra(intent), EventCreator::putEventToDatabase);
@@ -118,16 +125,16 @@ public class EventCreator extends DeviceLocationProviderActivity {
         }
     }
 
-    private static void putEventToDatabase(Event event, boolean edited) {
+    private static CompletableFuture<?> putEventToDatabase(Event event, boolean edited) {
         Log.d(LOGCAT_TAG, event.toString());
         EventQueries db = new EventQueries(Database.getDefaultInstance());
         if (edited) {
-            db.modifyEvent(event);
+            return db.modifyEvent(event);
         } else if(event.isRecurrent()) {
-            db.addRecurringEvent(event);
+            return db.addRecurringEvent(event);
         }
         else {
-            db.addNonRecurringEvent(event);
+            return db.addNonRecurringEvent(event);
         }
     }
 
@@ -146,7 +153,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
     }
 
     @VisibleForTesting
-    public void setCreationCallback(BiConsumer<Event, Boolean> callback) {
+    public void setCreationCallback(BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         model.callback = callback;
     }
 }
