@@ -35,6 +35,10 @@ import java.util.List;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
+/**
+ * Main fragment of the Event creator.
+ * Allow to set values for most fields.
+ */
 public class MainFragment extends Fragment {
 
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
@@ -49,7 +53,6 @@ public class MainFragment extends Fragment {
     private EditText customLocation;
     private Button geolocation;
     private CheckBox useGeolocation;
-    private CheckBox isRecurrent;
     private Spinner recurrencePeriodType;
     private EditText recurrencePeriodAmount;
 
@@ -82,7 +85,7 @@ public class MainFragment extends Fragment {
         this.customLocation = getView().findViewById(R.id.editEventLocationName);
         this.geolocation = getView().findViewById(R.id.buttonGotoGeolocation);
         this.useGeolocation = getView().findViewById(R.id.checkGeolocation);
-        this.isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
+        CheckBox isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
         this.recurrencePeriodType = getView().findViewById(R.id.spinnerRecurrencePeriodType);
         this.recurrencePeriodAmount = getView().findViewById(R.id.editRecurrenceAmount);
 

@@ -21,7 +21,11 @@ import java.time.LocalDate;
 import java.util.function.BiConsumer;
 
 /**
- * To use to create an event, just start the activity.
+ * Activity allowing to create/edit events.
+ *
+ * Push events to database once done.
+ *
+ * To create an event, just start the activity.
  * To edit an event, start using the following code
  * <pre>
  * {@code
@@ -33,7 +37,7 @@ import java.util.function.BiConsumer;
  * }
  * </pre>
  * A date can also be passed to specify the initial date
- * of the event. Ignored if an event is also given.
+ * of the event. Ignored if an event is also provided.
  */
 public class EventCreator extends DeviceLocationProviderActivity {
     // Package private
