@@ -4,8 +4,11 @@ package com.github.onedirection.geolocation.location;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 
 import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.location.LocationCallback;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,4 +23,10 @@ public interface DeviceLocationProvider extends LocationProvider {
     }
 
     CompletableFuture<Boolean> requestFineLocationPermission();
+
+    Location getLastAndroidLocation();
+
+    void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation);
+
+    void clearLocationCallBackNavigation();
 }

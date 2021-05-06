@@ -30,6 +30,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * MarkerSymbolManager is used with mapbox to be able to display marker that represent events,
+ * on the map in mapfragment
+ */
 public class MarkerSymbolManager {
 
     public static final String LOG_TAG = "MarkerSymbolManager";
