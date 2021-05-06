@@ -5,33 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.widget.TextView;
-
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
-import com.github.onedirection.events.LocationsAdapter;
-import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.notifs.Notifications;
-import com.github.onedirection.utils.Id;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * To use to view a list of events, just start the activity
