@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.events.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,10 +19,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
-import com.github.onedirection.geolocation.geocoding.GeocodingService;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.geocoding.GeocodingService;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
+import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
+import com.github.onedirection.utils.ObserverPattern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,12 @@ import java.util.function.Consumer;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
-public class EventCreatorGeolocationFragment extends Fragment {
+/**
+ * Geolocation fragment of the Event creator.
+ * Allow to either use the phone location
+ * or geocoding to locate the event.
+ */
+public class GeolocationFragment extends Fragment implements ObserverPattern.Observer<Coordinates> {
 
     private static final String NO_LOCATION = "None";
     private static final int SEARCH_COUNT = 5;
@@ -42,7 +49,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
     private DeviceLocationProviderActivity locationProvider;
 
-    private EventCreatorViewModel model;
+    private ViewModel model;
     private GeocodingService geocoding;
 
     private CheckBox usePhoneLocation;
@@ -79,7 +86,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
         this.locationProvider = (DeviceLocationProviderActivity) requireActivity();
 
 
-        this.model = new ViewModelProvider(requireActivity()).get(EventCreatorViewModel.class);
+        this.model = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         this.geocoding = new NominatimGeocoding(getContext());
 
         this.usePhoneLocation = getView().findViewById(R.id.buttonUseCurrentLocation);
@@ -126,16 +133,7 @@ public class EventCreatorGeolocationFragment extends Fragment {
         geocodingMatches.observe(getViewLifecycleOwner(), namedCoordinates -> updateResults());
 
         // Location listener
-        this.locationProvider.addObserver((subject, value) -> {
-            Optional<NamedCoordinates> current = this.phoneLocation.getValue();
-            if(!current.isPresent() || !current.get().areCloseTo(value, COORDINATES_TOLERANCE)) {
-                // We don't update GPS location if the offset is too small, in order not to spam
-                // the geocoding service.
-                geocoding.getBestNamedCoordinates(value).thenAccept(coordinates ->
-                        this.phoneLocation.postValue(Optional.of(coordinates))
-                );
-            }
-        });
+        this.locationProvider.addObserver(this);
 
         // Text edit listener
         locationQuery.addTextChangedListener(onTextChanged(s ->
@@ -145,10 +143,9 @@ public class EventCreatorGeolocationFragment extends Fragment {
         ));
 
         usePhoneLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
+            if (isChecked) {
                 locationProvider.startLocationTracking();
-            }
-            else{
+            } else {
                 locationProvider.stopLocationTracking();
             }
         });
@@ -164,13 +161,20 @@ public class EventCreatorGeolocationFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.locationProvider.removeObserver(this);
+    }
+
     private Consumer<NamedCoordinates> generateLocationSelectionCallback() {
         return coordinates -> model.coordinates.postValue(Optional.of(coordinates));
     }
 
-    private void updateResults(){
+    private void updateResults() {
         List<NamedCoordinates> ls = new ArrayList<>(geocodingMatches.getValue());
-        if(usePhoneLocation.isChecked() && phoneLocation.getValue().isPresent()){
+        if (usePhoneLocation.isChecked() && phoneLocation.getValue().isPresent()) {
             ls.add(phoneLocation.getValue().get());
         }
 
@@ -183,17 +187,17 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
         model.incrementLoad();
         lastRequest = request.whenComplete((o, t) -> {
-            if(!(t instanceof CancellationException)){
+            if (!(t instanceof CancellationException)) {
                 requestLoading.setVisibility(View.INVISIBLE);
             }
             model.decrementLoad();
         });
     }
 
-    private CompletableFuture<List<NamedCoordinates>> generateGeocodingRequest(String query){
+    private CompletableFuture<List<NamedCoordinates>> generateGeocodingRequest(String query) {
         return geocoding.getNamedCoordinates(query, SEARCH_COUNT)
                 .whenComplete((coordinates, throwable) -> {
-                    if(coordinates != null) {
+                    if (coordinates != null) {
                         this.geocodingMatches.postValue(coordinates);
                     }
                 });
@@ -201,8 +205,20 @@ public class EventCreatorGeolocationFragment extends Fragment {
 
     private void gotoMain() {
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.eventCreatorFragmentContainer, EventCreatorMainFragment.class, null)
+                .replace(R.id.eventCreatorFragmentContainer, MainFragment.class, null)
                 .setReorderingAllowed(true)
                 .commit();
+    }
+
+    @Override
+    public void onObservableUpdate(ObserverPattern.Observable<Coordinates> subject, Coordinates value) {
+        Optional<NamedCoordinates> current = this.phoneLocation.getValue();
+        if (!current.isPresent() || !current.get().areCloseTo(value, COORDINATES_TOLERANCE)) {
+            // We don't update GPS location if the offset is too small, in order not to spam
+            // the geocoding service.
+            geocoding.getBestNamedCoordinates(value).thenAccept(coordinates ->
+                    this.phoneLocation.postValue(Optional.of(coordinates))
+            );
+        }
     }
 }
