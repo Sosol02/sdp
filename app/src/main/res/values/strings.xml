@@ -17,6 +17,7 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
 
+    <!-- Strings to be displayed to the user -->
     <string name="welcome">Welcome</string>
     <string name="sign_in_failed">Sign in failed</string>
     <string name="register_failed">Register failed</string>
@@ -44,8 +45,8 @@
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">Create an event:</string>
     <string name="create_event_button_text">Create event</string>
-    <string name="event_name_hint">Event name</string>
-    <string name="location_hint">Location</string>
+    <string name="event_name_hint">Enter title</string>
+    <string name="location_hint">Location name (if any)</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
     <string name="recurrence_end_text">Repeat until:</string>
@@ -56,7 +57,7 @@
     <string name="use_current_location">Use current location</string>
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
-    <string name="use_geolocation">Use geolocation</string>
+    <string name="use_geolocation">Add location</string>
 
     <string name="my_location_button_desc">my_location_button</string>
 
@@ -71,7 +72,7 @@
     <string name="view_events">View Events</string>
     <string name="shrek_left">Our lord and savior dabbing to the left</string>
     <string name="shrek_right">Our lord and savior dabbing to the right</string>
-    <string name="repeat_event">Repeat event ?</string>
+    <string name="repeat_event">Repeats</string>
     <string name="repeat_every">Repeat every:</string>
     <string name="amount">Amount</string>
     <string name="menu_event_viewer">menu_event_viewer</string>
