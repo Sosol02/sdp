@@ -25,7 +25,6 @@ public final class Monads {
         return m.thenCompose(o -> toFuture(o));
     }
 
-    // ahh monads.. if only
     public static <T> CompletableFuture<T> flattenFuture(CompletableFuture<CompletableFuture<T>> fut) {
         return fut.thenCompose(x -> x);
     }
