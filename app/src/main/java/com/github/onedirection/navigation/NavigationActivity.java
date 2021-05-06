@@ -16,25 +16,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
 import com.github.onedirection.events.EventCreator;
-
-
 import com.github.onedirection.eventviewer.EventView;
-
-import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.utils.Id;
 import com.google.android.material.navigation.NavigationView;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 public class NavigationActivity extends AppCompatActivity {
@@ -128,6 +117,4 @@ public class NavigationActivity extends AppCompatActivity {
                 });
         confirmationWindows.show();
     }
-
-
 }

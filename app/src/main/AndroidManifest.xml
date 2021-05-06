@@ -29,6 +29,17 @@
         <activity android:name=".events.EventCreator" />
         <activity android:name=".eventviewer.EventView" />
 
-        <receiver android:name=".notifs.NotificationPublisher" />
+        <receiver android:name=".notification.NotificationPublisher" />
+
+        <provider
+            android:authorities="${applicationId}.androidx-startup"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false" >
+            <meta-data
+                android:name="com.github.onedirection.startup.NotificationInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
     </application>
+
 </manifest>
