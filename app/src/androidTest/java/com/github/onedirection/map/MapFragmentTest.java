@@ -98,8 +98,7 @@ public class MapFragmentTest {
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Rule
-    public GrantPermissionRule mGrantPermissionRule =
-            GrantPermissionRule.grant(
+    public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(
                     Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
