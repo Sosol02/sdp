@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.TextView;
@@ -113,7 +114,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
     }
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
-            ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+            ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
 
@@ -129,7 +130,6 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
         }
     };
 
