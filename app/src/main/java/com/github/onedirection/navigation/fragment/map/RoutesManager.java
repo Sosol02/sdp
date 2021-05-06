@@ -1,12 +1,14 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.BuildConfig;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
@@ -54,13 +56,13 @@ public class RoutesManager {
 
         RouteOptions routeOptions = new RouteOptions.Builder()
                 .maxRoutes(3)
-                .systemOfMeasurementForDisplayText(SystemOfMeasurement.UNITED_STATES_CUSTOMARY) // or specify METRIC
-                .language("en_US") // NOTE: alternately, specify "es_US" for Spanish in the US
+                .systemOfMeasurementForDisplayText(SystemOfMeasurement.METRIC)
+                .language("en_US")
                 .highways(RouteOptionType.ALLOW)
                 .tolls(RouteOptionType.ALLOW)
-                .ferries(RouteOptionType.DISALLOW)
-                .internationalBorders(RouteOptionType.DISALLOW)
-                .unpaved(RouteOptionType.DISALLOW)
+                .ferries(RouteOptionType.AVOID)
+                .internationalBorders(RouteOptionType.ALLOW)
+                .unpaved(RouteOptionType.AVOID)
                 .seasonalClosures(RouteOptionType.AVOID)
                 .build();
 

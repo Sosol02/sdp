@@ -3,9 +3,12 @@ package com.github.onedirection.navigation.fragment.map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.mapquest.navigation.location.LocationProviderAdapter;
 import com.mapquest.navigation.model.location.Location;
 
@@ -27,6 +30,14 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
 
     public DeviceLocationProviderAdapter(AbstractDeviceLocationProvider deviceLocationProvider) {
         this.deviceLocationProvider = deviceLocationProvider;
+        deviceLocationProvider.setLocationCallBackNavigation(new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location = androidLocationToMapquestLocation(locationResult.getLastLocation());
+                notifyListenersLocationChanged(location);
+            }
+        });
+        requestLocationUpdates();
     }
 
     @Override
@@ -42,11 +53,7 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
     @Nullable
     @Override
     public Location getLastKnownLocation() {
-        android.location.Location location = deviceLocationProvider.getLastAndroidLocation();
-        Location locationMapQuest = new Location(location.getLatitude(),
-                location.getLongitude(), location.getAltitude(), location.getBearing(),
-                location.getSpeed(), location.getAccuracy(), location.getTime());
-        return locationMapQuest;
+        return androidLocationToMapquestLocation(deviceLocationProvider.getLastAndroidLocation());
     }
 
     @Override
@@ -56,9 +63,17 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
 
     @Override
     public int describeContents() {
-        return 0;
+        throw new IllegalStateException("DeviceLocationprovider is not parcelable");
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {}
+    public void writeToParcel(Parcel dest, int flags) {
+        throw new IllegalStateException("DeviceLocationprovider is not parcelable");
+    }
+
+    public Location androidLocationToMapquestLocation(android.location.Location location) {
+        return new Location(location.getLatitude(),
+                location.getLongitude(), location.getAltitude(), location.getBearing(),
+                location.getSpeed(), location.getAccuracy(), location.getTime());
+    }
 }

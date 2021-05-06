@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -99,9 +100,12 @@ public class MapFragment extends Fragment {
 
                 LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
                 LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
-                routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+                LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0194,-118.411);
+                LatLng TEST_VALUE_LATLNG_6 = new LatLng(27.994402, -81.760254);
+                routesManager.findRoute(TEST_VALUE_LATLNG_5, TEST_VALUE_LATLNG_6, new RoutesResponseListener() {
                     @Override
                     public void onRoutesRetrieved(@NonNull List<Route> list) {
+                        routeDisplayManager.displayRoute(list.get(0));
                         navigationManager.startNavigation(list.get(0));
                     }
 
@@ -237,6 +241,7 @@ public class MapFragment extends Fragment {
                 permissionRequestResult = new CompletableFuture<>();
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             }
+            deviceLocationProvider.startLocationTracking();
             LatLng latLng = myLocationSymbolManager.getPosition();
             if (latLng != null) {
                 CameraPosition position = new CameraPosition.Builder()

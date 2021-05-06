@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
@@ -29,6 +30,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.model.Route;
 
 import org.junit.After;
@@ -38,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -235,7 +238,18 @@ public class MapFragmentTest {
         RoutesManager routesManager = getRoutesManager();
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
-            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, semaphore::release);
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+                @Override
+                public void onRoutesRetrieved(@NonNull List<Route> list) {
+                    semaphore.release();
+                }
+
+                @Override
+                public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+
+                @Override
+                public void onRequestMade() {}
+            });
         });
         try {
             semaphore.acquire();
@@ -249,7 +263,7 @@ public class MapFragmentTest {
         assertThat(lines, is(notNullValue()));
         assertThat(routes, is(notNullValue()));
 
-        runOnUiThreadAndWaitEndExecution(routesManager::clearRoutesManager);
+        runOnUiThreadAndWaitEndExecution(routesManager::clearRoutes);
 
         lines = getRoutesManagerLines(routesManager);
         routes = getRoutesManagerRoutes(routesManager);
