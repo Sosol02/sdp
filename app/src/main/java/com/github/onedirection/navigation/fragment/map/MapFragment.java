@@ -27,9 +27,14 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.location.Location;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -39,15 +44,20 @@ public class MapFragment extends Fragment {
 
     private MapView mapView;
     private MapboxMap mapboxMap;
+
     private MarkerSymbolManager markerSymbolManager;
     private MyLocationSymbolManager myLocationSymbolManager;
     private RoutesManager routesManager;
+    private RouteDisplayManager routeDisplayManager;
+    private NavigationManager navigationManager;
+
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView event_name;
     private TextView event_time_start;
     private TextView event_time_end;
     private TextView event_location;
-    private DeviceLocationProvider deviceLocationProvider;
+
+    private AbstractDeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -83,11 +93,29 @@ public class MapFragment extends Fragment {
 
             EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                initializeDeviceLocationProvider();
                 initializeManagers(style);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
-            });
 
-            initializeDeviceLocationProvider();
+                LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
+                LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
+                routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+                    @Override
+                    public void onRoutesRetrieved(@NonNull List<Route> list) {
+                        navigationManager.startNavigation(list.get(0));
+                    }
+
+                    @Override
+                    public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+                    }
+
+                    @Override
+                    public void onRequestMade() {
+
+                    }
+                });
+            });
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
                 OnMyLocationButtonClickResponse();
@@ -174,9 +202,11 @@ public class MapFragment extends Fragment {
 
     private void initializeManagers(@NonNull Style style) {
         Context context = requireContext().getApplicationContext();
-        routesManager = new RoutesManager(context, mapView, mapboxMap, style);
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
+        routesManager = new RoutesManager(context);
+        routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager);
     }
 
     private void initializeDeviceLocationProvider() {

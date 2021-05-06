@@ -135,6 +135,10 @@ public abstract class AbstractDeviceLocationProvider implements DeviceLocationPr
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
+    public final Location getLastAndroidLocation() {
+        return lastLocation;
+    }
+
     //************************ Methods to be Observable *****************************************
 
     private void notifyOfLocationChange() {
