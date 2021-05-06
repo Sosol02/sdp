@@ -45,6 +45,7 @@ public abstract class AbstractDeviceLocationProvider implements DeviceLocationPr
     private final FusedLocationProviderClient fusedLocationClient;
     private final ArrayList<ObserverPattern.Observer<Coordinates>> observers;
     private final LocationCallback locationCallback;
+    private LocationCallback locationCallBackNavigation;
     private Location lastLocation;
 
     public AbstractDeviceLocationProvider(Context ctx) {
@@ -57,6 +58,9 @@ public abstract class AbstractDeviceLocationProvider implements DeviceLocationPr
                 super.onLocationResult(locationResult);
                 lastLocation = locationResult.getLastLocation();
                 notifyOfLocationChange();
+                if (locationCallBackNavigation != null) {
+                    locationCallBackNavigation.onLocationResult(locationResult);
+                }
             }
 
             @Override
@@ -133,6 +137,21 @@ public abstract class AbstractDeviceLocationProvider implements DeviceLocationPr
             throw new IllegalStateException("There is no last location currently");
         }
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
+    }
+
+    public final Location getLastAndroidLocation() {
+        if (lastLocation == null) {
+            throw new IllegalStateException("There is no last location currently");
+        }
+        return lastLocation;
+    }
+
+    public final void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {
+        this.locationCallBackNavigation = locationCallBackNavigation;
+    }
+
+    public final void clearLocationCallBackNavigation() {
+        locationCallBackNavigation = null;
     }
 
     //************************ Methods to be Observable *****************************************
