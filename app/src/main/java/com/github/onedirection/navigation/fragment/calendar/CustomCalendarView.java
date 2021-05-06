@@ -183,14 +183,9 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void callDayEventsList(AdapterView parent, ZonedDateTime day) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setCancelable(true);
-        dayEventsView = new DayEventsListView(getContext(), day, idling);
-        builder.setView(dayEventsView);
-        alertDialog = builder.create();
-        alertDialog.show();
-        alertDialog.getWindow().setLayout(1000, 1200);
-        alertDialog.setOnDismissListener(dialog -> refreshCalendarView());
+        dayEventsView = new DayEventsListView(getContext(), day);
+        dayEventsView.setOnDialogDismissFunction(() -> refreshCalendarView());
+
     }
 
     private int getMonthNumber(Calendar cal) {

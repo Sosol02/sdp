@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.EventQueries;
@@ -30,6 +31,8 @@ public class DayEventsListView extends LinearLayout {
     private final LayoutInflater inflater;
     private View view;
     private CountingIdlingResource idling;
+    private Runnable onDialogDismiss;
+    private AlertDialog alertDialog;
 
 
     public DayEventsListView(Context context, ZonedDateTime day){
@@ -39,6 +42,14 @@ public class DayEventsListView extends LinearLayout {
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         refreshView();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(true);
+        builder.setView(this);
+        alertDialog = builder.create();
+        if(onDialogDismiss != null){
+            alertDialog.setOnDismissListener(dialog -> onDialogDismiss.run());
+        }
     }
 
     public DayEventsListView(Context context, ZonedDateTime day, CountingIdlingResource idling){
@@ -62,14 +73,21 @@ public class DayEventsListView extends LinearLayout {
             loadingDialog.dismissDialog();
             if(((List<Event>)events).size() == 0){
                 view = inflater.inflate(R.layout.empty_event_list_screen, this);
+                alertDialog.show();
             } else {
                 view = inflater.inflate(R.layout.day_events_list, this);
                 setupEventsListView((List<Event>) events, view);
+                alertDialog.show();
+                alertDialog.getWindow().setLayout(1000, 1200);
             }
             if(idling != null){
                 idling.decrement();
             }
         });
+    }
+
+    public void setOnDialogDismissFunction(Runnable runnable){
+        runnable.run();
     }
 
 
