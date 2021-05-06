@@ -15,6 +15,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * To use to view a unique events, just start the activity an provide the event
+ */
+
 public class DisplayEvent extends AppCompatActivity {
 
     public static final String EXTRA_EVENT = "EVENT_ID";

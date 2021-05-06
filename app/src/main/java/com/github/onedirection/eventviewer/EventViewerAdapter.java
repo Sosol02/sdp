@@ -15,6 +15,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Adapter for the EventView Recycler
+ */
+
 public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.ViewHolder> {
 
     private OnNoteListener mOnNoteListener;
