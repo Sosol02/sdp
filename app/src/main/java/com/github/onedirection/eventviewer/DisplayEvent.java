@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

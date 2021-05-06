@@ -8,9 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.github.onedirection.R;
+
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
+
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
 import com.github.onedirection.utils.Monads;

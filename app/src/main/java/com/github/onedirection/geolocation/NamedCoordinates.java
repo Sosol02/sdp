@@ -5,8 +5,6 @@ import java.util.Objects;
 
 import javax.annotation.concurrent.Immutable;
 
-import static java.lang.Math.abs;
-
 /** Represents (immutable) geographic coordinates paired with the name of the location. */
 @Immutable
 public class NamedCoordinates implements Serializable {

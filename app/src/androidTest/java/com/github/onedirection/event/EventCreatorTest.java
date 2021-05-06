@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.event;
 
 
 import android.content.Intent;
@@ -11,13 +11,11 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.PickerActions;
-import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.internal.util.ReflectionUtil;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
@@ -31,11 +29,9 @@ import org.junit.runner.RunWith;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;

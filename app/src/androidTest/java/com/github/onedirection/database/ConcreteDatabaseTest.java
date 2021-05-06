@@ -3,8 +3,7 @@ package com.github.onedirection.database;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 
-import com.github.onedirection.EventQueriesTest;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.utils.Id;
 
@@ -12,20 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class ConcreteDatabaseTest {
 
-    private static int count = 10;
+    private static final int count = 10;
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {

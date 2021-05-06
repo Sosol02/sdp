@@ -15,8 +15,8 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.eventviewer.DisplayEvent;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;

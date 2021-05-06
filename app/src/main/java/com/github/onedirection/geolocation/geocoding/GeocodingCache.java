@@ -6,7 +6,6 @@ import com.github.onedirection.utils.Cache;
 import com.github.onedirection.utils.Pair;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**  A wrapper for geocoding providing caching. */

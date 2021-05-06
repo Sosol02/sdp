@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
