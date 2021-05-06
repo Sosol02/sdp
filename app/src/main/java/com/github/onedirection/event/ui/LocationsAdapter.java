@@ -1,4 +1,8 @@
+<<<<<<< HEAD:app/src/main/java/com/github/onedirection/event/LocationsAdapter.java
 package com.github.onedirection.event;
+=======
+package com.github.onedirection.events.ui;
+>>>>>>> main:app/src/main/java/com/github/onedirection/event/ui/LocationsAdapter.java
 
 import android.view.LayoutInflater;
 import android.view.View;

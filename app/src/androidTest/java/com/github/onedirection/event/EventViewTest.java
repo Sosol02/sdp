@@ -63,13 +63,14 @@ public class EventViewTest {
 
     @Test
 
-    public void testActivityWithIntent(){
+    public void testActivityWithIntent() {
         Intent i = new Intent(ApplicationProvider.getApplicationContext(), EventView.class);
 
         ArrayList<Event> events = new ArrayList<Event>();
         events.add(event);
-        Intent intent = EventView.putEventListExtra(i,events);
-        ActivityScenario.launch(intent).onActivity(a -> {});
+        Intent intent = EventView.putEventListExtra(i, events);
+        ActivityScenario.launch(intent).onActivity(a -> {
+        });
         onView(ViewMatchers.withId(R.id.eventName)).check(matches(withText(containsString("Event nameZZZ"))));
     }
 
@@ -153,9 +154,8 @@ public class EventViewTest {
     }
 
 
-
     @Test
-    public void eventViewerTest(){
+    public void eventViewerTest() {
 
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),

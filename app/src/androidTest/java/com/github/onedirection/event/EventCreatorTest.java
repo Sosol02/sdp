@@ -14,8 +14,10 @@ import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.internal.util.ReflectionUtil;
 
 import com.github.onedirection.R;
+import com.github.onedirection.event.EventCreator;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
@@ -27,9 +29,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -44,6 +50,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -68,17 +75,15 @@ public class EventCreatorTest {
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().plusDays(1);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plusDays(2);
 
+    private final static Duration REC_DURATION = ChronoUnit.DAYS.getDuration();
+    private final static ZonedDateTime REC_END = START_TIME.plusYears(1);
+    private final static Recurrence RECURRENCE = new Recurrence(ID, REC_DURATION, REC_END);
+
     private final static String EPFL_QUERY = "EPFL";
     private final static String EPFL_CANTON = "Vaud";
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
-    private final static Event EVENT_BIS = new Event(
-            ID,
-            "Other name",
-            "Other location",
-            ZonedDateTime.now(),
-            ZonedDateTime.now().plusHours(10)
-    );
+    private final static Event REC_EVENT = new Event(ID, NAME, LOCATION_NAME, START_TIME, END_TIME, RECURRENCE);
 
     public static class Wrapper<T> {
         public T val;
@@ -91,7 +96,6 @@ public class EventCreatorTest {
     // Utilities
 
     public void test(Function<Intent, Intent> setup, Runnable test, BiConsumer<Event, Boolean> eventChecks) {
-        Intents.init();
         final Wrapper<IdlingResource> idling = new Wrapper<>(null);
         final Wrapper<Pair<Event, Boolean>> result = new Wrapper<>(new Pair<>(null, null));
 
@@ -102,14 +106,16 @@ public class EventCreatorTest {
             EventCreator activity = (EventCreator) a;
             idling.val = activity.getIdlingResource();
             IdlingRegistry.getInstance().register(idling.val);
-            activity.setCreationCallback((event, aBoolean) -> result.val = new Pair<>(event, aBoolean));
+            activity.setCreationCallback((event, aBoolean) -> {
+                result.val = new Pair<>(event, aBoolean);
+                return CompletableFuture.completedFuture(true);
+            });
         });
 
         test.run();
 
         eventChecks.accept(result.val.first, result.val.second);
 
-        Intents.release();
         IdlingRegistry.getInstance().unregister(idling.val);
     }
 
@@ -167,6 +173,56 @@ public class EventCreatorTest {
         );
     }
 
+    @Test
+    public void recurrencePeriodCanBeSet(){
+        test(
+                i -> i,
+                () -> {
+                    testIsMainFragment();
+                    onView(withId(R.id.checkEventRecurrence)).check(matches(not(isChecked())));
+                    onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+
+                    onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
+                    onView(withId(R.id.recurrencePeriod)).check(matches(isEnabled()));
+                    onView(withId(R.id.recurrenceUntil)).check(matches(isDisplayed()));
+                },
+                (event, edit) -> {}
+        );
+    }
+
+    @Test
+    public void recurrencePeriodNotEditableWhenAlreadyRecurrent() {
+        test(
+                i -> EventCreator.putEventExtra(i, REC_EVENT),
+                () -> {
+                    testIsMainFragment();
+                    onView(withId(R.id.checkEventRecurrence)).check(matches(isChecked()));
+
+                    onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
+                    onView(withId(R.id.recurrencePeriod)).check(matches(not(isEnabled())));
+                    onView(withId(R.id.recurrenceUntil)).check(matches(isDisplayed()));
+                },
+                (event, edit) -> {}
+        );
+    }
+
+    @Test
+    public void recurrencePeriodEditableWhenNotRecurrent() {
+        test(
+                i -> EventCreator.putEventExtra(i, EVENT),
+                () -> {
+                    testIsMainFragment();
+                    onView(withId(R.id.checkEventRecurrence)).check(matches(not(isChecked())));
+                    onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
+
+                    onView(withId(R.id.recurrencePeriod)).check(matches(isDisplayed()));
+                    onView(withId(R.id.recurrencePeriod)).check(matches(isEnabled()));
+                    onView(withId(R.id.recurrenceUntil)).check(matches(isDisplayed()));
+                },
+                (event, edit) -> {}
+        );
+    }
+
     ////////////////////////////////////////////////////////////
     //            Arguments tests (Intent extras)             //
     ////////////////////////////////////////////////////////////
@@ -185,6 +241,7 @@ public class EventCreatorTest {
                 },
                 (event, edit) -> {
                     assertThat(event.getStartTime().toLocalDate(), is(date));
+                    assertThat(edit, is(false));
                 }
         );
     }
@@ -216,6 +273,7 @@ public class EventCreatorTest {
                 },
                 (event, edit) -> {
                     assertThat(event, is(EVENT));
+                    assertThat(edit, is(true));
                 }
         );
     }
@@ -232,9 +290,19 @@ public class EventCreatorTest {
         test(
                 i -> i,
                 () -> {
-                    onView(withId(R.id.editEventName)).perform(scrollTo(), click(), clearText(), typeText(name));
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(name)
+                    );
                     closeSoftKeyboard();
-                    onView(withId(R.id.editEventLocationName)).perform(scrollTo(), click(), clearText(), typeText(location));
+                    onView(withId(R.id.editEventLocationName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(location)
+                    );
                     closeSoftKeyboard();
 
                     onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
@@ -317,6 +385,70 @@ public class EventCreatorTest {
                 }
         );
     }
+
+
+    @Test
+    public void editorIsDisabledDuringCallback(){
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
+        EventCreator.putEventExtra(intent, EVENT);
+
+        ActivityScenario.launch(intent).onActivity(a -> {
+            EventCreator activity = (EventCreator) a;
+            activity.setCreationCallback((event, aBoolean) -> new CompletableFuture<>());
+        });
+
+        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+        onView(withId(R.id.eventCreatorMainFragment)).check(matches(allOf(
+                isDisplayed(),
+                not(isEnabled())
+        )));
+    }
+
+    ////////////////////////////////////////////////////////////
+    //                    Edition tests                       //
+    ////////////////////////////////////////////////////////////
+
+    @Test
+    public void eventCanBeEdited() {
+        final Event eventBis = new Event(
+                ID,
+                "Other name",
+                "Other location",
+                START_TIME,
+                END_TIME
+        );
+
+        test(
+                i -> EventCreator.putEventExtra(i, EVENT),
+                () -> {
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(eventBis.getName())
+                    );
+                    closeSoftKeyboard();
+                    onView(withId(R.id.checkGeolocation)).perform(
+                            scrollTo(),
+                            click()
+                    );
+                    onView(withId(R.id.editEventLocationName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(eventBis.getLocationName())
+                    );
+                    closeSoftKeyboard();
+
+                    onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+                },
+                (event, edit) -> {
+                    assertThat(event, is(eventBis));
+                    assertThat(edit, is(true));
+                }
+        );
+    }
+
 
     ////////////////////////////////////////////////////////////
     //               "Should-not-be-here" tests               //

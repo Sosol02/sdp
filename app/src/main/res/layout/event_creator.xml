@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".event.EventCreator">
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +17,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/eventCreatorFragmentContainer"
-            android:name="com.github.onedirection.event.EventCreatorMainFragment"
+            android:name="com.github.onedirection.events.ui.MainFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
