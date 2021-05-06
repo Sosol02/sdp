@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -18,9 +17,9 @@ import javax.annotation.concurrent.Immutable;
  */
 public class Recurrence implements Serializable {
 
-    private Id groupId;
-    private Duration period;
-    private ZonedDateTime endTime;
+    private final Id groupId;
+    private final Duration period;
+    private final ZonedDateTime endTime;
 
     /**
      * Constructor of Recurrence
