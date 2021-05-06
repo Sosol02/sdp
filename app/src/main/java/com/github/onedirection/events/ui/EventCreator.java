@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.events.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import androidx.test.espresso.IdlingResource;
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
@@ -93,7 +94,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         return intent.putExtra(EXTRA_DATE, date);
     }
 
-    private EventCreatorViewModel model;
+    private ViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
 
         Intent intent = getIntent();
 
-        this.model = new ViewModelProvider(this).get(EventCreatorViewModel.class);
+        this.model = new ViewModelProvider(this).get(ViewModel.class);
 
         if (hasEventExtra(intent)) {
             this.model.init(getEventExtra(intent), EventCreator::putEventToDatabase);

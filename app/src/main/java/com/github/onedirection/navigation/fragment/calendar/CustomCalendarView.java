@@ -18,7 +18,7 @@ import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
 
 import java.text.SimpleDateFormat;

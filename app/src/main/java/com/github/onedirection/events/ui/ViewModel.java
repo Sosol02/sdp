@@ -1,9 +1,10 @@
-package com.github.onedirection.events;
+package com.github.onedirection.events.ui;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.github.onedirection.events.Event;
+import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-public class EventCreatorViewModel extends ViewModel {
+public class ViewModel extends androidx.lifecycle.ViewModel {
     private final static Duration DEFAULT_EVENT_DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static Duration DEFAULT_EVENT_RECURRENCE_PERIOD = Duration.of(1, ChronoUnit.HOURS);
     private final static Duration DEFAULT_EVENT_RECURRENCE_DURATION = Duration.of(1, ChronoUnit.DAYS);
