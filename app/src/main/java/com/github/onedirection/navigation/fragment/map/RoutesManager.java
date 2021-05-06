@@ -1,13 +1,11 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.BuildConfig;
-import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -30,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.opencensus.internal.DefaultVisibilityForTesting;
 
 public class RoutesManager {
 

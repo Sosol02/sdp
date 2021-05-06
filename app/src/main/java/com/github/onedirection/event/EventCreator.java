@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.event;
 
 import android.content.Intent;
 import android.os.Bundle;

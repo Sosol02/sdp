@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.event;
 
 import com.github.onedirection.utils.Id;
 

@@ -17,8 +17,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
 
 import java.text.SimpleDateFormat;

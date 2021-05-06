@@ -1,13 +1,12 @@
 package com.github.onedirection.database.store;
 
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

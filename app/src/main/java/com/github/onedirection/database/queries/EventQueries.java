@@ -2,8 +2,8 @@ package com.github.onedirection.database.queries;
 
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 
@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class EventQueries {
 
+    @SuppressWarnings("FieldMayBeFinal")
     private Database db;
 
     /**

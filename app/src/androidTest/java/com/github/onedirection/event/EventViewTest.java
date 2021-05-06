@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.event;
 
 import android.content.Intent;
 import android.view.View;
@@ -12,7 +12,6 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
 import com.github.onedirection.eventviewer.EventView;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;

@@ -18,8 +18,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.EventCreator;
 import com.github.onedirection.eventviewer.EventView;
 import com.google.android.material.navigation.NavigationView;
 

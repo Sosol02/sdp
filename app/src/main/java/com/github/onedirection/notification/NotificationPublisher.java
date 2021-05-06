@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 
 import java.time.ZonedDateTime;
 import java.util.List;

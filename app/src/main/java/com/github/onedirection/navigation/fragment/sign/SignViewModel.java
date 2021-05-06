@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.AuthenticationService;
-import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.User;
 
 public class SignViewModel extends ViewModel {
@@ -31,7 +30,7 @@ public class SignViewModel extends ViewModel {
                     .exceptionally(error -> {userResult.setValue(null); return null; });
         } else {
             auth.loginUser(username, password).thenAccept(userResult::setValue)
-                    .exceptionally(error -> {userResult.setValue(null); return null; });;
+                    .exceptionally(error -> {userResult.setValue(null); return null; });
         }
     }
 

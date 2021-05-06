@@ -1,14 +1,13 @@
-package com.github.onedirection;
-
-import android.util.Log;
+package com.github.onedirection.database;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -27,10 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
