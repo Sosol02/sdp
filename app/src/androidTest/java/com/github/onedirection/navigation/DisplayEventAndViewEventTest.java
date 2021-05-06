@@ -16,7 +16,7 @@ import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
 import com.github.onedirection.eventviewer.DisplayEvent;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
