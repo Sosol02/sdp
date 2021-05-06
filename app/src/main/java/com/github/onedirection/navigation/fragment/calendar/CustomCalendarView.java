@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import com.github.onedirection.EventQueries;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;

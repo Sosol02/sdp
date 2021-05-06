@@ -11,7 +11,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.espresso.IdlingResource;
 
-import com.github.onedirection.EventQueries;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;

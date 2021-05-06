@@ -9,7 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.github.onedirection.EventQueries;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
 
