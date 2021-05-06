@@ -98,14 +98,6 @@ public class DisplayEventAndViewEventTest {
                         isDisplayed()));
         navigationMenuItemView.perform(click());
 
-        ViewInteraction recyclerView = onView(
-                allOf(withId(R.id.recyclerEventView),
-                        childAtPosition(
-                                withClassName(is("android.widget.LinearLayout")),
-                                0)));
-        recyclerView.perform(actionOnItemAtPosition(3, longClick()));
-
-
     }
 
     private static Matcher<View> childAtPosition(
