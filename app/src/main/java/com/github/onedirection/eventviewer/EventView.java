@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 
 public class EventView extends AppCompatActivity implements EventViewerAdapter.OnNoteListener{
 
-    private final static Id ID = Id.generateRandom();
+    /*private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
     private final static String LOCATION_NAME = "Location name";
     private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, LOCATION_NAME);
@@ -49,7 +49,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
     private final static String EPFL_QUERY = "EPFL";
     private final static String EPFL_CANTON = "Vaud";
 
-    private final static Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
+    private final static Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);*/
 
     RecyclerView eventList;
     EventViewerAdapter eventViewerAdapter;
@@ -92,10 +92,11 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
         }
         setContentView(R.layout.event_viewer);
 
+        /* For testing
         events.add(e);
         events.add(e);
         events.add(e);
-        events.add(e);
+        events.add(e);*/
 
 
         eventViewerAdapter = new EventViewerAdapter(events, this);
