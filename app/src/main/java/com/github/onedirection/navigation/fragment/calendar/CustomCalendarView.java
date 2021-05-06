@@ -183,7 +183,7 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void callDayEventsList(ZonedDateTime day) {
-        dayEventsView = new DayEventsListView(getContext(), day);
+        dayEventsView = new DayEventsListView(getContext(), day, idling);
         dayEventsView.setOnDialogDismissFunction(() -> refreshCalendarView());
 
     }

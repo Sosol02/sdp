@@ -181,6 +181,12 @@ public class CalendarUITest {
         viewEventsButton.perform(click());
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
+
+        ViewInteraction materialButton4 = onView(
+                allOf(withId(R.id.eventDeleteButton), withText("Delete"), isDisplayed()));
+        materialButton4.perform(click());
+
+        onView(withId(R.id.dayEventsList)).check(matches(not(isDisplayed())));
     }
 
 

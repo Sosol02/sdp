@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -42,52 +43,52 @@ public class DayEventsListView extends LinearLayout {
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         refreshView();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setCancelable(true);
-        builder.setView(this);
-        alertDialog = builder.create();
-        if(onDialogDismiss != null){
-            alertDialog.setOnDismissListener(dialog -> onDialogDismiss.run());
-        }
     }
 
     public DayEventsListView(Context context, ZonedDateTime day, CountingIdlingResource idling){
-        super(context);
-        this.context = context;
-        this.day = day;
+        this(context, day);
         this.idling = idling;
-
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        refreshView();
     }
 
     public void refreshView(){
         if(idling != null){
             idling.increment();
         }
-        LoadingDialog loadingDialog = new LoadingDialog(context);
-        loadingDialog.startLoadingAnimation();
         CompletableFuture<List<Event>> dayEvents = getDayEvents(day);
         dayEvents.whenComplete((events, throwable) -> {
-            loadingDialog.dismissDialog();
             if(((List<Event>)events).size() == 0){
                 view = inflater.inflate(R.layout.empty_event_list_screen, this);
-                alertDialog.show();
             } else {
                 view = inflater.inflate(R.layout.day_events_list, this);
                 setupEventsListView((List<Event>) events, view);
-                alertDialog.show();
-                alertDialog.getWindow().setLayout(1000, 1200);
             }
             if(idling != null){
-                idling.decrement();
+                try {
+                    idling.decrement();
+                } catch (Exception e){
+                }
             }
+            setupDialog(events);
         });
     }
 
     public void setOnDialogDismissFunction(Runnable runnable){
-        runnable.run();
+        onDialogDismiss = runnable;
+    }
+
+    private AlertDialog setupDialog(List<Event> events) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(true);
+        builder.setView(view);
+        alertDialog = builder.create();
+        if (onDialogDismiss != null) {
+            alertDialog.setOnDismissListener(dialog -> onDialogDismiss.run());
+        }
+        alertDialog.show();
+        if (events.size() != 0) {
+            alertDialog.getWindow().setLayout(1000, 1200);
+        }
+        return alertDialog;
     }
 
 
