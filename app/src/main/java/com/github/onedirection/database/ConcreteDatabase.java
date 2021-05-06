@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The auto synced database of the application
+ * Uses Firebase Firestore as NoSQL db
  */
 public class ConcreteDatabase implements Database {
     private final FirebaseFirestore db;

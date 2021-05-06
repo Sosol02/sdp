@@ -17,6 +17,12 @@ import java.util.Optional;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
+/**
+ * Represents an event or task
+ * that has to be done at a certain point in time,
+ * that takes a certain amount of time to complete,
+ * and optionally that takes place at a certain location.
+ */
 public class Event implements Serializable, Storable<Event> {
 
     final private Id id;

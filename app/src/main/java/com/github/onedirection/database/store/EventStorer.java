@@ -14,6 +14,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * A utility class that provides operations to store Events in a conventional way
+ * This class uses the Singleton pattern, and the single instance of this class is used and passed to generic queries to
+ * specify that these queries are done on Events.
+ */
 public class EventStorer extends Storer<Event> {
 
     private static final EventStorer GLOBAL = new EventStorer();
@@ -27,6 +32,9 @@ public class EventStorer extends Storer<Event> {
     public static final String KEY_RECURR_ID = "recurrId";
     public static final String KEY_RECURR_END_TIME = "recurrEndTime";
     public static final String KEY_RECURR_PERIOD = "recurrPeriod";
+
+    private EventStorer() {
+    }
 
     public static EventStorer getInstance() {
         return GLOBAL;
