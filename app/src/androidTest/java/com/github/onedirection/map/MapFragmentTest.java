@@ -193,18 +193,11 @@ public class MapFragmentTest {
 
         runOnUiThreadAndWaitEndExecution(() -> {
             // need to zoom to center the marker and make the next click() click it
-            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pair.second, 15));
             mapboxMap.setCameraPosition(new CameraPosition.Builder()
                     .target(pair.second)
                     .zoom(15.)
                     .build());
-            mapboxMap.addOnCameraIdleListener(semaphore::release);
         });
-        try {
-            semaphore.acquire();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
         getBottomSheetBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -219,7 +212,7 @@ public class MapFragmentTest {
 
             }
         });
-        onView(withId(R.id.mapView)).perform(click());
+        onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
         try {
             semaphore.acquire();
         } catch (Exception e) {
@@ -240,7 +233,6 @@ public class MapFragmentTest {
         MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
         markerSymbolManager.syncEventsWithDb().join();
 
-        Semaphore waitForCameraMovement = new Semaphore(0);
         Semaphore waitForBsbCollapsed = new Semaphore(0);
         Semaphore waitForBsbHidden = new Semaphore(0);
 
@@ -271,10 +263,8 @@ public class MapFragmentTest {
                         .zoom(15.)
                         .build()
                 );
-                mapboxMap.addOnCameraIdleListener(waitForCameraMovement::release);
             });
-            waitForCameraMovement.acquire();
-            onView(withId(R.id.mapView)).perform(click());
+            onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
             waitForBsbCollapsed.acquire(); // wait for the bsb to settle
 
             assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
