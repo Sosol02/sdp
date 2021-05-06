@@ -35,6 +35,10 @@ import java.util.List;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
+/**
+ * Main fragment of the Event creator.
+ * Allow to set values for most fields.
+ */
 public class MainFragment extends Fragment {
 
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
@@ -49,7 +53,6 @@ public class MainFragment extends Fragment {
     private EditText customLocation;
     private Button geolocation;
     private CheckBox useGeolocation;
-    private CheckBox isRecurrent;
     private Spinner recurrencePeriodType;
     private EditText recurrencePeriodAmount;
 
@@ -82,7 +85,7 @@ public class MainFragment extends Fragment {
         this.customLocation = getView().findViewById(R.id.editEventLocationName);
         this.geolocation = getView().findViewById(R.id.buttonGotoGeolocation);
         this.useGeolocation = getView().findViewById(R.id.checkGeolocation);
-        this.isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
+        CheckBox isRecurrent = getView().findViewById(R.id.checkEventRecurrence);
         this.recurrencePeriodType = getView().findViewById(R.id.spinnerRecurrencePeriodType);
         this.recurrencePeriodAmount = getView().findViewById(R.id.editRecurrenceAmount);
 
@@ -112,10 +115,7 @@ public class MainFragment extends Fragment {
 
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
-        getView().findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
-            model.callback.accept(generateEvent(), model.isEditing);
-            requireActivity().finish();
-        });
+        getView().findViewById(R.id.buttonEventAdd).setOnClickListener(this::addEventCallback);
 
         // Text listeners
         name.addTextChangedListener(onTextChanged(s -> model.name.postValue(s)));
@@ -128,6 +128,7 @@ public class MainFragment extends Fragment {
                 if (model.coordinates.getValue().isPresent()) {
                     model.useGeolocation.postValue(true);
                 } else {
+                    // Enforce that a geolocation is set
                     gotoGeolocation();
                 }
             } else {
@@ -136,12 +137,13 @@ public class MainFragment extends Fragment {
         });
 
         // Recurrence setup
+        isRecurrent.setChecked(model.isRecurrent.getValue());
         isRecurrent.setOnCheckedChangeListener((buttonView, isChecked) -> {
             model.isRecurrent.postValue(isChecked);
         });
 
 
-        getView().findViewById(R.id.recurrencePeriod).setEnabled(!model.isEditing);
+        getView().findViewById(R.id.recurrencePeriod).setEnabled(!(model.isEditing && model.isRecurrent.getValue()));
         model.isRecurrent.observe(getViewLifecycleOwner(), aBoolean -> {
             getView().findViewById(R.id.recurrencePeriod).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
             getView().findViewById(R.id.recurrenceUntil).setVisibility(aBoolean ? View.VISIBLE : View.GONE);
@@ -217,4 +219,15 @@ public class MainFragment extends Fragment {
         return model.generateEvent();
     }
 
+    private void addEventCallback(View v) {
+        model.incrementLoad();
+        requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
+        model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) ->  {
+            if(throwable != null){
+                Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
+            }
+            model.decrementLoad();
+            requireActivity().finish();
+        });
+    }
 }

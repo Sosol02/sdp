@@ -35,6 +35,11 @@ import java.util.function.Consumer;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
+/**
+ * Geolocation fragment of the Event creator.
+ * Allow to either use the phone location
+ * or geocoding to locate the event.
+ */
 public class GeolocationFragment extends Fragment implements ObserverPattern.Observer<Coordinates> {
 
     private static final String NO_LOCATION = "None";
