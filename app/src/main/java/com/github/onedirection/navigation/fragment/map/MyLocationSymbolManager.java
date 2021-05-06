@@ -18,6 +18,10 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.util.Objects;
 
+/**
+ * MyLocationSymbolManager is used with mapbox to be able to display the location user with a blue
+ * dot on the map in mapfragment
+ */
 public class MyLocationSymbolManager {
 
     private final SymbolManager symbolManager;
