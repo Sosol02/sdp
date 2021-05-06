@@ -163,7 +163,6 @@ public class CalendarUITest {
 
         ViewInteraction materialButton4 = onView(
                 firstMatch(withId(R.id.eventDeleteButton)));
-        materialButton4.perform(click());
     }
 
 
