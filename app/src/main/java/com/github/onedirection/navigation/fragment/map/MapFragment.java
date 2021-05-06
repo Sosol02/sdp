@@ -3,6 +3,7 @@ package com.github.onedirection.navigation.fragment.map;
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,19 +35,29 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * Fragment where the mapbox is displayed, it used to be able to locate events on a map and
+ * navigate between them
+ */
 public class MapFragment extends Fragment {
+
+    private static final String LOG_TAG = "MapFragment";
 
     private MapView mapView;
     private MapboxMap mapboxMap;
+
     private MarkerSymbolManager markerSymbolManager;
     private MyLocationSymbolManager myLocationSymbolManager;
     private RoutesManager routesManager;
+    private RouteDisplayManager routeDisplayManager;
+    private NavigationManager navigationManager;
+
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView event_name;
     private TextView event_time_start;
     private TextView event_time_end;
     private TextView event_location;
+
     private DeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
@@ -83,11 +94,10 @@ public class MapFragment extends Fragment {
 
             EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+                initializeDeviceLocationProvider();
                 initializeManagers(style);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
-
-            initializeDeviceLocationProvider();
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
                 OnMyLocationButtonClickResponse();
@@ -110,9 +120,12 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     public void showBottomSheet() {
+        Log.d(LOG_TAG, "showBottomSheet");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     
@@ -133,9 +146,18 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     @Override
@@ -174,9 +196,14 @@ public class MapFragment extends Fragment {
 
     private void initializeManagers(@NonNull Style style) {
         Context context = requireContext().getApplicationContext();
-        routesManager = new RoutesManager(context, mapView, mapboxMap, style);
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
+        routesManager = new RoutesManager(context);
+        routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager);
+
+        // now that markerSymbolManager is non null, sync
+        markerSymbolManager.syncEventsWithDb();
     }
 
     private void initializeDeviceLocationProvider() {
@@ -198,15 +225,16 @@ public class MapFragment extends Fragment {
                 myLocationSymbolManager.update(value);
             }
         });
-
     }
 
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
+            EspressoIdlingResource.getInstance().lockIdlingResource();
             if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
                 permissionRequestResult = new CompletableFuture<>();
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             }
+            deviceLocationProvider.startLocationTracking();
             LatLng latLng = myLocationSymbolManager.getPosition();
             if (latLng != null) {
                 CameraPosition position = new CameraPosition.Builder()
@@ -215,6 +243,7 @@ public class MapFragment extends Fragment {
                         .build();
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
             }
+            EspressoIdlingResource.getInstance().unlockIdlingResource();
         }
     }
 
