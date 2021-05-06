@@ -79,7 +79,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
             events = getEventListExtra(intent);
         }
         setContentView(R.layout.event_viewer);
-        
+
         eventViewerAdapter = new EventViewerAdapter(events, this);
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
         eventList.setAdapter(eventViewerAdapter);

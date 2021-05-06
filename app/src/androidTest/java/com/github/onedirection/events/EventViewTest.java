@@ -50,6 +50,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
@@ -94,6 +95,7 @@ public class EventViewTest {
         Intent intent = EventView.putEventListExtra(i,events);
         ActivityScenario.launch(intent).onActivity(a -> {});
         onView(ViewMatchers.withId(R.id.eventName)).check(matches(withText(containsString("Event nameZZZ"))));
+        onView(withId(R.id.eventName)).perform(longClick());
     }
 
 
