@@ -46,8 +46,13 @@ public class DayEventsListView extends LinearLayout {
     }
 
     public DayEventsListView(Context context, ZonedDateTime day, CountingIdlingResource idling){
-        this(context, day);
+        super(context);
+        this.context = context;
+        this.day = day;
         this.idling = idling;
+
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        refreshView();
     }
 
     public void refreshView(){
@@ -56,17 +61,10 @@ public class DayEventsListView extends LinearLayout {
         }
         CompletableFuture<List<Event>> dayEvents = getDayEvents(day);
         dayEvents.whenComplete((events, throwable) -> {
-            if(((List<Event>)events).size() == 0){
-                view = inflater.inflate(R.layout.empty_event_list_screen, this);
-            } else {
-                view = inflater.inflate(R.layout.day_events_list, this);
-                setupEventsListView((List<Event>) events, view);
-            }
+            view = inflater.inflate(R.layout.day_events_list, this);
+            setupEventsListView((List<Event>) events, view);
             if(idling != null){
-                try {
-                    idling.decrement();
-                } catch (Exception e){
-                }
+                idling.decrement();
             }
             setupDialog(events);
         });
@@ -77,6 +75,7 @@ public class DayEventsListView extends LinearLayout {
     }
 
     private AlertDialog setupDialog(List<Event> events) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
         builder.setView(view);
@@ -84,9 +83,11 @@ public class DayEventsListView extends LinearLayout {
         if (onDialogDismiss != null) {
             alertDialog.setOnDismissListener(dialog -> onDialogDismiss.run());
         }
-        alertDialog.show();
         if (events.size() != 0) {
+            alertDialog.show();
             alertDialog.getWindow().setLayout(1000, 1200);
+        } else{
+            alertDialog.dismiss();
         }
         return alertDialog;
     }

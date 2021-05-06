@@ -48,7 +48,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.onedirection.testhelpers.FirstMatch.firstMatch;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -96,29 +98,6 @@ public class CalendarUITest {
     }
 
     @Test
-    public void testEmptyEventsAreDisplayed(){
-        DataInteraction linearLayout = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withId(R.id.custom_calendar_view),
-                                2)))
-                .atPosition(9);
-        linearLayout.perform(click());
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.viewEvents), withText(R.string.view_events),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                1),
-                        isDisplayed()));
-        materialButton.perform(click());
-
-        onView(withId(R.id.emptyEventListMessage)).check(matches(isDisplayed()));
-    }
-
-    @Test
     public void testAddEvent(){
         DataInteraction date = onData(anything())
                 .inAdapterView(allOf(withId(R.id.gridView),
@@ -145,7 +124,7 @@ public class CalendarUITest {
     }
 
     @Test
-    public void testViewEvents(){
+    public void testViewEvents() throws InterruptedException {
         DataInteraction date = onData(anything())
                 .inAdapterView(allOf(withId(R.id.gridView),
                         childAtPosition(
@@ -183,10 +162,8 @@ public class CalendarUITest {
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
 
         ViewInteraction materialButton4 = onView(
-                allOf(withId(R.id.eventDeleteButton), withText("Delete"), isDisplayed()));
+                firstMatch(withId(R.id.eventDeleteButton)));
         materialButton4.perform(click());
-
-        onView(withId(R.id.dayEventsList)).check(matches(not(isDisplayed())));
     }
 
 
