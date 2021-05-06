@@ -43,15 +43,11 @@ public class EventsListAdapter extends ArrayAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return events.get(position);
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
 
-    @SuppressLint({"SetTextI18n", "ViewHolder", "InflateParams"})
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

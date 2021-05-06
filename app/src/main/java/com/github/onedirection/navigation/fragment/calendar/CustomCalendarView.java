@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.EventQueries;
@@ -44,16 +42,15 @@ public class CustomCalendarView extends LinearLayout {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
-    private List<Event> eventsList = new ArrayList<>();
-    private DayEventsListView dayEventsView = null;
     public CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
+    private List<Event> eventsList = new ArrayList<>();
 
+    private DayEventsListView dayEventsView;
     private Context context;
     private ImageButton nextButton, previousButton;
     private TextView CurrentDate;
     private GridView gridView;
     private AlertDialog alertDialog;
-
 
 
     public CustomCalendarView(Context context) {
@@ -113,7 +110,7 @@ public class CustomCalendarView extends LinearLayout {
         setUpCalendar();
     }
 
-    public DayEventsListView getDayEventView(){
+    public DayEventsListView getDayEventView() {
         return dayEventsView;
     }
 
@@ -203,7 +200,7 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     @VisibleForTesting
-    public CountingIdlingResource getIdlingResource(){
+    public CountingIdlingResource getIdlingResource() {
         return idling;
     }
 }

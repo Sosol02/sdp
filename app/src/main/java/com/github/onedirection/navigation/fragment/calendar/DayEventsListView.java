@@ -85,7 +85,9 @@ public class DayEventsListView extends LinearLayout {
         }
         if (events.size() != 0) {
             alertDialog.show();
-            alertDialog.getWindow().setLayout(1000, 1200);
+            int windowLayoutWidth = 1000;
+            int windowLayoutHeight = 1200;
+            alertDialog.getWindow().setLayout(windowLayoutWidth, windowLayoutHeight);
         } else{
             alertDialog.dismiss();
         }
