@@ -1,4 +1,4 @@
-package com.github.onedirection.notifs;
+package com.github.onedirection.notification;
 
 public class NotificationIdGenerator {
     private static Integer counter = 0;
