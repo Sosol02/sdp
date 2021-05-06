@@ -71,7 +71,7 @@ public class DisplayEventAndViewEventTest {
         ActivityScenario.launch(intent).onActivity(a -> {
             DisplayEvent activity = (DisplayEvent) a;
         });
-        onView(withId(R.id.buttonDisplay)).perform(click());
+        //onView(withId(R.id.buttonDisplay)).perform(click());
     }
 
     @Test
