@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.toList;
  * @param <K> The type of the keys
  * @param <V> The type of the values
  */
-public class Cache<K, V> {
+public final class Cache<K, V> {
 
     public static final int MAX_HISTORY_DEFAULT = 32;
 
@@ -46,11 +46,11 @@ public class Cache<K, V> {
     private final Map<K, V> map;
     private final LinkedBlockingQueue<K> history;
 
-    private static<K, V> BiFunction<? super K, ? super V, Boolean> defaultSetFunction() {
+    static<K, V> BiFunction<? super K, ? super V, Boolean> defaultSetFunction() {
         return (k, v) -> { throw new RuntimeException("No default setFunction provided. k: " + k + ", v: " + v); };
     }
 
-    private static<K, V> Function<? super K, ? extends V> defaultGetFunction() {
+    static<K, V> Function<? super K, ? extends V> defaultGetFunction() {
         return k -> { throw new RuntimeException("No default getFunction provided. k: " + k); };
     }
 
