@@ -25,11 +25,7 @@
             </intent-filter>
 
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
-
-
-        </activity>
-
-        <activity android:name=".events.ui.EventCreator" />
+        <activity android:name=".events.EventCreator" />
         <activity android:name=".eventviewer.EventView" />
 
         <receiver android:name=".notification.NotificationPublisher" />

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
