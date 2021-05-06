@@ -97,28 +97,6 @@ public class MapFragment extends Fragment {
                 initializeDeviceLocationProvider();
                 initializeManagers(style);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
-
-                LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
-                LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
-                LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0194,-118.411);
-                LatLng TEST_VALUE_LATLNG_6 = new LatLng(27.994402, -81.760254);
-                routesManager.findRoute(TEST_VALUE_LATLNG_5, TEST_VALUE_LATLNG_6, new RoutesResponseListener() {
-                    @Override
-                    public void onRoutesRetrieved(@NonNull List<Route> list) {
-                        routeDisplayManager.displayRoute(list.get(0));
-                        navigationManager.startNavigation(list.get(0));
-                    }
-
-                    @Override
-                    public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-                    }
-
-                    @Override
-                    public void onRequestMade() {
-
-                    }
-                });
             });
 
             view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
@@ -232,7 +210,6 @@ public class MapFragment extends Fragment {
                 myLocationSymbolManager.update(value);
             }
         });
-
     }
 
     private void OnMyLocationButtonClickResponse() {

@@ -66,6 +66,7 @@ public class RoutesManager {
                 .seasonalClosures(RouteOptionType.AVOID)
                 .build();
 
+        EspressoIdlingResource.getInstance().lockIdlingResource();
         routeService.requestRoutes(from, to, routeOptions, new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(List<Route> routes1) {
@@ -73,11 +74,13 @@ public class RoutesManager {
                     routes = routes1;
                 }
                 routesResponseListener.onRoutesRetrieved(routes1);
+                EspressoIdlingResource.getInstance().unlockIdlingResource();
             }
 
             @Override
             public void onRequestFailed(@Nullable Integer httpStatusCode, @Nullable IOException exception) {
                 routesResponseListener.onRequestFailed(httpStatusCode, exception);
+                EspressoIdlingResource.getInstance().unlockIdlingResource();
             }
 
             @Override
