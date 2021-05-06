@@ -1,17 +1,13 @@
 package com.github.onedirection;
 
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.StringContains;
 import org.junit.Test;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;

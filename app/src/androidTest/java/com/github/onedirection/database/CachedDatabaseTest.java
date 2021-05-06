@@ -3,7 +3,7 @@ package com.github.onedirection.database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Before;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class CachedDatabaseTest {
-    private static int count = 10;
+    private static final int count = 10;
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {

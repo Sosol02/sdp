@@ -1,4 +1,4 @@
-package com.github.onedirection.events.ui;
+package com.github.onedirection.event.ui;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -22,7 +22,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

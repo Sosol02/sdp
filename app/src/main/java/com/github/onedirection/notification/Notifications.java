@@ -12,17 +12,10 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.github.onedirection.EventQueries;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.R;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public class Notifications {
     private static final String CHANNEL_ID = "com.1Direction.events";

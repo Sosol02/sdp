@@ -14,11 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import com.github.onedirection.EventQueries;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
 
 import java.text.SimpleDateFormat;

@@ -10,7 +10,7 @@ import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.Id;
