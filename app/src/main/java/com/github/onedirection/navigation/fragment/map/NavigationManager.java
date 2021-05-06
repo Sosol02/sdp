@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.github.onedirection.BuildConfig;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.ObserverPattern;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -38,7 +39,7 @@ public class NavigationManager {
     private static final double NAVIGATION_ZOOM = 16;
     private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;
 
-    public NavigationManager(Context context, AbstractDeviceLocationProvider deviceLocationProvider,
+    public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
@@ -77,6 +78,7 @@ public class NavigationManager {
     }
 
     public void stopNavigation() {
+        navigationManager.cancelNavigation();
         navigationManager.deinitialize();
     }
 

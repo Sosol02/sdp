@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
+import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
 import com.mapquest.navigation.location.LocationProviderAdapter;
@@ -26,9 +26,9 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
         }
     };
 
-    private AbstractDeviceLocationProvider deviceLocationProvider;
+    private DeviceLocationProvider deviceLocationProvider;
 
-    public DeviceLocationProviderAdapter(AbstractDeviceLocationProvider deviceLocationProvider) {
+    public DeviceLocationProviderAdapter(DeviceLocationProvider deviceLocationProvider) {
         this.deviceLocationProvider = deviceLocationProvider;
         deviceLocationProvider.setLocationCallBackNavigation(new LocationCallback() {
             @Override

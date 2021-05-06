@@ -139,18 +139,18 @@ public abstract class AbstractDeviceLocationProvider implements DeviceLocationPr
         return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
-    public Location getLastAndroidLocation() {
+    public final Location getLastAndroidLocation() {
         if (lastLocation == null) {
             throw new IllegalStateException("There is no last location currently");
         }
         return lastLocation;
     }
 
-    public void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {
+    public final void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {
         this.locationCallBackNavigation = locationCallBackNavigation;
     }
 
-    public void clearLocationCallBackNavigation() {
+    public final void clearLocationCallBackNavigation() {
         locationCallBackNavigation = null;
     }
 

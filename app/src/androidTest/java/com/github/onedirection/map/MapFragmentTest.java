@@ -1,12 +1,12 @@
 package com.github.onedirection.map;
 
 import android.Manifest;
+import android.location.Location;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
@@ -17,6 +17,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
@@ -25,7 +26,6 @@ import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
 import com.github.onedirection.navigation.fragment.map.NavigationManager;
 import com.github.onedirection.navigation.fragment.map.RouteDisplayManager;
 import com.github.onedirection.navigation.fragment.map.RoutesManager;
-import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
@@ -38,6 +38,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
 
 import org.junit.After;
@@ -53,7 +54,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -86,6 +86,9 @@ public class MapFragmentTest {
     private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", new NamedCoordinates(48.511197, 2.205589, "Paris"),
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
+    public static final double LOCATION_1_latitude = 32.22222;
+    public static final double LOCATION_1_longitude = 43.33333;
+    public static final Coordinates COORDINATES_1 = new Coordinates(32.22222, 43.33333);
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
@@ -132,13 +135,13 @@ public class MapFragmentTest {
 
     @Test
     public void isIdlingResourceWorkingForManagersInitializing() {
-        assertThat(getMarkerSymbolManager(), is(notNullValue()));
-        assertThat(getMyLocationSymbolManager(), is(notNullValue()));
+        assertThat(getFragmentField("markerSymbolManager", MarkerSymbolManager.class), is(notNullValue()));
+        assertThat(getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class), is(notNullValue()));
     }
 
     @Test
     public void testMarkerSymbolManager() {
-        MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
 
         final Symbol[] marker = new Symbol[1];
         runOnUiThreadAndWaitEndExecution(() -> marker[0] = markerSymbolManager.addMarker(TEST_VALUE_LATLNG_1));
@@ -161,7 +164,7 @@ public class MapFragmentTest {
     @Test
     public void testAddEventPutsMarkerOnMap() {
         // Wait acton to make getMarkerSymbolManager work.
-        MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
         List<Pair<Symbol, LatLng>> pair = new ArrayList<>();
         runOnUiThreadAndWaitEndExecution(() -> {
             try {
@@ -171,7 +174,7 @@ public class MapFragmentTest {
             }
         });
 
-        BottomSheetBehavior<View> bsb = getBottomSheetBehavior();
+        BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
         assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_HIDDEN));
 
         Semaphore semaphore = new Semaphore(0);
@@ -187,7 +190,7 @@ public class MapFragmentTest {
             throw new RuntimeException(e);
         }
 
-        getBottomSheetBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -212,9 +215,16 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Cirrus reject")
     public void testMyLocationIsAppearing() {
-        MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
+        MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
+        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
+        deviceLocationProviderMockito.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+            }
+        });
+        deviceLocationProviderMockito.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
         onView(withId(R.id.my_location_button)).perform(click());
@@ -224,27 +234,34 @@ public class MapFragmentTest {
 
     @Test
     public void testMyLocationButton() {
-        MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
+        MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
+        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
+        deviceLocationProviderMockito.addObserver((subject, value) -> {
+            if (myLocationSymbolManager != null) {
+                runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+            }
+        });
+        deviceLocationProviderMockito.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
         onView(withId(R.id.my_location_button)).perform(click());
-        assertThat(myLocationSymbolManager.getPosition(), is(nullValue()));
+        assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
     }
 
     @Test
     public void testRoutesManagerInit() {
-        RoutesManager routesManager = getRoutesManager();
-        RouteDisplayManager routeDisplayManager = getRouteDisplayManager();
-        List<Line> lines = getRouteDisplayManagerLines(routeDisplayManager);
-        List<Route> routes = getRoutesManagerRoutes(routesManager);
+        RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
+        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
+        List<Line> lines = getAttributeField("lines", routeDisplayManager, List.class);
+        List<Route> routes = getAttributeField("routes", routesManager, List.class);
 
         assertThat(lines, is(nullValue()));
         assertThat(routes, is(nullValue()));
     }
 
     @Test
-    @Ignore("Cirrus loop")
     public void testRoutesManagerFindMethod() {
-        RoutesManager routesManager = getRoutesManager();
-        RouteDisplayManager routeDisplayManager = getRouteDisplayManager();
+        RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
+        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
             routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
@@ -267,8 +284,8 @@ public class MapFragmentTest {
             throw new RuntimeException(e);
         }
 
-        List<Line> lines = getRouteDisplayManagerLines(routeDisplayManager);
-        List<Route> routes = getRoutesManagerRoutes(routesManager);
+        List<Line> lines = getAttributeField("lines", routeDisplayManager, List.class);
+        List<Route> routes = getAttributeField("routes", routesManager, List.class);
 
         assertThat(routes, is(notNullValue()));
         assertThat(lines, is(notNullValue()));
@@ -276,8 +293,8 @@ public class MapFragmentTest {
         runOnUiThreadAndWaitEndExecution(routesManager::clearRoutes);
         runOnUiThreadAndWaitEndExecution(routeDisplayManager::clearDisplayedRoute);
 
-        lines = getRouteDisplayManagerLines(routeDisplayManager);
-        routes = getRoutesManagerRoutes(routesManager);
+        lines = getAttributeField("lines", routeDisplayManager, List.class);
+        routes = getAttributeField("routes", routesManager, List.class);
 
         assertThat(lines, is(nullValue()));
         assertThat(routes, is(nullValue()));
@@ -285,15 +302,14 @@ public class MapFragmentTest {
 
 
     @Test
-    @Ignore("Cirrus loop")
     public void testNavigation() {
-        RoutesManager routesManager = getRoutesManager();
-        RouteDisplayManager routeDisplayManager = getRouteDisplayManager();
-        NavigationManager navigationManager = getNavigationManager();
+        RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
+        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
+        NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
 
         final boolean[] isNavigationStarted = {false};
 
-        com.mapquest.navigation.NavigationManager navigationManager1 = getNavigationManagerMapQuest(navigationManager);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
         navigationManager1.addNavigationStateListener(new NavigationStateListener() {
             @Override
             public void onNavigationStarted() {
@@ -302,7 +318,7 @@ public class MapFragmentTest {
 
             @Override
             public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-
+                isNavigationStarted[0] = false;
             }
 
             @Override
@@ -342,120 +358,49 @@ public class MapFragmentTest {
         }
 
         assertThat(isNavigationStarted[0], is(true));
+
+        navigationManager.stopNavigation();
+        assertThat(isNavigationStarted[0], is(false));
     }
 
-    private void runOnUiThreadAndWaitEndExecution(BlockingCustomCodeOnRuiUiThread blockingCustomCodeOnRuiUiThread) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                blockingCustomCodeOnRuiUiThread.onRunOnUIThread();
-                synchronized (this) {
-                    this.notify();
-                }
-            }
-        };
-        synchronized (runnable) {
-            fragment.requireActivity().runOnUiThread(runnable);
-            try {
-                runnable.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    private void runOnUiThreadAndWaitEndExecution(Runnable runnable) {
+        Semaphore semaphore = new Semaphore(0);
+        fragment.requireActivity().runOnUiThread(() -> {
+            runnable.run();
+            semaphore.release();
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private MarkerSymbolManager getMarkerSymbolManager() {
+    private <T> T getFragmentField(String fieldName, Class<T> classToCast) {
+        return getAttributeField(fieldName, fragment, classToCast);
+    }
+
+    private <T, S> S getAttributeField(String fieldName, T attribute, Class<S> classToCast) {
         try {
-            Field field = fragment.getClass().getDeclaredField("markerSymbolManager");
+            Field field = attribute.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            return ((MarkerSymbolManager) field.get(fragment));
+            return ((S) field.get(attribute));
         } catch (Exception err) {
             throw new RuntimeException(err);
         }
     }
 
-    private MyLocationSymbolManager getMyLocationSymbolManager() {
+    private <T> void setFragmentField(String fieldName, T value) {
+        setAttributeField(fieldName, fragment, value);
+    }
+
+    private <T, S> void setAttributeField(String fieldName, T attribute, S value) {
         try {
-            Field field = fragment.getClass().getDeclaredField("myLocationSymbolManager");
+            Field field = attribute.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            return ((MyLocationSymbolManager) field.get(fragment));
+            field.set(attribute, value);
         } catch (Exception err) {
             throw new RuntimeException(err);
         }
-    }
-
-    private RoutesManager getRoutesManager() {
-        try {
-            Field field = fragment.getClass().getDeclaredField("routesManager");
-            field.setAccessible(true);
-            return ((RoutesManager) field.get(fragment));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private NavigationManager getNavigationManager() {
-        try {
-            Field field = fragment.getClass().getDeclaredField("navigationManager");
-            field.setAccessible(true);
-            return ((NavigationManager) field.get(fragment));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private com.mapquest.navigation.NavigationManager getNavigationManagerMapQuest(NavigationManager navigationManager) {
-        try {
-            Field field = navigationManager.getClass().getDeclaredField("navigationManager");
-            field.setAccessible(true);
-            return ((com.mapquest.navigation.NavigationManager) field.get(navigationManager));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private RouteDisplayManager getRouteDisplayManager() {
-        try {
-            Field field = fragment.getClass().getDeclaredField("routeDisplayManager");
-            field.setAccessible(true);
-            return ((RouteDisplayManager) field.get(fragment));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private List<Line> getRouteDisplayManagerLines(RouteDisplayManager routeDisplayManager) {
-        try {
-            Field field = routeDisplayManager.getClass().getDeclaredField("lines");
-            field.setAccessible(true);
-            return ((List<Line>) field.get(routeDisplayManager));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private List<Route> getRoutesManagerRoutes(RoutesManager routesManager) {
-        try {
-            Field field = routesManager.getClass().getDeclaredField("routes");
-            field.setAccessible(true);
-            return ((List<Route>) field.get(routesManager));
-        } catch (Exception err) {
-            throw new RuntimeException(err);
-        }
-    }
-
-    private BottomSheetBehavior<View> getBottomSheetBehavior() {
-        try {
-            Field field = fragment.getClass().getDeclaredField("bottomSheetBehavior");
-            field.setAccessible(true);
-            return (BottomSheetBehavior<View>) field.get(fragment);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-    }
-
-    private interface BlockingCustomCodeOnRuiUiThread {
-
-        void onRunOnUIThread();
     }
 }

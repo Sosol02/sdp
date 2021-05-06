@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -28,14 +27,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
-import com.mapquest.navigation.model.Route;
-import com.mapquest.navigation.model.location.Location;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -58,7 +52,7 @@ public class MapFragment extends Fragment {
     private TextView event_time_end;
     private TextView event_location;
 
-    private AbstractDeviceLocationProvider deviceLocationProvider;
+    private DeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -214,6 +208,7 @@ public class MapFragment extends Fragment {
 
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
+            EspressoIdlingResource.getInstance().lockIdlingResource();
             if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
                 permissionRequestResult = new CompletableFuture<>();
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -227,6 +222,7 @@ public class MapFragment extends Fragment {
                         .build();
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
             }
+            EspressoIdlingResource.getInstance().unlockIdlingResource();
         }
     }
 
