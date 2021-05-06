@@ -1,5 +1,7 @@
 package com.github.onedirection.geolocation;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -57,6 +59,10 @@ public final class Coordinates implements Serializable {
      */
     public boolean areCloseTo(NamedCoordinates that, double tolerance){
         return  areCloseTo(that.dropName(), tolerance);
+    }
+
+    public LatLng toLatLng() {
+        return new LatLng(latitude, longitude);
     }
 
     @Override
