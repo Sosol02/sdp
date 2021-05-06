@@ -16,14 +16,14 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+
 
 /**
  * View model for the Event Creator.
  * Basically the list of all attributes the event creator would have
  * if the main class + all fragments were merged.
- *
+ * <p>
  * Note: I made the mistake of using some outdated documentation
  * as inspiration for this class, so fields are public, where they shouldn't.
  */
