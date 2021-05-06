@@ -3,6 +3,7 @@ package com.github.onedirection.navigation.fragment.map;
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ import java.util.concurrent.CompletableFuture;
 
 
 public class MapFragment extends Fragment {
+
+    private static final String LOG_TAG = "MapFragment";
 
     private MapView mapView;
     private MapboxMap mapboxMap;
@@ -110,9 +113,12 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     public void showBottomSheet() {
+        Log.d(LOG_TAG, "showBottomSheet");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     
@@ -133,9 +139,18 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     @Override
@@ -177,6 +192,9 @@ public class MapFragment extends Fragment {
         routesManager = new RoutesManager(context, mapView, mapboxMap, style);
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
+
+        // now that markerSymbolManager is non null, sync
+        markerSymbolManager.syncEventsWithDb();
     }
 
     private void initializeDeviceLocationProvider() {

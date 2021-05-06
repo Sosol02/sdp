@@ -1,6 +1,7 @@
 package com.github.onedirection.map;
 
 import android.Manifest;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,7 +14,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
+import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
@@ -24,6 +29,7 @@ import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -41,7 +47,11 @@ import org.junit.runner.RunWith;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -57,6 +67,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class MapFragmentTest {
@@ -70,9 +81,18 @@ public class MapFragmentTest {
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
     private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
     private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
+    private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0, -50.0);
     private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", "Paris",
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
+
+    private final Event[] testEvents = new Event[] {
+            new Event(Id.generateRandom(), "Event 1 Paris", "Paris France", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 3 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria", new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile", new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+    };
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
@@ -105,6 +125,16 @@ public class MapFragmentTest {
         mapboxMap = onMapReadyIdlingResource.getMapboxMap();
     }
 
+    @Before
+    public void deleteAllEvents() throws ExecutionException, InterruptedException {
+        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
+        for(Event e : events) {
+            Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
+            assertEquals(e.getId(), id);
+        }
+    }
+
     @After
     public void AtEndTest() {
         IdlingRegistry.getInstance().unregister(onMapReadyIdlingResource);
@@ -124,7 +154,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testMarkerSymbolManager() {
+    public void testMarkerSymbolManager() throws InterruptedException {
         MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
 
         final Symbol[] marker = new Symbol[1];
@@ -146,7 +176,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testAddEventPutsMarkerOnMap() {
+    public void testAddEventPutsMarkerOnMap() throws InterruptedException {
         // Wait acton to make getMarkerSymbolManager work.
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
         MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
@@ -165,6 +195,10 @@ public class MapFragmentTest {
         runOnUiThreadAndWaitEndExecution(() -> {
             // need to zoom to center the marker and make the next click() click it
             mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pair.second, 15));
+            mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                    .target(pair.second)
+                    .zoom(15.)
+                    .build());
             mapboxMap.addOnCameraIdleListener(semaphore::release);
         });
         try {
@@ -198,6 +232,65 @@ public class MapFragmentTest {
     }
 
     @Test
+    public void testDbEventsAppearOnMap() throws InterruptedException {
+        Database db = Database.getDefaultInstance();
+        db.storeAll(Arrays.asList(testEvents)).join();
+
+        // Wait acton to make getMarkerSymbolManager work.
+        onView(withId(R.id.mapView)).perform(new WaitAction(1000));
+        MarkerSymbolManager markerSymbolManager = getMarkerSymbolManager();
+        markerSymbolManager.syncEventsWithDb().join();
+
+        Semaphore waitForCameraMovement = new Semaphore(0);
+        Semaphore waitForBsbCollapsed = new Semaphore(0);
+        Semaphore waitForBsbHidden = new Semaphore(0);
+
+        BottomSheetBehavior<View> bsb = getBottomSheetBehavior();
+        bsb.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    Log.d("MapFragmentTest", "bsb state collapsed.");
+                    waitForBsbCollapsed.release();
+                } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    Log.d("MapFragmentTest", "bsb state hidden.");
+                    waitForBsbHidden.release();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
+        });
+
+        for (Event e : testEvents) {
+            Log.d("MapFragmentTest", "e: " + e);
+            runOnUiThreadAndWaitEndExecution(() -> {
+                // need to zoom to center the marker and make the next click() click it
+                Log.d("MapFragmentTest", "about to release.");
+                mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                        .target(e.getCoordinates().get().toLatLng())
+                        .zoom(15.)
+                        .build()
+                );
+                mapboxMap.addOnCameraIdleListener(waitForCameraMovement::release);
+            });
+            waitForCameraMovement.acquire();
+            onView(withId(R.id.mapView)).perform(click());
+            waitForBsbCollapsed.acquire(); // wait for the bsb to settle
+
+            assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
+            Log.d("MapFragmentTest", "map_event_name: " + fragment.getActivity().findViewById(R.id.fragment_map_event_name));
+
+            onView(withId(R.id.fragment_map_event_name)).check(matches(withText(e.getName())));
+
+            runOnUiThreadAndWaitEndExecution(() ->
+                    bsb.setState(BottomSheetBehavior.STATE_HIDDEN)
+            );
+            waitForBsbHidden.acquire();
+        }
+    }
+
+    @Test
     @Ignore("Cirrus reject")
     public void testMyLocationIsAppearing() {
         MyLocationSymbolManager myLocationSymbolManager = getMyLocationSymbolManager();
@@ -216,7 +309,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testRoutesManagerInit() {
+    public void testRoutesManagerInit() throws InterruptedException {
         RoutesManager routesManager = getRoutesManager();
         List<Line> lines = getRoutesManagerLines(routesManager);
         List<Route> routes = getRoutesManagerRoutes(routesManager);
@@ -231,7 +324,7 @@ public class MapFragmentTest {
 
     @Test
     @Ignore("Cirrus reject")
-    public void testRoutesManagerFindMethod() {
+    public void testRoutesManagerFindMethod() throws InterruptedException {
         RoutesManager routesManager = getRoutesManager();
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
@@ -258,24 +351,13 @@ public class MapFragmentTest {
         assertThat(routes, is(nullValue()));
     }
 
-    private void runOnUiThreadAndWaitEndExecution(BlockingCustomCodeOnRuiUiThread blockingCustomCodeOnRuiUiThread) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                blockingCustomCodeOnRuiUiThread.onRunOnUIThread();
-                synchronized (this) {
-                    this.notify();
-                }
-            }
-        };
-        synchronized (runnable) {
-            fragment.requireActivity().runOnUiThread(runnable);
-            try {
-                runnable.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    private void runOnUiThreadAndWaitEndExecution(Runnable runnable) throws InterruptedException {
+        Semaphore semaphore = new Semaphore(0);
+        fragment.requireActivity().runOnUiThread(() -> {
+            runnable.run();
+            semaphore.release();
+        });
+        semaphore.acquire();
     }
 
     private MarkerSymbolManager getMarkerSymbolManager() {
@@ -336,10 +418,5 @@ public class MapFragmentTest {
         } catch (Exception e) {
             throw new RuntimeException();
         }
-    }
-
-    private interface BlockingCustomCodeOnRuiUiThread {
-
-        void onRunOnUIThread();
     }
 }
