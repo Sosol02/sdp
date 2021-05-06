@@ -26,6 +26,7 @@ import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
 import com.github.onedirection.navigation.fragment.map.NavigationManager;
 import com.github.onedirection.navigation.fragment.map.RouteDisplayManager;
 import com.github.onedirection.navigation.fragment.map.RoutesManager;
+import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
@@ -227,7 +228,7 @@ public class MapFragmentTest {
         setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
-        onView(withId(R.id.my_location_button)).perform(click());
+        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(5000));
         LatLng next = mapboxMap.getCameraPosition().target;
         assertThat(next.equals(last), is(false));
     }
