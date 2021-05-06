@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.BuildConfig;
+import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
