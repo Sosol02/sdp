@@ -34,6 +34,8 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -104,7 +106,10 @@ public class EventCreatorTest {
             EventCreator activity = (EventCreator) a;
             idling.val = activity.getIdlingResource();
             IdlingRegistry.getInstance().register(idling.val);
-            activity.setCreationCallback((event, aBoolean) -> result.val = new Pair<>(event, aBoolean));
+            activity.setCreationCallback((event, aBoolean) -> {
+                result.val = new Pair<>(event, aBoolean);
+                return CompletableFuture.completedFuture(true);
+            });
         });
 
         test.run();
@@ -379,6 +384,24 @@ public class EventCreatorTest {
                     );
                 }
         );
+    }
+
+
+    @Test
+    public void editorIsDisabledDuringCallback(){
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventCreator.class);
+        EventCreator.putEventExtra(intent, EVENT);
+
+        ActivityScenario.launch(intent).onActivity(a -> {
+            EventCreator activity = (EventCreator) a;
+            activity.setCreationCallback((event, aBoolean) -> new CompletableFuture<>());
+        });
+
+        onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+        onView(withId(R.id.eventCreatorMainFragment)).check(matches(allOf(
+                isDisplayed(),
+                not(isEnabled())
+        )));
     }
 
     ////////////////////////////////////////////////////////////

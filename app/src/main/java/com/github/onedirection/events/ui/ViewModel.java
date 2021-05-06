@@ -15,7 +15,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * View model for the Event Creator.
@@ -45,11 +47,11 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
     public Id eventId;
     public Id recId;
     public boolean isEditing;
-    public BiConsumer<Event, Boolean> callback;
+    public BiFunction<Event, Boolean, CompletableFuture<?>> callback;
     public CountingIdlingResource idling;
 
 
-    public void init(Event event, BiConsumer<Event, Boolean> callback, boolean isEditing) {
+    public void init(Event event, BiFunction<Event, Boolean, CompletableFuture<?>> callback, boolean isEditing) {
         this.name = new MutableLiveData<>(event.getName());
         this.startTime = new MutableLiveData<>(event.getStartTime());
         this.endTime = new MutableLiveData<>(event.getEndTime());
@@ -74,11 +76,11 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         this.idling = new CountingIdlingResource("Event creator is loading.");
     }
 
-    public void init(Event event, BiConsumer<Event, Boolean> callback) {
+    public void init(Event event, BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         init(event, callback, true);
     }
 
-    private void init(ZonedDateTime start, BiConsumer<Event, Boolean> callback) {
+    private void init(ZonedDateTime start, BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         init(
                 new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)),
                 callback,
@@ -86,11 +88,11 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         );
     }
 
-    public void init(BiConsumer<Event, Boolean> callback) {
+    public void init(BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         init(ZonedDateTime.now(), callback);
     }
 
-    public void init(LocalDate date, BiConsumer<Event, Boolean> callback) {
+    public void init(LocalDate date, BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         init(ZonedDateTime.of(date, LocalTime.now(), ZoneId.systemDefault()), callback);
     }
 

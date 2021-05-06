@@ -115,10 +115,7 @@ public class MainFragment extends Fragment {
 
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
-        getView().findViewById(R.id.buttonEventAdd).setOnClickListener(v -> {
-            model.callback.accept(generateEvent(), model.isEditing);
-            requireActivity().finish();
-        });
+        getView().findViewById(R.id.buttonEventAdd).setOnClickListener(this::addEventCallback);
 
         // Text listeners
         name.addTextChangedListener(onTextChanged(s -> model.name.postValue(s)));
@@ -131,6 +128,7 @@ public class MainFragment extends Fragment {
                 if (model.coordinates.getValue().isPresent()) {
                     model.useGeolocation.postValue(true);
                 } else {
+                    // Enforce that a geolocation is set
                     gotoGeolocation();
                 }
             } else {
@@ -221,4 +219,15 @@ public class MainFragment extends Fragment {
         return model.generateEvent();
     }
 
+    private void addEventCallback(View v) {
+        model.incrementLoad();
+        requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
+        model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) ->  {
+            if(throwable != null){
+                Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
+            }
+            model.decrementLoad();
+            requireActivity().finish();
+        });
+    }
 }

@@ -18,7 +18,9 @@ import com.github.onedirection.events.Event;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Activity allowing to create/edit events.
@@ -123,16 +125,16 @@ public class EventCreator extends DeviceLocationProviderActivity {
         }
     }
 
-    private static void putEventToDatabase(Event event, boolean edited) {
+    private static CompletableFuture<?> putEventToDatabase(Event event, boolean edited) {
         Log.d(LOGCAT_TAG, event.toString());
         EventQueries db = new EventQueries(Database.getDefaultInstance());
         if (edited) {
-            db.modifyEvent(event);
+            return db.modifyEvent(event);
         } else if(event.isRecurrent()) {
-            db.addRecurringEvent(event);
+            return db.addRecurringEvent(event);
         }
         else {
-            db.addNonRecurringEvent(event);
+            return db.addNonRecurringEvent(event);
         }
     }
 
@@ -151,7 +153,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
     }
 
     @VisibleForTesting
-    public void setCreationCallback(BiConsumer<Event, Boolean> callback) {
+    public void setCreationCallback(BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         model.callback = callback;
     }
 }
