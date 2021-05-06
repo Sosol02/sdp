@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -14,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
-
+        <activity android:name=".eventviewer.DisplayEvent"></activity>
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -24,11 +23,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
         <activity android:name=".events.EventCreator" />
         <activity android:name=".eventviewer.EventView" />
 
         <receiver android:name=".notifs.NotificationPublisher" />
     </application>
+
 </manifest>

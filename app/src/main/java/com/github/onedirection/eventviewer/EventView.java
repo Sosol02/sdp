@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
  * To use to view a list of events, just start the activity
  */
 
-public class EventView extends AppCompatActivity {
+public class EventView extends AppCompatActivity implements EventViewerAdapter.OnNoteListener{
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
@@ -97,7 +97,7 @@ public class EventView extends AppCompatActivity {
         events.add(e);
 
 
-        eventViewerAdapter = new EventViewerAdapter(events);
+        eventViewerAdapter = new EventViewerAdapter(events, this);
         eventList = (RecyclerView) findViewById(R.id.recyclerEventView);
         eventList.setAdapter(eventViewerAdapter);
         eventList.setLayoutManager(new LinearLayoutManager(this));
@@ -109,7 +109,7 @@ public class EventView extends AppCompatActivity {
 
     private void updateResults(List<Event> events){
         this.events = events;
-        eventList.setAdapter(new EventViewerAdapter(events));
+        eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
@@ -132,4 +132,14 @@ public class EventView extends AppCompatActivity {
 
         }
     };
+
+
+
+    @Override
+    public void onNoteClick(int position) {
+        Event event = events.get(position);
+        Intent intent = new Intent(this, DisplayEvent.class);
+        intent = DisplayEvent.putEventExtra(intent,event);
+        startActivity(intent);
+    }
 }
