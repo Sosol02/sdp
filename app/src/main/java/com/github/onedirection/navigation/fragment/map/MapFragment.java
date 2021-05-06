@@ -34,7 +34,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * Fragment where the mapbox is displayed, it used to be able to locate events on a map and
+ * navigate between them
+ */
 public class MapFragment extends Fragment {
 
     private MapView mapView;

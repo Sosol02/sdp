@@ -1,7 +1,5 @@
 package com.github.onedirection.navigation.fragment.map;
 
-import androidx.annotation.NonNull;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -18,13 +16,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * RouteDisplayManager is used with mapbox to display a route between events in the form of lines
+ * on the map of mapfragment
+ */
 public class RouteDisplayManager {
 
-    private LineManager lineManager;
+    private final LineManager lineManager;
     private List<Line> lines;
 
-    private final String LINE_COLOR = "Blue";
-    private final float LINE_WIDTH = 2f;
+    private static final String LINE_COLOR = "Blue";
+    private static final float LINE_WIDTH = 2f;
 
     public RouteDisplayManager(MapView mapView, MapboxMap mapboxMap, Style style) {
         this.lineManager = new LineManager(mapView, mapboxMap, style);

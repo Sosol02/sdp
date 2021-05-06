@@ -5,17 +5,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.github.onedirection.BuildConfig;
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
-import com.github.onedirection.utils.ObserverPattern;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapquest.navigation.dataclient.RouteService;
-import com.mapquest.navigation.internal.NavigationManagerImpl;
-import com.mapquest.navigation.internal.dataclient.NavigationRouteService;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
 import com.mapquest.navigation.listener.RerouteBehaviorOverride;
 import com.mapquest.navigation.listener.RerouteListener;
@@ -27,14 +21,18 @@ import com.mapquest.navigation.model.location.LocationObservation;
 
 import java.util.Objects;
 
+/**
+ * NavigationManager is used with mapquest to be able to navigate between events on the map
+ * in mapfragment by giving it a route
+ */
 public class NavigationManager {
 
-    private com.mapquest.navigation.NavigationManager navigationManager;
-    private MapboxMap mapboxMap;
+    private final com.mapquest.navigation.NavigationManager navigationManager;
+    private final MapboxMap mapboxMap;
     private Location lastLocation;
 
-    private CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
-    private RouteUpdatingRerouteListener routeUpdatingRerouteListener;
+    private final CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
+    private final RouteUpdatingRerouteListener routeUpdatingRerouteListener;
 
     private static final double NAVIGATION_ZOOM = 16;
     private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;

@@ -1,11 +1,9 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.BuildConfig;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -24,9 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * RoutesManager is use with mapquest to able to query a route between events
+ */
 public class RoutesManager {
 
-    private RouteService routeService;
+    private final RouteService routeService;
     private List<Route> routes;
 
     public RoutesManager(Context context) {
@@ -57,7 +58,7 @@ public class RoutesManager {
         RouteOptions routeOptions = new RouteOptions.Builder()
                 .maxRoutes(3)
                 .systemOfMeasurementForDisplayText(SystemOfMeasurement.METRIC)
-                .language("en_US")
+                .language("en_US") // TODO try to input the system language
                 .highways(RouteOptionType.ALLOW)
                 .tolls(RouteOptionType.ALLOW)
                 .ferries(RouteOptionType.AVOID)

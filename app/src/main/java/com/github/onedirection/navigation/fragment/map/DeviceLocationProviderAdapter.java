@@ -12,17 +12,22 @@ import com.google.android.gms.location.LocationResult;
 import com.mapquest.navigation.location.LocationProviderAdapter;
 import com.mapquest.navigation.model.location.Location;
 
+/**
+ * Class that adapt our deviceLocationProviderAdapter to the LocationProviderAdapter
+ * used for the Navigation Manager of Map Quest
+*/
+
 public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public DeviceLocationProviderAdapter createFromParcel(Parcel in) {
-            throw new IllegalStateException("DeviceLocationprovider is not parcelable");
+            throw new UnsupportedOperationException("DeviceLocationprovider is not parcelable");
         }
 
         @Override
         public DeviceLocationProviderAdapter[] newArray(int size) {
-            throw new IllegalStateException("DeviceLocationprovider is not parcelable");
+            throw new UnsupportedOperationException("DeviceLocationprovider is not parcelable");
         }
     };
 
@@ -63,12 +68,12 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
 
     @Override
     public int describeContents() {
-        throw new IllegalStateException("DeviceLocationprovider is not parcelable");
+        throw new UnsupportedOperationException("DeviceLocationprovider is not parcelable");
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        throw new IllegalStateException("DeviceLocationprovider is not parcelable");
+        throw new UnsupportedOperationException("DeviceLocationprovider is not parcelable");
     }
 
     public Location androidLocationToMapquestLocation(android.location.Location location) {
