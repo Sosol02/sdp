@@ -35,6 +35,9 @@ public class DayEventsListView extends LinearLayout {
     private Runnable onDialogDismiss;
     private AlertDialog alertDialog;
 
+    private final static int WINDOW_LAYOUT_WIDTH = 1000;
+    private final static int WINDOW_LAYOUT_HEIGHT = 1200;
+
 
     public DayEventsListView(Context context, ZonedDateTime day){
         super(context);
@@ -85,9 +88,7 @@ public class DayEventsListView extends LinearLayout {
         }
         if (events.size() != 0) {
             alertDialog.show();
-            int windowLayoutWidth = 1000;
-            int windowLayoutHeight = 1200;
-            alertDialog.getWindow().setLayout(windowLayoutWidth, windowLayoutHeight);
+            alertDialog.getWindow().setLayout(WINDOW_LAYOUT_WIDTH, WINDOW_LAYOUT_HEIGHT);
         } else{
             alertDialog.dismiss();
         }

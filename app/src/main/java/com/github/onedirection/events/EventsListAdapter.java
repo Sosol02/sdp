@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,7 +26,7 @@ public class EventsListAdapter extends ArrayAdapter {
     private final Runnable onEditEvent;
     private final Runnable onDeleteEvent;
 
-    public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent){
+    public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent) {
         super(applicationContext, R.layout.event_view_in_list);
         this.context = applicationContext;
         this.onEditEvent = onEditEvent;
@@ -61,16 +60,15 @@ public class EventsListAdapter extends ArrayAdapter {
         Button eventDeleteButton = (Button) convertView.findViewById(R.id.eventDeleteButton);
 
 
-
         Event event = events.get(position);
         eventName.setText(event.getName());
-        eventDate.setText("Date: " + event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        eventStartTime.setText("From: " + event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        eventEndTime.setText("To: " + event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        eventDate.setText(String.format("Date: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+        eventStartTime.setText(String.format("From: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))));
+        eventEndTime.setText(String.format("From: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))));
         eventLocation.setText(event.getLocationName());
 
         eventEditButton.setOnClickListener(v -> {
-            if(onEditEvent != null){
+            if (onEditEvent != null) {
                 Intent intent = new Intent(this.getContext(), EventCreator.class);
                 EventCreator.putEventExtra(intent, event);
                 this.getContext().startActivity(intent);
@@ -89,7 +87,6 @@ public class EventsListAdapter extends ArrayAdapter {
             });
         });
         return convertView;
-
 
 
     }
