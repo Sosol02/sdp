@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 
 import java.time.Instant;
 import java.util.Calendar;

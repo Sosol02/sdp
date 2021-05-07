@@ -3,30 +3,18 @@ package com.github.onedirection.navigation;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import androidx.fragment.app.testing.FragmentScenario;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.idling.CountingIdlingResource;
-import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.events.EventCreator;
 import com.github.onedirection.navigation.fragment.calendar.CalendarFragment;
-import com.github.onedirection.navigation.fragment.calendar.CustomCalendarView;
-import com.github.onedirection.navigation.fragment.map.MapFragment;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -44,26 +32,39 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.onedirection.testhelpers.FirstMatch.firstMatch;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class CalendarUITest {
 
+    @Rule
+    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
     private CountingIdlingResource idling;
     private CalendarFragment fragment;
 
-    @Rule
-    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    private static Matcher<View> childAtPosition(
+            final Matcher<View> parentMatcher, final int position) {
+
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Child at position " + position + " in parent ");
+                parentMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
+            }
+        };
+    }
 
     @Before
     public void setupForTest() throws InterruptedException {
@@ -77,11 +78,11 @@ public class CalendarUITest {
             idling = fragment.getIdlingResource();
             IdlingRegistry.getInstance().register(idling);
         });
-    };
+    }
 
     @Test
-    public void changeMonthTest(){
-        ViewInteraction currentMonth =  onView(allOf(withId(R.id.currentDate)));
+    public void changeMonthTest() {
+        ViewInteraction currentMonth = onView(allOf(withId(R.id.currentDate)));
 
         ViewInteraction appCompatImageButton2 = onView(
                 allOf(withId(R.id.nextBtn),
@@ -93,12 +94,12 @@ public class CalendarUITest {
                         isDisplayed()));
         appCompatImageButton2.perform(click());
 
-        ViewInteraction newMonth =  onView(allOf(withId(R.id.currentDate)));
+        ViewInteraction newMonth = onView(allOf(withId(R.id.currentDate)));
         assertThat(currentMonth, not(newMonth));
     }
 
     @Test
-    public void testAddEvent(){
+    public void testAddEvent() {
         DataInteraction date = onData(anything())
                 .inAdapterView(allOf(withId(R.id.gridView),
                         childAtPosition(
@@ -165,32 +166,8 @@ public class CalendarUITest {
                 firstMatch(withId(R.id.eventDeleteButton)));
     }
 
-
-
-
-
-
     @After
-    public void AtEndTest(){
+    public void AtEndTest() {
         IdlingRegistry.getInstance().unregister(idling);
-    }
-
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
     }
 }

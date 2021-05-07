@@ -1,16 +1,12 @@
 package com.github.onedirection.map;
 
-import android.app.Activity;
-
 import androidx.annotation.NonNull;
 import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.navigation.fragment.map.MapFragment;
-import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import java.lang.reflect.Field;
 

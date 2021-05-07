@@ -1,14 +1,13 @@
 package com.github.onedirection;
 
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Test;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -32,7 +30,7 @@ public class EventTest {
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
-    private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME, Optional.of(Id.generateRandom()), Optional.of(Id.generateRandom())); //Daily
+    private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
 
@@ -87,7 +85,7 @@ public class EventTest {
 
     @Test
     public void testEventSetRecurringPeriodAndGet() {
-        final Recurrence recurringPeriod = new Recurrence(RECURRING_PERIOD.getGroupId(), Duration.ofDays(7), END_TIME, RECURRING_PERIOD.getPrevEvent(), RECURRING_PERIOD.getNextEvent());
+        final Recurrence recurringPeriod = new Recurrence(RECURRING_PERIOD.getGroupId(), Duration.ofDays(7), END_TIME);
 
         assertThrows(NullPointerException.class, () -> EVENT.setRecurrence(null));
         Event eventChanged = EVENT.setRecurrence(recurringPeriod);

@@ -1,7 +1,16 @@
 package com.github.onedirection.utils;
 
+import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A simple immutable pair.
+ *
+ * This class is immutable as long as
+ * the underlying values are themselves immutable.
+ * @param <S> The first type
+ * @param <T> The second type
+ */
 public final class Pair<S, T> {
     public final S first;
     public final T second;
@@ -9,6 +18,10 @@ public final class Pair<S, T> {
     public Pair(S first, T second){
         this.first = first;
         this.second = second;
+    }
+
+    public static<S, T> Pair<S, T> of(S first, T second){
+        return new Pair(first, second);
     }
 
     @Override
@@ -30,5 +43,29 @@ public final class Pair<S, T> {
     @Override
     public int hashCode() {
         return Objects.hash(first, second);
+    }
+
+    /**
+     * Convert the pair into a map entry.
+     *
+     * Useful for creating maps from set of pairs.
+     */
+    public Map.Entry<S, T> toEntry() {
+        return new Map.Entry<S, T>() {
+            @Override
+            public S getKey() {
+                return first;
+            }
+
+            @Override
+            public T getValue() {
+                return second;
+            }
+
+            @Override
+            public T setValue(T value) {
+                throw new UnsupportedOperationException("This entry is backed by a Pair");
+            }
+        };
     }
 }
