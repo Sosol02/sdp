@@ -35,16 +35,16 @@ import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.model.Route;
-import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
+import com.mapquest.navigation.model.location.Coordinate;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +53,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -99,7 +101,9 @@ public class MapFragmentTest {
 
     public static final double LOCATION_1_latitude = 32.22222;
     public static final double LOCATION_1_longitude = 43.33333;
-    public static final Coordinates COORDINATES_1 = new Coordinates(32.22222, 43.33333);
+    public static final Coordinates COORDINATES_LOCATION = new Coordinates(32.22222, 43.33333);
+    public static final LatLng LAT_LNG_1 = new LatLng(40.7326808, -73.9843407);
+    public static final LatLng LAT_LNG_2 = new LatLng(40.7326808, -73.9843407);
 
     private final Event[] testEvents = new Event[] {
             new Event(Id.generateRandom(), "Event 1 Paris", "Paris France", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
@@ -286,11 +290,10 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Cirrus reject")
     public void testMyLocationIsAppearing() {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
-        deviceLocationProviderMockito.addObserver((subject, value) -> {
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 try {
                     runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
@@ -299,8 +302,8 @@ public class MapFragmentTest {
                 }
             }
         });
-        deviceLocationProviderMockito.notifyObservers();
-        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
+        deviceLocationProviderMock.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
         onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(5000));
@@ -311,8 +314,8 @@ public class MapFragmentTest {
     @Test
     public void testMyLocationButton() {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
-        deviceLocationProviderMockito.addObserver((subject, value) -> {
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 try {
                     runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
@@ -321,8 +324,8 @@ public class MapFragmentTest {
                 }
             }
         });
-        deviceLocationProviderMockito.notifyObservers();
-        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
+        deviceLocationProviderMock.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
         onView(withId(R.id.my_location_button)).perform(click());
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
     }
@@ -339,10 +342,11 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Route service not working on Cirrus")
     public void testRoutesManagerFindMethod() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
+        RouteService routeService = new RouteServiceMock();
+        setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
             routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
@@ -391,8 +395,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Route service not working on Cirrus")
-    public void testNavigation() {
+    public void testNavigation() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
@@ -422,8 +425,10 @@ public class MapFragmentTest {
             }
         });
 
+        RouteService routeService = new RouteServiceMock();
+        setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(LAT_LNG_1, LAT_LNG_2, new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
                 routeDisplayManager.displayRoute(list.get(0));
@@ -440,7 +445,7 @@ public class MapFragmentTest {
             public void onRequestMade() {
 
             }
-        });
+        }));
         try {
             semaphore.acquire();
         } catch (Exception e) {
