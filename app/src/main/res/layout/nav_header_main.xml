@@ -38,7 +38,8 @@
             android:text="@string/nav_header_username"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/col_on_secondary"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:translationY="8dp" />
 
         <TextView
             android:id="@+id/nav_header_email"

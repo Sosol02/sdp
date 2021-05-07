@@ -77,7 +77,7 @@
             android:layout_width="333dp"
             android:layout_height="wrap_content"
             android:translationX="8dp"
-            android:translationY="150dp">
+            android:translationY="113dp">
 
             <include
                 android:id="@+id/startDateTime"
@@ -89,7 +89,7 @@
             android:layout_width="333dp"
             android:layout_height="wrap_content"
             android:translationX="8dp"
-            android:translationY="210dp">
+            android:translationY="163dp">
 
             <include
                 android:id="@+id/endDateTime"
@@ -109,46 +109,35 @@
             android:textColorLink="@color/col_primary_variant"
             android:textSize="18sp"
             android:translationX="120dp"
-            android:translationY="320dp"
+            android:translationY="230dp"
             android:visibility="visible"
             tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/recurrencePeriod"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:layout_width="333dp"
+            android:layout_height="wrap_content"
+            android:translationX="8dp"
+            android:translationY="270dp"
             tools:visibility="gone">
 
-            <TextView
-                android:id="@+id/textRecurrencePeriod"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="@string/repeat_every" />
+            <include
+                layout="@layout/recurrence_layout" />
 
-            <EditText
-                android:id="@+id/editRecurrenceAmount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:ems="10"
-                android:hint="@string/amount"
-                android:inputType="number"
-                android:textAlignment="textEnd" />
-
-            <Spinner
-                android:id="@+id/spinnerRecurrencePeriodType"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2" />
         </LinearLayout>
 
-        <include
-            android:id="@+id/recurrenceUntil"
-            layout="@layout/date_time_buttons"
-            android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="333dp"
+            android:layout_height="wrap_content"
+            android:translationX="8dp"
+            android:translationY="320dp">
+
+            <include
+                android:id="@+id/recurrenceUntil"
+                layout="@layout/date_time_buttons"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -167,7 +156,7 @@
     <EditText
         android:id="@+id/editEventName"
         android:layout_width="330dp"
-        android:layout_height="109dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="35dp"
         android:ems="14"
         android:hint="@string/event_name_hint"
@@ -184,5 +173,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textEventCreatorTitle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

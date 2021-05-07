@@ -36,7 +36,6 @@
             android:title="@string/menu_logout" />
         <item
             android:id="@+id/nav_event_viewer"
-            android:icon="@drawable/ic_menu_sign"
             android:title="View All Events"/>
     </group>
 </menu>

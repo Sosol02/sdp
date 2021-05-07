@@ -16,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.event.ui.EventCreator;
+import com.github.onedirection.event.ui.MainFragment;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
@@ -129,7 +130,8 @@ public class EventCreatorTest {
     }
 
     public void testIsMainFragment() {
-        onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
+        //onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
+        onView(withClassName(is(MainFragment.class.getName()))).check(matches(isDisplayed()));
     }
 
     public void testIsGeolocationFragment() {
