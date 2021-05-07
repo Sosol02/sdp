@@ -34,6 +34,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         this.dates = dates;
     }
 
+
     @SuppressLint("SetTextI18n")
     @NonNull
     @Override
@@ -48,7 +49,6 @@ public class CalendarGridAdapter extends ArrayAdapter {
         int currentMonth = currentDate.get(Calendar.MONTH) + 1;
         int currentYear = currentDate.get(Calendar.YEAR);
         View view = convertView;
-
 
         if (view == null) {
             view = inflater.inflate(R.layout.single_cell_layout, parent, false);
