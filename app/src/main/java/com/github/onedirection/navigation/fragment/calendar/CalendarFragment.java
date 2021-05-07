@@ -7,7 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
 
@@ -34,5 +37,14 @@ public class CalendarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         calendarView.refreshCalendarView();
+        DayEventsListView eventsListView = calendarView.getDayEventView();
+        if(eventsListView != null){
+            eventsListView.refreshView();
+        }
+    }
+
+    @VisibleForTesting
+    public CountingIdlingResource getIdlingResource(){
+        return calendarView.getIdlingResource();
     }
 }

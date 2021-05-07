@@ -75,6 +75,17 @@
     <string name="repeat_event">Repeats</string>
     <string name="repeat_every">Repeat every:</string>
     <string name="amount">Amount</string>
+
+    <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="location">Location</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="no_events_scheduled_today">No events scheduled today!</string>
+
     <string name="menu_event_viewer">menu_event_viewer</string>
+
 
 </resources>
