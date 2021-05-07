@@ -15,6 +15,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
@@ -23,6 +24,7 @@ import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
+import com.github.onedirection.navigation.fragment.map.DeviceLocationProviderAdapter;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
@@ -290,7 +292,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testMyLocationIsAppearing() {
+    public void testMyLocationIsAppearing() throws InterruptedException {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
         DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
         deviceLocationProviderMock.addObserver((subject, value) -> {
@@ -306,7 +308,15 @@ public class MapFragmentTest {
         setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
-        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(5000));
+        Semaphore semaphore = new Semaphore(0);
+        onView(withId(R.id.my_location_button)).perform(click());
+        mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                semaphore.release();
+            }
+        });
+        semaphore.acquire();
         LatLng next = mapboxMap.getCameraPosition().target;
         assertThat(next.equals(last), is(false));
     }
@@ -399,6 +409,12 @@ public class MapFragmentTest {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+        final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
+        runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
+                fragment.requireContext().getApplicationContext(), BuildConfig.API_KEY,
+                new DeviceLocationProviderAdapter(new DeviceLocationProviderMock()))
+                .build());
+        setAttributeField("navigationManager", navigationManager, nav[0]);
 
         final boolean[] isNavigationStarted = {false};
 
