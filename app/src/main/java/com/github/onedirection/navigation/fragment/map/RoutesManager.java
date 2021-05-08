@@ -10,7 +10,9 @@ import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.internal.collection.CollectionsUtil;
 import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteOptionType;
 import com.mapquest.navigation.model.RouteOptions;
 import com.mapquest.navigation.model.SystemOfMeasurement;
@@ -18,8 +20,10 @@ import com.mapquest.navigation.model.location.Coordinate;
 import com.mapquest.navigation.model.location.Destination;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Objects;
 
@@ -37,24 +41,14 @@ public class RoutesManager {
                 BuildConfig.API_KEY);
     }
 
-    public void findRoute(LatLng start, LatLng finish) {
-        findRoute(start, finish, new RoutesResponseListener() {
-            @Override
-            public void onRoutesRetrieved(@NonNull List<Route> list) {}
-
-            @Override
-            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
-
-            @Override
-            public void onRequestMade() {}
-        });
-    }
-
-    public void findRoute(LatLng start, LatLng finish, RoutesResponseListener routesResponseListener) {
+    public void findRoute(LatLng start, List<LatLng> destinations, RoutesResponseListener routesResponseListener) {
         clearRoutes();
         Coordinate from = new Coordinate(start.getLatitude(), start.getLongitude());
-        Coordinate tmp = new Coordinate(finish.getLatitude(), finish.getLongitude());
-        List<Destination> to = Arrays.asList(new Destination(tmp, null));
+        List<Destination> to = new ArrayList<>();
+        for (LatLng destination : destinations) {
+            Coordinate tmp = new Coordinate(destination.getLatitude(), destination.getLongitude());
+            to.add(new Destination(tmp, null));
+        }
 
         RouteOptions routeOptions = new RouteOptions.Builder()
                 .maxRoutes(3)
@@ -62,10 +56,10 @@ public class RoutesManager {
                 .language("en_US") // TODO try to input the system language
                 .highways(RouteOptionType.ALLOW)
                 .tolls(RouteOptionType.ALLOW)
-                .ferries(RouteOptionType.AVOID)
+                .ferries(RouteOptionType.DISALLOW)
                 .internationalBorders(RouteOptionType.ALLOW)
-                .unpaved(RouteOptionType.AVOID)
-                .seasonalClosures(RouteOptionType.AVOID)
+                .unpaved(RouteOptionType.DISALLOW)
+                .seasonalClosures(RouteOptionType.DISALLOW)
                 .build();
 
         EspressoIdlingResource.getInstance().lockIdlingResource();
@@ -90,6 +84,10 @@ public class RoutesManager {
                 routesResponseListener.onRequestMade();
             }
         });
+    }
+
+    public long getTimeUntilArrival(@NonNull Route route) {
+        return CollectionsUtil.lastValue(route.getLegs()).getTraffic().getEstimatedTimeOfArrival().getTime();
     }
 
     public void clearRoutes() {

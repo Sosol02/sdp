@@ -59,6 +59,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -345,7 +346,7 @@ public class MapFragmentTest {
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
-            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
                 @Override
                 public void onRoutesRetrieved(@NonNull List<Route> list) {
                     routeDisplayManager.displayRoute(list.get(0));
@@ -423,7 +424,7 @@ public class MapFragmentTest {
         });
 
         Semaphore semaphore = new Semaphore(0);
-        routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+        routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
                 routeDisplayManager.displayRoute(list.get(0));
