@@ -1,6 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -11,9 +12,11 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
+import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.listener.RerouteBehaviorOverride;
 import com.mapquest.navigation.listener.RerouteListener;
 import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteStoppedReason;
 import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
 import com.mapquest.navigation.model.location.Coordinate;
 import com.mapquest.navigation.model.location.Location;
@@ -29,6 +32,7 @@ public class NavigationManager {
 
     private final com.mapquest.navigation.NavigationManager navigationManager;
     private final MapboxMap mapboxMap;
+    private final Context context;
     private Location lastLocation;
 
     private final CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
@@ -42,12 +46,11 @@ public class NavigationManager {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
         this.mapboxMap = mapboxMap;
-        deviceLocationProvider.addObserver((subject, value) -> {
-
-        });
+        this.context = context;
         navigationManager = new com.mapquest.navigation.NavigationManager.Builder(context,
                 BuildConfig.API_KEY, new DeviceLocationProviderAdapter(deviceLocationProvider))
                 .build();
+        navigationManager.setRerouteBehaviorOverride(coordinate -> true);
         routeUpdatingRerouteListener = new RouteUpdatingRerouteListener(routeDisplayManager);
         centeringMapOnLocationProgressListener = new CenteringMapOnLocationProgressListener();
     }
@@ -56,12 +59,6 @@ public class NavigationManager {
         navigationManager.initialize();
         navigationManager.setUserLocationTrackingConsentStatus(UserLocationTrackingConsentStatus.DENIED);
         navigationManager.addProgressListener(centeringMapOnLocationProgressListener);
-        navigationManager.setRerouteBehaviorOverride(new RerouteBehaviorOverride() {
-            @Override
-            public boolean shouldReroute(Coordinate coordinate) {
-                return true;
-            }
-        });
         navigationManager.addRerouteListener(routeUpdatingRerouteListener);
         navigationManager.startNavigation(route);
 
@@ -77,7 +74,22 @@ public class NavigationManager {
 
     public void stopNavigation() {
         navigationManager.cancelNavigation();
+        navigationManager.removeProgressListener(centeringMapOnLocationProgressListener);
+        navigationManager.removeRerouteListener(routeUpdatingRerouteListener);
         navigationManager.deinitialize();
+    }
+
+    private class ToastUpdateNavigationStateListener extends NavigationStateListener {
+
+        @Override
+        public void onNavigationStarted() {
+            Toast.makeText(context, "Navigation started", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
+            Toast.makeText(context, "Navigation ended", Toast.LENGTH_LONG).show();
+        }
     }
 
     private class CenteringMapOnLocationProgressListener extends DefaultNavigationProgressListener {
