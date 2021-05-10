@@ -19,6 +19,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Adapter used by the calendar to display the date and number of events on that day
+ */
 public class CalendarGridAdapter extends ArrayAdapter {
     private final Calendar currentDate;
     private final List<Event> events;
@@ -35,7 +38,6 @@ public class CalendarGridAdapter extends ArrayAdapter {
     }
 
 
-    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -67,9 +69,9 @@ public class CalendarGridAdapter extends ArrayAdapter {
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
                     if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(nbOfEventsInDay + " Event");
+                        EventNumber.setText(String.format("%s Event", nbOfEventsInDay));
                     } else {
-                        EventNumber.setText(nbOfEventsInDay + " Events");
+                        EventNumber.setText(String.format("%s Events", nbOfEventsInDay));
                     }
                 }
             }
