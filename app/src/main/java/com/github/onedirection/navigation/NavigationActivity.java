@@ -66,7 +66,7 @@ public class NavigationActivity extends AppCompatActivity {
                 startActivity(intent);
                 return false;
             }
-        });
+        }); // */
 
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);

@@ -18,6 +18,7 @@ import androidx.test.rule.GrantPermissionRule;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
@@ -35,7 +36,6 @@ import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Line;
@@ -43,7 +43,6 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.model.Route;
-import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
 
 import org.junit.After;
@@ -57,7 +56,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -142,7 +140,7 @@ public class MapFragmentTest {
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
         for(Event e : events) {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
