@@ -2,13 +2,17 @@ package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import com.github.onedirection.BuildConfig;
+import com.github.onedirection.R;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -47,7 +51,6 @@ public class NavigationManager {
     private final com.mapquest.navigation.NavigationManager navigationManager;
     private final MapboxMap mapboxMap;
     private final Context context;
-    private Location lastLocation;
 
     private final CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
     private final RouteUpdatingRerouteListener routeUpdatingRerouteListener;
@@ -55,11 +58,17 @@ public class NavigationManager {
     private final UpdatingSpeedLimitSpanListener updatingSpeedLimitSpanListener;
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
+    private final RelativeLayout maneuverBar;
+    private final RelativeLayout arrivalBar;
+    private final AppCompatImageButton myLocationButton;
+
     private static final double NAVIGATION_ZOOM = 16;
     private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;
+    private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
+    private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
-                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager) {
+                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
         this.mapboxMap = mapboxMap;
@@ -73,6 +82,11 @@ public class NavigationManager {
         toastUpdateNavigationStateListener = new ToastUpdateNavigationStateListener();
         updatingSpeedLimitSpanListener = new UpdatingSpeedLimitSpanListener();
         etaUpdateResponseListener = new EtaUpdateResponseListener();
+        myLocationButton = view.findViewById(R.id.my_location_button);
+        maneuverBar = view.findViewById(R.id.maneuverBarLayout);
+        arrivalBar = view.findViewById(R.id.arrivalBarLayout);
+        maneuverBar.setVisibility(View.GONE);
+        arrivalBar.setVisibility(View.GONE);
     }
 
     public void startNavigation(@NonNull Route route) {
@@ -83,11 +97,30 @@ public class NavigationManager {
         navigationManager.addNavigationStateListener(toastUpdateNavigationStateListener);
         navigationManager.addEtaResponseListener(etaUpdateResponseListener);
         navigationManager.addSpeedLimitSpanListener(updatingSpeedLimitSpanListener);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder(mapboxMap.getCameraPosition())
+                .zoom(NAVIGATION_ZOOM)
+                .tilt(NAVIGATION_TILT_VALUE_DEGREES)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
+        myLocationButton.setVisibility(View.GONE);
+        maneuverBar.setVisibility(View.VISIBLE);
+        arrivalBar.setVisibility(View.VISIBLE);
+
         navigationManager.startNavigation(route);
     }
 
     public void stopNavigation() {
         navigationManager.cancelNavigation();
+
+        CameraPosition cameraPosition = new CameraPosition.Builder(mapboxMap.getCameraPosition())
+                .zoom(ON_EXIT_NAVIGATION_ZOOM)
+                .tilt(ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
+        myLocationButton.setVisibility(View.VISIBLE);
+
+
         navigationManager.removeProgressListener(centeringMapOnLocationProgressListener);
         navigationManager.removeRerouteListener(routeUpdatingRerouteListener);
         navigationManager.removeNavigationStateListener(toastUpdateNavigationStateListener);

@@ -100,7 +100,7 @@ public class MapFragment extends Fragment {
             EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
-                initializeManagers(style);
+                initializeManagers(style, view);
                 LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
                 LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
                 List<LatLng> latLngs = new ArrayList<>();
@@ -220,13 +220,13 @@ public class MapFragment extends Fragment {
         return permissionRequestResult;
     }
 
-    private void initializeManagers(@NonNull Style style) {
+    private void initializeManagers(@NonNull Style style, @NonNull View view) {
         Context context = requireContext().getApplicationContext();
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
         routesManager = new RoutesManager(context);
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
-        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
 
         // now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();
