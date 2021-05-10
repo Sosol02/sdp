@@ -46,22 +46,17 @@ import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.model.Route;
 import com.mapquest.navigation.model.RouteStoppedReason;
-import com.mapquest.navigation.model.location.Coordinate;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

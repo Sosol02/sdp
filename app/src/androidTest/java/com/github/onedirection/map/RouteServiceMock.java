@@ -2,7 +2,6 @@ package com.github.onedirection.map;
 
 import androidx.annotation.NonNull;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RouteSummaryResponseListener;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
@@ -27,12 +26,14 @@ import com.mapquest.navigation.model.location.Destination;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *    Route service that return route between those points
+ *    LatLng(40.7326808, -73.9843407);
+ *    LatLng(40.7326808, -73.9843407);
+ */
+
 public class RouteServiceMock implements RouteService {
-    /*
-    Route between those points
-    LatLng(40.7326808, -73.9843407);
-    LatLng(40.7326808, -73.9843407);
-     */
+
 
     @Override
     public void requestRoutes(@NonNull Coordinate coordinate, @NonNull List<Destination> list, @NonNull RouteOptions routeOptions, @NonNull RoutesResponseListener routesResponseListener) {
@@ -63,7 +64,7 @@ public class RouteServiceMock implements RouteService {
         RouteOptions routeOptions1 = new RouteOptions.Builder()
                 .maxRoutes(3)
                 .systemOfMeasurementForDisplayText(SystemOfMeasurement.METRIC)
-                .language("en_US") // TODO try to input the system language
+                .language("en_US")
                 .highways(RouteOptionType.ALLOW)
                 .tolls(RouteOptionType.ALLOW)
                 .ferries(RouteOptionType.AVOID)
