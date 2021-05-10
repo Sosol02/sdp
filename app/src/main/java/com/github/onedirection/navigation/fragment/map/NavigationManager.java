@@ -2,7 +2,7 @@ package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +18,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapquest.navigation.internal.collection.CollectionsUtil;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
 import com.mapquest.navigation.listener.EtaResponseListener;
 import com.mapquest.navigation.listener.NavigationProgressListener;
@@ -38,6 +39,10 @@ import com.mapquest.navigation.model.location.Location;
 import com.mapquest.navigation.model.location.LocationObservation;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -45,6 +50,8 @@ import java.util.Set;
 /**
  * NavigationManager is used with mapquest to be able to navigate between events on the map
  * in mapfragment by giving it a route
+ * Class inspired from the example provided by mapquest :
+ * https://github.com/MapQuest/mq-navigation-sdk-reference-app-android
  */
 public class NavigationManager {
 
@@ -55,17 +62,27 @@ public class NavigationManager {
     private final CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
     private final RouteUpdatingRerouteListener routeUpdatingRerouteListener;
     private final ToastUpdateNavigationStateListener toastUpdateNavigationStateListener;
+    private final UpdatingNavigationProgressListener updatingNavigationProgressListener;
     private final UpdatingSpeedLimitSpanListener updatingSpeedLimitSpanListener;
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
     private final RelativeLayout maneuverBar;
+    private final ImageView nextManeuverIcon;
+    private final TextView nextManeuverDistance;
+    private final TextView nextManeuver;
+
     private final RelativeLayout arrivalBar;
+    private final TextView timeNextDestination;
+    private final TextView timeFinalDestination;
+    private final TextView remainingDistance;
+
     private final AppCompatImageButton myLocationButton;
 
     private static final double NAVIGATION_ZOOM = 16;
     private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;
     private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
     private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.ROOT);
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
@@ -80,21 +97,40 @@ public class NavigationManager {
         routeUpdatingRerouteListener = new RouteUpdatingRerouteListener(routeDisplayManager);
         centeringMapOnLocationProgressListener = new CenteringMapOnLocationProgressListener();
         toastUpdateNavigationStateListener = new ToastUpdateNavigationStateListener();
+        updatingNavigationProgressListener = new UpdatingNavigationProgressListener();
         updatingSpeedLimitSpanListener = new UpdatingSpeedLimitSpanListener();
         etaUpdateResponseListener = new EtaUpdateResponseListener();
+
         myLocationButton = view.findViewById(R.id.my_location_button);
         maneuverBar = view.findViewById(R.id.maneuverBarLayout);
         arrivalBar = view.findViewById(R.id.arrivalBarLayout);
         maneuverBar.setVisibility(View.GONE);
         arrivalBar.setVisibility(View.GONE);
+
+        nextManeuverIcon = view.findViewById(R.id.next_maneuver_icon);
+        nextManeuverDistance = view.findViewById(R.id.next_maneuver_distance);
+        nextManeuver = view.findViewById(R.id.next_maneuver);
+        timeNextDestination = view.findViewById(R.id.eta_next_destination);
+        timeFinalDestination = view.findViewById(R.id.eta_final_destination);
+        remainingDistance = view.findViewById(R.id.remaining_distance);
+        view.findViewById(R.id.stop).setOnClickListener(v -> {
+            if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE) {
+                stopNavigation();
+            }
+        });
     }
 
     public void startNavigation(@NonNull Route route) {
+        if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE) {
+            throw new IllegalStateException("You cannot start the navigation manager when it has already started");
+        }
+
         navigationManager.initialize();
         navigationManager.setUserLocationTrackingConsentStatus(UserLocationTrackingConsentStatus.DENIED);
         navigationManager.addProgressListener(centeringMapOnLocationProgressListener);
         navigationManager.addRerouteListener(routeUpdatingRerouteListener);
         navigationManager.addNavigationStateListener(toastUpdateNavigationStateListener);
+        navigationManager.addProgressListener(updatingNavigationProgressListener);
         navigationManager.addEtaResponseListener(etaUpdateResponseListener);
         navigationManager.addSpeedLimitSpanListener(updatingSpeedLimitSpanListener);
 
@@ -111,6 +147,9 @@ public class NavigationManager {
     }
 
     public void stopNavigation() {
+        if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.STOPPED) {
+            throw new IllegalStateException("You cannot stop the navigation manager when it has not started");
+        }
         navigationManager.cancelNavigation();
 
         CameraPosition cameraPosition = new CameraPosition.Builder(mapboxMap.getCameraPosition())
@@ -119,14 +158,25 @@ public class NavigationManager {
                 .build();
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
         myLocationButton.setVisibility(View.VISIBLE);
-
+        maneuverBar.setVisibility(View.GONE);
+        arrivalBar.setVisibility(View.GONE);
 
         navigationManager.removeProgressListener(centeringMapOnLocationProgressListener);
         navigationManager.removeRerouteListener(routeUpdatingRerouteListener);
         navigationManager.removeNavigationStateListener(toastUpdateNavigationStateListener);
+        navigationManager.removeProgressListener(updatingNavigationProgressListener);
         navigationManager.removeEtaResponseListener(etaUpdateResponseListener);
         navigationManager.removeSpeedLimitSpanListener(updatingSpeedLimitSpanListener);
         navigationManager.deinitialize();
+    }
+
+    private void updateUiOnStartAndReroute(Route route) {
+        RouteLeg lastRouteLeg = CollectionsUtil.lastValue(route.getLegs());
+        long timeForNextDestination = navigationManager.getCurrentRouteLeg().getTraffic().getEstimatedTimeOfArrival().getTime();
+        long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
+
+        timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
+        timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
     }
 
     private class ToastUpdateNavigationStateListener implements NavigationStateListener {
@@ -134,6 +184,7 @@ public class NavigationManager {
         @Override
         public void onNavigationStarted() {
             Toast.makeText(context, "Navigation started", Toast.LENGTH_LONG).show();
+            updateUiOnStartAndReroute(navigationManager.getRoute());
         }
 
         @Override
@@ -182,6 +233,7 @@ public class NavigationManager {
         public void onRerouteReceived(Route route) {
             Toast.makeText(context, "Reroute succeeded", Toast.LENGTH_LONG).show();
             routeDisplayManager.displayRoute(route);
+            updateUiOnStartAndReroute(route);
         }
 
         @Override
@@ -190,16 +242,21 @@ public class NavigationManager {
         }
     }
 
-    private class UpdatingNavigationProgressListener implements NavigationProgressListener{
+    private class UpdatingNavigationProgressListener implements NavigationProgressListener {
 
         @Override
         public void onLocationObservationReceived(@NonNull LocationObservation locationObservation) {
-
+            remainingDistance.setText(((int) locationObservation.getRemainingLegDistance()) + " meters");
+            nextManeuverDistance.setText(String.format(Locale.getDefault(), "%1$d meters", locationObservation
+                                                        .getDistanceToUpcomingManeuver().intValue()));
         }
 
         @Override
         public void onUpcomingManeuverUpdated(@Nullable Maneuver maneuver) {
-
+            String labelText = ((maneuver.getName() != null) && !maneuver.getName().trim().isEmpty()) ?
+                    maneuver.getTypeText() + ", " + maneuver.getName() :
+                    maneuver.getTypeText();
+            nextManeuver.setText(labelText);
         }
 
         @Override
@@ -219,6 +276,7 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : enteredSpeedLimits) {
                 float speed = speedLimitSpan.getSpeedLimit().getSpeed();
                 SpeedLimit.Type type = speedLimitSpan.getSpeedLimit().getType();
+                //TODO update UI
             }
         }
     }
@@ -231,7 +289,14 @@ public class NavigationManager {
         }
 
         @Override
-        public void onEtaUpdate(@NonNull Map<String, Traffic> map, String s) {}
+        public void onEtaUpdate(@NonNull Map<String, Traffic> map, String s) {
+            String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
+            long timeForNextDestination = map.get(s).getEstimatedTimeOfArrival().getTime();
+            long timeForFinalDestination = map.get(lastRouteLegKey).getEstimatedTimeOfArrival().getTime();
+
+            timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
+            timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+        }
 
         @Override
         public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
