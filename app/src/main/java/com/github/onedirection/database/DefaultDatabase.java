@@ -2,6 +2,9 @@ package com.github.onedirection.database;
 
 import androidx.annotation.VisibleForTesting;
 
+/**
+ * A class to organise and hold all Database global instances.
+ */
 public class DefaultDatabase {
 
     private static final ConcreteDatabase concreteDatabase = new ConcreteDatabase();

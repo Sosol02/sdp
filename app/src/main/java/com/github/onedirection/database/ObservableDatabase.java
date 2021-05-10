@@ -12,6 +12,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * A wrapper around a database which implements Observable in order to add callbacks to
+ * database actions.
+ */
 public class ObservableDatabase implements Database, Observable<ObservableDatabase.Action> {
 
     ObservableDatabase(Database innerDb) {
@@ -23,14 +27,12 @@ public class ObservableDatabase implements Database, Observable<ObservableDataba
 
     @Override
     public boolean addObserver(Observer<Action> observer) {
-        observers.add(Objects.requireNonNull(observer));
-        return true;
+        return observers.add(Objects.requireNonNull(observer));
     }
 
     @Override
     public boolean removeObserver(Observer<Action> observer) {
-        observers.add(Objects.requireNonNull(observer));
-        return true;
+        return observers.add(Objects.requireNonNull(observer));
     }
 
     public void removeAllObservers() {
