@@ -1,8 +1,6 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,9 +43,9 @@ import java.util.Set;
 public class NavigationManager {
 
     private final com.mapquest.navigation.NavigationManager navigationManager;
+    private final RouteDisplayManager routeDisplayManager;
     private final MapboxMap mapboxMap;
     private final Context context;
-    private Location lastLocation;
 
     private final CenteringMapOnLocationProgressListener centeringMapOnLocationProgressListener;
     private final RouteUpdatingRerouteListener routeUpdatingRerouteListener;
@@ -64,11 +62,12 @@ public class NavigationManager {
         Objects.requireNonNull(deviceLocationProvider);
         this.mapboxMap = mapboxMap;
         this.context = context;
+        this.routeDisplayManager = routeDisplayManager;
         navigationManager = new com.mapquest.navigation.NavigationManager.Builder(context,
                 BuildConfig.API_KEY, new DeviceLocationProviderAdapter(deviceLocationProvider))
                 .build();
         navigationManager.setRerouteBehaviorOverride(coordinate -> true);
-        routeUpdatingRerouteListener = new RouteUpdatingRerouteListener(routeDisplayManager);
+        routeUpdatingRerouteListener = new RouteUpdatingRerouteListener();
         centeringMapOnLocationProgressListener = new CenteringMapOnLocationProgressListener();
         toastUpdateNavigationStateListener = new ToastUpdateNavigationStateListener();
         updatingSpeedLimitSpanListener = new UpdatingSpeedLimitSpanListener();
@@ -131,12 +130,6 @@ public class NavigationManager {
 
     private class RouteUpdatingRerouteListener implements RerouteListener {
 
-        private RouteDisplayManager routeDisplayManager;
-
-        public RouteUpdatingRerouteListener(RouteDisplayManager routeDisplayManager) {
-            this.routeDisplayManager = routeDisplayManager;
-        }
-
         @Override
         public void onRerouteWouldOccur(Location location) {}
 
@@ -148,7 +141,6 @@ public class NavigationManager {
         @Override
         public void onRerouteReceived(Route route) {
             Toast.makeText(context, "Reroute succeeded", Toast.LENGTH_LONG).show();
-            routeDisplayManager.displayRoute(route);
         }
 
         @Override

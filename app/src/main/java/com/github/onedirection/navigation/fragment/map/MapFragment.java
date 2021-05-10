@@ -28,6 +28,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapquest.navigation.dataclient.listener.RouteResponseListener;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.model.Route;
 
@@ -101,27 +102,6 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
                 initializeManagers(style);
-                LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
-                LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
-                List<LatLng> latLngs = new ArrayList<>();
-                latLngs.add(TEST_VALUE_LATLNG_4);
-                routesManager.findRoute(TEST_VALUE_LATLNG_3, latLngs, new RoutesResponseListener() {
-                    @Override
-                    public void onRoutesRetrieved(@NonNull List<Route> list) {
-                        routeDisplayManager.displayRoute(list.get(0));
-                        navigationManager.startNavigation(list.get(0));
-                    }
-
-                    @Override
-                    public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-                    }
-
-                    @Override
-                    public void onRequestMade() {
-
-                    }
-                });
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
@@ -273,4 +253,39 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private class DisplayRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                routeDisplayManager.displayRoute(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+
+        @Override
+        public void onRequestMade() {}
+    }
+
+    private class NavigationRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                navigationManager.startNavigation(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+        }
+
+        @Override
+        public void onRequestMade() {
+
+        }
+    }
 }
