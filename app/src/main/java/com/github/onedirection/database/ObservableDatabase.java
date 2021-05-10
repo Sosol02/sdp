@@ -33,6 +33,10 @@ public class ObservableDatabase implements Database, Observable<ObservableDataba
         return true;
     }
 
+    public void removeAllObservers() {
+        observers.clear();
+    }
+
     /*
 store
 retrieve
