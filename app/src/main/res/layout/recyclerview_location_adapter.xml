@@ -7,5 +7,13 @@
         android:id="@+id/locationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="8sp" />
+        android:textColor="@color/col_on_secondary"
+        android:textSize="14sp"
+        android:textAlignment="center"/>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/col_on_secondary"/>
+
 </FrameLayout>

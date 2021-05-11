@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/custom_calendar_view"
-    tools:context=".navigation.fragment.calendar.CustomCalendarView">
+    tools:context=".navigation.fragment.calendar.CustomCalendarView"
+    android:background="@color/col_on_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,35 +19,33 @@
         android:background = "@color/white">
 
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:id = "@+id/previousBtn"
-            android:background="@mipmap/shrek_dab_left"
-            android:layout_margin = "10dp"
-            android:contentDescription="@string/shrek_left"
-            />
+            android:id="@+id/previousBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/left_arrow"
+            android:contentDescription="@string/shrek_left" />
 
         <TextView
+            android:id="@+id/currentDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:layout_weight="3"
             android:text="@string/currentdate"
-            android:id="@+id/currentDate"
             android:textAlignment="center"
+            android:textColor="@color/col_on_secondary"
             android:textSize="18sp"
-            android:textColor="@color/black"
-            />
+            app:cornerRadius="50px" />
 
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:id = "@+id/nextBtn"
-            android:background="@mipmap/shrek_dab_right"
-            android:layout_margin = "10dp"
-            android:contentDescription="@string/shrek_right"
-            />
+            android:id="@+id/nextBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/right_arrow"
+            android:contentDescription="@string/shrek_right" />
     </LinearLayout>
 
     <LinearLayout
@@ -129,6 +128,5 @@
         android:layout_height="match_parent"
         android:id="@+id/gridView"
         android:numColumns="7" />
-
 
 </LinearLayout>

@@ -42,7 +42,7 @@
     <string name="fragment_map_event_location">Location</string>
 
     <!-- Strings related to event creator -->
-    <string name="create_an_event_title">Create an event:</string>
+    <string name="create_an_event_title">CREATE AN EVENT</string>
     <string name="create_event_button_text">Create event</string>
     <string name="event_name_hint">Event name</string>
     <string name="location_hint">Location</string>

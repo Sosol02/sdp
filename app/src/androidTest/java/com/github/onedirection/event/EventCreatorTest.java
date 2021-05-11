@@ -129,7 +129,7 @@ public class EventCreatorTest {
     }
 
     public void testIsMainFragment() {
-        onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("Create"))));
+        onView(ViewMatchers.withId(R.id.textEventCreatorTitle)).check(matches(withText(containsString("CREATE"))));
     }
 
     public void testIsGeolocationFragment() {
