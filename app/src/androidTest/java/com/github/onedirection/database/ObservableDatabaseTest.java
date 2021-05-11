@@ -74,6 +74,7 @@ public class ObservableDatabaseTest {
             assertThat(obj.kind, is(ObservableDatabase.ActionKind.Remove));
         });
         odb.remove(TEST_EVENT_1.getId(), TEST_EVENT_1.storer()).join();
+        odb.removeAllObservers();
     }
 
     @Test
@@ -86,6 +87,7 @@ public class ObservableDatabaseTest {
             assertThat(obj.kind, is(ObservableDatabase.ActionKind.Retrieve));
         });
         odb.retrieve(TEST_EVENT_1.getId(), TEST_EVENT_1.storer()).join();
+        odb.removeAllObservers();
     }
 
 
@@ -117,5 +119,37 @@ public class ObservableDatabaseTest {
             assertThat(obj.kind, is(ObservableDatabase.ActionKind.Store));
         });
         odb.retrieveAll(EventStorer.getInstance());
+
+        odb.removeAllObservers();
+    }
+
+    @Test
+    public void testQueriesWork() {
+        ObservableDatabase odb = DefaultDatabase.getDefaultInstance();
+        odb.removeAllObservers();
+        odb.store(TEST_EVENT_1);
+        odb.addObserver((observable, obj) -> {
+            List<Event> ls = (List<Event>) obj.element;
+            assertThat(ls.get(0), is(TEST_EVENT_1));
+            assertThat(obj.ids.get(0), is(TEST_EVENT_1.getId()));
+            assertThat(obj.kind, is(ObservableDatabase.ActionKind.Retrieve));
+        });
+        odb.filterWhereEquals("name", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+        odb.filterWhereGreaterEq("name", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+        odb.filterWhereLessEq("name", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+        odb.filterWhereGreaterEqLess("name", TEST_EVENT_1.getName(),  TEST_EVENT_1.getName() + "z", EventStorer.getInstance()).join();
+        odb.filterWhereGreaterLessEq("name", "", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+
+        odb.removeAllObservers();
+        odb.addObserver((observable, obj) -> {
+            List<Event> ls = (List<Event>) obj.element;
+            assertThat(ls.isEmpty(), is(true));
+            assertThat(obj.ids.isEmpty(), is(true));
+            assertThat(obj.kind, is(ObservableDatabase.ActionKind.Retrieve));
+        });
+        odb.filterWhereGreater("name", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+        odb.filterWhereLess("name", TEST_EVENT_1.getName(), EventStorer.getInstance()).join();
+
+        odb.removeAllObservers();
     }
 }
