@@ -4,6 +4,7 @@ import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.utils.Id;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -32,6 +33,12 @@ public class ObservableDatabaseTest {
         for(Event e : events) {
             db.remove(e.getId(), EventStorer.getInstance()).get();
         }
+    }
+
+    @After
+    public void removeObservers() {
+        ObservableDatabase db = DefaultDatabase.getDefaultInstance();
+        db.removeAllObservers(); // crashes subsequent tests if not here
     }
 
     @Test
