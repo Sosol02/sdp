@@ -14,12 +14,14 @@ import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
-import com.github.onedirection.events.EventsListAdapter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A view displaying the list of events for a given day
+ */
 @SuppressLint("ViewConstructor")
 public class DayEventsListView extends LinearLayout {
     private final static int WINDOW_LAYOUT_WIDTH = 1000;
@@ -71,7 +73,7 @@ public class DayEventsListView extends LinearLayout {
         onDialogDismiss = runnable;
     }
 
-    private AlertDialog setupDialog(List<Event> events) {
+    private void setupDialog(List<Event> events) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
@@ -86,7 +88,6 @@ public class DayEventsListView extends LinearLayout {
         } else {
             alertDialog.dismiss();
         }
-        return alertDialog;
     }
 
 

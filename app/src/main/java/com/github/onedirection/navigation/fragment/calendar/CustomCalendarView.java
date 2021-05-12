@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The view of the actual list of dates of the calendar
+ */
 public class CustomCalendarView extends LinearLayout {
 
     private static final int MAX_CALENDAR_DAYS = 42;
@@ -84,19 +87,13 @@ public class CustomCalendarView extends LinearLayout {
             int dateOfMonth = dateOfMonthAtPosition(position);
             LocalDate localDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
 
-            addEvent.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    callEventCreator(localDate);
-                    alertDialog.cancel();
-                }
+            addEvent.setOnClickListener(v -> {
+                callEventCreator(localDate);
+                alertDialog.cancel();
             });
-            viewEvents.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    alertDialog.cancel();
-                    callDayEventsList(localDate.atStartOfDay(ZoneId.systemDefault()));
-                }
+            viewEvents.setOnClickListener(v -> {
+                alertDialog.cancel();
+                callDayEventsList(localDate.atStartOfDay(ZoneId.systemDefault()));
             });
             builder.setView(onDaySelectedPopup);
             alertDialog = builder.create();
@@ -147,7 +144,7 @@ public class CustomCalendarView extends LinearLayout {
         LoadingDialog loadingDialog = startLoadingAnimation();
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             eventsList = monthEvents;
-            setUpGridView(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
+            setUpGridView();
             stopLoadingAnimation(loadingDialog);
             idling.decrement();
         });
@@ -158,11 +155,10 @@ public class CustomCalendarView extends LinearLayout {
         EventQueries queryManager = new EventQueries(database);
         LocalDate localDate = LocalDate.of(year, monthNumber, 1);
         ZonedDateTime firstInstantOfMonth = localDate.atStartOfDay(ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        return monthEventsFuture;
+        return queryManager.getEventsByMonth(firstInstantOfMonth);
     }
 
-    private void setUpGridView(int monthNumber, int year) {
+    private void setUpGridView() {
         CalendarGridAdapter calendarGridAdapter = new CalendarGridAdapter(context, dates, calendar, eventsList);
         gridView.setAdapter(calendarGridAdapter);
     }
@@ -184,7 +180,7 @@ public class CustomCalendarView extends LinearLayout {
 
     private void callDayEventsList(ZonedDateTime day) {
         dayEventsView = new DayEventsListView(getContext(), day, idling);
-        dayEventsView.setOnDialogDismissFunction(() -> refreshCalendarView());
+        dayEventsView.setOnDialogDismissFunction(this::refreshCalendarView);
 
     }
 

@@ -14,6 +14,9 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
 
+/**
+ * The fragment displaying the elements related to the calendar of the app
+ */
 public class CalendarFragment extends Fragment {
 
     private final String EXTRA_MESSAGE_DATE = "DATE";

@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+/**
+ * Calendar view model in the navigation fragment hierarchy
+ */
 public class CalendarViewModel extends ViewModel {
     private final MutableLiveData<String> mText;
 
