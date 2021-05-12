@@ -7,9 +7,7 @@
     android:orientation="vertical"
     tools:visibility="visible">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
+
 
     <Button
         android:id="@+id/addEvent"
@@ -22,9 +20,7 @@
         android:textColor="@color/col_on_primary"
         app:cornerRadius="50px" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
+
 
     <Button
         android:id="@+id/viewEvents"
@@ -41,8 +37,6 @@
         android:textColor="@color/col_on_primary"
         app:cornerRadius="50px" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
+
 
 </LinearLayout>
