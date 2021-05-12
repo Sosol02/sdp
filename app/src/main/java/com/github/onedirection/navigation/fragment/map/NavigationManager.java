@@ -60,6 +60,7 @@ public class NavigationManager {
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
+        Objects.requireNonNull(routeDisplayManager);
         this.mapboxMap = mapboxMap;
         this.context = context;
         this.routeDisplayManager = routeDisplayManager;
