@@ -34,11 +34,10 @@ public class Notifications {
     private static final int requestCode = 0;
     /**
      * Delta time in seconds within which we consider an event to trigger.
-     * Consider looking at onRecieve to get the full picture.
+     * Consider looking at onReceive to get the full picture.
      */
-    public static int SLACK = 60;
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static int CHECK_WAIT_TIME_SECS = 60 * 5;
+    private static final int SLACK = 60;
+    private static final int CHECK_WAIT_TIME_SECS = 60 * 5;
 
     private PendingIntent lastPendingIntent = null;
 
@@ -138,7 +137,7 @@ public class Notifications {
                 }
                 if (!scheduledNextTime) {
                     Log.d(LOG_TAG, "No event was available for scheduling the next call, " +
-                            "schdeling for next check = " + CHECK_WAIT_TIME_SECS + " seconds.");
+                            "scheduling for next check = " + CHECK_WAIT_TIME_SECS + " seconds.");
                     scheduleNextCheckAt(appContext, now.plusSeconds(CHECK_WAIT_TIME_SECS), handler);
                 }
             }
