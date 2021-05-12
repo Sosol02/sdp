@@ -2,6 +2,8 @@ package com.github.onedirection.navigation.fragment.calendar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,6 +100,7 @@ public class CustomCalendarView extends LinearLayout {
             });
             builder.setView(onDaySelectedPopup);
             alertDialog = builder.create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             alertDialog.show();
         });
     }
