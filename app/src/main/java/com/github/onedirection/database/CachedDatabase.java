@@ -16,12 +16,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class CachedDatabase implements Database {
 
-    private static final CachedDatabase globalCachedDb = new CachedDatabase(ConcreteDatabase.getDatabase());
-
-    public static CachedDatabase getInstance() {
-        return globalCachedDb;
-    }
-
     private final Database innerDatabase;
     // sadly, we can't have a concrete type for the values. This comment is useful: don't try to refactor this type,
     // I already thought about it and it was the best i found.
