@@ -39,6 +39,7 @@ public final class NominatimGeocoding implements GeocodingService {
     private static final String LON_FIELD = "lon";
 
     private static final String LOGCAT_TAG = "NominatimGeocoding";
+    private static final String USER_AGENT = "1Direction";
 
     public static final int MAX_RESULTS = 50;
     private static final int MIN_DELAY_MS = 1_000;
@@ -98,7 +99,7 @@ public final class NominatimGeocoding implements GeocodingService {
         ){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                return Collections.singletonMap("User-Agent", "1Direction");
+                return Collections.singletonMap("User-Agent", USER_AGENT);
             }
         };
         return Pair.of(result, request);
@@ -117,7 +118,7 @@ public final class NominatimGeocoding implements GeocodingService {
         ){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                return Collections.singletonMap("User-agent", "1Direction");
+                return Collections.singletonMap("User-agent", USER_AGENT);
             }
         };
         return Pair.of(result, request);
@@ -134,7 +135,7 @@ public final class NominatimGeocoding implements GeocodingService {
         });
 
 
-        long delay = Math.min(0, MIN_DELAY_MS - (SystemClock.uptimeMillis() - this.lastRequest));
+        long delay = Math.max(0, MIN_DELAY_MS - (SystemClock.uptimeMillis() - this.lastRequest));
         delayer.postDelayed(() -> requestQueue.add(request), delay);
         this.lastRequest = SystemClock.uptimeMillis() + delay;
 
@@ -144,7 +145,8 @@ public final class NominatimGeocoding implements GeocodingService {
     @Override
     public CompletableFuture<List<NamedCoordinates>> getNamedCoordinates(String locationName, int count) {
         if (count > MAX_RESULTS) {
-            Log.w(LOGCAT_TAG, "The specified number of results is over Nominatim's limit (which is 50).");
+            Log.w(LOGCAT_TAG, String.format("The specified number of results is over Nominatim's limit (which is %s).", MAX_RESULTS));
+            count = MAX_RESULTS;
         } else if (count < 1) {
             throw new IllegalArgumentException("Count cannot be below 1.");
         }
