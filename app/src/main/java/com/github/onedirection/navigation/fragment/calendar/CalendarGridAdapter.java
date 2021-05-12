@@ -71,7 +71,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
                     if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(String.format("%s Event", nbOfEventsInDay));
+                        EventNumber.setText(R.string.one_event_cal_display);
                     } else {
                         EventNumber.setText(String.format("%s Events", nbOfEventsInDay));
                     }
