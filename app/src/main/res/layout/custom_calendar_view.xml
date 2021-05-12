@@ -37,7 +37,7 @@
             android:textAlignment="center"
             android:textColor="@color/col_on_secondary"
             android:textSize="18sp"
-            app:cornerRadius="50px" />
+            app:cornerRadius="50dp" />
 
         <ImageButton
             android:id="@+id/nextBtn"
