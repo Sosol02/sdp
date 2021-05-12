@@ -10,7 +10,7 @@ import com.google.android.gms.location.LocationCallback;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-public class DeviceLocationProviderMockito implements DeviceLocationProvider {
+public class DeviceLocationProviderMock implements DeviceLocationProvider {
 
     private final ArrayList<ObserverPattern.Observer<Coordinates>> observers = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class DeviceLocationProviderMockito implements DeviceLocationProvider {
 
     @Override
     public Coordinates getLastLocation() {
-        return MapFragmentTest.COORDINATES_1;
+        return MapFragmentTest.COORDINATES_LOCATION;
     }
 
     @Override
