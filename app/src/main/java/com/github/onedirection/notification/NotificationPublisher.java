@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.github.onedirection.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.event.Event;
@@ -48,7 +49,7 @@ public class NotificationPublisher extends BroadcastReceiver {
 
         ZonedDateTime now = ZonedDateTime.now();
         // TODO: use Database.getInstance instead
-        CompletableFuture<List<Event>> eventsFuture = EventQueries.getEventsByDay(ConcreteDatabase.getDatabase(), now);
+        CompletableFuture<List<Event>> eventsFuture = EventQueries.getEventsByDay(Database.getDefaultInstance(), now);
         eventsFuture.whenComplete((events, err) -> {
             Context appContext = context.getApplicationContext();
             Notifications notifications = Notifications.getInstance(appContext);

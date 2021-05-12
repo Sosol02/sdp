@@ -22,13 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class ConcreteDatabase implements Database {
     private final FirebaseFirestore db;
 
-    private static final ConcreteDatabase global = new ConcreteDatabase();
-
-    public static ConcreteDatabase getDatabase() {
-        return global;
-    }
-
-    private ConcreteDatabase() {
+    ConcreteDatabase() {
         db = FirebaseUtils.getFirestore();
     }
 
