@@ -96,13 +96,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
-            app:cornerRadius="50px" />
+            app:cornerRadius="50dp" />
 
         <Button
             android:id="@+id/buttonSetGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/set_geolocation"
-            app:cornerRadius="50px" />
+            app:cornerRadius="50dp" />
     </LinearLayout>
 </FrameLayout>

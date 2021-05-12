@@ -6,7 +6,7 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_event_viewer"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/menu_home" />
         <item
@@ -34,9 +34,9 @@
             android:icon="@drawable/ic_menu_logout"
             android:visible="false"
             android:title="@string/menu_logout" />
-        <item
-            android:id="@+id/nav_event_viewer"
+        <!--<item
+            android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_sign"
-            android:title="@string/menu_event_viewer"/>
+            android:title="@string/menu_event_viewer"/>-->
     </group>
 </menu>
