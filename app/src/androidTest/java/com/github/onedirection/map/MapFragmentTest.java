@@ -19,6 +19,7 @@ import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
+import com.github.onedirection.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
@@ -143,7 +144,7 @@ public class MapFragmentTest {
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
         for(Event e : events) {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
