@@ -467,7 +467,7 @@ public class MapFragmentTest {
 
         assertThat(isNavigationStarted[0], is(true));
 
-        navigationManager.stopNavigation();
+        runOnUiThreadAndWaitEndExecution(navigationManager::stopNavigation);
         assertThat(isNavigationStarted[0], is(false));
     }
 
