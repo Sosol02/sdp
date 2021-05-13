@@ -1,4 +1,4 @@
-package com.github.onedirection.events;
+package com.github.onedirection.navigation.fragment.calendar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,6 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Adapter used by views listing events that displays a concise description of the events
+ */
 public class EventsListAdapter extends ArrayAdapter {
     private final Context context;
     private final List<Event> events;
@@ -48,11 +51,12 @@ public class EventsListAdapter extends ArrayAdapter {
     }
 
 
-    @SuppressLint("ViewHolder")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        convertView = layoutInflater.inflate(R.layout.event_view_in_list, null);
+        if(convertView == null){
+            convertView = layoutInflater.inflate(R.layout.event_view_in_list, parent, false);
+        }
         TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
         TextView eventDate = (TextView) convertView.findViewById(R.id.eventDate);
         TextView eventStartTime = (TextView) convertView.findViewById(R.id.eventStartTime);

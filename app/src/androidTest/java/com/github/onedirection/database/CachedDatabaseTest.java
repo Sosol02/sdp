@@ -23,7 +23,7 @@ public class CachedDatabaseTest {
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
         for(Event e : events) {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
@@ -33,79 +33,79 @@ public class CachedDatabaseTest {
 
     @Test
     public void canStoreAndRetrieveAndRemoveEvents() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.canStoreAndRetrieveAndRemoveEvents(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.canStoreAndRetrieveAndRemoveEvents(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void containsOnEventObject() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.containsOnEventObject(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.containsOnEventObject(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void containsOnEventId() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.containsOnEventId(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.containsOnEventId(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void storeAllWorksJustLikeManyStores() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.storeAllWorksJustLikeManyStores(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.storeAllWorksJustLikeManyStores(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void storeAllWorksOnEmptyList() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.storeAllWorksOnEmptyList(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.storeAllWorksOnEmptyList(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void retrieveAllWorksJustLikeManyRetrieves() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.retrieveAllWorksJustLikeManyRetrieves(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.retrieveAllWorksJustLikeManyRetrieves(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void retrieveOnFilterKeyQueryActsLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.retrieveOnFilterKeyQueryActsLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.retrieveOnFilterKeyQueryActsLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void sameIdOverridesEntry() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.sameIdOverridesEntry(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.sameIdOverridesEntry(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereGreaterFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereGreaterFiltersLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.filterWhereGreaterFiltersLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereGreaterEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereGreaterEqFiltersLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.filterWhereGreaterEqFiltersLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereLessFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereLessFiltersLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.filterWhereLessFiltersLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereLessEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereLessEqFiltersLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.filterWhereLessEqFiltersLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereGreaterEqLessFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereGreaterEqLessFiltersLikeRDB(new CachedDatabase(ConcreteDatabase.getDatabase()));
+        CommonDatabaseTests.filterWhereGreaterEqLessFiltersLikeRDB(new CachedDatabase(DefaultDatabase.getDefaultConcreteInstance()));
     }
 
     @Test
     public void filterWhereGreaterLessEqFiltersLikeRDB() throws ExecutionException, InterruptedException {
-        CommonDatabaseTests.filterWhereGreaterLessEqFiltersLikeRDB(ConcreteDatabase.getDatabase());
+        CommonDatabaseTests.filterWhereGreaterLessEqFiltersLikeRDB(DefaultDatabase.getDefaultConcreteInstance());
     }
 
     @Test
     public void failedFutureInvalidatesCache() throws ExecutionException, InterruptedException {
         int[] counter = new int[] {0};
         CompletableFuture<? extends Storable<?>> fut = new CompletableFuture<>();
-        final ConcreteDatabase realdb = ConcreteDatabase.getDatabase();
+        final ConcreteDatabase realdb = DefaultDatabase.getDefaultConcreteInstance();
         final CachedDatabase cdb = new CachedDatabase(new MockDatabase() {
             @Override
             public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {

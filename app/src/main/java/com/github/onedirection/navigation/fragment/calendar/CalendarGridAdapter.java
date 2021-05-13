@@ -19,11 +19,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Adapter used by the calendar to display the date and number of events on that day
+ */
 public class CalendarGridAdapter extends ArrayAdapter {
     private final Calendar currentDate;
     private final List<Event> events;
     private final LayoutInflater inflater;
     private final List<Date> dates;
+    private final int currentMonth;
+
 
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
@@ -32,10 +37,10 @@ public class CalendarGridAdapter extends ArrayAdapter {
         this.events = events;
         this.inflater = LayoutInflater.from(context);
         this.dates = dates;
+        this.currentMonth = currentDate.get(Calendar.MONTH) + 1;
     }
 
 
-    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -46,8 +51,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         int dayNumber = dateCalendar.get(Calendar.DAY_OF_MONTH);
         int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
         int displayYear = dateCalendar.get(Calendar.YEAR);
-        int currentMonth = currentDate.get(Calendar.MONTH) + 1;
-        int currentYear = currentDate.get(Calendar.YEAR);
+
         View view = convertView;
 
         if (view == null) {
@@ -67,9 +71,9 @@ public class CalendarGridAdapter extends ArrayAdapter {
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
                     if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(nbOfEventsInDay + " Event");
+                        EventNumber.setText(R.string.one_event_cal_display);
                     } else {
-                        EventNumber.setText(nbOfEventsInDay + " Events");
+                        EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.multiple_events_cal_display), nbOfEventsInDay));
                     }
                 }
             }
@@ -77,6 +81,14 @@ public class CalendarGridAdapter extends ArrayAdapter {
         return view;
     }
 
+    @Override
+    public boolean isEnabled(int position) {
+        Date monthDate = dates.get(position);
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(monthDate);
+        int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
+        return currentMonth == displayMonth;
+    }
 
     @Override
     public int getCount() {
