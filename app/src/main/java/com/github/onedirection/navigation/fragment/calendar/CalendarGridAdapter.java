@@ -27,6 +27,8 @@ public class CalendarGridAdapter extends ArrayAdapter {
     private final List<Event> events;
     private final LayoutInflater inflater;
     private final List<Date> dates;
+    private final int currentMonth;
+
 
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
@@ -35,6 +37,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         this.events = events;
         this.inflater = LayoutInflater.from(context);
         this.dates = dates;
+        this.currentMonth = currentDate.get(Calendar.MONTH) + 1;
     }
 
 
@@ -48,8 +51,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
         int dayNumber = dateCalendar.get(Calendar.DAY_OF_MONTH);
         int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
         int displayYear = dateCalendar.get(Calendar.YEAR);
-        int currentMonth = currentDate.get(Calendar.MONTH) + 1;
-        int currentYear = currentDate.get(Calendar.YEAR);
+
         View view = convertView;
 
         if (view == null) {
@@ -69,9 +71,9 @@ public class CalendarGridAdapter extends ArrayAdapter {
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
                     if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(String.format("%s Event", nbOfEventsInDay));
+                        EventNumber.setText(R.string.one_event_cal_display);
                     } else {
-                        EventNumber.setText(String.format("%s Events", nbOfEventsInDay));
+                        EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.multiple_events_cal_display), nbOfEventsInDay));
                     }
                 }
             }
@@ -79,6 +81,14 @@ public class CalendarGridAdapter extends ArrayAdapter {
         return view;
     }
 
+    @Override
+    public boolean isEnabled(int position) {
+        Date monthDate = dates.get(position);
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(monthDate);
+        int displayMonth = dateCalendar.get(Calendar.MONTH) + 1;
+        return currentMonth == displayMonth;
+    }
 
     @Override
     public int getCount() {

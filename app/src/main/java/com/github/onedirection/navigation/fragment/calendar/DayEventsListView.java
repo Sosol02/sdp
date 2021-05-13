@@ -17,6 +17,7 @@ import com.github.onedirection.event.Event;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -74,6 +75,10 @@ public class DayEventsListView extends LinearLayout {
     }
 
     private void setupDialog(List<Event> events) {
+        Objects.requireNonNull(events);
+        if(events.size() == 0){
+            return;
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
@@ -82,13 +87,10 @@ public class DayEventsListView extends LinearLayout {
         if (onDialogDismiss != null) {
             alertDialog.setOnDismissListener(dialog -> onDialogDismiss.run());
         }
-        if (events.size() != 0) {
-            alertDialog.show();
-            alertDialog.getWindow().setLayout(WINDOW_LAYOUT_WIDTH, WINDOW_LAYOUT_HEIGHT);
-        } else {
-            alertDialog.dismiss();
-        }
+        alertDialog.show();
+        alertDialog.getWindow().setLayout(WINDOW_LAYOUT_WIDTH, WINDOW_LAYOUT_HEIGHT);
     }
+
 
 
     private CompletableFuture<List<Event>> getDayEvents(ZonedDateTime day) {
