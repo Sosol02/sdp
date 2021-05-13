@@ -71,6 +71,9 @@ public class CalendarGridAdapter extends ArrayAdapter {
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
                     EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.events_call_display), nbOfEventsInDay));
+                    //EventNumber.setBackground(R.drawable.rounded_corner);
+                } else {
+                    //EventNumber.setBackground(R.drawable.rounded_corner);
                 }
             }
         }
