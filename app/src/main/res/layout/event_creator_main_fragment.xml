@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/set_geolocation"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    app:cornerRadius="50dp"/>
 
                 <include
                     android:id="@+id/startDateTime"
