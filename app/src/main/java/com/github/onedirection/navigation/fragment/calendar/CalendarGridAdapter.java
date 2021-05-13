@@ -70,11 +70,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                 if (dayNumber == eventCalendar.get(Calendar.DAY_OF_MONTH) && displayMonth == eventCalendar.get(Calendar.MONTH) + 1
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
-                    if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(R.string.one_event_cal_display);
-                    } else {
-                        EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.multiple_events_cal_display), nbOfEventsInDay));
-                    }
+                    EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.events_call_display), nbOfEventsInDay));
                 }
             }
         }
