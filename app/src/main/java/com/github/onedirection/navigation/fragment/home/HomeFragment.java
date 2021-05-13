@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.database.queries.EventQueries;
+import com.github.onedirection.event.Event;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
