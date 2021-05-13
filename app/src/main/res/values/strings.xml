@@ -86,6 +86,7 @@
 
     <string name="menu_event_viewer">menu_event_viewer</string>
     <string name="one_event_cal_display">1 Event</string>
+    <string name="multiple_events_cal_display">%d Events</string>
 
 
 </resources>

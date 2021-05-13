@@ -73,7 +73,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                     if (nbOfEventsInDay == 1) {
                         EventNumber.setText(R.string.one_event_cal_display);
                     } else {
-                        EventNumber.setText(String.format("%s Events", nbOfEventsInDay));
+                        EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.multiple_events_cal_display), nbOfEventsInDay));
                     }
                 }
             }
