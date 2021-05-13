@@ -1,4 +1,4 @@
-package com.github.onedirection.eventviewer;
+package com.github.onedirection.navigation.fragment.home;
 
 import android.view.LayoutInflater;
 import android.view.View;

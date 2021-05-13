@@ -8,7 +8,6 @@ import android.view.ViewParent;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
@@ -16,11 +15,9 @@ import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
-import com.github.onedirection.eventviewer.DisplayEvent;
+import com.github.onedirection.navigation.fragment.home.DisplayEvent;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
-import com.github.onedirection.utils.Pair;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -33,8 +30,6 @@ import java.time.ZonedDateTime;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;

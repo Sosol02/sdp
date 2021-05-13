@@ -1,4 +1,4 @@
-package com.github.onedirection.eventviewer;
+package com.github.onedirection.navigation.fragment.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 

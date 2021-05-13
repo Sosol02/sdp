@@ -19,22 +19,14 @@ import androidx.navigation.ui.NavigationUI;
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.events.ui.EventCreator;
-import com.github.onedirection.eventviewer.EventView;
-import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.utils.Id;
 import com.google.android.material.navigation.NavigationView;
 
-import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,7 +46,6 @@ public class NavigationActivity extends AppCompatActivity {
         ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
 
-        CompletableFuture.allOf(monthEventsFuture);
 
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,28 +54,18 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_calendar, R.id.nav_map)
+                R.id.nav_calendar,R.id.nav_home, R.id.nav_map)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+
         navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(getApplicationContext(), EventCreator.class);
-                startActivity(intent);
-                return false;
-            }
-        });
-
-        navigationView.getMenu().findItem(R.id.nav_event_viewer).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(getApplicationContext(), EventView.class);
-                List<Event> events = getEvents();
-                EventView.putEventListExtra(intent, events);
                 startActivity(intent);
                 return false;
             }
@@ -103,15 +84,6 @@ public class NavigationActivity extends AppCompatActivity {
                 logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
                 return false;
             }
-        });
-
-        Intent intent = new Intent(this, EventView.class);
-        intent = EventView.putEventListExtra(intent,events);
-        startActivity(intent);
-
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            events = monthEvents;
-            EventView.eventView.updateResults(events);
         });
     }
 

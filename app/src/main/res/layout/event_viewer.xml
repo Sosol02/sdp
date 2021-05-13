@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".eventviewer.EventView"
+    tools:context=".navigation.fragment.home.EventView"
     android:background="@drawable/background">
 
 
