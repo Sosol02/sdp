@@ -209,7 +209,7 @@ public class MainFragment extends Fragment {
                         ))
                 ,
                 time.getValue().getYear(),
-                time.getValue().getMonthValue(),
+                time.getValue().getMonthValue() - 1,
                 time.getValue().getDayOfMonth()
         );
         datePicker.show();
