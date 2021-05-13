@@ -48,6 +48,7 @@
     <string name="location_hint">Location</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
+    <string name="recurrence_end_text">Repeat until:</string>
 
     <string name="set_event_location">Set event location</string>
     <string name="location_name">Location name</string>
@@ -70,5 +71,9 @@
     <string name="view_events">View Events</string>
     <string name="shrek_left">Our lord and savior dabbing to the left</string>
     <string name="shrek_right">Our lord and savior dabbing to the right</string>
+    <string name="repeat_event">Repeat event ?</string>
+    <string name="repeat_every">Repeat every:</string>
+    <string name="amount">Amount</string>
+    <string name="menu_event_viewer">menu_event_viewer</string>
 
 </resources>

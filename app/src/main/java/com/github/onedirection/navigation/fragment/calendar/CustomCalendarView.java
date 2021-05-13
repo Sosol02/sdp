@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.ConcreteDatabase;
 import com.github.onedirection.events.Event;
-import com.github.onedirection.events.EventCreator;
+import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.utils.LoadingDialog;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -47,7 +47,6 @@ public class CustomCalendarView extends LinearLayout {
     private TextView CurrentDate;
     private GridView gridView;
     private AlertDialog alertDialog;
-    private Fragment parentFragment;
 
 
     public CustomCalendarView(Context context) {
@@ -102,13 +101,7 @@ public class CustomCalendarView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-
-
-    public void setParentFragment(Fragment fragment) {
-        this.parentFragment = fragment;
-    }
-
-    public void refreshCalendarView(){
+    public void refreshCalendarView() {
         setUpCalendar();
     }
 
@@ -136,19 +129,22 @@ public class CustomCalendarView extends LinearLayout {
             monthCalendar.add(Calendar.DAY_OF_MONTH, 1);
         }
         gridView.setAdapter(null);
-        collectEventsPerMonth(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
+
+        CompletableFuture<List<Event>> monthEventsFuture = collectEventsPerMonth(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
+        LoadingDialog loadingDialog = startLoadingAnimation();
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            eventsList = monthEvents;
+            setUpGridView(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
+            stopLoadingAnimation(loadingDialog);
+        });
     }
 
-
-    private void collectEventsPerMonth(int monthNumber, int year) {
+    private CompletableFuture<List<Event>> collectEventsPerMonth(int monthNumber, int year) {
         ConcreteDatabase database = ConcreteDatabase.getDatabase();
         EventQueries queryManager = new EventQueries(database);
         ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(year, monthNumber, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            eventsList = monthEvents;
-            setUpGridView(monthNumber, year);
-        });
+        return monthEventsFuture;
     }
 
     private void setUpGridView(int monthNumber, int year) {
@@ -166,16 +162,28 @@ public class CustomCalendarView extends LinearLayout {
     }
 
     private void callEventCreator(int year, int month, int day) {
-        Intent intent = new Intent(parentFragment.getActivity(), EventCreator.class);
+        Intent intent = new Intent(this.getContext(), EventCreator.class);
         EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
-        parentFragment.startActivity(intent);
+        this.getContext().startActivity(intent);
     }
 
     private void callDayEventsList() {
         //@TODO when the events list is implemented;
     }
 
-    private int getMonthNumber(Calendar cal){
+    private int getMonthNumber(Calendar cal) {
         return cal.get(Calendar.MONTH) + 1;
     }
+
+    private LoadingDialog startLoadingAnimation() {
+        LoadingDialog loadingDialog = new LoadingDialog(this.getContext());
+        loadingDialog.startLoadingAnimation();
+        return loadingDialog;
+    }
+
+    private void stopLoadingAnimation(LoadingDialog loadingDialog) {
+        loadingDialog.dismissDialog();
+    }
+
+
 }

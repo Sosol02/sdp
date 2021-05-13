@@ -2,12 +2,19 @@ package com.github.onedirection.utils;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNot.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThrows;
 
 public class CacheTest {
 
@@ -17,6 +24,13 @@ public class CacheTest {
             map.put(i, Integer.toString(i));
         }
         return map;
+    }
+
+    @Test
+    public void defaultFunctionsThrow() {
+        Cache<Integer, Integer> cache = new Cache<>();
+        assertThrows(RuntimeException.class, () -> cache.get(0));
+        assertThrows(RuntimeException.class, () -> cache.set(0, 0));
     }
 
     @Test
@@ -81,8 +95,9 @@ public class CacheTest {
     }
 
     @Test
-    public void cacheDefaultMaxHistoryNotZero() {
-        assertThat(new Cache<>((x) -> x).getMaxHistory(), is(not(0)));
+    public void cacheDefaultMaxHistoryIsCorrect() {
+        assertThat(new Cache<>().getMaxHistory(), is(not(0)));
+        assertThat(new Cache<>(75).getMaxHistory(), is(75));
     }
 
     @Test
@@ -120,5 +135,137 @@ public class CacheTest {
         cache.get(0);
         assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
         assertThat(counter[0], is(2));
+
+        cache.invalidate();
+
+        // test other overload
+        counter[0] = 0;
+        cache.get(0);
+        cache.get(1);
+        cache.get(2);
+
+        assertThat(cache.getMap().getOrDefault(0, "wrong"), is("0"));
+        assertThat(cache.getMap().getOrDefault(1, "wrong"), is("1"));
+        assertThat(cache.getMap().getOrDefault(2, "wrong"), is("2"));
+        assertThat(counter[0], is(3));
+
+        cache.invalidate(1);
+        cache.get(1);
+
+        assertThat(counter[0], is(4));
+    }
+
+    @Test
+    public void testCacheSetFunction() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> Integer.toString(k), (k, v) -> {
+            counter[0] += 1;
+            return true;
+        });
+
+        cache.set(3, "3");
+        cache.set(5, "5");
+        cache.set(324, "324");
+        cache.get(3);
+        cache.get(6);
+        cache.get(32465);
+
+        assertThat(counter[0], is(3));
+    }
+
+    @Test
+    public void testCacheNullValuesArentCached() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> {
+            counter[0] += 1;
+            return null;
+        });
+
+        cache.get(3);
+        assertThat(counter[0], is(1));
+        cache.get(4);
+        assertThat(counter[0], is(2));
+        cache.get(3);
+        assertThat(counter[0], is(3));
+        cache.get(4);
+        assertThat(counter[0], is(4));
+    }
+
+    @Test
+    public void writeAllocateWorks() {
+        final int[] counter = {0};
+        final Cache<Integer, String> cache = new Cache<>(k -> {
+            counter[0] += 1;
+            return null;
+        }, (k, v) -> true);
+
+        cache.set(0, "0", false);
+        assertThat(counter[0], is(0));
+        cache.get(0);
+        assertThat(counter[0], is(1));
+
+        cache.invalidate();
+        counter[0] = 0;
+
+        cache.set(0, "0", true);
+        assertThat(counter[0], is(0));
+        cache.get(0);
+        assertThat(counter[0], is(0));
+    }
+
+
+    ///////////////////////////////////////
+    //           Persistence             //
+    ///////////////////////////////////////
+
+    @Test
+    public void canBeStoredAndLoaded() {
+        Function<Integer, Integer> get = i -> i;
+
+        Cache<Integer, Integer> ref = new Cache<>(get, 2);
+        for (int i = 0; i <= 9; ++i) {
+            ref.get(i);
+        }
+
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        boolean dumpSuccess = ref.dumpToStream(output, i -> i, i -> i);
+        assertThat(dumpSuccess, is(true));
+
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        Optional<Cache<Integer, Integer>> maybeSerialized = Cache.loadFromStream(
+                input,
+                get,
+                (Integer i) -> i,
+                (Integer i) -> i
+        );
+        assertThat(maybeSerialized.isPresent(), is(true));
+
+        Cache<Integer, Integer> serialized = maybeSerialized.get();
+
+        for(Integer k: ref.getMap().keySet()){
+            assertThat(serialized.isCached(k), is(true));
+        }
+
+        BiConsumer<Integer, Integer> bothRequest = (i, old) -> {
+            assertThat(ref.isCached(i), is(false));
+            assertThat(serialized.isCached(i), is(false));
+            ref.get(i);
+            serialized.get(i);
+            assertThat(ref.isCached(i), is(true));
+            assertThat(serialized.isCached(i), is(true));
+        };
+
+        Consumer<Integer> noneRequest = i -> {
+            assertThat(ref.isCached(i), is(true));
+            assertThat(serialized.isCached(i), is(true));
+        };
+
+        bothRequest.accept(7, 8);
+        noneRequest.accept(9);
+        noneRequest.accept(7);
+        noneRequest.accept(9);
+        bothRequest.accept(0, 9);
+        bothRequest.accept(9, 7);
     }
 }
