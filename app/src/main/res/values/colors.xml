@@ -17,5 +17,5 @@
     <color name="col_secondary">#002E2C</color>
     <color name="col_secondary_variant">#035E7B</color>
     <color name="col_on_secondary">#262223</color>
-    <color name="event_present_icon">#FFC300</color>
+    <color name="event_present_icon">#CFCC5500</color>
 </resources>

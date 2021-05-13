@@ -21,9 +21,8 @@
         android:layout_height="wrap_content"
         android:textSize="10sp"
         android:id="@+id/events_id"
-        android:textColor="@color/white"
+        android:textColor="@color/col_on_primary"
         android:layout_gravity="center"
-        android:textAlignment="center"
-        android:background="@drawable/rounded_corner"/>
+        android:textAlignment="center"/>
 
 </LinearLayout>
