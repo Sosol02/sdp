@@ -25,6 +25,7 @@ import com.github.onedirection.utils.Pair;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +43,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
+@Ignore("Disabled feature")
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class DisplayEventAndViewEventTest {
@@ -88,7 +90,7 @@ public class DisplayEventAndViewEventTest {
         appCompatImageButton.perform(click());
 
         ViewInteraction navigationMenuItemView = onView(
-                allOf(withId(R.id.nav_event_viewer),
+                allOf(withId(/*R.id.nav_event_viewer*/0),
                         childAtPosition(
                                 allOf(withId(R.id.design_navigation_view),
                                         childAtPosition(

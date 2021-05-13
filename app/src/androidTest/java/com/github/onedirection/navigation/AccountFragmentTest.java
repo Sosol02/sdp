@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.onedirection.R;
 import com.github.onedirection.navigation.NavigationActivity;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.instanceOf;
 
+@Ignore("Disabled feature")
 @RunWith(AndroidJUnit4.class)
 public class AccountFragmentTest {
 

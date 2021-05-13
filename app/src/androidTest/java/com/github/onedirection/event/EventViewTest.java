@@ -20,6 +20,7 @@ import com.github.onedirection.utils.Id;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -43,6 +44,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
+@Ignore("Disabled feature")
 public class EventViewTest {
 
 
@@ -91,7 +93,7 @@ public class EventViewTest {
         appCompatImageButton.perform(click());
 
         ViewInteraction navigationMenuItemView = onView(
-                withId(R.id.nav_event_viewer));
+                withId(/*R.id.nav_event_viewer*/0));
         navigationMenuItemView.perform(click());
 
         ViewInteraction checkHasEvent = onView(
