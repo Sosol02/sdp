@@ -1,28 +1,25 @@
-package com.github.onedirection;
-
-import android.util.Log;
+package com.github.onedirection.database.queries;
 
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A class used to query the events in a database based on different operations
  */
 public class EventQueries {
 
+    @SuppressWarnings("FieldMayBeFinal")
     private Database db;
 
     /**

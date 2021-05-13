@@ -16,12 +16,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.database.queries.EventQueries;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
 import java.time.ZoneId;

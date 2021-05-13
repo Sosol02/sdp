@@ -2,6 +2,8 @@ package com.github.onedirection.navigation.fragment.calendar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.queries.EventQueries;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.LoadingDialog;
 
 import java.text.SimpleDateFormat;
@@ -32,6 +36,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The view of the actual list of dates of the calendar
+ */
 public class CustomCalendarView extends LinearLayout {
 
     private static final int MAX_CALENDAR_DAYS = 42;
@@ -40,8 +47,10 @@ public class CustomCalendarView extends LinearLayout {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
+    public CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
     private List<Event> eventsList = new ArrayList<>();
 
+    private DayEventsListView dayEventsView;
     private Context context;
     private ImageButton nextButton, previousButton;
     private TextView CurrentDate;
@@ -76,23 +85,19 @@ public class CustomCalendarView extends LinearLayout {
             Button addEvent = onDaySelectedPopup.findViewById(R.id.addEvent);
             Button viewEvents = onDaySelectedPopup.findViewById(R.id.viewEvents);
             int dateOfMonth = dateOfMonthAtPosition(position);
+            LocalDate localDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
 
-            addEvent.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    callEventCreator(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
-                    alertDialog.cancel();
-                }
+            addEvent.setOnClickListener(v -> {
+                callEventCreator(localDate);
+                alertDialog.cancel();
             });
-            viewEvents.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    callDayEventsList();
-                    alertDialog.cancel();
-                }
+            viewEvents.setOnClickListener(v -> {
+                alertDialog.cancel();
+                callDayEventsList(localDate.atStartOfDay(ZoneId.systemDefault()));
             });
             builder.setView(onDaySelectedPopup);
             alertDialog = builder.create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             alertDialog.show();
         });
     }
@@ -103,6 +108,10 @@ public class CustomCalendarView extends LinearLayout {
 
     public void refreshCalendarView() {
         setUpCalendar();
+    }
+
+    public DayEventsListView getDayEventView() {
+        return dayEventsView;
     }
 
 
@@ -130,24 +139,26 @@ public class CustomCalendarView extends LinearLayout {
         }
         gridView.setAdapter(null);
 
+        idling.increment();
         CompletableFuture<List<Event>> monthEventsFuture = collectEventsPerMonth(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
         LoadingDialog loadingDialog = startLoadingAnimation();
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             eventsList = monthEvents;
-            setUpGridView(getMonthNumber(calendar), monthCalendar.get(Calendar.YEAR));
+            setUpGridView();
             stopLoadingAnimation(loadingDialog);
+            idling.decrement();
         });
     }
 
     private CompletableFuture<List<Event>> collectEventsPerMonth(int monthNumber, int year) {
-        ConcreteDatabase database = ConcreteDatabase.getDatabase();
+        Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(year, monthNumber, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(firstInstantOfMonth);
-        return monthEventsFuture;
+        LocalDate localDate = LocalDate.of(year, monthNumber, 1);
+        ZonedDateTime firstInstantOfMonth = localDate.atStartOfDay(ZoneId.systemDefault());
+        return queryManager.getEventsByMonth(firstInstantOfMonth);
     }
 
-    private void setUpGridView(int monthNumber, int year) {
+    private void setUpGridView() {
         CalendarGridAdapter calendarGridAdapter = new CalendarGridAdapter(context, dates, calendar, eventsList);
         gridView.setAdapter(calendarGridAdapter);
     }
@@ -161,14 +172,16 @@ public class CustomCalendarView extends LinearLayout {
         return monthCalendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private void callEventCreator(int year, int month, int day) {
+    private void callEventCreator(LocalDate date) {
         Intent intent = new Intent(this.getContext(), EventCreator.class);
-        EventCreator.putDateExtra(intent, LocalDate.of(year, month, day));
+        EventCreator.putDateExtra(intent, date);
         this.getContext().startActivity(intent);
     }
 
-    private void callDayEventsList() {
-        //@TODO when the events list is implemented;
+    private void callDayEventsList(ZonedDateTime day) {
+        dayEventsView = new DayEventsListView(getContext(), day, idling);
+        dayEventsView.setOnDialogDismissFunction(this::refreshCalendarView);
+
     }
 
     private int getMonthNumber(Calendar cal) {
@@ -185,5 +198,8 @@ public class CustomCalendarView extends LinearLayout {
         loadingDialog.dismissDialog();
     }
 
-
+    @VisibleForTesting
+    public CountingIdlingResource getIdlingResource() {
+        return idling;
+    }
 }

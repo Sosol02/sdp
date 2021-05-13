@@ -1,15 +1,11 @@
 package com.github.onedirection.navigation.fragment.sign;
 
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,12 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.User;
-import com.github.onedirection.navigation.fragment.home.HomeFragment;
 import com.google.android.material.navigation.NavigationView;
-
-import org.w3c.dom.Text;
 
 public class SignFragment extends Fragment {
 

@@ -1,14 +1,14 @@
 package com.github.onedirection;
 
-import android.util.Log;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -27,10 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -64,7 +61,7 @@ public class EventQueriesTest {
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException, ParseException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
         for (Event e : events) {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
@@ -81,7 +78,7 @@ public class EventQueriesTest {
             events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(20 + 2 * i), end.plusMinutes(20 + 2 * i + 1)));
             events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20 + 2 * i), start.minusMinutes(20 + 2 * i).plusMinutes(1)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
         if (b) {
             EventQueries eq = new EventQueries(db);
@@ -101,7 +98,7 @@ public class EventQueriesTest {
         for (int i = 0; i < 5; ++i) {
             events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
         if (b) {
             EventQueries eq = new EventQueries(db);
@@ -127,7 +124,7 @@ public class EventQueriesTest {
         eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent", "loc", start, end));
         eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", end, end.plusMinutes(1)));
         eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", start.minusMinutes(1), start));
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
@@ -156,7 +153,7 @@ public class EventQueriesTest {
         for (int i = 0; i < 5; ++i) {
             events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
         if (b) {
             EventQueries eq = new EventQueries(db);
@@ -179,7 +176,7 @@ public class EventQueriesTest {
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.minusDays(i + 2), today.minusDays(i + 1)));
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.plusDays(i + 1), today.plusDays(i + 2)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
@@ -212,7 +209,7 @@ public class EventQueriesTest {
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusWeeks(i + 2), thisWeek.minusWeeks(i + 1)));
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.plusWeeks(i + 1), thisWeek.plusWeeks(i + 2)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
@@ -245,7 +242,7 @@ public class EventQueriesTest {
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusWeeks(i + 2), thisMonth.minusWeeks(i + 1)));
             eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.plusMonths(i + 1), thisMonth.plusMonths(i + 2)));
         }
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
         b = b && db.storeAll(eventsRejected).get();
@@ -267,7 +264,7 @@ public class EventQueriesTest {
 
     @Test
     public void storeRecurringEventShouldStoreCorrectNumberOfEvents() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -292,19 +289,19 @@ public class EventQueriesTest {
     public void modifyEventStoresCorrectModifiedVersion() throws ExecutionException, InterruptedException {
         ZonedDateTime time = ZonedDateTime.now();
         Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
-        assertEquals(event.getId(), ConcreteDatabase.getDatabase().store(event).get());
+        assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
         Event modifiedEvent = event.setName("modified");
-        assertEquals(modifiedEvent.getId(), EventQueries.modifyEvent(ConcreteDatabase.getDatabase(), modifiedEvent).get());
-        Event e = ConcreteDatabase.getDatabase().retrieve(event.getId(), event.storer()).get();
+        assertEquals(modifiedEvent.getId(), EventQueries.modifyEvent(DefaultDatabase.getDefaultConcreteInstance(), modifiedEvent).get());
+        Event e = DefaultDatabase.getDefaultConcreteInstance().retrieve(event.getId(), event.storer()).get();
         assertEquals(modifiedEvent, e);
         assertNotEquals(event, e);
-        EventQueries.removeEvent(ConcreteDatabase.getDatabase(), e.getId()).get();
+        EventQueries.removeEvent(DefaultDatabase.getDefaultConcreteInstance(), e.getId()).get();
     }
 
     @Test
     public void modifyEndTimeOfRecurringEventChangesEndTimeOfSeries() throws ExecutionException, InterruptedException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -330,20 +327,20 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Event event = new Event(rootId, "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
-        assertEquals(event.getId(), ConcreteDatabase.getDatabase().store(event).get());
+        assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
         Recurrence recurrence = new Recurrence(rootId, period, time.plusDays(6));
         Event recurrEvent = event.setRecurrence(recurrence);
-        assertTrue(EventQueries.modifyEvent(ConcreteDatabase.getDatabase(), recurrEvent).get().equals(event.getId()));
-        List<Event> eventSeries = new EventQueries(ConcreteDatabase.getDatabase()).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
+        assertTrue(EventQueries.modifyEvent(DefaultDatabase.getDefaultConcreteInstance(), recurrEvent).get().equals(event.getId()));
+        List<Event> eventSeries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance()).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
         assertEquals(7, eventSeries.size());
 
-        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeRecurrEvents(recurrence.getGroupId()).get());
+        assertTrue(new EventQueries(DefaultDatabase.getDefaultConcreteInstance()).removeRecurrEvents(recurrence.getGroupId()).get());
     }
 
     @Test
     public void modifyRecurrEventByRemovingRecurrenceIsAllowed() throws ExecutionException, InterruptedException {
-        ConcreteDatabase db = ConcreteDatabase.getDatabase();
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -359,25 +356,25 @@ public class EventQueriesTest {
 
         List<Event> eventSeries = new EventQueries(db).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
         assertEquals(6, eventSeries.size());
-        assertTrue(ConcreteDatabase.getDatabase().contains(nonRecurrEvent).get());
+        assertTrue(DefaultDatabase.getDefaultConcreteInstance().contains(nonRecurrEvent).get());
 
-        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeRecurrEvents(recurrence.getGroupId()).get());
-        assertTrue(new EventQueries(ConcreteDatabase.getDatabase()).removeEvent(nonRecurrEvent.getId()).get().equals(nonRecurrEvent.getId()));
+        assertTrue(new EventQueries(DefaultDatabase.getDefaultConcreteInstance()).removeRecurrEvents(recurrence.getGroupId()).get());
+        assertTrue(new EventQueries(DefaultDatabase.getDefaultConcreteInstance()).removeEvent(nonRecurrEvent.getId()).get().equals(nonRecurrEvent.getId()));
     }
 
     @Test
     public void removeNonRecurringEventRemovesItFromDatabase() throws ExecutionException, InterruptedException {
         ZonedDateTime time = ZonedDateTime.now();
         Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
-        assertEquals(event.getId(), ConcreteDatabase.getDatabase().store(event).get());
-        assertTrue(ConcreteDatabase.getDatabase().contains(event.getId(), event.storer()).get());
-        assertEquals(event.getId(), EventQueries.removeEvent(ConcreteDatabase.getDatabase(), event.getId()).get());
-        assertFalse(ConcreteDatabase.getDatabase().contains(event.getId(), event.storer()).get());
+        assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
+        assertTrue(DefaultDatabase.getDefaultConcreteInstance().contains(event.getId(), event.storer()).get());
+        assertEquals(event.getId(), EventQueries.removeEvent(DefaultDatabase.getDefaultConcreteInstance(), event.getId()).get());
+        assertFalse(DefaultDatabase.getDefaultConcreteInstance().contains(event.getId(), event.storer()).get());
     }
 
     @Test
     public void removeRecurringEventRemovesFromRecurrenceSeries() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -407,7 +404,7 @@ public class EventQueriesTest {
 
     @Test
     public void retrieveRecurrenceSeriesGivesBackCorrectNumberOfEvents() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -425,7 +422,7 @@ public class EventQueriesTest {
 
     @Test
     public void removeRecurrEventsRemovesRecurrenceSeries() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -442,20 +439,20 @@ public class EventQueriesTest {
 
     @Test
     public void addNonRecuringEventActsLikeStoreInDB() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Event e = new Event(Id.generateRandom(), "e", "noLoc", Optional.empty(), start, end, Optional.empty());
-        assertFalse(ConcreteDatabase.getDatabase().contains(e.getId(), e.storer()).get());
+        assertFalse(DefaultDatabase.getDefaultConcreteInstance().contains(e.getId(), e.storer()).get());
         Id id = queries.addNonRecurringEvent(e).get();
         assertEquals(e.getId(), id);
-        assertTrue(ConcreteDatabase.getDatabase().contains(e.getId(), e.storer()).get());
+        assertTrue(DefaultDatabase.getDefaultConcreteInstance().contains(e.getId(), e.storer()).get());
         queries.removeEvent(e.getId()).get();
     }
 
     @Test
     public void extendEndTimeOfSeriesAddsEventsCorrectly() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -476,7 +473,7 @@ public class EventQueriesTest {
 
     @Test
     public void modifyEndTimeOfSeriesCanRemoveSeries() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -497,7 +494,7 @@ public class EventQueriesTest {
 
     @Test
     public void modifyEndTimeOfSeriesCanProduceSingleEvent() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -518,7 +515,7 @@ public class EventQueriesTest {
 
     @Test
     public void modifyEndTimeOfSeriesCanReduceAmountOfEvents() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -539,7 +536,7 @@ public class EventQueriesTest {
 
     @Test
     public void removeRecurrEventsRemovesRecurrenceSeriesFromEvent() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
@@ -558,7 +555,7 @@ public class EventQueriesTest {
 
     @Test
     public void convertNonRecurringEventToRecurringWorksAsExpected() throws ExecutionException, InterruptedException {
-        EventQueries queries = new EventQueries(ConcreteDatabase.getDatabase());
+        EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);

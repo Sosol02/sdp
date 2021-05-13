@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.AuthenticationService;
-import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.authentication.User;
 
 public class SignViewModel extends ViewModel {

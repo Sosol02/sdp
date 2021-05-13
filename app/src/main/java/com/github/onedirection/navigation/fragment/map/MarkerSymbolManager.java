@@ -8,10 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.event.Event;
+
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
+import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.Pair;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -57,11 +63,10 @@ public class MarkerSymbolManager {
         symbolManager.addClickListener(symbol -> {
             Log.d(LOG_TAG, "Symbol clicked: " + symbol);
             Event event = eventMap.get(symbol);
-            assert event != null;
+            Objects.requireNonNull(event);
 
             fragment.setBottomSheetEvent(event);
             fragment.showBottomSheet();
-
         });
     }
 
@@ -145,5 +150,27 @@ public class MarkerSymbolManager {
 
     public Map<Symbol, Event> getEventMap() {
         return Collections.unmodifiableMap(eventMap);
+    }
+
+    public CompletableFuture<Void> syncEventsWithDb() {
+        Log.d(LOG_TAG, "syncEventsWithDb");
+        Database db = Database.getDefaultInstance();
+        CompletableFuture<List<Event>> futEvents = db.retrieveAll(EventStorer.getInstance());
+        CompletableFuture<CompletableFuture<Void>> futAddEvents = futEvents.handle((ls, err) -> {
+            if (err != null) {
+                Log.d(LOG_TAG, "syncEventsWithDb: error: " + err);
+                // @Reviewers: should i put a counter or something to prevent infinite loop?
+                return syncEventsWithDb(); // retry, hopefully it'll work some day.
+            } else {
+                Log.d(LOG_TAG, "syncEventsWithDb: register db events: " + ls);
+                removeAllMarkers();
+                ArrayList<CompletableFuture<Pair<Symbol, LatLng>>> futures = new ArrayList<>();
+                for (Event e : ls) {
+                    futures.add(addGeocodedEventMarker(e));
+                }
+                return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+            }
+        });
+        return Monads.flattenFuture(futAddEvents);
     }
 }

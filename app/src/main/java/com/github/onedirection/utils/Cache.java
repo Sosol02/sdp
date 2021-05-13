@@ -38,7 +38,7 @@ import static java.util.stream.Collectors.toList;
  */
 public final class Cache<K, V> {
 
-    public static final int MAX_HISTORY_DEFAULT = 32;
+    public static final int MAX_HISTORY_DEFAULT = 1024;
 
     private final int maxHistory;
     private final Function<? super K, ? extends V> getFunction;
