@@ -28,6 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/*
+ **Home of the application
+ **Display the events of the month
+ */
 public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNoteListener{
 
     RecyclerView eventList;
@@ -43,7 +47,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         ZonedDateTime date = ZonedDateTime.now();
 
         ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(date.getYear(), date.getMonthValue(), 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsByMonth(Database.getDefaultInstance(), firstInstantOfMonth);;
 
         View root = inflater.inflate(R.layout.event_viewer, container, false);
 
@@ -99,13 +103,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         Intent intent = new Intent(this.getContext(), DisplayEvent.class);
         intent = DisplayEvent.putEventExtra(intent,event);
         startActivity(intent);
-    }
-
-    public CompletableFuture<List<Event>> getEventFromMonth(ZonedDateTime date) {
-        Database db = Database.getDefaultInstance();
-        EventQueries queryManager = new EventQueries(db);
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(date);
-        return monthEventsFuture;
     }
 
 }

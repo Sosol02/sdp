@@ -41,12 +41,6 @@ public class NavigationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ZonedDateTime date = ZonedDateTime.now();
-
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
-
-
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -115,12 +109,6 @@ public class NavigationActivity extends AppCompatActivity {
         confirmationWindows.show();
     }
 
-    public CompletableFuture<List<Event>> getEventFromMonth(ZonedDateTime date) {
-        Database db = Database.getDefaultInstance();
-        EventQueries queryManager = new EventQueries(db);
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(date);
-        return monthEventsFuture;
-    }
 
     private List<Event> getEvents(){
         return this.events;
