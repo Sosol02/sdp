@@ -219,7 +219,7 @@ filterWhereGreaterLessEq
         return result;
     }
 
-    enum ActionKind {
+    public enum ActionKind {
         Store, Remove, Retrieve
     }
 
@@ -230,7 +230,7 @@ filterWhereGreaterLessEq
      * - Or a QurtyKind.Retrieve, which corresponds to all other operations
      * which don't modifiy the database.
      */
-    static class Action {
+    public static class Action {
         public final ActionKind kind;
         public final List<Id> ids;
         public final Object element;

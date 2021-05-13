@@ -59,6 +59,7 @@ import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -355,7 +356,7 @@ public class MapFragmentTest {
         setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
-            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
                 @Override
                 public void onRoutesRetrieved(@NonNull List<Route> list) {
                     routeDisplayManager.displayRoute(list.get(0));
@@ -440,7 +441,7 @@ public class MapFragmentTest {
         RouteService routeService = new RouteServiceMock();
         setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(LAT_LNG_1, LAT_LNG_2, new RoutesResponseListener() {
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
                 routeDisplayManager.displayRoute(list.get(0));
@@ -466,7 +467,7 @@ public class MapFragmentTest {
 
         assertThat(isNavigationStarted[0], is(true));
 
-        navigationManager.stopNavigation();
+        runOnUiThreadAndWaitEndExecution(navigationManager::stopNavigation);
         assertThat(isNavigationStarted[0], is(false));
     }
 

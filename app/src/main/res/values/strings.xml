@@ -42,15 +42,15 @@
     <string name="fragment_map_event_location">Location</string>
 
     <!-- Strings related to event creator -->
-    <string name="create_an_event_title">Create an event:</string>
-    <string name="create_event_button_text">Create event</string>
+    <string name="create_an_event_title">CREATE AN EVENT</string>
+    <string name="create_event_button_text"> Create event </string>
     <string name="event_name_hint">Event name</string>
     <string name="location_hint">Location</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
     <string name="recurrence_end_text">Repeat until:</string>
 
-    <string name="set_event_location">Set event location</string>
+    <string name="set_event_location">SET EVENT LOCATION</string>
     <string name="location_name">Location name</string>
     <string name="search">Search:</string>
     <string name="use_current_location">Use current location</string>

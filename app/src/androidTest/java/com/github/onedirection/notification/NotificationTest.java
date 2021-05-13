@@ -17,6 +17,7 @@ import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,12 @@ public class NotificationTest {
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
+    @BeforeClass
+    public static void installObserver() {
+        Notifications.getInstance(ApplicationProvider.getApplicationContext())
+                .installNotificationsObserver(ApplicationProvider.getApplicationContext());
+    }
+
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
@@ -46,7 +53,6 @@ public class NotificationTest {
             Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
             assertEquals(e.getId(), id);
         }
-        NotificationPublisher.SLACK = 5;
     }
 
     @Test
@@ -61,7 +67,6 @@ public class NotificationTest {
         }
 
         // now notifs should eventually show up
-
-        onView(withId(R.id.textExampleHome)).perform(new WaitAction(NotificationPublisher.SLACK * 4000));
+        onView(withId(R.id.textExampleHome)).perform(new WaitAction(1000));
     }
 }
