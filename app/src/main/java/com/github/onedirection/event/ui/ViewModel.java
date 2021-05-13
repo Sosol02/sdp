@@ -70,7 +70,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         );
 
         this.eventId = event.getId();
-        this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
+        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
         this.isEditing = isEditing;
         this.callback = callback;
         this.idling = new CountingIdlingResource("Event creator is loading.");
