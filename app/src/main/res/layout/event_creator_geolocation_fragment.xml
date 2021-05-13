@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +16,6 @@
         android:paddingEnd="40dp"
         android:paddingBottom="10dp"
         tools:ignore="UselessParent">
-
 
         <TextView
             android:id="@+id/textEventCreatorTitle"
@@ -53,7 +53,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/locationMatchesList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:textAlignment="textEnd"
+            tools:itemCount="5" />
 
         <Space
             android:layout_width="match_parent"
@@ -63,19 +65,23 @@
             android:id="@+id/textLocationResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/result" />
+            android:text="@string/result"
+            android:textSize="14sp"
+            android:textColor="@color/col_on_secondary"/>
 
         <TextView
             android:id="@+id/textSelectedLocation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/col_on_secondary"/>
 
         <TextView
             android:id="@+id/textSelectedLocationFull"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="8sp"
-            tools:ignore="SmallSp" />
+            android:textSize="14sp"
+            tools:ignore="SmallSp"
+            android:textColor="@color/col_on_secondary"/>
 
         <ProgressBar
             android:id="@+id/progressBarEventCreatorLoading"
@@ -88,12 +94,14 @@
             android:id="@+id/buttonCancelGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            app:cornerRadius="50dp" />
 
         <Button
             android:id="@+id/buttonSetGeolocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/set_geolocation" />
+            android:text="@string/set_geolocation"
+            app:cornerRadius="50dp" />
     </LinearLayout>
 </FrameLayout>
