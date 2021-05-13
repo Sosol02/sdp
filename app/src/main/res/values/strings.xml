@@ -41,6 +41,19 @@
     <string name="fragment_map_event_time_end">End time</string>
     <string name="fragment_map_event_location">Location</string>
 
+    <string name="navigation_started_text">Navigation started</string>
+    <string name="navigation_stopped_text">Navigation ended</string>
+    <string name="navigation_eta_format">h:mm a</string>
+    <string name="navigation_reroute_request">Reroute request</string>
+    <string name="navigation_reroute_failed">Reroute failed</string>
+    <string name="navigation_reroute_success">Reroute succeeded</string>
+    <string name="navigation_distance_unit"> meters</string>
+    <string name="navigation_distance_format">%1$d meters</string>
+
+    <string name="route_service_request">Route has been requested</string>
+    <string name="route_service_failed">Route request has failed</string>
+    <string name="route_service_success">Route has been retrieved</string>
+
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">CREATE AN EVENT</string>
     <string name="create_event_button_text"> Create event </string>

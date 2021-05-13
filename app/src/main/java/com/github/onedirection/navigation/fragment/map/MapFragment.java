@@ -28,7 +28,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapquest.navigation.dataclient.listener.RouteResponseListener;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.model.Route;
 
@@ -101,7 +100,7 @@ public class MapFragment extends Fragment {
             EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
-                initializeManagers(style);
+                initializeManagers(style, view);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
@@ -200,13 +199,13 @@ public class MapFragment extends Fragment {
         return permissionRequestResult;
     }
 
-    private void initializeManagers(@NonNull Style style) {
+    private void initializeManagers(@NonNull Style style, @NonNull View view) {
         Context context = requireContext().getApplicationContext();
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
         routesManager = new RoutesManager(context);
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
-        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
 
         // now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();
