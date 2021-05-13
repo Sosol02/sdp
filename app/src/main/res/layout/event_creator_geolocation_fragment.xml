@@ -17,7 +17,6 @@
         android:paddingBottom="10dp"
         tools:ignore="UselessParent">
 
-
         <TextView
             android:id="@+id/textEventCreatorTitle"
             android:layout_width="wrap_content"
