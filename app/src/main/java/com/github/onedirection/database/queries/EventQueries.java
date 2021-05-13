@@ -66,11 +66,15 @@ public class EventQueries {
         });
     }
 
-    /**
-     * Get events that take place during a given day
-     * @param day (ZonedDateTime) : the given day
-     * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given day, once the query is done
-     */
+    public static CompletableFuture<List<Event>> getEventsInTimeframe(Database db, ZonedDateTime start, ZonedDateTime end) {
+        return new EventQueries(db).getEventsInTimeframe(start,end);
+    }
+
+        /**
+         * Get events that take place during a given day
+         * @param day (ZonedDateTime) : the given day
+         * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given day, once the query is done
+         */
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
         ZonedDateTime dayStart = TimeUtils.truncateTimeToDays(day);
         ZonedDateTime dayEnd = dayStart.plusDays(1);
