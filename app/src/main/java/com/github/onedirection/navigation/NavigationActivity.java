@@ -48,16 +48,13 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(getApplicationContext(), EventCreator.class);
-                startActivity(intent);
-                return false;
-            }
+        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(menuItem -> {
+            Intent intent = new Intent(getApplicationContext(), EventCreator.class);
+            startActivity(intent);
+            return false;
         });
 
-        navigationView.getMenu().findItem(R.id.nav_event_viewer).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        /*navigationView.getMenu().findItem(R.id.nav_event_viewer).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(getApplicationContext(), EventView.class);
@@ -66,7 +63,7 @@ public class NavigationActivity extends AppCompatActivity {
                 startActivity(intent);
                 return false;
             }
-        });
+        });*/
 
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);
@@ -75,12 +72,9 @@ public class NavigationActivity extends AppCompatActivity {
         TextView drawerUsername = headerView.findViewById(R.id.nav_header_username);
         TextView drawerEmail = headerView.findViewById(R.id.nav_header_email);
 
-        logoutMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
-                return false;
-            }
+        logoutMenuItem.setOnMenuItemClickListener(menuItem -> {
+            logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
+            return false;
         });
     }
 
