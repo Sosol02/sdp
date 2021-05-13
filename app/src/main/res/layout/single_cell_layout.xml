@@ -13,13 +13,12 @@
         android:textColor="@color/col_on_secondary"
         android:text=""
         android:layout_gravity="center"
-        android:textAlignment="center"
-        />
+        android:textAlignment="center"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="10sp"
+        android:textSize="9sp"
         android:id="@+id/events_id"
         android:textColor="@color/col_on_primary"
         android:layout_gravity="center"
