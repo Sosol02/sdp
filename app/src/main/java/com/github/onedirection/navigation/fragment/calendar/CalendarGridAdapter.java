@@ -2,10 +2,12 @@ package com.github.onedirection.navigation.fragment.calendar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,10 +61,10 @@ public class CalendarGridAdapter extends ArrayAdapter {
         }
 
         if (displayMonth == currentMonth) {
-            TextView Day_Number = view.findViewById(R.id.calendar_day);
-            TextView EventNumber = view.findViewById(R.id.events_id);
+            TextView textDayNumber = view.findViewById(R.id.calendar_day);
+            TextView eventNumber = view.findViewById(R.id.events_id);
 
-            Day_Number.setText(String.valueOf(dayNumber));
+            textDayNumber.setText(String.valueOf(dayNumber));
             Calendar eventCalendar = Calendar.getInstance();
             int nbOfEventsInDay = 0;
             for (int i = 0; i < events.size(); ++i) {
@@ -70,12 +72,13 @@ public class CalendarGridAdapter extends ArrayAdapter {
                 if (dayNumber == eventCalendar.get(Calendar.DAY_OF_MONTH) && displayMonth == eventCalendar.get(Calendar.MONTH) + 1
                         && displayYear == eventCalendar.get(Calendar.YEAR)) {
                     nbOfEventsInDay++;
-                    if (nbOfEventsInDay == 1) {
-                        EventNumber.setText(R.string.one_event_cal_display);
-                    } else {
-                        EventNumber.setText(String.format(view.getContext().getResources().getString(R.string.multiple_events_cal_display), nbOfEventsInDay));
-                    }
                 }
+            }
+            if(nbOfEventsInDay > 0) {
+                eventNumber.setText(Integer.toString(nbOfEventsInDay));
+                eventNumber.setBackgroundResource(R.drawable.rounded_corner);
+            } else {
+                eventNumber.setBackgroundResource(android.R.color.transparent);
             }
         }
         return view;
