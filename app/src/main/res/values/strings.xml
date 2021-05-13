@@ -10,7 +10,7 @@
     <string name="menu_calendar">Calendar</string>
     <string name="menu_map">Map</string>
     <string name="menu_account">Account</string>
-    <string name="menu_sign">Sign</string>
+    <string name="menu_sign">Sign In</string>
     <string name="menu_logout">Logout</string>
 
 
@@ -33,6 +33,7 @@
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
+    <string name="update_event">Modify Event</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>

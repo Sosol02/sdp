@@ -20,6 +20,7 @@ import com.github.onedirection.navigation.fragment.home.HomeFragment;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
+@Ignore("Disabled feature")
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class HomeTest {
@@ -70,6 +72,7 @@ public class HomeTest {
 
         ViewInteraction navigationMenuItemView = onView(
                 allOf(withId(R.id.nav_home),
+
                         childAtPosition(
                                 allOf(withId(R.id.design_navigation_view),
                                         childAtPosition(

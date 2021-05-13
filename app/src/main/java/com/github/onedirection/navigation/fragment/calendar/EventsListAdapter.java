@@ -70,7 +70,7 @@ public class EventsListAdapter extends ArrayAdapter {
         eventName.setText(event.getName());
         eventDate.setText(String.format("Date: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
         eventStartTime.setText(String.format("From: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))));
-        eventEndTime.setText(String.format("From: %s", event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))));
+        eventEndTime.setText(String.format("To: %s", event.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"))));
         eventLocation.setText(event.getLocationName());
 
         eventEditButton.setOnClickListener(v -> {

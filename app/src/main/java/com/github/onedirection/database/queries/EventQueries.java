@@ -146,15 +146,16 @@ public class EventQueries {
         Recurrence newEventRecurrence = event.getRecurrence().get();
 
         Id groupId = newEventRecurrence.getGroupId();
-        long period = newEventRecurrence.getPeriod().getSeconds();
-        long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
-        long refStartTime = event.getStartTime().toEpochSecond();
+        final long period = newEventRecurrence.getPeriod().getSeconds();
+        final long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
+        final long refStartTime = event.getStartTime().toEpochSecond();
+        final long duration = event.getEndTime().toEpochSecond() - event.getStartTime().toEpochSecond();
 
         long x = (recurrenceLimit - refStartTime)/period;
         long tmpStartTime = refStartTime + x * period;
         while(x > 0) {
             Event newEvent = new Event(Id.generateRandom(), event.getName(), event.getLocationName(), event.getCoordinates(),
-                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newEventRecurrence));
+                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+duration), Optional.of(newEventRecurrence));
             eventsToStore.add(newEvent);
             tmpStartTime = refStartTime + (--x) * period;
         }
