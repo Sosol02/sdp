@@ -36,6 +36,7 @@ import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
 import com.mapquest.navigation.model.location.Destination;
 import com.mapquest.navigation.model.location.Location;
 import com.mapquest.navigation.model.location.LocationObservation;
+import com.mapquest.navigation.NavigationManager.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -82,7 +83,8 @@ public class NavigationManager {
     private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;
     private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
     private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.ROOT);
+    private static final int MAPBOX_CAMERA_ANIMATION_DURATION = 1000;
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(String.valueOf(R.string.navigation_eta_format), Locale.ROOT);
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
@@ -118,17 +120,17 @@ public class NavigationManager {
         timeFinalDestination = view.findViewById(R.id.eta_final_destination);
         remainingDistance = view.findViewById(R.id.remaining_distance);
         view.findViewById(R.id.stop).setOnClickListener(v -> {
-            if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE) {
+            if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
                 stopNavigation();
             }
         });
     }
 
     public void startNavigation(@NonNull Route route) {
-        if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE) {
+        if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
             throw new IllegalStateException("You cannot start the navigation manager when it has already started");
         }
-
+        Objects.requireNonNull(route);
         navigationManager.initialize();
         navigationManager.setUserLocationTrackingConsentStatus(UserLocationTrackingConsentStatus.DENIED);
         navigationManager.addProgressListener(centeringMapOnLocationProgressListener);
@@ -142,7 +144,7 @@ public class NavigationManager {
                 .zoom(NAVIGATION_ZOOM)
                 .tilt(NAVIGATION_TILT_VALUE_DEGREES)
                 .build();
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), MAPBOX_CAMERA_ANIMATION_DURATION);
         myLocationButton.setVisibility(View.GONE);
         maneuverBar.setVisibility(View.VISIBLE);
         arrivalBar.setVisibility(View.VISIBLE);
@@ -151,7 +153,7 @@ public class NavigationManager {
     }
 
     public void stopNavigation() {
-        if (navigationManager.getNavigationState() == com.mapquest.navigation.NavigationManager.NavigationState.STOPPED) {
+        if (navigationManager.getNavigationState() == NavigationState.STOPPED) {
             throw new IllegalStateException("You cannot stop the navigation manager when it has not started");
         }
         navigationManager.cancelNavigation();
@@ -160,7 +162,7 @@ public class NavigationManager {
                 .zoom(ON_EXIT_NAVIGATION_ZOOM)
                 .tilt(ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES)
                 .build();
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), MAPBOX_CAMERA_ANIMATION_DURATION);
         myLocationButton.setVisibility(View.VISIBLE);
         maneuverBar.setVisibility(View.GONE);
         arrivalBar.setVisibility(View.GONE);
@@ -188,13 +190,13 @@ public class NavigationManager {
 
         @Override
         public void onNavigationStarted() {
-            Toast.makeText(context, "Navigation started", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
             updateUiOnStartAndReroute(navigationManager.getRoute());
         }
 
         @Override
         public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-            Toast.makeText(context, "Navigation ended", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -214,7 +216,7 @@ public class NavigationManager {
                     .zoom(NAVIGATION_ZOOM)
                     .tilt(NAVIGATION_TILT_VALUE_DEGREES)
                     .build();
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000);
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), MAPBOX_CAMERA_ANIMATION_DURATION);
         }
     }
 
@@ -225,19 +227,19 @@ public class NavigationManager {
 
         @Override
         public void onRerouteRequested(Location location) {
-            Toast.makeText(context, "Reroute request", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onRerouteReceived(Route route) {
-            Toast.makeText(context, "Reroute succeeded", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_LONG).show();
             routeDisplayManager.displayRoute(route);
             updateUiOnStartAndReroute(route);
         }
 
         @Override
         public void onRerouteFailed() {
-            Toast.makeText(context, "Reroute failed", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -245,8 +247,8 @@ public class NavigationManager {
 
         @Override
         public void onLocationObservationReceived(@NonNull LocationObservation locationObservation) {
-            remainingDistance.setText(((int) locationObservation.getRemainingLegDistance()) + " meters");
-            nextManeuverDistance.setText(String.format(Locale.getDefault(), "%1$d meters", locationObservation
+            remainingDistance.setText(((int) locationObservation.getRemainingLegDistance()) + R.string.navigation_distance_unit);
+            nextManeuverDistance.setText(String.format(Locale.getDefault(), String.valueOf(R.string.navigation_distance_format), locationObservation
                                                         .getDistanceToUpcomingManeuver().intValue()));
         }
 

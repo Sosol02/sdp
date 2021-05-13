@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.BuildConfig;
+import com.github.onedirection.R;
 import com.github.onedirection.utils.EspressoIdlingResource;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapquest.navigation.dataclient.RouteService;
@@ -67,7 +68,7 @@ public class RoutesManager {
             @Override
             public void onRoutesRetrieved(List<Route> routes1) {
                 if (routes1.size() > 0) {
-                    Toast.makeText(context, "Route has been retrevied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.route_service_success, Toast.LENGTH_LONG).show();
                     routes = routes1;
                 }
                 routesResponseListener.onRoutesRetrieved(routes1);
@@ -76,14 +77,14 @@ public class RoutesManager {
 
             @Override
             public void onRequestFailed(@Nullable Integer httpStatusCode, @Nullable IOException exception) {
-                Toast.makeText(context, "Route request has failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.route_service_failed, Toast.LENGTH_LONG).show();
                 routesResponseListener.onRequestFailed(httpStatusCode, exception);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             }
 
             @Override
             public void onRequestMade() {
-                Toast.makeText(context, "Route has been requested", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.route_service_request, Toast.LENGTH_LONG).show();
                 routesResponseListener.onRequestMade();
             }
         });
