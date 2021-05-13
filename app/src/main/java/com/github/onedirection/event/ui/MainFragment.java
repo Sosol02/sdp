@@ -165,6 +165,11 @@ public class MainFragment extends Fragment {
         });
         recurrencePeriodAmount.setOnFocusChangeListener((v, hasFocus) -> updateRecurrencePeriod());
 
+        // Setup final button
+        if(model.isEditing){
+            Button btn = getView().findViewById(R.id.buttonEventAdd);
+            btn.setText(R.string.update_event);
+        }
     }
 
     private void gotoGeolocation() {
@@ -209,7 +214,7 @@ public class MainFragment extends Fragment {
                         ))
                 ,
                 time.getValue().getYear(),
-                time.getValue().getMonthValue(),
+                time.getValue().getMonthValue() - 1,
                 time.getValue().getDayOfMonth()
         );
         datePicker.show();

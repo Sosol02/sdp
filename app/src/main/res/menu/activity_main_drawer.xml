@@ -17,10 +17,10 @@
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_menu_map"
             android:title="@string/menu_map" />
-        <item
+        <!--<item>
             android:id="@+id/nav_account"
             android:icon="@drawable/ic_menu_account"
-            android:title="@string/menu_account" />
+            android:title="@string/menu_account" />-->
         <item
             android:id="@+id/nav_create_event"
             android:icon="@drawable/ic_date_range_black_18dp"
@@ -34,9 +34,5 @@
             android:icon="@drawable/ic_menu_logout"
             android:visible="false"
             android:title="@string/menu_logout" />
-        <item
-            android:id="@+id/nav_event_viewer"
-            android:icon="@drawable/ic_menu_sign"
-            android:title="@string/menu_event_viewer"/>
     </group>
 </menu>
