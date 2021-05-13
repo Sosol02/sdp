@@ -101,27 +101,6 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
                 initializeManagers(style, view);
-                LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
-                LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
-                List<LatLng> latLngs = new ArrayList<>();
-                latLngs.add(TEST_VALUE_LATLNG_4);
-                routesManager.findRoute(TEST_VALUE_LATLNG_3, latLngs, new RoutesResponseListener() {
-                    @Override
-                    public void onRoutesRetrieved(@NonNull List<Route> list) {
-                        routeDisplayManager.displayRoute(list.get(0));
-                        navigationManager.startNavigation(list.get(0));
-                    }
-
-                    @Override
-                    public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-                    }
-
-                    @Override
-                    public void onRequestMade() {
-
-                    }
-                });
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 

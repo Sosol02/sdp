@@ -67,7 +67,7 @@ public class NavigationManager {
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
     private final RelativeLayout maneuverBar;
-    private final ImageView nextManeuverIcon;
+    private final ImageView nextManeuverIcon; //TODO change label with upcoming maneuver
     private final TextView nextManeuverDistance;
     private final TextView nextManeuver;
 
