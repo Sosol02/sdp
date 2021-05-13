@@ -28,6 +28,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
     EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
     public static final String EXTRA_LIST_EVENT = "EVENT_LIST_ID";
+    static public EventView eventView;
 
     public static boolean hasEventListExtra(Intent intent) {
         return intent.hasExtra(EXTRA_LIST_EVENT);
@@ -58,6 +59,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        eventView = this;
         Intent intent = getIntent();
 
         if(hasEventListExtra(intent)){
@@ -75,7 +77,7 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
 
     }
 
-    private void updateResults(List<Event> events){
+    public void updateResults(List<Event> events){
         this.events = events;
         eventList.setAdapter(new EventViewerAdapter(events, this));
     }
@@ -99,8 +101,6 @@ public class EventView extends AppCompatActivity implements EventViewerAdapter.O
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         }
     };
-
-
 
     @Override
     public void onNoteClick(int position) {

@@ -16,23 +16,46 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.Database;
 import com.github.onedirection.events.Event;
+import com.github.onedirection.events.Recurrence;
 import com.github.onedirection.events.ui.EventCreator;
 import com.github.onedirection.eventviewer.EventView;
+import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.utils.Id;
 import com.google.android.material.navigation.NavigationView;
 
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 public class NavigationActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    List<Event> events = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ZonedDateTime date = ZonedDateTime.now();
+
+        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
+
+        CompletableFuture.allOf(monthEventsFuture);
+
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,7 +70,6 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-
         navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -61,7 +83,7 @@ public class NavigationActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(getApplicationContext(), EventView.class);
-                ArrayList<Event> events = new ArrayList<>();
+                List<Event> events = getEvents();
                 EventView.putEventListExtra(intent, events);
                 startActivity(intent);
                 return false;
@@ -81,6 +103,15 @@ public class NavigationActivity extends AppCompatActivity {
                 logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
                 return false;
             }
+        });
+
+        Intent intent = new Intent(this, EventView.class);
+        intent = EventView.putEventListExtra(intent,events);
+        startActivity(intent);
+
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            events = monthEvents;
+            EventView.eventView.updateResults(events);
         });
     }
 
@@ -115,5 +146,16 @@ public class NavigationActivity extends AppCompatActivity {
                     }
                 });
         confirmationWindows.show();
+    }
+
+    public CompletableFuture<List<Event>> getEventFromMonth(ZonedDateTime date) {
+        Database db = Database.getDefaultInstance();
+        EventQueries queryManager = new EventQueries(db);
+        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(date);
+        return monthEventsFuture;
+    }
+
+    private List<Event> getEvents(){
+        return this.events;
     }
 }
