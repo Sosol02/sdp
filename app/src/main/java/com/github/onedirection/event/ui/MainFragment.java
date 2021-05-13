@@ -165,6 +165,11 @@ public class MainFragment extends Fragment {
         });
         recurrencePeriodAmount.setOnFocusChangeListener((v, hasFocus) -> updateRecurrencePeriod());
 
+        // Setup final button
+        if(model.isEditing){
+            Button btn = getView().findViewById(R.id.buttonEventAdd);
+            btn.setText(R.string.update_event);
+        }
     }
 
     private void gotoGeolocation() {
