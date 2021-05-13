@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
         ZonedDateTime date = ZonedDateTime.now();
 
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(date.getYear(), date.getMonthValue(), 1, 0, 0, 0, 0, ZoneId.systemDefault());
         CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
 
         View root = inflater.inflate(R.layout.event_viewer, container, false);
