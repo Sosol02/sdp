@@ -1,6 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,7 +13,6 @@ import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.internal.collection.CollectionsUtil;
 import com.mapquest.navigation.model.Route;
-import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteOptionType;
 import com.mapquest.navigation.model.RouteOptions;
 import com.mapquest.navigation.model.SystemOfMeasurement;
@@ -21,10 +21,8 @@ import com.mapquest.navigation.model.location.Destination;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -34,11 +32,13 @@ public class RoutesManager {
 
     private final RouteService routeService;
     private List<Route> routes;
+    private Context context;
 
     public RoutesManager(Context context) {
         Objects.requireNonNull(context);
         this.routeService = new RouteService.Builder().build(context,
                 BuildConfig.API_KEY);
+        this.context = context;
     }
 
     public void findRoute(LatLng start, List<LatLng> destinations, RoutesResponseListener routesResponseListener) {
@@ -53,7 +53,7 @@ public class RoutesManager {
         RouteOptions routeOptions = new RouteOptions.Builder()
                 .maxRoutes(3)
                 .systemOfMeasurementForDisplayText(SystemOfMeasurement.METRIC)
-                .language("en_US") // TODO try to input the system language
+                .language(Locale.getDefault().toLanguageTag().replace("-", "_"))
                 .highways(RouteOptionType.ALLOW)
                 .tolls(RouteOptionType.ALLOW)
                 .ferries(RouteOptionType.DISALLOW)
@@ -67,6 +67,7 @@ public class RoutesManager {
             @Override
             public void onRoutesRetrieved(List<Route> routes1) {
                 if (routes1.size() > 0) {
+                    Toast.makeText(context, "Route has been retrevied", Toast.LENGTH_LONG).show();
                     routes = routes1;
                 }
                 routesResponseListener.onRoutesRetrieved(routes1);
@@ -75,12 +76,14 @@ public class RoutesManager {
 
             @Override
             public void onRequestFailed(@Nullable Integer httpStatusCode, @Nullable IOException exception) {
+                Toast.makeText(context, "Route request has failed", Toast.LENGTH_LONG).show();
                 routesResponseListener.onRequestFailed(httpStatusCode, exception);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             }
 
             @Override
             public void onRequestMade() {
+                Toast.makeText(context, "Route has been requested", Toast.LENGTH_LONG).show();
                 routesResponseListener.onRequestMade();
             }
         });

@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface Database {
 
-    static Database getDefaultInstance() { return CachedDatabase.getInstance(); }
+    static Database getDefaultInstance() { return DefaultDatabase.getDefaultInstance(); }
 
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore);
 

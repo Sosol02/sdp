@@ -30,7 +30,6 @@ import com.mapquest.navigation.model.Maneuver;
 import com.mapquest.navigation.model.Route;
 import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
-import com.mapquest.navigation.model.SpeedLimit;
 import com.mapquest.navigation.model.SpeedLimitSpan;
 import com.mapquest.navigation.model.Traffic;
 import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
@@ -56,6 +55,7 @@ import java.util.Set;
 public class NavigationManager {
 
     private final com.mapquest.navigation.NavigationManager navigationManager;
+    private final RouteDisplayManager routeDisplayManager;
     private final MapboxMap mapboxMap;
     private final Context context;
 
@@ -88,13 +88,17 @@ public class NavigationManager {
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
+        Objects.requireNonNull(routeDisplayManager);
         this.mapboxMap = mapboxMap;
         this.context = context;
+        this.routeDisplayManager = routeDisplayManager;
+
         navigationManager = new com.mapquest.navigation.NavigationManager.Builder(context,
                 BuildConfig.API_KEY, new DeviceLocationProviderAdapter(deviceLocationProvider))
                 .build();
         navigationManager.setRerouteBehaviorOverride(coordinate -> true);
-        routeUpdatingRerouteListener = new RouteUpdatingRerouteListener(routeDisplayManager);
+
+        routeUpdatingRerouteListener = new RouteUpdatingRerouteListener();
         centeringMapOnLocationProgressListener = new CenteringMapOnLocationProgressListener();
         toastUpdateNavigationStateListener = new ToastUpdateNavigationStateListener();
         updatingNavigationProgressListener = new UpdatingNavigationProgressListener();
@@ -171,6 +175,7 @@ public class NavigationManager {
     }
 
     private void updateUiOnStartAndReroute(Route route) {
+        routeDisplayManager.displayRoute(route);
         RouteLeg lastRouteLeg = CollectionsUtil.lastValue(route.getLegs());
         long timeForNextDestination = navigationManager.getCurrentRouteLeg().getTraffic().getEstimatedTimeOfArrival().getTime();
         long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
@@ -214,12 +219,6 @@ public class NavigationManager {
     }
 
     private class RouteUpdatingRerouteListener implements RerouteListener {
-
-        private RouteDisplayManager routeDisplayManager;
-
-        public RouteUpdatingRerouteListener(RouteDisplayManager routeDisplayManager) {
-            this.routeDisplayManager = routeDisplayManager;
-        }
 
         @Override
         public void onRerouteWouldOccur(Location location) {}
@@ -273,11 +272,11 @@ public class NavigationManager {
 
         @Override
         public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull Set<SpeedLimitSpan> enteredSpeedLimits) {
-            for (SpeedLimitSpan speedLimitSpan : enteredSpeedLimits) {
+            /*for (SpeedLimitSpan speedLimitSpan : enteredSpeedLimits) {
                 float speed = speedLimitSpan.getSpeedLimit().getSpeed();
                 SpeedLimit.Type type = speedLimitSpan.getSpeedLimit().getType();
                 //TODO update UI
-            }
+            }*/
         }
     }
 

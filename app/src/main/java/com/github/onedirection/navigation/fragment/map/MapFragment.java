@@ -273,4 +273,39 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private class DisplayRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                routeDisplayManager.displayRoute(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+
+        @Override
+        public void onRequestMade() {}
+    }
+
+    private class NavigationRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                navigationManager.startNavigation(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+        }
+
+        @Override
+        public void onRequestMade() {
+
+        }
+    }
 }

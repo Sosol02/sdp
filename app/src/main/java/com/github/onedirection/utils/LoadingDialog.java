@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 
 import com.github.onedirection.R;
 
+/**
+ * A loading animation which pops up in a dialog
+ */
 public class LoadingDialog {
     private final Context context;
     private AlertDialog dialog;
