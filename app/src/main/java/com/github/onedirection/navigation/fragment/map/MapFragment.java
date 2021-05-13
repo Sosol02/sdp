@@ -28,9 +28,15 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapquest.navigation.dataclient.listener.RouteResponseListener;
+import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.model.Route;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -247,4 +253,39 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private class DisplayRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                routeDisplayManager.displayRoute(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+
+        @Override
+        public void onRequestMade() {}
+    }
+
+    private class NavigationRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                navigationManager.startNavigation(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+        }
+
+        @Override
+        public void onRequestMade() {
+
+        }
+    }
 }
