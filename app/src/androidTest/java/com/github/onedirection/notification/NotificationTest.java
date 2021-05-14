@@ -67,6 +67,6 @@ public class NotificationTest {
         }
 
         // now notifs should eventually show up
-        onView(withId(R.id.textExampleHome)).perform(new WaitAction(1000));
+        //onView(withId(R.id.textExampleHome)).perform(new WaitAction(1000));
     }
 }

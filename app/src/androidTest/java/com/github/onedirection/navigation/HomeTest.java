@@ -6,21 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.ui.EventCreator;
-import com.github.onedirection.eventviewer.DisplayEvent;
-import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.utils.Id;
-import com.github.onedirection.utils.Pair;
+import com.github.onedirection.navigation.fragment.home.HomeFragment;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -30,54 +25,40 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.ZonedDateTime;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
 @Ignore("Disabled feature")
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class DisplayEventAndViewEventTest {
+public class HomeTest {
 
-
-    private final static Id ID = Id.generateRandom();
-    private final static String NAME = "Event name";
-    private final static String LOCATION_NAME = "Location name";
-    private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, LOCATION_NAME);
-    private final static ZonedDateTime START_TIME = ZonedDateTime.now().plusDays(1);
-    private final static ZonedDateTime END_TIME = ZonedDateTime.now().plusDays(2);
-
-    private final static String EPFL_QUERY = "EPFL";
-    private final static String EPFL_CANTON = "Vaud";
-
-    private final static Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
     @Rule
     public ActivityTestRule<NavigationActivity> mActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
 
-
     @Test
-
-    public void viewEventTest(){
-
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), DisplayEvent.class);
-        intent = DisplayEvent.putEventExtra(intent,e);
-        ActivityScenario.launch(intent).onActivity(a -> {
-            DisplayEvent activity = (DisplayEvent) a;
-        });
-        onView(withId(R.id.buttonDisplay)).perform(click());
+    public void homeTest() {
+        ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()));
+        onView(withId(R.id.nav_home)).perform(ViewActions.click());
     }
 
     @Test
-    public void displayEventAndViewEventTest() {
+    public void navigationActivityTest2() {
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Open navigation drawer"),
                         childAtPosition(
@@ -90,16 +71,16 @@ public class DisplayEventAndViewEventTest {
         appCompatImageButton.perform(click());
 
         ViewInteraction navigationMenuItemView = onView(
-                allOf(withId(/*R.id.nav_event_viewer*/0),
+                allOf(withId(R.id.nav_home),
+
                         childAtPosition(
                                 allOf(withId(R.id.design_navigation_view),
                                         childAtPosition(
                                                 withId(R.id.nav_view),
                                                 0)),
-                                7),
+                                1),
                         isDisplayed()));
         navigationMenuItemView.perform(click());
-
     }
 
     private static Matcher<View> childAtPosition(

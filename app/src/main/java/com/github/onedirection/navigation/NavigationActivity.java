@@ -18,21 +18,29 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.event.ui.EventCreator;
-import com.github.onedirection.eventviewer.EventView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 public class NavigationActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    List<Event> events = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -40,7 +48,7 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_calendar, R.id.nav_map)
+                R.id.nav_calendar,R.id.nav_home, R.id.nav_map)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -54,16 +62,6 @@ public class NavigationActivity extends AppCompatActivity {
             return false;
         });
 
-        /*navigationView.getMenu().findItem(R.id.nav_event_viewer).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(getApplicationContext(), EventView.class);
-                ArrayList<Event> events = new ArrayList<>();
-                EventView.putEventListExtra(intent, events);
-                startActivity(intent);
-                return false;
-            }
-        });*/
 
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);
@@ -109,5 +107,10 @@ public class NavigationActivity extends AppCompatActivity {
                     }
                 });
         confirmationWindows.show();
+    }
+
+
+    private List<Event> getEvents(){
+        return this.events;
     }
 }

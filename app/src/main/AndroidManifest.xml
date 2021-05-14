@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
-        <activity android:name=".eventviewer.DisplayEvent"></activity>
+        <activity android:name=".navigation.fragment.home.DisplayEvent"></activity>
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -26,9 +26,8 @@
 
 
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
-        <activity android:name=".event.ui.EventCreator" />
 
-        <activity android:name=".eventviewer.EventView" />
+        <activity android:name=".event.ui.EventCreator" />
 
         <receiver android:name=".notification.NotificationPublisher" />
 
