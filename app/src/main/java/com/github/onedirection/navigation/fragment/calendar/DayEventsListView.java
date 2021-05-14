@@ -17,14 +17,17 @@ import com.github.onedirection.event.Event;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * A view displaying the list of events for a given day
  */
 @SuppressLint("ViewConstructor")
-public class DayEventsListView extends LinearLayout {
+
+
+
+public class DayEventsListView extends LinearLayout{
+
     private final static int WINDOW_LAYOUT_WIDTH = 1000;
     private final static int WINDOW_LAYOUT_HEIGHT = 1200;
     private final Context context;
@@ -36,50 +39,42 @@ public class DayEventsListView extends LinearLayout {
     private AlertDialog alertDialog;
 
 
-    public DayEventsListView(Context context, ZonedDateTime day) {
+    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss) {
         super(context);
         this.context = context;
         this.day = day;
+        this.onDialogDismiss = onDialogDismiss;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.view = inflater.inflate(R.layout.day_events_list, this);
 
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         refreshView();
     }
 
-    public DayEventsListView(Context context, ZonedDateTime day, CountingIdlingResource idling) {
-        super(context);
-        this.context = context;
-        this.day = day;
+    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {
+        this(context, day, onDialogDismiss);
         this.idling = idling;
-
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        refreshView();
     }
 
-    public void refreshView() {
+    public void refreshView(){
         if (idling != null) {
             idling.increment();
         }
         CompletableFuture<List<Event>> dayEvents = getDayEvents(day);
         dayEvents.whenComplete((events, throwable) -> {
-            view = inflater.inflate(R.layout.day_events_list, this);
-            setupEventsListView((List<Event>) events, view);
+            if(events.size() == 0){
+                alertDialog.dismiss();
+            }
+            setupEventsListView(events, view);
             if (idling != null) {
                 idling.decrement();
             }
-            setupDialog(events);
+            if(alertDialog == null && events.size() > 0){
+                setupDialog();
+            }
         });
     }
 
-    public void setOnDialogDismissFunction(Runnable runnable) {
-        onDialogDismiss = runnable;
-    }
-
-    private void setupDialog(List<Event> events) {
-        Objects.requireNonNull(events);
-        if(events.size() == 0){
-            return;
-        }
-
+    private void setupDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
         builder.setView(view);
@@ -91,14 +86,11 @@ public class DayEventsListView extends LinearLayout {
         alertDialog.getWindow().setLayout(WINDOW_LAYOUT_WIDTH, WINDOW_LAYOUT_HEIGHT);
     }
 
-
-
     private CompletableFuture<List<Event>> getDayEvents(ZonedDateTime day) {
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
         return queryManager.getEventsByDay(day);
     }
-
 
     private void setupEventsListView(List<Event> dayEvents, View view) {
         ListView eventsListView = view.findViewById(R.id.dayEventsList);
@@ -113,5 +105,6 @@ public class DayEventsListView extends LinearLayout {
     private void onDeleteEvent() {
         refreshView();
     }
-
 }
+
+
