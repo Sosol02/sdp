@@ -180,7 +180,6 @@ public class CustomCalendarView extends LinearLayout {
 
     private void callDayEventsList(ZonedDateTime day) {
         dayEventsView = new DayEventsListView(getContext(), day, this::refreshCalendarView, idling);
-
     }
 
     private int getMonthNumber(Calendar cal) {

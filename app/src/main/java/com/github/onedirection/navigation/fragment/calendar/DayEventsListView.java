@@ -38,21 +38,16 @@ public class DayEventsListView extends LinearLayout{
     private Runnable onDialogDismiss;
     private AlertDialog alertDialog;
 
-
-    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss) {
+    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {
         super(context);
         this.context = context;
         this.day = day;
         this.onDialogDismiss = onDialogDismiss;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.view = inflater.inflate(R.layout.day_events_list, this);
+        this.idling = idling;
 
         refreshView();
-    }
-
-    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {
-        this(context, day, onDialogDismiss);
-        this.idling = idling;
     }
 
     public void refreshView(){
