@@ -17,6 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * A simple cache that will call the provided function to generate elements,
@@ -232,6 +233,8 @@ public final class Cache<K, V> {
      *
      * Note that the get/set functions of the cache cannot be serialized and must
      * be specified when de-serializing to obtain the exact same cache.
+     * Entries whose key/value get mapped to null will be discarded.
+     *
      * @param target The stream where to serialize.
      * @param keyMap Convert the keys into a serializable type.
      * @param valMap Convert the values into a serializable type.
@@ -247,7 +250,12 @@ public final class Cache<K, V> {
     ){
         try(ObjectOutputStream outputStream = new ObjectOutputStream(target)) {
             outputStream.writeInt(maxHistory);
-            outputStream.writeObject(Monads.map(map, combine(keyMap, valMap)));
+            outputStream.writeObject(
+                    map.entrySet().stream()
+                            .map(e -> combine(keyMap, valMap).apply(e.getKey(), e.getValue()))
+                            .filter(e -> e.getKey() != null && e.getValue() != null)
+                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue))
+            );
             outputStream.writeObject( history.stream().map(keyMap).collect(toList()) );
 
             outputStream.flush();
