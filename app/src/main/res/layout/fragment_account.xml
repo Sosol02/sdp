@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".navigation.fragment.account.AccountFragment">
 
-    <ExpandableListView
-        android:id="@+id/expandableListView"
-        android:layout_height="match_parent"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment"
+        android:name="com.github.onedirection.interoperability.gcalendar.ExportFragment"
         android:layout_width="match_parent"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp" />
+        android:layout_height="wrap_content">
+
+    </androidx.fragment.app.FragmentContainerView>
 
 </FrameLayout>
