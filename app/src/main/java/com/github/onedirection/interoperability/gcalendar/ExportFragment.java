@@ -44,7 +44,6 @@ public class ExportFragment extends Fragment {
                     .build();
 
     private ActivityResultLauncher<Intent> loginGoogle;
-    private boolean performExport = true;
 
     public ExportFragment() {
         // Required empty public constructor
@@ -83,10 +82,6 @@ public class ExportFragment extends Fragment {
     }
 
     private void exportEvents(GoogleSignInAccount account) {
-        if (!this.performExport) {
-            return;
-        }
-
         Account a = Objects.requireNonNull(Objects.requireNonNull(account).getAccount());
 
         Log.d(LOGCAT_TAG, a.name);
@@ -101,10 +96,5 @@ public class ExportFragment extends Fragment {
             googleSignInClient.signOut();
             Log.d(LOGCAT_TAG, "User logged out.");
         });
-    }
-
-    @VisibleForTesting
-    public void setExport(boolean v) {
-        this.performExport = v;
     }
 }

@@ -1,16 +1,14 @@
 package com.github.onedirection.interoperability;
 
-import android.content.Intent;
-
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -20,12 +18,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(AndroidJUnit4.class)
 public class GoogleCalendarTest {
 
     @Test
     public void exportButtonCanBeClicked() {
         FragmentScenario<ExportFragment> fragment = FragmentScenario.launchInContainer(ExportFragment.class);
-        fragment.onFragment(exportFragment -> exportFragment.setExport(false));
         onView(withId(R.id.buttonGCalendarExport)).check(matches(isClickable()));
         Intents.init();
         assertThat(Intents.getIntents().isEmpty(), is(true));
