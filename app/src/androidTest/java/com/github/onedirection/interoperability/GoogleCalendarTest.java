@@ -29,7 +29,7 @@ public class GoogleCalendarTest {
 
         onView(withId(R.id.buttonGCalendarExport)).perform(click());
 
-        // This intent is ridiculous, but I didn't find better
+        // This matcher is ridiculous, but I didn't find better
         Intents.intended(new TypeSafeMatcher<Intent>() {
             @Override
             protected boolean matchesSafely(Intent item) {
