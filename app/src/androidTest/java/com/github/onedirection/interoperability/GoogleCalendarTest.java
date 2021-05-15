@@ -17,31 +17,22 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class GoogleCalendarTest {
 
     @Test
-    public void exportButtonCanClicked() {
+    public void exportButtonCanBeClicked() {
         FragmentScenario<ExportFragment> fragment = FragmentScenario.launchInContainer(ExportFragment.class);
         fragment.onFragment(exportFragment -> exportFragment.setExport(false));
         onView(withId(R.id.buttonGCalendarExport)).check(matches(isClickable()));
         Intents.init();
+        assertThat(Intents.getIntents().isEmpty(), is(true));
 
         onView(withId(R.id.buttonGCalendarExport)).perform(click());
 
-        // This matcher is ridiculous, but I didn't find better
-        Intents.intended(new TypeSafeMatcher<Intent>() {
-            @Override
-            protected boolean matchesSafely(Intent item) {
-                return item.toString().contains("GOOGLE_SIGN_IN")
-                        && item.toString().contains("com.github.onedirection");
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("starts google login");
-            }
-        });
+        assertThat(Intents.getIntents().isEmpty(), is(false));
 
         Intents.release();
     }
