@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
+import com.github.onedirection.event.Event;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -21,15 +22,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
+import static com.github.onedirection.interoperability.gcalendar.GoogleCalendar.LOGCAT_TAG;
 
 /**
- * Fragment which allow to export the calendar into Google Calendar.
+ * Fragment which allows to export the calendar into Google Calendar.
  */
 public class ExportFragment extends Fragment {
 
+    // From https://developers.google.com/identity/protocols/oauth2/scopes#calendar
     private static final String CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar";
-    private static final String LOGCAT_TAG = "GCalendar";
+
+    private static final GoogleSignInOptions GSI_OPTIONS =
+            new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestScopes(new Scope(CALENDAR_SCOPE))
+                    .build();
 
     private ActivityResultLauncher<Intent> loginGoogle;
     private boolean performExport = true;
@@ -59,12 +71,9 @@ public class ExportFragment extends Fragment {
         return view;
     }
 
-    private void googleLogin(View ignored){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestScopes(new Scope(CALENDAR_SCOPE))
-                .build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
+    private void googleLogin(View ignored) {
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), GSI_OPTIONS);
+        // The user is always logged out so that he can select to which account to login (and thus export).
         googleSignInClient.signOut();
 
         Log.d(LOGCAT_TAG, "User needs to login into its Google Account.");
@@ -73,19 +82,29 @@ public class ExportFragment extends Fragment {
         loginGoogle.launch(signInIntent);
     }
 
-    private void exportEvents(GoogleSignInAccount account){
-        if(!this.performExport){
+    private void exportEvents(GoogleSignInAccount account) {
+        if (!this.performExport) {
             return;
         }
 
         Account a = Objects.requireNonNull(Objects.requireNonNull(account).getAccount());
 
         Log.d(LOGCAT_TAG, a.name);
-        Log.d(LOGCAT_TAG, "Exporting events...");
+        // TODO: ask Remi for a method to get all events (in the future ?)
+        CompletableFuture<List<Event>> events = CompletableFuture.completedFuture(Collections.emptyList());
+        GoogleCalendar.exportEvents(
+                requireContext(),
+                a,
+                events
+        ).whenComplete((ignored1, ignored2) -> {
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), GSI_OPTIONS);
+            googleSignInClient.signOut();
+            Log.d(LOGCAT_TAG, "User logged out.");
+        });
     }
 
     @VisibleForTesting
-    public void setExport(boolean v){
+    public void setExport(boolean v) {
         this.performExport = v;
     }
 }
