@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.instanceOf;
 
-@Ignore("Disabled feature")
 @RunWith(AndroidJUnit4.class)
 public class AccountFragmentTest {
 
@@ -40,8 +39,5 @@ public class AccountFragmentTest {
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_account)));
-
-        onData(anything())
-                .atPosition(0).perform(click());
     }
 }
