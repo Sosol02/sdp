@@ -27,8 +27,10 @@ import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -144,6 +146,12 @@ public class CalendarUITest {
                         isDisplayed()));
         materialButton.perform(click());
 
+        onView(withId(R.id.editEventName)).perform(
+                scrollTo(),
+                click(),
+                clearText(),
+                typeText("6chars")
+        );
         ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
         materialButton2.perform(scrollTo(), click());
 
