@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
@@ -152,6 +153,7 @@ public class CalendarUITest {
                 clearText(),
                 typeText("6chars")
         );
+        closeSoftKeyboard();
         ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
         materialButton2.perform(scrollTo(), click());
 
