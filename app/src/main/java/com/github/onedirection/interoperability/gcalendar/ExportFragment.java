@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.queries.EventQueries;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -22,10 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import static com.github.onedirection.interoperability.gcalendar.GoogleCalendar.LOGCAT_TAG;
 
@@ -84,13 +81,11 @@ public class ExportFragment extends Fragment {
     private void exportEvents(GoogleSignInAccount account) {
         Account a = Objects.requireNonNull(Objects.requireNonNull(account).getAccount());
 
-        Log.d(LOGCAT_TAG, a.name);
-        // TODO: ask Remi for a method to get all events (in the future ?)
-        CompletableFuture<List<Event>> events = CompletableFuture.completedFuture(Collections.emptyList());
+        Log.d(LOGCAT_TAG, "Events will be exported to: " + a.name);
         GoogleCalendar.exportEvents(
                 requireContext(),
                 a,
-                events
+                EventQueries.getAllEvents(Database.getDefaultInstance())
         ).whenComplete((ignored1, ignored2) -> {
             GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), GSI_OPTIONS);
             googleSignInClient.signOut();

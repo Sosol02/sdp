@@ -24,7 +24,7 @@ public final class GoogleCalendar {
     }
 
     public static Event toGCalendarEvents(com.github.onedirection.event.Event event) {
-        // Task #207 (assigned to @Flechman)
+        // TODO: Task #207 (assigned to @Flechman)
 
         // Example: https://developers.google.com/calendar/v3/reference/events/insert#java
         // Doc: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/java/latest/
@@ -34,11 +34,13 @@ public final class GoogleCalendar {
     }
 
     public static com.github.onedirection.event.Event fromGCalendarEvents(Event event) {
+        // TODO: Task #???
+
         return null;
     }
 
     public static CompletableFuture<Void> exportEvents(Context ctx, Account account, CompletableFuture<List<com.github.onedirection.event.Event>> ls) {
-        // Task #206 -- See `gcalendar-export` branch for WIP implementation
+        // TODO: Task #206 -- See `gcalendar-export` branch for WIP implementation
         return ls.thenAccept(ignored -> {
         });
     }
