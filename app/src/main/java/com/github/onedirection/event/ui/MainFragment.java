@@ -241,7 +241,7 @@ public class MainFragment extends Fragment {
         } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
             checkMsg = String.valueOf(R.string.end_before_start);
         } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > Duration.ofDays(1).getSeconds()) {
-            checkMsg = String.valueOf(R.string.end_before_start);
+            checkMsg = String.valueOf(R.string.event_time_too_long);
         } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
             checkMsg = String.format(String.valueOf(R.string.location_name_too_long), MAX_STRING_LENGTH);
         } else if(model.isRecurrent.getValue()) {
