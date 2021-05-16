@@ -226,10 +226,17 @@ public class EventCreatorTest {
     @Test
     public void dateCanBeSpecifiedAsInput() {
         final LocalDate date = LocalDate.of(1000, 10, 1);
+        final String eventName = "6chars";
 
         test(
                 i -> EventCreator.putDateExtra(i, date),
                 () -> {
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(eventName)
+                    );
                     onView(allOf(withId(R.id.date), hasSibling(withText(containsString("Start")))))
                             .check(matches(withText(date.toString())));
 
@@ -334,9 +341,17 @@ public class EventCreatorTest {
 
     @Test
     public void geocodingCanBeUsed() {
+        final String eventName = "6chars";
+
         test(
                 i -> i,
                 () -> {
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(eventName)
+                    );
                     onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
                     testIsGeolocationFragment();
 
@@ -356,10 +371,17 @@ public class EventCreatorTest {
     public void recurrenceCanBeUsed() {
         ChronoUnit unit = ChronoUnit.YEARS;
         int amount = 2;
+        final String eventName = "6chars";
 
         test(
                 i -> i,
                 () -> {
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(eventName)
+                    );
                     onView(withId(R.id.checkEventRecurrence)).perform(scrollTo(), click());
                     onView(withId(R.id.editRecurrenceAmount)).perform(
                             scrollTo(),
