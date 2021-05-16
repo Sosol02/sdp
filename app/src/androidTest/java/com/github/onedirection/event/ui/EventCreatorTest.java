@@ -1,8 +1,10 @@
-package com.github.onedirection.event;
+package com.github.onedirection.event.ui;
 
 
 import android.content.Intent;
+import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.test.core.app.ActivityScenario;
@@ -15,7 +17,10 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.event.ui.EventCreator;
+import com.github.onedirection.event.ui.MainFragment;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
@@ -23,6 +28,7 @@ import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
 import com.github.onedirection.utils.Pair;
 
+import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -492,4 +498,69 @@ public class EventCreatorTest {
         }
     }
 
+    @Test
+    public void sanityChecksOnNamesPreventEventCreation() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< MainFragment.MAX_STRING_LENGTH+1; ++i) {
+            sb.append('o');
+        }
+        String nameTooLong = sb.toString();
+        String locationTooLong = nameTooLong;
+        String name = "EVENT NAME";
+        String location = "EVENT LOCATION";
+
+        test(
+                i -> i,
+                () -> {
+                    onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+
+                    onView(withId(R.id.checkArgsText)).check((view, noViewFoundException) ->
+                            ((TextView) view).getText().equals(R.string.empty_event_name));
+
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(nameTooLong)
+                    );
+                    closeSoftKeyboard();
+
+                    onView(withId(R.id.checkArgsText)).check((view, noViewFoundException) ->
+                            ((TextView) view).getText().equals(R.string.event_name_too_long));
+
+                    onView(withId(R.id.editEventName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(name)
+                    );
+                    closeSoftKeyboard();
+
+                    onView(withId(R.id.editEventLocationName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(locationTooLong)
+                    );
+                    closeSoftKeyboard();
+
+                    onView(withId(R.id.checkArgsText)).check((view, noViewFoundException) ->
+                            ((TextView) view).getText().equals(R.string.location_name_too_long));
+
+                    onView(withId(R.id.editEventLocationName)).perform(
+                            scrollTo(),
+                            click(),
+                            clearText(),
+                            typeText(location)
+                    );
+                    closeSoftKeyboard();
+
+                    onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+                },
+                (event, edit) -> {
+                    assertThat(event.getName(), is(name));
+                    assertThat(event.getLocationName(), is(location));
+                }
+        );
+    }
 }

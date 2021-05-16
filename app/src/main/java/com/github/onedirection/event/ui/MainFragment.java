@@ -17,12 +17,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
 import com.github.onedirection.event.Event;
+
+import net.hockeyapp.android.Strings;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -43,7 +46,8 @@ import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
  */
 public class MainFragment extends Fragment {
 
-    private final static int MAX_STRING_LENGTH = 100;
+    @VisibleForTesting
+    final static int MAX_STRING_LENGTH = 100;
 
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
             ChronoUnit.DAYS,
@@ -231,18 +235,18 @@ public class MainFragment extends Fragment {
     private boolean fieldsAreValid() {
         String checkMsg = null;
         if(model.name.getValue() == null || model.name.getValue().equals("")) {
-            checkMsg = "Please specify a name for your event.";
+            checkMsg = String.valueOf(R.string.empty_event_name);
         } else if(model.name.getValue().length() > MAX_STRING_LENGTH) {
-            checkMsg = "The event name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.";
+            checkMsg = String.format(String.valueOf(R.string.event_name_too_long), MAX_STRING_LENGTH);
         } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
-            checkMsg = "Invalid: The event ends before it even starts.";
+            checkMsg = String.valueOf(R.string.end_before_start);
         } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > Duration.ofDays(1).getSeconds()) {
-            checkMsg = "The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.";
-        } else if(model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
-            checkMsg = "The custom location name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.";
+            checkMsg = String.valueOf(R.string.end_before_start);
+        } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
+            checkMsg = String.format(String.valueOf(R.string.location_name_too_long), MAX_STRING_LENGTH);
         } else if(model.isRecurrent.getValue()) {
             if(model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
-                checkMsg = "The recurrence end should be at least the event start time.";
+                checkMsg = String.valueOf(R.string.recurrence_end_too_soon);
             }
         }
         if(checkMsg != null) {
