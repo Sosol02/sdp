@@ -42,8 +42,7 @@ import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 public class MainFragment extends Fragment {
 
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
-            ChronoUnit.MINUTES,
-            ChronoUnit.HOURS,
+            ChronoUnit.DAYS,
             ChronoUnit.WEEKS,
             ChronoUnit.YEARS
     ));
@@ -115,6 +114,7 @@ public class MainFragment extends Fragment {
 
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
+        // 'Add Event' button listener
         getView().findViewById(R.id.buttonEventAdd).setOnClickListener(this::addEventCallback);
 
         // Text listeners
@@ -224,15 +224,30 @@ public class MainFragment extends Fragment {
         return model.generateEvent();
     }
 
+    private boolean fieldsAreValid() {
+        if(model.name.getValue() == null || model.name.getValue().equals("")) {
+            TextView checksText = getView().findViewById(R.id.checkArgsText);
+            checksText.setText("Please specify a name for your event.");
+            checksText.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            getView().findViewById(R.id.checkArgsText).setVisibility(View.GONE);
+            return true;
+        }
+    }
+
     private void addEventCallback(View v) {
-        model.incrementLoad();
-        requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
-        model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) ->  {
-            if(throwable != null){
-                Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
-            }
-            model.decrementLoad();
-            requireActivity().finish();
-        });
+        if(fieldsAreValid()) {
+            model.incrementLoad();
+            requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
+            model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) -> {
+                if (throwable != null) {
+                    Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
+                }
+                model.decrementLoad();
+                requireActivity().finish();
+            });
+        }
     }
 }

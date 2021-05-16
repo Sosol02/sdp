@@ -143,6 +143,15 @@
                     layout="@layout/date_time_buttons"
                     android:visibility="gone" />
 
+                <TextView
+                    android:id="@+id/checkArgsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/traffic_red"
+                    android:textAlignment="center"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
