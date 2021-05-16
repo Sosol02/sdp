@@ -229,30 +229,31 @@ public class MainFragment extends Fragment {
     }
 
     private boolean fieldsAreValid() {
+        String checkMsg = null;
         if(model.name.getValue() == null || model.name.getValue().equals("")) {
-            return setChecksText("Please specify a name for your event.");
+            checkMsg = "Please specify a name for your event.";
         } else if(model.name.getValue().length() > MAX_STRING_LENGTH) {
-            return setChecksText("The event name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.");
+            checkMsg = "The event name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.";
         } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
-            return setChecksText("Invalid: The event ends before it even starts.");
+            checkMsg = "Invalid: The event ends before it even starts.";
         } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > Duration.ofDays(1).getSeconds()) {
-            return setChecksText("The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.");
+            checkMsg = "The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.";
         } else if(model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
-            return setChecksText("The custom location name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.");
+            checkMsg = "The custom location name is too long. Provide a name no longer than "+MAX_STRING_LENGTH+" characters.";
         } else if(model.isRecurrent.getValue()) {
             if(model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
-                return setChecksText("The recurrence end should be at least the event start time.");
+                checkMsg = "The recurrence end should be at least the event start time.";
             }
         }
-        getView().findViewById(R.id.checkArgsText).setVisibility(View.GONE);
-        return true;
-    }
-
-    private boolean setChecksText(String newText) {
-        TextView checksText = getView().findViewById(R.id.checkArgsText);
-        checksText.setText(Objects.requireNonNull(newText));
-        checksText.setVisibility(View.VISIBLE);
-        return false;
+        if(checkMsg != null) {
+            TextView checksText = getView().findViewById(R.id.checkArgsText);
+            checksText.setText(checkMsg);
+            checksText.setVisibility(View.VISIBLE);
+            return false;
+        } else {
+            getView().findViewById(R.id.checkArgsText).setVisibility(View.GONE);
+            return true;
+        }
     }
 
     private void addEventCallback(View v) {
