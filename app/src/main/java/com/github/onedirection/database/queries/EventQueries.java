@@ -19,8 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class EventQueries {
 
-    @SuppressWarnings("FieldMayBeFinal")
-    private Database db;
+    private final Database db;
 
     /**
      * Constructor of EventQueries
@@ -30,6 +29,13 @@ public class EventQueries {
         this.db = db;
     }
 
+    public static CompletableFuture<List<Event>> getAllEvents(Database db){
+        return new EventQueries(db).getAllEvents();
+    }
+
+    public CompletableFuture<List<Event>> getAllEvents(){
+        return db.retrieveAll(EventStorer.getInstance());
+    }
 
     /**
      * Method to query events that take place in a time frame that is non-disjoint with the given time frame [start, end[
