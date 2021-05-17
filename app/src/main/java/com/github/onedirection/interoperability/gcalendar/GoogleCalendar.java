@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.content.Context;
 import android.util.Log;
 
+import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.ui.MainFragment;
 import com.github.onedirection.utils.Monads;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -19,7 +21,9 @@ import com.google.api.services.calendar.model.EventDateTime;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -38,18 +42,47 @@ public final class GoogleCalendar {
     private GoogleCalendar() {
     }
 
+    /**
+     * Converts an Event into a Google Calendar Event.
+     * If the event is recurring, the conversion can only happen if the event is the first to occur in the recurrence,
+     * else an exception is thrown.
+     * Event class of the Google Calendar API : https://developers.google.com/resources/api-libraries/documentation/calendar/v3/java/latest/
+     * @param event (Event): the Event to convert into a Google Calendar Event
+     * @return (com.google.api.services.calendar.model.Event): a Google Calendar Event
+     */
     public static Event toGCalendarEvents(com.github.onedirection.event.Event event) {
-        // TODO: Task #207 (assigned to @Flechman)
-
-        // Example: https://developers.google.com/calendar/v3/reference/events/insert#java
-        // Doc: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/java/latest/
-        // Warning: use EventDateTime::setDatetime, not EventDateTime::setDate
-
         Objects.requireNonNull(event);
+
         Event gcEvent = new Event()
-                .setSummary(event.getName());
+                .setSummary(event.getName())
+                .setId(event.getId().getUuid());
+
+        if(event.isRecurrent()) {
+            Recurrence recurrence = event.getRecurrence().get();
+            if(!event.getId().equals(recurrence.getGroupId())) {
+                throw new IllegalArgumentException("Cannot convert a recurring event to a google event if this one is not the first element of the recurrence");
+            }
+            gcEvent.setRecurringEventId(recurrence.getGroupId().getUuid());
+
+            String recurrencePeriod = null;
+            for(TemporalUnit t : MainFragment.PERIODS) {
+                if(recurrence.getPeriod().equals(t.getDuration())) {
+                    recurrencePeriod = t.toString().toUpperCase();
+                    recurrencePeriod = recurrencePeriod.substring(0, recurrencePeriod.length()-1)+"LY";
+                }
+            }
+            if(recurrencePeriod == null) {
+                throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+            }
+
+            long count = (recurrence.getEndTime().toEpochSecond() - event.getStartTime().toEpochSecond()) / recurrence.getPeriod().getSeconds() + 1;
+
+            String[] recurr = new String[] {"RRULE:FREQ="+recurrencePeriod+";COUNT="+count};
+            gcEvent.setRecurrence(Arrays.asList(recurr));
+        }
+
         if(event.getLocation().isPresent()) {
-            gcEvent.setLocation();
+            gcEvent.setLocation(event.getLocationName());
         }
 
         DateTime startDateTime = new DateTime(event.getStartTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
@@ -64,12 +97,7 @@ public final class GoogleCalendar {
                 .setTimeZone(ZoneId.SHORT_IDS.get(event.getEndTime().getZone().getId()));
         gcEvent.setEnd(end);
 
-        if(event.isRecurrent()) {
-
-        }
-
-
-        return null;
+        return gcEvent;
     }
 
     public static com.github.onedirection.event.Event fromGCalendarEvents(Event event) {
