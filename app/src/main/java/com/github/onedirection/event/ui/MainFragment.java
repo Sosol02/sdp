@@ -47,7 +47,7 @@ import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 public class MainFragment extends Fragment {
 
     @VisibleForTesting
-    final static int MAX_STRING_LENGTH = 100;
+    final static int MAX_STRING_LENGTH = 50;
 
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
             ChronoUnit.DAYS,
