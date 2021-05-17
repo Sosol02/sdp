@@ -96,15 +96,13 @@
     <string name="location">Location</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="no_events_scheduled_today">No events scheduled today!</string>
 
-    <string name="menu_event_viewer">menu_event_viewer</string>
-
-    <string name="one_event_cal_display">1 Event</string>
-    <string name="multiple_events_cal_display">%d Events</string>
     <string name="event_name">Event Name</string>
     <string name="textview">TextView</string>
 
+    <!-- Google calendar related -->
+    <string name="export_your_calendar">Export your calendar:</string>
+    <string name="export_to_google_calendar">Export to Google Calendar</string>
 
 
 </resources>
