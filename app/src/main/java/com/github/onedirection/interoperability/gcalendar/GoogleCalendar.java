@@ -2,12 +2,22 @@ package com.github.onedirection.interoperability.gcalendar;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.util.Log;
 
+import com.github.onedirection.utils.Monads;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.CalendarList;
+import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -29,6 +39,12 @@ public final class GoogleCalendar {
         // Example: https://developers.google.com/calendar/v3/reference/events/insert#java
         // Doc: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/java/latest/
         // Warning: use EventDateTime::setDatetime, not EventDateTime::setDate
+
+        Objects.requireNonNull(event);
+        Event gcEvent = new Event()
+                .setSummary(event.getName());
+
+
 
         return null;
     }
