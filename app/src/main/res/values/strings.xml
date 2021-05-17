@@ -44,12 +44,12 @@
 
     <string name="navigation_started_text">Navigation started</string>
     <string name="navigation_stopped_text">Navigation ended</string>
-    <string name="navigation_eta_format">h:mm a</string>
     <string name="navigation_reroute_request">Reroute request</string>
     <string name="navigation_reroute_failed">Reroute failed</string>
     <string name="navigation_reroute_success">Reroute succeeded</string>
-    <string name="navigation_distance_unit"> meters</string>
+    <string name="navigation_distance_unit">meters</string>
     <string name="navigation_distance_format">%1$d meters</string>
+    <string name="navigation_manager_stop">✖</string>
 
     <string name="route_service_request">Route has been requested</string>
     <string name="route_service_failed">Route request has failed</string>
@@ -103,6 +103,5 @@
     <!-- Google calendar related -->
     <string name="export_your_calendar">Export your calendar:</string>
     <string name="export_to_google_calendar">Export to Google Calendar</string>
-
 
 </resources>

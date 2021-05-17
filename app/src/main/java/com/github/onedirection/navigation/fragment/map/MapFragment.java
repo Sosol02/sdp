@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -91,7 +92,6 @@ public class MapFragment extends Fragment {
                         }
                     }
                 });
-
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
@@ -101,6 +101,9 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
                 initializeManagers(style, view);
+                LatLng LAT_LNG_1 = new LatLng(37.423018, -122.083361);
+                LatLng LAT_LNG_2 = new LatLng(37.432067, -122.087706);
+                routesManager.findRoute(LAT_LNG_1, Collections.singletonList(LAT_LNG_2), new NavigationRouteResponseListener());
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
@@ -190,7 +193,7 @@ public class MapFragment extends Fragment {
     }
 
     private CompletableFuture<Boolean> requestLocationPermission() {
-        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+        if (isVisible() && !DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {

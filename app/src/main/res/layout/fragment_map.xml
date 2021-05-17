@@ -9,7 +9,8 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:visibility="gone">
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
@@ -30,14 +31,16 @@
             app:layout_constraintHorizontal_bias="0.95"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.97" />
+            app:layout_constraintVertical_bias="0.97"
+            tools:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/maneuverBarLayout"
-            android:layout_width="match_parent"
+            android:layout_width="350dp"
             android:layout_height="80dp"
-            android:background="@drawable/blank"
-            android:visibility="gone"
+            android:layout_marginTop="45dp"
+            android:background="@drawable/background_navgation_bar"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -58,6 +61,7 @@
                 android:layout_alignTop="@+id/next_maneuver_icon"
                 android:layout_toEndOf="@+id/next_maneuver_icon"
                 android:text=""
+                android:textColor="?colorOnPrimary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -70,6 +74,7 @@
                 android:layout_gravity="fill_horizontal"
                 android:layout_marginEnd="10dp"
                 android:text=""
+                android:textColor="?colorOnPrimary"
                 android:textSize="16sp" />
 
 
@@ -77,14 +82,15 @@
 
         <RelativeLayout
             android:id="@+id/arrivalBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:background="@drawable/blank"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/background_navgation_bar"
             android:padding="5dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.491"
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
@@ -92,7 +98,8 @@
                 android:layout_width="45dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="\u2716"
+                android:text="@string/navigation_manager_stop"
+                android:textColor="?colorOnPrimary"
                 android:textSize="24sp" />
 
             <TextView
@@ -102,7 +109,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@id/stop"
                 android:text=""
-                android:textColor="@color/mapbox_blue"
+                android:textColor="?colorOnPrimary"
                 android:textSize="24sp" />
 
             <TextView
@@ -113,6 +120,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_toEndOf="@id/eta_next_destination"
                 android:text=""
+                android:textColor="?colorOnPrimary"
                 android:textSize="24sp" />
 
             <TextView
@@ -122,6 +130,7 @@
                 android:layout_below="@id/eta_final_destination"
                 android:layout_toEndOf="@+id/stop"
                 android:text=""
+                android:textColor="?colorOnPrimary"
                 android:textSize="18sp" />
 
 
@@ -136,7 +145,8 @@
         android:background="@color/white"
         app:behavior_hideable="true"
         app:behavior_peekHeight="230dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/fragment_map_event_name"

@@ -84,7 +84,7 @@ public class NavigationManager {
     private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
     private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
     private static final int MAPBOX_CAMERA_ANIMATION_DURATION = 1000;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(String.valueOf(R.string.navigation_eta_format), Locale.ROOT);
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.ROOT);
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
@@ -158,6 +158,7 @@ public class NavigationManager {
         }
         navigationManager.cancelNavigation();
 
+        routeDisplayManager.clearDisplayedRoute();
         CameraPosition cameraPosition = new CameraPosition.Builder(mapboxMap.getCameraPosition())
                 .zoom(ON_EXIT_NAVIGATION_ZOOM)
                 .tilt(ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES)
@@ -247,8 +248,8 @@ public class NavigationManager {
 
         @Override
         public void onLocationObservationReceived(@NonNull LocationObservation locationObservation) {
-            remainingDistance.setText(((int) locationObservation.getRemainingLegDistance()) + R.string.navigation_distance_unit);
-            nextManeuverDistance.setText(String.format(Locale.getDefault(), String.valueOf(R.string.navigation_distance_format), locationObservation
+            remainingDistance.setText((int) locationObservation.getRemainingLegDistance() + " " + context.getResources().getString(R.string.navigation_distance_unit));
+            nextManeuverDistance.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.navigation_distance_format), locationObservation
                                                         .getDistanceToUpcomingManeuver().intValue()));
         }
 
