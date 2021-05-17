@@ -49,7 +49,7 @@ public class MainFragment extends Fragment {
     @VisibleForTesting
     final static int MAX_STRING_LENGTH = 50;
 
-    public final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
+    private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
             ChronoUnit.DAYS,
             ChronoUnit.WEEKS,
             ChronoUnit.MONTHS,

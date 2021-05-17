@@ -21,10 +21,14 @@ import com.google.api.services.calendar.model.EventDateTime;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,6 +42,14 @@ public final class GoogleCalendar {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     static final String LOGCAT_TAG = "GCalendar";
+
+    private final static Map<TemporalUnit, String> PERIODS = Collections.unmodifiableMap(new HashMap<TemporalUnit, String>() {
+        {
+            put(ChronoUnit.DAYS, "DAILY");
+            put(ChronoUnit.WEEKS, "WEEKLY");
+            put(ChronoUnit.MONTHS, "MONTHLY");
+            put(ChronoUnit.YEARS, "YEARLY");
+        }});
 
     private GoogleCalendar() {
     }
@@ -65,10 +77,9 @@ public final class GoogleCalendar {
             gcEvent.setRecurringEventId(recurrence.getGroupId().getUuid());
 
             String recurrencePeriod = null;
-            for(TemporalUnit t : MainFragment.PERIODS) {
-                if(recurrence.getPeriod().equals(t.getDuration())) {
-                    recurrencePeriod = t.toString().toUpperCase();
-                    recurrencePeriod = recurrencePeriod.substring(0, recurrencePeriod.length()-1)+"LY";
+            for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
+                if(recurrence.getPeriod().equals(t.getKey().getDuration())) {
+                    recurrencePeriod = t.getValue();
                 }
             }
             if(recurrencePeriod == null) {
