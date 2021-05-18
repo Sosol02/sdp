@@ -28,7 +28,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import androidx.appcompat.app.ActionBar;
 
@@ -43,6 +47,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
     public static HomeFragment homeFragment;
+    Map<Id,Boolean> favorites = new HashMap<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -123,6 +128,10 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            Database database = Database.getDefaultInstance();
+            EventQueries queryManager = new EventQueries(database);
+            queryManager.removeEvent(events.get(viewHolder.getPosition()).getId());
+            eventList.getAdapter().notifyItemRemoved(viewHolder.getPosition());
         }
     };
 

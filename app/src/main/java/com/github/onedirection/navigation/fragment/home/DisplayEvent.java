@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
@@ -123,6 +125,24 @@ public class DisplayEvent extends AppCompatActivity {
               }));
     }
 
+    /** Called when the user taps the star button */
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void buttonStarEvent(View view){
+        Id id = event.getId();
+        if(!HomeFragment.homeFragment.favorites.containsKey(id)){
+            HomeFragment.homeFragment.favorites.put(id,false);
+        }
+        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
+        ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+        if(isFavorite){
+            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+            HomeFragment.homeFragment.favorites.replace(id,false);
+        }else{
+            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+            HomeFragment.homeFragment.favorites.replace(id,true);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -131,4 +151,6 @@ public class DisplayEvent extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

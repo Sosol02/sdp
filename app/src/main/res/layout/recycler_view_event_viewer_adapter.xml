@@ -11,12 +11,11 @@
         android:id="@+id/eventLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
         android:cursorVisible="false"
         android:text="No location precised"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/eventEndTime"
         app:layout_constraintTop_toBottomOf="@+id/eventEndTime"
         tools:visibility="visible" />
 
@@ -24,23 +23,22 @@
         android:id="@+id/eventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
         android:layout_marginTop="15dp"
         android:text="TextView"
         android:textColor="#000000"
         app:layout_constraintBottom_toTopOf="@+id/eventEndTime"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/eventEndTime"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/eventStartTime"
         android:layout_width="0dp"
         android:layout_height="16dp"
-        android:layout_marginEnd="127dp"
+        android:layout_marginEnd="57dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/favoriteButton"
         app:layout_constraintStart_toEndOf="@+id/eventEndTime"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,10 +48,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="166dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="3dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/eventLocation"
         app:layout_constraintEnd_toStartOf="@+id/eventStartTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventName" />
+
+    <ImageButton
+        android:id="@+id/favoriteButton"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="3dp"
+        android:background="#00ffffff"
+        android:src="@android:drawable/btn_star_big_on"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/eventStartTime"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
