@@ -1,5 +1,7 @@
 package com.github.onedirection.interoperability;
 
+import android.util.Log;
+
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -10,6 +12,7 @@ import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
 import com.github.onedirection.interoperability.gcalendar.GoogleCalendar;
 import com.github.onedirection.utils.Id;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 
 import org.junit.Test;
@@ -56,8 +59,8 @@ public class GoogleCalendarTest {
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
 
-        assertEquals(startTime.toEpochSecond(), gcEvent.getStart().getDate().getValue()/1000);
-        assertEquals(endTime.toEpochSecond(), gcEvent.getEnd().getDate().getValue()/1000);
+        assertEquals(startTime.toEpochSecond(), gcEvent.getStart().getDateTime().getValue()/1000);
+        assertEquals(endTime.toEpochSecond(), gcEvent.getEnd().getDateTime().getValue()/1000);
     }
 
     @Test
