@@ -26,7 +26,7 @@ public class RouteDisplayManager {
     private List<Line> lines;
 
     private static final String LINE_COLOR = "Blue";
-    private static final float LINE_WIDTH = 2f;
+    private static final float LINE_WIDTH = 10f;
 
     public RouteDisplayManager(MapView mapView, MapboxMap mapboxMap, Style style) {
         this.lineManager = new LineManager(mapView, mapboxMap, style);

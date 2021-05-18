@@ -47,7 +47,8 @@
     <string name="navigation_reroute_request">Reroute request</string>
     <string name="navigation_reroute_failed">Reroute failed</string>
     <string name="navigation_reroute_success">Reroute succeeded</string>
-    <string name="navigation_distance_unit">meters</string>
+    <string name="navigation_distance_small_unit">m</string>
+    <string name="navigation_distance_big_unit">km</string>
     <string name="navigation_distance_format">%1$d meters</string>
     <string name="navigation_manager_stop">✖</string>
 

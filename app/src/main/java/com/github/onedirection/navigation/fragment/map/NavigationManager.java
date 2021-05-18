@@ -39,9 +39,13 @@ import com.mapquest.navigation.model.location.LocationObservation;
 import com.mapquest.navigation.NavigationManager.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -68,7 +72,7 @@ public class NavigationManager {
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
     private final RelativeLayout maneuverBar;
-    private final ImageView nextManeuverIcon; //TODO change label with upcoming maneuver
+    private final ImageView nextManeuverIcon;
     private final TextView nextManeuverDistance;
     private final TextView nextManeuver;
 
@@ -79,12 +83,13 @@ public class NavigationManager {
 
     private final AppCompatImageButton myLocationButton;
 
-    private static final double NAVIGATION_ZOOM = 16;
-    private static final double NAVIGATION_TILT_VALUE_DEGREES = 60;
+    private static final double NAVIGATION_ZOOM = 18;
+    private static final double NAVIGATION_TILT_VALUE_DEGREES = 55;
     private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
     private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
     private static final int MAPBOX_CAMERA_ANIMATION_DURATION = 1000;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.ROOT);
+    private static final Map<Maneuver.Type, Integer> MANEUVER_RESOURCES_ID_BY_TYPE = buildManeuverIconResources();
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
                              MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
@@ -98,7 +103,6 @@ public class NavigationManager {
         navigationManager = new com.mapquest.navigation.NavigationManager.Builder(context,
                 BuildConfig.API_KEY, new DeviceLocationProviderAdapter(deviceLocationProvider))
                 .build();
-        navigationManager.setRerouteBehaviorOverride(coordinate -> true);
 
         routeUpdatingRerouteListener = new RouteUpdatingRerouteListener();
         centeringMapOnLocationProgressListener = new CenteringMapOnLocationProgressListener();
@@ -187,6 +191,17 @@ public class NavigationManager {
         timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
     }
 
+    private String getStringDistanceFromIntDistance(int distance) {
+        if (distance > 5000) {
+            double distanceKm = ((double) distance) / 1000;
+            BigDecimal b = new BigDecimal(Double.toString(distanceKm));
+            b.setScale(1, RoundingMode.CEILING);
+            return b.toString() + " " + context.getResources().getString(R.string.navigation_distance_big_unit);
+        } else {
+            return distance + " " + context.getResources().getString(R.string.navigation_distance_small_unit);
+        }
+    }
+
     private class ToastUpdateNavigationStateListener implements NavigationStateListener {
 
         @Override
@@ -228,19 +243,21 @@ public class NavigationManager {
 
         @Override
         public void onRerouteRequested(Location location) {
-            Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onRerouteReceived(Route route) {
-            Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_LONG).show();
-            routeDisplayManager.displayRoute(route);
-            updateUiOnStartAndReroute(route);
+            Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
+            if (route != null) {
+                routeDisplayManager.displayRoute(route);
+                updateUiOnStartAndReroute(route);
+            }
         }
 
         @Override
         public void onRerouteFailed() {
-            Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -248,17 +265,28 @@ public class NavigationManager {
 
         @Override
         public void onLocationObservationReceived(@NonNull LocationObservation locationObservation) {
-            remainingDistance.setText((int) locationObservation.getRemainingLegDistance() + " " + context.getResources().getString(R.string.navigation_distance_unit));
-            nextManeuverDistance.setText(String.format(Locale.getDefault(), context.getResources().getString(R.string.navigation_distance_format), locationObservation
-                                                        .getDistanceToUpcomingManeuver().intValue()));
+
+            remainingDistance.setText(getStringDistanceFromIntDistance((int) locationObservation.getRemainingLegDistance()));
+            if (locationObservation.getDistanceToUpcomingManeuver() != null) {
+                nextManeuverDistance.setText(getStringDistanceFromIntDistance(locationObservation.
+                        getDistanceToUpcomingManeuver().intValue()));
+            }
         }
 
         @Override
         public void onUpcomingManeuverUpdated(@Nullable Maneuver maneuver) {
-            String labelText = ((maneuver.getName() != null) && !maneuver.getName().trim().isEmpty()) ?
-                    maneuver.getTypeText() + ", " + maneuver.getName() :
-                    maneuver.getTypeText();
-            nextManeuver.setText(labelText);
+            if (maneuver != null) {
+                String labelText = (!maneuver.getName().trim().isEmpty()) ?
+                        maneuver.getTypeText() + ", " + maneuver.getName() :
+                        maneuver.getTypeText();
+                nextManeuver.setText(labelText);
+                if (MANEUVER_RESOURCES_ID_BY_TYPE.containsKey(maneuver.getType())) {
+                    nextManeuverIcon.setImageResource(MANEUVER_RESOURCES_ID_BY_TYPE.get(maneuver.getType()));
+                    nextManeuverIcon.setVisibility(View.VISIBLE);
+                }
+            } else {
+                nextManeuverIcon.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -267,6 +295,14 @@ public class NavigationManager {
         @Override
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
+            if (finalDestination) {
+                Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
+                destinationAcceptanceHandler.confirmArrival(true);
+                //stopNavigation();
+            } else {
+                Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
+                destinationAcceptanceHandler.confirmArrival(true);
+            }
 
         }
     }
@@ -286,18 +322,18 @@ public class NavigationManager {
     private class EtaUpdateResponseListener implements EtaResponseListener {
 
         @Override
-        public void onEtaUpdate(@NonNull EstimatedTimeOfArrival estimatedTimeOfArrival) {
-            long timeLeft = estimatedTimeOfArrival.getTime();
-        }
+        public void onEtaUpdate(@NonNull EstimatedTimeOfArrival estimatedTimeOfArrival) {}
 
         @Override
         public void onEtaUpdate(@NonNull Map<String, Traffic> map, String s) {
-            String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
-            long timeForNextDestination = map.get(s).getEstimatedTimeOfArrival().getTime();
-            long timeForFinalDestination = map.get(lastRouteLegKey).getEstimatedTimeOfArrival().getTime();
+            if (navigationManager.getRoute() != null) {
+                String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
+                long timeForNextDestination = map.get(s).getEstimatedTimeOfArrival().getTime();
+                long timeForFinalDestination = map.get(lastRouteLegKey).getEstimatedTimeOfArrival().getTime();
 
-            timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
-            timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+                timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
+                timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+            }
         }
 
         @Override
@@ -307,4 +343,27 @@ public class NavigationManager {
         public void onRequestMade() {}
     }
 
+
+    private static Map<Maneuver.Type, Integer> buildManeuverIconResources() {
+        Map<Maneuver.Type,Integer> mapManeuverIdByType = new HashMap<>();
+
+        mapManeuverIdByType.put(Maneuver.Type.LEFT_UTURN, R.drawable.maneuver_icon_uturn_left);
+        mapManeuverIdByType.put(Maneuver.Type.SHARP_LEFT, R.drawable.maneuver_icon_sharp_left);
+        mapManeuverIdByType.put(Maneuver.Type.LEFT, R.drawable.maneuver_icon_left);
+        mapManeuverIdByType.put(Maneuver.Type.SLIGHT_LEFT, R.drawable.maneuver_icon_slight_left);
+        mapManeuverIdByType.put(Maneuver.Type.STRAIGHT, R.drawable.maneuver_icon_straight);
+        mapManeuverIdByType.put(Maneuver.Type.SLIGHT_RIGHT, R.drawable.maneuver_icon_slight_right);
+        mapManeuverIdByType.put(Maneuver.Type.RIGHT, R.drawable.maneuver_icon_right);
+        mapManeuverIdByType.put(Maneuver.Type.SHARP_RIGHT, R.drawable.maneuver_icon_sharp_right);
+        mapManeuverIdByType.put(Maneuver.Type.RIGHT_UTURN, R.drawable.maneuver_icon_uturn_right);
+        mapManeuverIdByType.put(Maneuver.Type.MERGE, R.drawable.maneuver_icon_merge);
+        mapManeuverIdByType.put(Maneuver.Type.LEFT_MERGE, R.drawable.maneuver_icon_merge_left);
+        mapManeuverIdByType.put(Maneuver.Type.RIGHT_MERGE, R.drawable.maneuver_icon_merge_right);
+        mapManeuverIdByType.put(Maneuver.Type.LEFT_OFF_RAMP, R.drawable.maneuver_icon_exit_left);
+        mapManeuverIdByType.put(Maneuver.Type.RIGHT_OFF_RAMP, R.drawable.maneuver_icon_exit_right);
+        mapManeuverIdByType.put(Maneuver.Type.LEFT_FORK, R.drawable.maneuver_icon_fork_left);
+        mapManeuverIdByType.put(Maneuver.Type.RIGHT_FORK, R.drawable.maneuver_icon_fork_right);
+
+        return Collections.unmodifiableMap(mapManeuverIdByType);
+    }
 }
