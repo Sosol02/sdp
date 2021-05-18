@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation.fragment.home;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,12 +9,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.event.ui.EventCreator;
+import com.github.onedirection.utils.Id;
 
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * To use to view a unique events, just start the activity an provide the event
@@ -22,6 +28,7 @@ import java.util.List;
 public class DisplayEvent extends AppCompatActivity {
 
     public static final String EXTRA_EVENT = "EVENT_ID";
+
     Event event;
 
 
@@ -55,13 +62,18 @@ public class DisplayEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_event);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         Intent intent = getIntent();
 
         if(hasEventExtra(intent)){
             event = getEventExtra(intent);
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm");
 
         TextView name = this.findViewById(R.id.eventNameDisplay);
         name.setText(event.getName());
@@ -73,10 +85,35 @@ public class DisplayEvent extends AppCompatActivity {
         endTime.setText(event.getEndTime().format(formatter));
     }
 
-    /** Called when the user taps the Send button */
+    /** Called when the user taps the Edit button */
     public void buttonStartEditEvent(View view){
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
+        ZonedDateTime date = ZonedDateTime.now();
+
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            HomeFragment.homeFragment.updateResults(monthEvents);
+            super.onBackPressed();
+        });
+    }
+
+    /** Called when the user taps the Delete button */
+    public void buttonStartDeleteEvent(View view){
+        Database database = Database.getDefaultInstance();
+        EventQueries queryManager = new EventQueries(database);
+
+        CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
+
+        eventDeleted.whenComplete(((id, throwable) -> {
+                    for (int i = 0; i < HomeFragment.homeFragment.events.size(); i++) {
+                        if (HomeFragment.homeFragment.events.get(i).getId().equals(id)){
+                          HomeFragment.homeFragment.events.remove(i);
+                       }
+                   }
+            HomeFragment.homeFragment.updateResults();
+            super.onBackPressed();
+              }));
     }
 }

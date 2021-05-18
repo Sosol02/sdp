@@ -92,7 +92,6 @@ public class DayEventsListView extends LinearLayout {
     }
 
 
-
     private CompletableFuture<List<Event>> getDayEvents(ZonedDateTime day) {
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);

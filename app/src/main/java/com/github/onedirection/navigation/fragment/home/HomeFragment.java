@@ -3,12 +3,14 @@ package com.github.onedirection.navigation.fragment.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,6 +22,7 @@ import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
+import com.github.onedirection.utils.Id;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import androidx.appcompat.app.ActionBar;
+
 
 /*
  **Home of the application
@@ -37,7 +42,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     RecyclerView eventList;
     EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
-
+    public static HomeFragment homeFragment;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -63,6 +68,8 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
 
+        homeFragment = this;
+
         return root;
     }
 
@@ -73,6 +80,29 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
     public void updateResults(List<Event> events){
         this.events = events;
+        eventList.setAdapter(new EventViewerAdapter(this.events, this));
+    }
+
+    public void updateResults(){
+        eventList.setAdapter(new EventViewerAdapter(events, this));
+    }
+
+    public void updateResultsWithCallToDb(){
+        ZonedDateTime date = ZonedDateTime.now();
+
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            events = monthEvents;
+            eventList.setAdapter(new EventViewerAdapter(events, this));
+        });
+    }
+
+    public void deleteEvent(Id id){
+        for(int i =0; i<events.size();i++){
+            if(events.get(i).getId() == id){
+                events.remove(i);
+            }
+        }
         eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
@@ -104,4 +134,12 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         startActivity(intent);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
