@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:onClick="buttonStartEditEvent"
     tools:context=".navigation.fragment.home.DisplayEvent">
 
     <TextView
@@ -34,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:layout_marginBottom="109dp"
-        android:text="@string/textview"
+        android:text="No location precised"
         app:layout_constraintBottom_toBottomOf="@+id/eventStartTimeDisplay"
         app:layout_constraintEnd_toEndOf="@+id/eventStartTimeDisplay"
         app:layout_constraintStart_toStartOf="@+id/eventStartTimeDisplay"

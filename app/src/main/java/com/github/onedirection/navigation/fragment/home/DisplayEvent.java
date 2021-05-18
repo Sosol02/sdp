@@ -1,10 +1,12 @@
 package com.github.onedirection.navigation.fragment.home;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -78,7 +80,11 @@ public class DisplayEvent extends AppCompatActivity {
         TextView name = this.findViewById(R.id.eventNameDisplay);
         name.setText(event.getName());
         TextView location = this.findViewById(R.id.eventNameLocation);
-        location.setText(event.getLocationName());
+        if(event.getLocationName() == ""){
+            location.setText("No location specified");
+        }else {
+            location.setText(event.getLocationName());
+        }
         TextView startTime = this.findViewById(R.id.eventStartTimeDisplay);
         startTime.setText(event.getStartTime().format(formatter));
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
@@ -115,5 +121,14 @@ public class DisplayEvent extends AppCompatActivity {
             HomeFragment.homeFragment.updateResults();
             super.onBackPressed();
               }));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
