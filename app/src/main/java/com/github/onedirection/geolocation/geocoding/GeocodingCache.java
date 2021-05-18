@@ -79,6 +79,7 @@ public final class GeocodingCache implements GeocodingService {
     }
 
     public static Optional<GeocodingCache> loadFromAndroidCache(Context ctx, String filename, GeocodingService underlying) {
+        Objects.requireNonNull(underlying);
         Optional<Cache<Pair<String, Integer>, CompletableFuture<List<NamedCoordinates>>>> nameCache = AndroidCache.loadFromAndroidCache(
                 ctx,
                 filename + "_1",
