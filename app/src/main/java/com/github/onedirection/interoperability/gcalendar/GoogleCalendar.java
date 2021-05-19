@@ -66,7 +66,9 @@ public final class GoogleCalendar {
                 }
                 pageToken = calendarList.getNextPageToken();
             } while (pageToken != null);
-        } catch (Exception ignored) { /*Ignore and return empty*/ }
+        } catch (Exception ignored) { 
+            Log.d(LOGCAT_TAG, "Calendars loading failed.");
+        }
         return ls;
     }
 
@@ -99,9 +101,6 @@ public final class GoogleCalendar {
                                         .setSummary(CALENDAR_SUMMARY)
                         ).execute().getId();
                         Log.d(LOGCAT_TAG, "... done (id " + calendarId + ")");
-
-
-                        assert calendarId != null;
 
                         for (Event event : events) {
                             service.events().insert(calendarId, event).execute();
