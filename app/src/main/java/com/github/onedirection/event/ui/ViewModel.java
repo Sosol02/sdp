@@ -61,7 +61,6 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         this.coordinates = new MutableLiveData<>(event.getLocation());
 
         this.isRecurrent = new MutableLiveData<>(event.isRecurrent());
-        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
         this.recurrencePeriod = new MutableLiveData<>(
                 event.getRecurrence().map(Recurrence::getPeriod).orElse(DEFAULT_EVENT_RECURRENCE_PERIOD)
         );

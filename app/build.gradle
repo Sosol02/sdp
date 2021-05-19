@@ -79,6 +79,13 @@ dependencies {
         exclude group: 'com.android.support'
         exclude group: 'com.mapbox.mapboxsdk' //change when navigation is done
     }
+    // Google login/calendar related
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    implementation ('com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'){
+        exclude group: 'com.google.guava'
+    }
+
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation "androidx.startup:startup-runtime:1.0.0"
     testImplementation 'junit:junit:4.13.2'
