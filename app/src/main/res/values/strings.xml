@@ -110,6 +110,12 @@
     <!-- Google calendar related -->
     <string name="export_your_calendar">Export your calendar:</string>
     <string name="export_to_google_calendar">Export to Google Calendar</string>
+    <string name="start_navigation">Start navigation</string>
+
+
+    <string name="fragment_map_event_nav_cancel">cancel</string>
+    <string name="select_end_point">Select end point</string>
+
 
 
 </resources>
