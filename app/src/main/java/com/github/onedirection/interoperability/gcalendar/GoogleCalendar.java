@@ -3,6 +3,7 @@ package com.github.onedirection.interoperability.gcalendar;
 import android.accounts.Account;
 import android.content.Context;
 
+import com.github.onedirection.R;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
@@ -135,27 +136,35 @@ public final class GoogleCalendar {
 
         if(event.getRecurrence() != null) {
             List<String> recurrences = event.getRecurrence();
+            String periodically = null;
+            int eventCount = 0;
+
             for(String rule : recurrences) {
                 if(rule.substring(0, 5).equals("RRULE")) {
                     String[] info = rule.substring(11).split(";COUNT=");
-                    String periodically = info[0];
-                    int eventCount = Integer.parseInt(info[1]);
-                    Duration period = null;
-                    for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
-                        if(periodically.equals(t.getValue())) {
-                            period = t.getKey().getDuration();
-                        }
-                    }
-                    if(period == null) {
-                        throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
-                    }
-                    ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
-                            (startTime.toEpochSecond() + (eventCount-1) * period.getSeconds());
-
-                    Recurrence newRecurrence = new Recurrence(newEvent.getId(), period, recEndTime);
-                    newEvent = newEvent.setRecurrence(newRecurrence);
+                    periodically = info[0];
+                    eventCount = Integer.parseInt(info[1]);
                 }
             }
+            if(periodically == null) {
+                throw new IllegalArgumentException("No recurrence rule matches the one used by "+ R.string.app_name+" Events");
+            }
+
+            Duration period = null;
+            for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
+                if(periodically.equals(t.getValue())) {
+                    period = t.getKey().getDuration();
+                }
+            }
+            if(period == null) {
+                throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+            }
+
+            ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
+                    (startTime.toEpochSecond() + (eventCount-1) * period.getSeconds());
+
+            Recurrence newRecurrence = new Recurrence(newEvent.getId(), period, recEndTime);
+            newEvent = newEvent.setRecurrence(newRecurrence);
         }
 
         return newEvent;
