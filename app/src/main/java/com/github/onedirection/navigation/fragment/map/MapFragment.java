@@ -3,6 +3,7 @@ package com.github.onedirection.navigation.fragment.map;
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -27,9 +28,14 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.model.Route;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +45,8 @@ import java.util.concurrent.CompletableFuture;
  * navigate between them
  */
 public class MapFragment extends Fragment {
+
+    private static final String LOG_TAG = "MapFragment";
 
     private MapView mapView;
     private MapboxMap mapboxMap;
@@ -92,7 +100,7 @@ public class MapFragment extends Fragment {
             EspressoIdlingResource.getInstance().lockIdlingResource();
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
-                initializeManagers(style);
+                initializeManagers(style, view);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
@@ -117,9 +125,12 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     public void showBottomSheet() {
+        Log.d(LOG_TAG, "showBottomSheet");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     
@@ -140,9 +151,18 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        if (markerSymbolManager != null)
+            markerSymbolManager.syncEventsWithDb();
     }
 
     @Override
@@ -179,13 +199,16 @@ public class MapFragment extends Fragment {
         return permissionRequestResult;
     }
 
-    private void initializeManagers(@NonNull Style style) {
+    private void initializeManagers(@NonNull Style style, @NonNull View view) {
         Context context = requireContext().getApplicationContext();
         markerSymbolManager = new MarkerSymbolManager(context, mapView, mapboxMap, style, this);
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
         routesManager = new RoutesManager(context);
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
-        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
+
+        // now that markerSymbolManager is non null, sync
+        markerSymbolManager.syncEventsWithDb();
     }
 
     private void initializeDeviceLocationProvider() {
@@ -229,4 +252,39 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private class DisplayRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                routeDisplayManager.displayRoute(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+
+        @Override
+        public void onRequestMade() {}
+    }
+
+    private class NavigationRouteResponseListener implements RoutesResponseListener {
+
+        @Override
+        public void onRoutesRetrieved(@NonNull List<Route> list) {
+            if (list.size() > 0) {
+                navigationManager.startNavigation(list.get(0));
+            }
+        }
+
+        @Override
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+        }
+
+        @Override
+        public void onRequestMade() {
+
+        }
+    }
 }

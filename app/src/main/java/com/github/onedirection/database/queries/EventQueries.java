@@ -1,29 +1,25 @@
-package com.github.onedirection;
-
-import android.util.Log;
+package com.github.onedirection.database.queries;
 
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A class used to query the events in a database based on different operations
  */
 public class EventQueries {
 
-    private Database db;
+    private final Database db;
 
     /**
      * Constructor of EventQueries
@@ -33,6 +29,13 @@ public class EventQueries {
         this.db = db;
     }
 
+    public static CompletableFuture<List<Event>> getAllEvents(Database db){
+        return new EventQueries(db).getAllEvents();
+    }
+
+    public CompletableFuture<List<Event>> getAllEvents(){
+        return db.retrieveAll(EventStorer.getInstance());
+    }
 
     /**
      * Method to query events that take place in a time frame that is non-disjoint with the given time frame [start, end[
@@ -69,11 +72,15 @@ public class EventQueries {
         });
     }
 
-    /**
-     * Get events that take place during a given day
-     * @param day (ZonedDateTime) : the given day
-     * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given day, once the query is done
-     */
+    public static CompletableFuture<List<Event>> getEventsInTimeframe(Database db, ZonedDateTime start, ZonedDateTime end) {
+        return new EventQueries(db).getEventsInTimeframe(start,end);
+    }
+
+        /**
+         * Get events that take place during a given day
+         * @param day (ZonedDateTime) : the given day
+         * @return (CompletableFuture<List<Event>>) : A list of events occurring during the given day, once the query is done
+         */
     public CompletableFuture<List<Event>> getEventsByDay(ZonedDateTime day) {
         ZonedDateTime dayStart = TimeUtils.truncateTimeToDays(day);
         ZonedDateTime dayEnd = dayStart.plusDays(1);
@@ -149,15 +156,16 @@ public class EventQueries {
         Recurrence newEventRecurrence = event.getRecurrence().get();
 
         Id groupId = newEventRecurrence.getGroupId();
-        long period = newEventRecurrence.getPeriod().getSeconds();
-        long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
-        long refStartTime = event.getStartTime().toEpochSecond();
+        final long period = newEventRecurrence.getPeriod().getSeconds();
+        final long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
+        final long refStartTime = event.getStartTime().toEpochSecond();
+        final long duration = event.getEndTime().toEpochSecond() - event.getStartTime().toEpochSecond();
 
         long x = (recurrenceLimit - refStartTime)/period;
         long tmpStartTime = refStartTime + x * period;
         while(x > 0) {
             Event newEvent = new Event(Id.generateRandom(), event.getName(), event.getLocationName(), event.getCoordinates(),
-                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newEventRecurrence));
+                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+duration), Optional.of(newEventRecurrence));
             eventsToStore.add(newEvent);
             tmpStartTime = refStartTime + (--x) * period;
         }

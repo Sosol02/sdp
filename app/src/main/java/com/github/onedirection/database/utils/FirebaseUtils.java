@@ -1,7 +1,5 @@
 package com.github.onedirection.database.utils;
 
-import android.os.Build;
-
 import com.github.onedirection.BuildConfig;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;

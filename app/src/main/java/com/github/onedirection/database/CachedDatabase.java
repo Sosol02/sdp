@@ -8,7 +8,6 @@ import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.utils.Cache;
 import com.github.onedirection.utils.Id;
-import com.github.onedirection.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class CachedDatabase implements Database {
-
-    private static final CachedDatabase globalCachedDb = new CachedDatabase(ConcreteDatabase.getDatabase());
-
-    public static CachedDatabase getInstance() {
-        return globalCachedDb;
-    }
 
     private final Database innerDatabase;
     // sadly, we can't have a concrete type for the values. This comment is useful: don't try to refactor this type,

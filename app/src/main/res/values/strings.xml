@@ -10,7 +10,7 @@
     <string name="menu_calendar">Calendar</string>
     <string name="menu_map">Map</string>
     <string name="menu_account">Account</string>
-    <string name="menu_sign">Sign</string>
+    <string name="menu_sign">Sign In</string>
     <string name="menu_logout">Logout</string>
 
 
@@ -33,6 +33,7 @@
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
+    <string name="update_event">Modify Event</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>
@@ -41,22 +42,42 @@
     <string name="fragment_map_event_time_end">End time</string>
     <string name="fragment_map_event_location">Location</string>
 
+    <string name="navigation_started_text">Navigation started</string>
+    <string name="navigation_stopped_text">Navigation ended</string>
+    <string name="navigation_eta_format">h:mm a</string>
+    <string name="navigation_reroute_request">Reroute request</string>
+    <string name="navigation_reroute_failed">Reroute failed</string>
+    <string name="navigation_reroute_success">Reroute succeeded</string>
+    <string name="navigation_distance_unit"> meters</string>
+    <string name="navigation_distance_format">%1$d meters</string>
+
+    <string name="route_service_request">Route has been requested</string>
+    <string name="route_service_failed">Route request has failed</string>
+    <string name="route_service_success">Route has been retrieved</string>
+
     <!-- Strings related to event creator -->
-    <string name="create_an_event_title">Create an event:</string>
-    <string name="create_event_button_text">Create event</string>
+    <string name="create_an_event_title">CREATE AN EVENT</string>
+    <string name="create_event_button_text"> Create event </string>
     <string name="event_name_hint">Event name</string>
     <string name="location_hint">Location</string>
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
     <string name="recurrence_end_text">Repeat until:</string>
 
-    <string name="set_event_location">Set event location</string>
+    <string name="set_event_location">SET EVENT LOCATION</string>
     <string name="location_name">Location name</string>
     <string name="search">Search:</string>
     <string name="use_current_location">Use current location</string>
     <string name="result">Result:</string>
     <string name="set_geolocation">Set geolocation</string>
     <string name="use_geolocation">Use geolocation</string>
+
+    <string name="empty_event_name">Please specify a name for your event.</string>
+    <string name="event_name_too_long">The event name is too long. Provide a name no longer than %d characters.</string>
+    <string name="end_before_start">Invalid: The event ends before it even starts.</string>
+    <string name="event_time_too_long">The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.</string>
+    <string name="location_name_too_long">The custom location name is too long. Provide a name no longer than %d characters.</string>
+    <string name="recurrence_end_too_soon">The recurrence end time is too soon. It should be at least the event start time.</string>
 
     <string name="my_location_button_desc">my_location_button</string>
 
@@ -74,6 +95,21 @@
     <string name="repeat_event">Repeat event ?</string>
     <string name="repeat_every">Repeat every:</string>
     <string name="amount">Amount</string>
-    <string name="menu_event_viewer">menu_event_viewer</string>
+
+    <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="location">Location</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
+    <string name="event_name">Event Name</string>
+    <string name="textview">TextView</string>
+
+    <!-- Google calendar related -->
+    <string name="export_your_calendar">Export your calendar:</string>
+    <string name="export_to_google_calendar">Export to Google Calendar</string>
+
 
 </resources>

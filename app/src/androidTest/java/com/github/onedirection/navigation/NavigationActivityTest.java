@@ -59,12 +59,6 @@ public class NavigationActivityTest {
                 .check(matches(withText(R.string.menu_map)));
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_account)).perform(ViewActions.click());
-
-        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
-                .check(matches(withText(R.string.menu_account)));
-
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_sign)).perform(ViewActions.click());
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))

@@ -24,9 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
-        <activity android:name=".events.ui.EventCreator" />
-        <activity android:name=".navigation.fragment.home.EventView" />
+
+        <activity android:name=".event.ui.EventCreator" />
 
         <receiver android:name=".notification.NotificationPublisher" />
 
@@ -35,7 +36,7 @@
             android:name="androidx.startup.InitializationProvider"
             android:exported="false" >
             <meta-data
-                android:name="com.github.onedirection.startup.NotificationInitializer"
+                android:name="com.github.onedirection.startup.ApplicationInitializer"
                 android:value="androidx.startup" />
         </provider>
 

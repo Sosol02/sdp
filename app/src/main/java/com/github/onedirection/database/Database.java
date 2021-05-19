@@ -7,9 +7,12 @@ import com.github.onedirection.utils.Id;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Interface representing a database
+ */
 public interface Database {
 
-    static Database getDefaultInstance() { return CachedDatabase.getInstance(); }
+    static Database getDefaultInstance() { return DefaultDatabase.getDefaultInstance(); }
 
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore);
 

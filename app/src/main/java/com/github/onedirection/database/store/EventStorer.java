@@ -1,19 +1,23 @@
 package com.github.onedirection.database.store;
 
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * A utility class that provides operations to store Events in a conventional way
+ * This class uses the Singleton pattern, and the single instance of this class is used and passed to generic queries to
+ * specify that these queries are done on Events.
+ */
 public class EventStorer extends Storer<Event> {
 
     private static final EventStorer GLOBAL = new EventStorer();
@@ -30,6 +34,9 @@ public class EventStorer extends Storer<Event> {
 
     public static EventStorer getInstance() {
         return GLOBAL;
+    }
+
+    private EventStorer() {
     }
 
     @Override

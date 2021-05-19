@@ -1,10 +1,10 @@
-package com.github.onedirection.events.ui;
+package com.github.onedirection.event.ui;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.Recurrence;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
@@ -61,7 +61,6 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         this.coordinates = new MutableLiveData<>(event.getLocation());
 
         this.isRecurrent = new MutableLiveData<>(event.isRecurrent());
-        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(Id.generateRandom());
         this.recurrencePeriod = new MutableLiveData<>(
                 event.getRecurrence().map(Recurrence::getPeriod).orElse(DEFAULT_EVENT_RECURRENCE_PERIOD)
         );
@@ -70,7 +69,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         );
 
         this.eventId = event.getId();
-        this.eventId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
+        this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
         this.isEditing = isEditing;
         this.callback = callback;
         this.idling = new CountingIdlingResource("Event creator is loading.");

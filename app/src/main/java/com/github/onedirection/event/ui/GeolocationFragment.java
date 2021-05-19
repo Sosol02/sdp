@@ -1,4 +1,4 @@
-package com.github.onedirection.events.ui;
+package com.github.onedirection.event.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -87,7 +87,7 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
 
 
         this.model = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        this.geocoding = new NominatimGeocoding(getContext());
+        this.geocoding = GeocodingService.getDefaultInstance();
 
         this.usePhoneLocation = getView().findViewById(R.id.buttonUseCurrentLocation);
 

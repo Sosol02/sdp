@@ -1,7 +1,7 @@
 package com.github.onedirection.map;
 
 import android.Manifest;
-import android.location.Location;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,11 +15,17 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.database.ConcreteDatabase;
+import com.github.onedirection.database.Database;
+import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
+import com.github.onedirection.navigation.fragment.map.DeviceLocationProviderAdapter;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;
 import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
@@ -31,20 +37,21 @@ import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Pair;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
+import com.mapquest.navigation.listener.RerouteBehaviorOverride;
 import com.mapquest.navigation.model.Route;
-import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
+import com.mapquest.navigation.model.location.Coordinate;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +60,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -66,10 +75,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class MapFragmentTest {
@@ -84,19 +96,31 @@ public class MapFragmentTest {
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
     private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
     private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
+    private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0, -50.0);
+    //private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", "Paris",
     private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", new NamedCoordinates(48.511197, 2.205589, "Paris"),
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
+
     public static final double LOCATION_1_latitude = 32.22222;
     public static final double LOCATION_1_longitude = 43.33333;
-    public static final Coordinates COORDINATES_1 = new Coordinates(32.22222, 43.33333);
+    public static final Coordinates COORDINATES_LOCATION = new Coordinates(32.22222, 43.33333);
+    public static final LatLng LAT_LNG_1 = new LatLng(40.7326808, -73.9843407);
+    public static final LatLng LAT_LNG_2 = new LatLng(40.7326808, -73.9843407);
+
+    private final Event[] testEvents = new Event[] {
+            new Event(Id.generateRandom(), "Event 1 Paris", "Paris France", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 3 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria", new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile", new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+    };
 
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Rule
-    public GrantPermissionRule mGrantPermissionRule =
-            GrantPermissionRule.grant(
+    public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(
                     Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
@@ -123,6 +147,16 @@ public class MapFragmentTest {
         mapboxMap = onMapReadyIdlingResource.getMapboxMap();
     }
 
+    @Before
+    public void deleteAllEvents() throws ExecutionException, InterruptedException {
+        ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
+        List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
+        for(Event e : events) {
+            Id id = db.remove(e.getId(), EventStorer.getInstance()).get();
+            assertEquals(e.getId(), id);
+        }
+    }
+
     @After
     public void AtEndTest() {
         IdlingRegistry.getInstance().unregister(onMapReadyIdlingResource);
@@ -141,7 +175,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testMarkerSymbolManager() {
+    public void testMarkerSymbolManager() throws InterruptedException {
         MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
 
         final Symbol[] marker = new Symbol[1];
@@ -163,17 +197,11 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void testAddEventPutsMarkerOnMap() {
+    public void testAddEventPutsMarkerOnMap() throws InterruptedException {
         // Wait acton to make getMarkerSymbolManager work.
         MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
-        List<Pair<Symbol, LatLng>> pair = new ArrayList<>();
-        runOnUiThreadAndWaitEndExecution(() -> {
-            try {
-                pair.add(markerSymbolManager.addGeocodedEventMarker(TEST_EVENT_1).get());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        Pair<Symbol, LatLng>[] pair = new Pair[1];
+        runOnUiThreadAndWaitEndExecution(() -> pair[0] = markerSymbolManager.addGeocodedEventMarker(TEST_EVENT_1).join());
 
         BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
         assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_HIDDEN));
@@ -182,14 +210,11 @@ public class MapFragmentTest {
 
         runOnUiThreadAndWaitEndExecution(() -> {
             // need to zoom to center the marker and make the next click() click it
-            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pair.get(0).second, 15));
-            mapboxMap.addOnCameraIdleListener(semaphore::release);
+            mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                    .target(pair[0].second)
+                    .zoom(15.)
+                    .build());
         });
-        try {
-            semaphore.acquire();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
         getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -204,31 +229,95 @@ public class MapFragmentTest {
 
             }
         });
-        onView(withId(R.id.mapView)).perform(click());
-        try {
-            semaphore.acquire();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
+        semaphore.acquire();
 
         assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
         onView(withId(R.id.fragment_map_event_name)).check(matches(withText(TEST_EVENT_1.getName())));
     }
 
     @Test
-    public void testMyLocationIsAppearing() {
+    public void testDbEventsAppearOnMap() throws InterruptedException {
+        Database db = Database.getDefaultInstance();
+        db.storeAll(Arrays.asList(testEvents)).join();
+
+        // Wait acton to make getMarkerSymbolManager work.
+        onView(withId(R.id.mapView)).perform(new WaitAction(1000));
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);;
+        markerSymbolManager.syncEventsWithDb().join();
+
+        Semaphore waitForBsbCollapsed = new Semaphore(0);
+        Semaphore waitForBsbHidden = new Semaphore(0);
+
+        BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
+        bsb.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    Log.d("MapFragmentTest", "bsb state collapsed.");
+                    waitForBsbCollapsed.release();
+                } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    Log.d("MapFragmentTest", "bsb state hidden.");
+                    waitForBsbHidden.release();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
+        });
+
+        for (Event e : testEvents) {
+            Log.d("MapFragmentTest", "e: " + e);
+            runOnUiThreadAndWaitEndExecution(() -> {
+                // need to zoom to center the marker and make the next click() click it
+                Log.d("MapFragmentTest", "about to release.");
+                mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                        .target(e.getCoordinates().get().toLatLng())
+                        .zoom(15.)
+                        .build()
+                );
+            });
+            onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
+            waitForBsbCollapsed.acquire(); // wait for the bsb to settle
+
+            assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
+            Log.d("MapFragmentTest", "map_event_name: " + fragment.getActivity().findViewById(R.id.fragment_map_event_name));
+
+            onView(withId(R.id.fragment_map_event_name)).check(matches(withText(e.getName())));
+
+            runOnUiThreadAndWaitEndExecution(() ->
+                    bsb.setState(BottomSheetBehavior.STATE_HIDDEN)
+            );
+            waitForBsbHidden.acquire();
+        }
+    }
+
+    @Test
+    public void testMyLocationIsAppearing() throws InterruptedException {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
-        deviceLocationProviderMockito.addObserver((subject, value) -> {
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
-                runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+                try {
+                    runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
-        deviceLocationProviderMockito.notifyObservers();
-        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
+        deviceLocationProviderMock.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
-        onView(withId(R.id.my_location_button)).perform(click()).perform(new WaitAction(5000));
+        Semaphore semaphore = new Semaphore(0);
+        onView(withId(R.id.my_location_button)).perform(click());
+        mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                semaphore.release();
+            }
+        });
+        semaphore.acquire();
         LatLng next = mapboxMap.getCameraPosition().target;
         assertThat(next.equals(last), is(false));
     }
@@ -236,14 +325,18 @@ public class MapFragmentTest {
     @Test
     public void testMyLocationButton() {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMockito deviceLocationProviderMockito = new DeviceLocationProviderMockito();
-        deviceLocationProviderMockito.addObserver((subject, value) -> {
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
-                runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+                try {
+                    runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
-        deviceLocationProviderMockito.notifyObservers();
-        setFragmentField("deviceLocationProvider", deviceLocationProviderMockito);
+        deviceLocationProviderMock.notifyObservers();
+        setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
         onView(withId(R.id.my_location_button)).perform(click());
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
     }
@@ -260,13 +353,14 @@ public class MapFragmentTest {
     }
 
     @Test
-    @Ignore("Route service not working on Cirrus")
-    public void testRoutesManagerFindMethod() {
+    public void testRoutesManagerFindMethod() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
+        RouteService routeService = new RouteServiceMock();
+        setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
-            routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+            routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
                 @Override
                 public void onRoutesRetrieved(@NonNull List<Route> list) {
                     routeDisplayManager.displayRoute(list.get(0));
@@ -302,13 +396,26 @@ public class MapFragmentTest {
         assertThat(routes, is(nullValue()));
     }
 
+    private void runOnUiThreadAndWaitEndExecution(Runnable runnable) throws InterruptedException {
+        Semaphore semaphore = new Semaphore(0);
+        fragment.requireActivity().runOnUiThread(() -> {
+            runnable.run();
+            semaphore.release();
+        });
+        semaphore.acquire();
+    }
 
     @Test
-    @Ignore("Route service not working on Cirrus")
-    public void testNavigation() {
+    public void testNavigation() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+        final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
+        runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
+                fragment.requireContext().getApplicationContext(), BuildConfig.API_KEY,
+                new DeviceLocationProviderAdapter(new DeviceLocationProviderMock()))
+                .build());
+        setAttributeField("navigationManager", navigationManager, nav[0]);
 
         final boolean[] isNavigationStarted = {false};
 
@@ -335,11 +442,12 @@ public class MapFragmentTest {
             }
         });
 
+        RouteService routeService = new RouteServiceMock();
+        setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        routesManager.findRoute(TEST_VALUE_LATLNG_3, TEST_VALUE_LATLNG_4, new RoutesResponseListener() {
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
-                routeDisplayManager.displayRoute(list.get(0));
                 navigationManager.startNavigation(list.get(0));
                 semaphore.release();
             }
@@ -353,7 +461,7 @@ public class MapFragmentTest {
             public void onRequestMade() {
 
             }
-        });
+        }));
         try {
             semaphore.acquire();
         } catch (Exception e) {
@@ -362,21 +470,58 @@ public class MapFragmentTest {
 
         assertThat(isNavigationStarted[0], is(true));
 
-        navigationManager.stopNavigation();
+        runOnUiThreadAndWaitEndExecution(navigationManager::stopNavigation);
         assertThat(isNavigationStarted[0], is(false));
     }
 
-    private void runOnUiThreadAndWaitEndExecution(Runnable runnable) {
+    @Test
+    public void testNavigationUi() throws InterruptedException {
+        RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
+        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
+        NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+        final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
+                fragment.requireContext().getApplicationContext(), BuildConfig.API_KEY,
+                new DeviceLocationProviderAdapter(deviceLocationProviderMock))
+                .build());
+        setAttributeField("navigationManager", navigationManager, nav[0]);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        navigationManager1.setRerouteBehaviorOverride(coordinate -> false);
+        RouteService routeService = new RouteServiceMock();
+        setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        fragment.requireActivity().runOnUiThread(() -> {
-            runnable.run();
-            semaphore.release();
-        });
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_3, Collections.singletonList(TEST_VALUE_LATLNG_4), new RoutesResponseListener() {
+            @Override
+            public void onRoutesRetrieved(@NonNull List<Route> list) {
+                navigationManager.startNavigation(list.get(0));
+                semaphore.release();
+            }
+
+            @Override
+            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+
+            }
+
+            @Override
+            public void onRequestMade() {
+
+            }
+        }));
         try {
             semaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
+        onView(withId(R.id.next_maneuver)).check(matches(not(withText(""))));
+        onView(withId(R.id.eta_final_destination)).check(matches(not(withText(""))));
+        onView(withId(R.id.eta_next_destination)).check(matches(not(withText(""))));
+        onView(withId(R.id.arrivalBarLayout)).check(matches(isDisplayed()));
+        onView(withId(R.id.maneuverBarLayout)).check(matches(isDisplayed()));
+        onView(withId(R.id.stop)).perform(click());
+
+        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.STOPPED));
     }
 
     private <T> T getFragmentField(String fieldName, Class<T> classToCast) {

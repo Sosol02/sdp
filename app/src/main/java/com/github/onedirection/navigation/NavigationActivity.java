@@ -16,12 +16,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.FirebaseAuthentication;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.Event;
-import com.github.onedirection.events.ui.EventCreator;
+import com.github.onedirection.database.queries.EventQueries;
+import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
 import java.time.ZoneId;
@@ -41,12 +41,6 @@ public class NavigationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ZonedDateTime date = ZonedDateTime.now();
-
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
-
-
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,14 +56,12 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(getApplicationContext(), EventCreator.class);
-                startActivity(intent);
-                return false;
-            }
+        navigationView.getMenu().findItem(R.id.nav_create_event).setOnMenuItemClickListener(menuItem -> {
+            Intent intent = new Intent(getApplicationContext(), EventCreator.class);
+            startActivity(intent);
+            return false;
         });
+
 
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);
@@ -78,12 +70,9 @@ public class NavigationActivity extends AppCompatActivity {
         TextView drawerUsername = headerView.findViewById(R.id.nav_header_username);
         TextView drawerEmail = headerView.findViewById(R.id.nav_header_email);
 
-        logoutMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
-                return false;
-            }
+        logoutMenuItem.setOnMenuItemClickListener(menuItem -> {
+            logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
+            return false;
         });
     }
 
@@ -120,12 +109,6 @@ public class NavigationActivity extends AppCompatActivity {
         confirmationWindows.show();
     }
 
-    public CompletableFuture<List<Event>> getEventFromMonth(ZonedDateTime date) {
-        Database db = Database.getDefaultInstance();
-        EventQueries queryManager = new EventQueries(db);
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(date);
-        return monthEventsFuture;
-    }
 
     private List<Event> getEvents(){
         return this.events;

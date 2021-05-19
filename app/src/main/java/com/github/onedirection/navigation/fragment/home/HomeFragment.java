@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.onedirection.EventQueries;
 import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.database.queries.EventQueries;
+import com.github.onedirection.event.Event;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -28,6 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/*
+ **Home of the application
+ **Display the events of the month
+ */
 public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNoteListener{
 
     RecyclerView eventList;
@@ -42,8 +46,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
         ZonedDateTime date = ZonedDateTime.now();
 
-        ZonedDateTime firstInstantOfMonth = ZonedDateTime.of(2021, 5, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-        CompletableFuture<List<Event>> monthEventsFuture = getEventFromMonth(firstInstantOfMonth);
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
 
         View root = inflater.inflate(R.layout.event_viewer, container, false);
 
@@ -99,13 +102,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         Intent intent = new Intent(this.getContext(), DisplayEvent.class);
         intent = DisplayEvent.putEventExtra(intent,event);
         startActivity(intent);
-    }
-
-    public CompletableFuture<List<Event>> getEventFromMonth(ZonedDateTime date) {
-        Database db = Database.getDefaultInstance();
-        EventQueries queryManager = new EventQueries(db);
-        CompletableFuture<List<Event>> monthEventsFuture = queryManager.getEventsByMonth(date);
-        return monthEventsFuture;
     }
 
 }

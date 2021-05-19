@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.events.Event;
+import com.github.onedirection.event.Event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -56,7 +56,11 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss");
             this.name.setText(events[position].getName());
-            this.location.setText(events[position].getLocationName());
+            if(events[position].getLocationName() != ""){
+                this.location.setText(events[position].getLocationName());
+            }else{
+                this.location.setText("No location specified");
+            }
             this.startTime.setText(events[position].getStartTime().format(formatter));
             this.endTime.setText(events[position].getEndTime().format(formatter));
 
