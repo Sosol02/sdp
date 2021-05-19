@@ -10,13 +10,10 @@
         android:id="@+id/eventEndTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="217dp"
-        android:layout_marginEnd="110dp"
-        android:layout_marginBottom="216dp"
+        android:layout_marginStart="180dp"
         android:text="@string/textview"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonDisplayDelete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/eventNameDisplay" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/eventStartTimeDisplay"
+        app:layout_constraintStart_toStartOf="@+id/eventNameLocation" />
 
     <TextView
         android:id="@+id/eventStartTimeDisplay"
@@ -78,7 +75,7 @@
         android:layout_width="0dp"
         android:layout_height="85dp"
         android:layout_marginEnd="64dp"
-        android:layout_marginBottom="178dp"
+        android:layout_marginBottom="144dp"
         android:onClick="buttonStartDeleteEvent"
         android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
