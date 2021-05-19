@@ -47,7 +47,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
     public static HomeFragment homeFragment;
-    Map<Id,Boolean> favorites = new HashMap<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -100,6 +99,19 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             events = monthEvents;
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
+        eventList.getAdapter().notifyItemRangeInserted(0, events.size());
+    }
+
+    public void updateModifiedEvent(Id id){
+        int position = 0;
+        for(int i =0; i<events.size();i++){
+            if(events.get(i).getId().equals(id)){
+                position = 0;
+            }
+        }
+        events.get(position).setIsFavorite(true);
+        eventViewerAdapter.notifyItemChanged(position);
+        eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
     public void deleteEvent(Id id){

@@ -25,7 +25,7 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
-
+    private boolean isFavorite = false;
     /**
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
      */
@@ -121,6 +121,11 @@ public class Event implements Serializable, Storable<Event> {
                 : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
     }
 
+    public void setIsFavorite(boolean isFavorite){
+        Objects.requireNonNull(isFavorite);
+        this.isFavorite = isFavorite;
+    }
+
     @Override
     public Id getId() {
         return id;
@@ -153,6 +158,10 @@ public class Event implements Serializable, Storable<Event> {
 
     public ZonedDateTime getEndTime() {
         return endTime;
+    }
+
+    public boolean getIsFavorite() {
+        return isFavorite;
     }
 
     public Duration getDuration() {

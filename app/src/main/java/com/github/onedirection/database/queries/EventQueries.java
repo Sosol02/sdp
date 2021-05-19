@@ -276,8 +276,10 @@ public class EventQueries {
                                 return CompletableFuture.completedFuture(e.getId()); //The event has been removed when changing the recurrence end time, so it is not modified in the database
                             }
                         }
-                        return e.equals(event) ? CompletableFuture.completedFuture(e.getId())
-                                : db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence()));
+                        Event new_event = new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence());
+                        new_event.setIsFavorite(new_event.getIsFavorite());
+                        return e.equals(new_event) ? CompletableFuture.completedFuture(new_event.getId())
+                                : db.store(new_event);
                     }
                 } else {
                     throw new IllegalArgumentException("An error occurred while changing the recurrence end time");

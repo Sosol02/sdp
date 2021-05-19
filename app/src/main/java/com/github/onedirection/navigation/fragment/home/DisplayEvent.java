@@ -129,17 +129,31 @@ public class DisplayEvent extends AppCompatActivity {
     @SuppressLint("UseCompatLoadingForDrawables")
     public void buttonStarEvent(View view){
         Id id = event.getId();
-        if(!HomeFragment.homeFragment.favorites.containsKey(id)){
+        /*if(!HomeFragment.homeFragment.favorites.containsKey(id)){
             HomeFragment.homeFragment.favorites.put(id,false);
-        }
-        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
+        }*/
+        boolean isFavorite = event.getIsFavorite();
         ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
         if(isFavorite){
-            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
-            HomeFragment.homeFragment.favorites.replace(id,false);
+            //HomeFragment.homeFragment.favorites.replace(id,false);
+            event.setIsFavorite(false);
+            event.setName("tamerlachiennkaka");
+            CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
+            modificationOver.whenComplete((idFuture, throwable) -> {
+                HomeFragment.homeFragment.updateResultsWithCallToDb();
+                HomeFragment.homeFragment.updateModifiedEvent(id);
+                btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+            });
         }else{
-            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
-            HomeFragment.homeFragment.favorites.replace(id,true);
+            //HomeFragment.homeFragment.favorites.replace(id,true);
+            event.setIsFavorite(true);
+            event.setName("tamerlachienne");
+            CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
+            modificationOver.whenComplete((idFuture, throwable) -> {
+                HomeFragment.homeFragment.updateResultsWithCallToDb();
+                HomeFragment.homeFragment.updateModifiedEvent(id);
+                btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+            });
         }
     }
 
