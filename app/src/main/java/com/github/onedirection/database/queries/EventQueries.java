@@ -277,7 +277,6 @@ public class EventQueries {
                             }
                         }
                         Event new_event = new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence());
-                        new_event.setIsFavorite(new_event.getIsFavorite());
                         return e.equals(new_event) ? CompletableFuture.completedFuture(new_event.getId())
                                 : db.store(new_event);
                     }

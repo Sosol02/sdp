@@ -91,6 +91,14 @@ public class DisplayEvent extends AppCompatActivity {
         startTime.setText(event.getStartTime().format(formatter));
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
         endTime.setText(event.getEndTime().format(formatter));
+
+        if(!HomeFragment.homeFragment.favorites.containsKey(event.getId())){
+            HomeFragment.homeFragment.favorites.put(event.getId(),false);
+        }
+        if(HomeFragment.homeFragment.favorites.get(event.getId())){
+            ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+        }
     }
 
     /** Called when the user taps the Edit button */
@@ -132,28 +140,36 @@ public class DisplayEvent extends AppCompatActivity {
         /*if(!HomeFragment.homeFragment.favorites.containsKey(id)){
             HomeFragment.homeFragment.favorites.put(id,false);
         }*/
-        boolean isFavorite = event.getIsFavorite();
+        //boolean isFavorite = event.getIsFavorite();
+
+        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
         ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
         if(isFavorite){
             //HomeFragment.homeFragment.favorites.replace(id,false);
-            event.setIsFavorite(false);
-            event.setName("tamerlachiennkaka");
-            CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
-            modificationOver.whenComplete((idFuture, throwable) -> {
-                HomeFragment.homeFragment.updateResultsWithCallToDb();
-                HomeFragment.homeFragment.updateModifiedEvent(id);
-                btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
-            });
+            //event = event.setName("tamerlachiennkaka");
+            //event.setIsFavorite(false);
+            //CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
+            //modificationOver.whenComplete((idFuture, throwable) -> {
+                //HomeFragment.homeFragment.updateModifiedEvent(id);
+            //    btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+            //});
+            HomeFragment.homeFragment.favorites.replace(id, false);
+            HomeFragment.homeFragment.updateModifiedEvent(id);
+            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+
         }else{
             //HomeFragment.homeFragment.favorites.replace(id,true);
-            event.setIsFavorite(true);
-            event.setName("tamerlachienne");
-            CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
-            modificationOver.whenComplete((idFuture, throwable) -> {
-                HomeFragment.homeFragment.updateResultsWithCallToDb();
-                HomeFragment.homeFragment.updateModifiedEvent(id);
-                btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
-            });
+            //event.setIsFavorite(true);
+            //event.setName("tamerlachienne "+ event.getName());
+            //CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
+            //modificationOver.whenComplete((idFuture, throwable) -> {
+                //HomeFragment.homeFragment.updateModifiedEvent(id);
+                //btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+            //});
+            HomeFragment.homeFragment.favorites.replace(id, true);
+            HomeFragment.homeFragment.updateModifiedEvent(id);
+            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+
         }
     }
 
