@@ -138,9 +138,11 @@ public final class GoogleCalendar {
             for(String rule : recurrences) {
                 if(rule.substring(0, 5).equals("RRULE")) {
                     String[] info = rule.substring(11).split(";COUNT=");
+                    String periodically = info[0];
+                    int eventCount = Integer.parseInt(info[1]);
                     Duration period = null;
                     for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
-                        if(info[0].equals(t.getValue())) {
+                        if(periodically.equals(t.getValue())) {
                             period = t.getKey().getDuration();
                         }
                     }
@@ -148,7 +150,7 @@ public final class GoogleCalendar {
                         throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
                     }
                     ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
-                            (startTime.toEpochSecond() + (Integer.parseInt(info[1])-1) * period.getSeconds());
+                            (startTime.toEpochSecond() + (eventCount-1) * period.getSeconds());
 
                     Recurrence newRecurrence = new Recurrence(newEvent.getId(), period, recEndTime);
                     newEvent = newEvent.setRecurrence(newRecurrence);
