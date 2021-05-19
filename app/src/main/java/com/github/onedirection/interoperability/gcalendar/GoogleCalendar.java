@@ -73,7 +73,7 @@ public final class GoogleCalendar {
             for(String rule : recurrences) {
                 if(rule.substring(0, 5).equals("RRULE")) {
                     String[] info = rule.substring(11).split(";COUNT=");
-                
+
                 }
             }
         }
