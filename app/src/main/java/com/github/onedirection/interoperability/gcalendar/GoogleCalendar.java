@@ -12,6 +12,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -138,7 +139,20 @@ public final class GoogleCalendar {
             for(String rule : recurrences) {
                 if(rule.substring(0, 5).equals("RRULE")) {
                     String[] info = rule.substring(11).split(";COUNT=");
+                    Duration period = null;
+                    for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
+                        if(info[0].equals(t.getValue())) {
+                            period = t.getKey().getDuration();
+                        }
+                    }
+                    if(period == null) {
+                        throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+                    }
+                    ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
+                            (startTime.toEpochSecond() + (Integer.parseInt(info[1])-1) * period.getSeconds());
 
+                    Recurrence newRecurrence = new Recurrence(newEvent.getId(), period, recEndTime);
+                    newEvent = newEvent.setRecurrence(newRecurrence);
                 }
             }
         }
