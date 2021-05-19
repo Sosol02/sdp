@@ -3,13 +3,13 @@ package com.github.onedirection.interoperability.gcalendar;
 import android.accounts.Account;
 import android.content.Context;
 
+import com.github.onedirection.event.Event;
 import com.github.onedirection.event.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import java.time.Duration;
@@ -57,10 +57,10 @@ public final class GoogleCalendar {
      * @param event (Event): the Event to convert into a Google Calendar Event
      * @return (com.google.api.services.calendar.model.Event): a Google Calendar Event
      */
-    public static Event toGCalendarEvents(com.github.onedirection.event.Event event) {
+    public static com.google.api.services.calendar.model.Event toGCalendarEvents(Event event) {
         Objects.requireNonNull(event);
 
-        Event gcEvent = new Event()
+        com.google.api.services.calendar.model.Event gcEvent = new com.google.api.services.calendar.model.Event()
                 .setSummary(event.getName())
                 .setId(event.getId().getUuid());
 
@@ -115,7 +115,7 @@ public final class GoogleCalendar {
      * @param event (com.google.api.services.calendar.model.Event) : The Google Calendar Event to convert into an Event
      * @return (Event) : a new Event
      */
-    public static com.github.onedirection.event.Event fromGCalendarEvents(Event event) {
+    public static Event fromGCalendarEvents(com.google.api.services.calendar.model.Event event) {
         Objects.requireNonNull(event);
         if(event.getStart() == null || event.getEnd() == null) {
             throw new IllegalArgumentException("Event should have at least a start time and an end time.");
@@ -131,8 +131,7 @@ public final class GoogleCalendar {
         long epochSecondEndTime = event.getEnd().getDateTime().getValue()/1000;
         ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
 
-        com.github.onedirection.event.Event newEvent =
-                new com.github.onedirection.event.Event(newId, name, locationName, startTime, endTime);
+        Event newEvent = new Event(newId, name, locationName, startTime, endTime);
 
         if(event.getRecurrence() != null) {
             List<String> recurrences = event.getRecurrence();
