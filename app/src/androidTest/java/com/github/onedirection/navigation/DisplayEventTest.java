@@ -104,10 +104,6 @@ public class DisplayEventTest {
         onView(withId(R.id.buttonDisplayDelete)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplay)).perform(ViewActions.click());
-        onView(withId(R.id.buttonEventAdd)).check(matches(isDisplayed()));
-        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("RRRTRTR"));
-        pressBack();
-        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
     }
 
     @Test
