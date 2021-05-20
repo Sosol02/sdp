@@ -22,23 +22,21 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class Event implements Serializable, Storable<Event> {
 
+    /**
+     * Smallest time unit recorded inside the event.
+     */
+    final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
     final private Id id;
     final private String name;
     final private String locationName;
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
-    private List emailContacts;
-
     /**
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
      */
     final private Recurrence recurringPeriod;
-
-    /**
-     * Smallest time unit recorded inside the event.
-     */
-    final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
+    private List emailContacts;
 
     public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
         this.id = Objects.requireNonNull(id);
@@ -101,66 +99,14 @@ public class Event implements Serializable, Storable<Event> {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
     }
 
-    public Event setName(String new_value) {
-        if(Objects.requireNonNull(new_value).equals(this.name)){
-            return this;
-        } else {
-            Event newEvent =  new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
-            newEvent.setEmailContacts(this.emailContacts);
-            return newEvent;
-        }
+    public List<String> getEmailContacts() {
+        return new ArrayList<>(emailContacts);
     }
 
-    public Event setLocation(NamedCoordinates new_value) {
-        if(Optional.of(Objects.requireNonNull(new_value)).equals(getLocation())){
-            return this;
-        } else {
-            Event newEvent = new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
-            newEvent.setEmailContacts(this.emailContacts);
-            return newEvent;
-        }
-    }
-
-    public Event setStartTime(ZonedDateTime new_value) {
-        if(Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)){
-            return this;
-        } else {
-            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
-            newEvent.setEmailContacts(this.emailContacts);
-            return newEvent;
-        }
-    }
-
-    public Event setEndTime(ZonedDateTime new_value) {
-        if(Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)){
-            return this;
-        } else {
-            Event newEvent = new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
-            newEvent.setEmailContacts(this.emailContacts);
-            return  newEvent;
-        }
-    }
-
-    public Event setEmailContacts(List<String> contacts){
+    public Event setEmailContacts(List<String> contacts) {
         Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
         newEvent.emailContacts = contacts;
         return newEvent;
-    }
-
-    public Event setRecurrence(Recurrence period) {
-        if(Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())){
-            return this;
-        } else {
-            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
-            newEvent.setEmailContacts(this.emailContacts);
-            return newEvent;
-        }
-    }
-
-
-
-    public List<String> getEmailContacts(){
-        return new ArrayList<>(emailContacts);
     }
 
     @Override
@@ -177,7 +123,7 @@ public class Event implements Serializable, Storable<Event> {
         return Optional.ofNullable(location);
     }
 
-    public String getLocationName(){
+    public String getLocationName() {
         return locationName;
     }
 
@@ -185,16 +131,56 @@ public class Event implements Serializable, Storable<Event> {
         return getCoordinates().map(coordinates -> coordinates.addName(locationName));
     }
 
+    public Event setLocation(NamedCoordinates new_value) {
+        if (Optional.of(Objects.requireNonNull(new_value)).equals(getLocation())) {
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
     public String getName() {
         return name;
+    }
+
+    public Event setName(String new_value) {
+        if (Objects.requireNonNull(new_value).equals(this.name)) {
+            return this;
+        } else {
+            Event newEvent = new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
     }
 
     public ZonedDateTime getStartTime() {
         return startTime;
     }
 
+    public Event setStartTime(ZonedDateTime new_value) {
+        if (Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)) {
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
     public ZonedDateTime getEndTime() {
         return endTime;
+    }
+
+    public Event setEndTime(ZonedDateTime new_value) {
+        if (Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)) {
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
     }
 
     public Duration getDuration() {
@@ -207,6 +193,16 @@ public class Event implements Serializable, Storable<Event> {
 
     public Optional<Recurrence> getRecurrence() {
         return Optional.ofNullable(recurringPeriod);
+    }
+
+    public Event setRecurrence(Recurrence period) {
+        if (Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())) {
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), startTime, endTime, Optional.of(period));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
     }
 
     @Override

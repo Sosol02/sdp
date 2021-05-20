@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.onedirection.R;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

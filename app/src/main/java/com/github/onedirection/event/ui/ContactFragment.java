@@ -1,13 +1,6 @@
 package com.github.onedirection.event.ui;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +9,16 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.github.onedirection.R;
 import com.github.onedirection.utils.Email;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-
 
 public class ContactFragment extends Fragment {
 
@@ -56,7 +51,7 @@ public class ContactFragment extends Fragment {
 
     }
 
-    private void setupContactAdder(View view){
+    private void setupContactAdder(View view) {
         MutableLiveData<List<String>> contacts = viewModel.lateContacts;
         Button addContactButton = view.findViewById(R.id.addContactButton);
         EditText contactText = view.findViewById(R.id.contactInput);
@@ -69,7 +64,7 @@ public class ContactFragment extends Fragment {
                     newContactList.add(emailAddress);
                     contacts.setValue(newContactList);
                 }
-                if(contactListAdapter != null){
+                if (contactListAdapter != null) {
                     contactListAdapter.notifyDataSetChanged();
                 }
                 contactText.getText().clear();
@@ -80,7 +75,7 @@ public class ContactFragment extends Fragment {
     }
 
 
-    private void setupContactList(View view){
+    private void setupContactList(View view) {
         ListView contactListView = view.findViewById(R.id.contact_email_list);
         contactListAdapter = new ContactListAdapter(requireContext(), viewModel.lateContacts);
         contactListView.setAdapter(contactListAdapter);
