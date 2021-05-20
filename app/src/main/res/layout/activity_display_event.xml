@@ -4,23 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:onClick="buttonStartEditEvent"
     tools:context=".navigation.fragment.home.DisplayEvent">
+
 
     <TextView
         android:id="@+id/eventEndTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="72dp"
         android:text="@string/textview"
-        app:layout_constraintBaseline_toBaselineOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintStart_toStartOf="@+id/eventNameLocation" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/eventStartTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="188dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="160dp"
         android:text="@string/textview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,44 +32,46 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:layout_marginEnd="92dp"
-        android:text="@string/textview"
+        android:paddingLeft="4dp"
+        android:text="@string/no_loc"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay" />
 
     <TextView
         android:id="@+id/eventNameDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:textSize="32dp"
         android:text="@string/textview"
-        app:layout_constraintBottom_toBottomOf="@+id/eventNameLocation"
-        app:layout_constraintEnd_toEndOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintStart_toStartOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintTop_toTopOf="@+id/eventNameLocation" />
-
-    <TextView
-        android:id="@+id/descriptionDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="16dp"
-        android:background="#E91E63"
-        android:backgroundTint="#E91E63"
-        android:text="@string/event_name"
-        android:textColor="#00BCD4"
-        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginBottom="244dp"
+        android:layout_width="0dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="73dp"
         android:onClick="buttonStartEditEvent"
         android:text="@string/edit"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonDisplayDelete"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDisplayDelete"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonDisplayDelete"
+        android:layout_width="0dp"
+        android:layout_height="85dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="144dp"
+        android:onClick="buttonStartDeleteEvent"
+        android:text="@string/delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonDisplay" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
