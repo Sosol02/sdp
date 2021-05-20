@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,6 +82,8 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
                 startActivity(intent);
             }
         });
+
+        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
 
         return root;
     }

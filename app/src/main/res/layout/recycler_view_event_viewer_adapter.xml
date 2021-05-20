@@ -19,7 +19,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="10dp"
         android:cursorVisible="false"
-        android:text="No location precised"
+        android:text="@string/no_loc"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
