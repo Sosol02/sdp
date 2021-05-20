@@ -14,6 +14,8 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -44,6 +46,8 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
     public MutableLiveData<Duration> recurrencePeriod;
     public MutableLiveData<ZonedDateTime> recurrenceEnd;
 
+    public MutableLiveData<List<String>> lateContacts;
+
     public Id eventId;
     public Id recId;
     public boolean isEditing;
@@ -67,6 +71,8 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         this.recurrenceEnd = new MutableLiveData<>(
                 event.getRecurrence().map(Recurrence::getEndTime).orElse(event.getStartTime().plus(DEFAULT_EVENT_RECURRENCE_DURATION))
         );
+
+        this.lateContacts = new MutableLiveData<>(new ArrayList<>(event.getEmailContacts()));
 
         this.eventId = event.getId();
         this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
@@ -102,7 +108,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
     }
 
     public Event generateEvent() {
-        return useGeolocation.getValue() ?
+        Event event = useGeolocation.getValue() ?
                 new Event(
                         eventId,
                         name.getValue(),
@@ -119,6 +125,8 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
                         endTime.getValue(),
                         generateRecurrence()
                 );
+        event.setEmailContacts(lateContacts.getValue());
+        return event;
     }
 
     public void incrementLoad() {

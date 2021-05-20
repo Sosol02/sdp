@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,6 +28,7 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
+    private List emailContacts;
 
     /**
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
@@ -47,7 +51,9 @@ public class Event implements Serializable, Storable<Event> {
         if (this.startTime.until(this.endTime, TIME_PRECISION) < 0) {
             throw new IllegalArgumentException("The end date should be later than the start date.");
         }
+        emailContacts = Collections.EMPTY_LIST;
     }
+
 
     public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
         this(id, name, locationName, Optional.of(location), startTime, endTime, recurringPeriod);
@@ -95,30 +101,27 @@ public class Event implements Serializable, Storable<Event> {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
     }
 
-    public Event setName(String new_value) {
-        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
-    }
 
-    public Event setLocation(NamedCoordinates new_value) {
-        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
-    }
-
-    public Event setStartTime(ZonedDateTime new_value) {
-        return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)
-                ? this
-                : new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
-    }
-
-    public Event setEndTime(ZonedDateTime new_value) {
-        return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)
-                ? this
-                : new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
+    public Event setEmailContacts(List<String> contacts){
+        Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
+        newEvent.emailContacts = contacts;
+        return newEvent;
     }
 
     public Event setRecurrence(Recurrence period) {
-        return Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())
-                ? this
-                : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
+        if(Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())){
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
+
+
+    public List<String> getEmailContacts(){
+        return new ArrayList<>(emailContacts);
     }
 
     @Override

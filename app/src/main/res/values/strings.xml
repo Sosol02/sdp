@@ -111,5 +111,14 @@
     <string name="export_your_calendar">Export your calendar:</string>
     <string name="export_to_google_calendar">Export to Google Calendar</string>
 
+    <!-- Adding email contacts related -->
+    <string name="add_contact_button">Plus button to add a contact</string>
+    <string name="contact_editText_hint">Contact email when late</string>
+    <string name="add">Add</string>
+    <string name="example_email">shrek@example.com</string>
+    <string name="invalid_email"> Invalid email address </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

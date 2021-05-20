@@ -33,9 +33,9 @@ public class DayEventsListView extends LinearLayout{
     private final Context context;
     private final ZonedDateTime day;
     private final LayoutInflater inflater;
-    private View view;
-    private CountingIdlingResource idling;
-    private Runnable onDialogDismiss;
+    private final View view;
+    private final CountingIdlingResource idling;
+    private final Runnable onDialogDismiss;
     private AlertDialog alertDialog;
 
     public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {

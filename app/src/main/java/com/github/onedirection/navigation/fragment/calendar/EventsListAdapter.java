@@ -1,6 +1,5 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -32,7 +31,7 @@ public class EventsListAdapter extends ArrayAdapter {
     private final Runnable onDeleteEvent;
 
     public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent) {
-        super(applicationContext, R.layout.event_view_in_list);
+        super(applicationContext, R.layout.single_event_view);
         this.context = applicationContext;
         this.onEditEvent = onEditEvent;
         this.onDeleteEvent = onDeleteEvent;
@@ -55,7 +54,7 @@ public class EventsListAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if(convertView == null){
-            convertView = layoutInflater.inflate(R.layout.event_view_in_list, parent, false);
+            convertView = layoutInflater.inflate(R.layout.single_event_view, parent, false);
         }
         TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
         TextView eventDate = (TextView) convertView.findViewById(R.id.eventDate);
