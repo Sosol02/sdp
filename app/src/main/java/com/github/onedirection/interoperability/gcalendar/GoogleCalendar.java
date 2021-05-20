@@ -39,12 +39,12 @@ public final class GoogleCalendar {
     static final String LOGCAT_TAG = "GCalendar";
     private static final String DEFAULT_NAME = "No Name";
 
-    private final static Map<TemporalUnit, String> PERIODS = Collections.unmodifiableMap(new HashMap<TemporalUnit, String>() {
+    private final static Map<String, TemporalUnit> PERIODS = Collections.unmodifiableMap(new HashMap<String, TemporalUnit>() {
         {
-            put(ChronoUnit.DAYS, "DAILY");
-            put(ChronoUnit.WEEKS, "WEEKLY");
-            put(ChronoUnit.MONTHS, "MONTHLY");
-            put(ChronoUnit.YEARS, "YEARLY");
+            put("DAILY", ChronoUnit.DAYS);
+            put("WEEKLY", ChronoUnit.WEEKS);
+            put("MONTHLY", ChronoUnit.MONTHS);
+            put("YEARLY", ChronoUnit.YEARS);
         }});
 
     private GoogleCalendar() {
@@ -73,9 +73,9 @@ public final class GoogleCalendar {
             gcEvent.setRecurringEventId(recurrence.getGroupId().getUuid());
 
             String recurrencePeriod = null;
-            for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
-                if(recurrence.getPeriod().equals(t.getKey().getDuration())) {
-                    recurrencePeriod = t.getValue();
+            for(Map.Entry<String, TemporalUnit> t : PERIODS.entrySet()) {
+                if(recurrence.getPeriod().equals(t.getValue().getDuration())) {
+                    recurrencePeriod = t.getKey();
                 }
             }
             if(recurrencePeriod == null) {
@@ -124,7 +124,6 @@ public final class GoogleCalendar {
 
         Id newId = Id.generateRandom();
         String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
-        //TODO: ask @Ef55 what default location name to put if no location is specified
         String locationName = (event.getLocation() != null) ? event.getLocation() : "";
 
         long epochSecondStartTime = event.getStart().getDateTime().getValue()/1000;
@@ -138,32 +137,35 @@ public final class GoogleCalendar {
             List<String> recurrences = event.getRecurrence();
             String periodically = null;
             int eventCount = 0;
+            boolean rule_found = false;
+            String ruleFoundString = "";
 
             for(String rule : recurrences) {
+                //Refer to https://developers.google.com/calendar/create-events to see how to retrieve recurrence
                 if(rule.substring(0, 5).equals("RRULE")) {
+                    if(rule_found && !rule.equals(ruleFoundString)) {
+                        throw new IllegalArgumentException("There are two different matching rule formats for the recurrence.");
+                    }
                     String[] info = rule.substring(11).split(";COUNT=");
                     periodically = info[0];
                     eventCount = Integer.parseInt(info[1]);
+                    rule_found = true;
+                    ruleFoundString = rule;
                 }
             }
             if(periodically == null) {
                 throw new IllegalArgumentException("No recurrence rule matches the one used by "+ R.string.app_name+" Events");
             }
 
-            Duration period = null;
-            for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
-                if(periodically.equals(t.getValue())) {
-                    period = t.getKey().getDuration();
-                }
-            }
+            TemporalUnit period = PERIODS.getOrDefault(periodically, null);
             if(period == null) {
                 throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
             }
 
             ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
-                    (startTime.toEpochSecond() + (eventCount-1) * period.getSeconds());
+                    (startTime.toEpochSecond() + (eventCount-1) * period.getDuration().getSeconds());
 
-            Recurrence newRecurrence = new Recurrence(newEvent.getId(), period, recEndTime);
+            Recurrence newRecurrence = new Recurrence(newEvent.getId(), period.getDuration(), recEndTime);
             newEvent = newEvent.setRecurrence(newRecurrence);
         }
 
