@@ -82,7 +82,7 @@ public class DisplayEvent extends AppCompatActivity {
         TextView name = this.findViewById(R.id.eventNameDisplay);
         name.setText(event.getName());
         TextView location = this.findViewById(R.id.eventNameLocation);
-        if(event.getLocationName() == ""){
+        if(event.getLocationName().equals("")){
             location.setText("No location specified");
         }else {
             location.setText(event.getLocationName());
@@ -107,6 +107,13 @@ public class DisplayEvent extends AppCompatActivity {
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
         super.onBackPressed();
+        ZonedDateTime date = ZonedDateTime.now();
+
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            HomeFragment.homeFragment.updateResults(monthEvents);
+            super.onBackPressed();
+        });
     }
 
     /** Called when the user taps the Delete button */

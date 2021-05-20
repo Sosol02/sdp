@@ -6,40 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".navigation.fragment.home.DisplayEvent">
 
+
     <TextView
         android:id="@+id/eventEndTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="41dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="72dp"
         android:text="@string/textview"
-        app:layout_constraintBaseline_toBaselineOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintEnd_toEndOf="@+id/favorite_button"
-        app:layout_constraintStart_toStartOf="@+id/buttonDisplayDelete" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/eventStartTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="217dp"
-        android:layout_marginBottom="217dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="160dp"
         android:text="@string/textview"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonDisplayDelete"
-        app:layout_constraintEnd_toEndOf="@+id/eventNameLocation"
-        app:layout_constraintStart_toStartOf="@+id/eventNameLocation"
-        app:layout_constraintTop_toTopOf="@+id/eventNameDisplay" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/eventNameLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="109dp"
-        android:layout_marginBottom="108dp"
-        android:text="No location precised"
-        app:layout_constraintBottom_toBottomOf="@+id/eventStartTimeDisplay"
+        android:layout_marginTop="100dp"
+        android:paddingLeft="4dp"
+        android:text="@string/no_loc"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/eventNameDisplay" />
+        app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay" />
 
     <TextView
         android:id="@+id/eventNameDisplay"
@@ -57,11 +54,12 @@
         android:id="@+id/descriptionDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="#000000"
         android:text="@string/event_name"
         android:textSize="36sp"
-        app:layout_constraintEnd_toStartOf="@+id/favorite_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -81,7 +79,7 @@
         android:layout_width="119dp"
         android:layout_height="84dp"
         android:layout_marginEnd="64dp"
-        android:layout_marginBottom="180dp"
+        android:layout_marginBottom="144dp"
         android:onClick="buttonStartDeleteEvent"
         android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -90,20 +88,17 @@
 
     <ImageButton
         android:id="@+id/favorite_button"
-        android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_width="30dp"
+        android:layout_height="67dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="37dp"
-        android:layout_marginEnd="38dp"
-        android:layout_marginBottom="37dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
         android:background="#00ffffff"
         android:clickable="true"
         android:onClick="buttonStarEvent"
         android:src="@android:drawable/btn_star_big_off"
-        app:layout_constraintBottom_toTopOf="@+id/eventNameLocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/eventNameDisplay"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionDisplay" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

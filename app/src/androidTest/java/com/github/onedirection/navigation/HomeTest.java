@@ -32,6 +32,7 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -92,6 +93,49 @@ public class HomeTest {
                                 1),
                         isDisplayed()));
         navigationMenuItemView.perform(click());
+    }
+
+    @Test
+    public void testFabButton(){
+        ViewInteraction floatingActionButton = onView(
+                allOf(withId(R.id.fab), withContentDescription("Add event"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.nav_host_fragment),
+                                        0),
+                                1),
+                        isDisplayed()));
+        floatingActionButton.perform(click());
+
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.editEventName),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.cardView),
+                                        0),
+                                1),
+                        isDisplayed()));
+        appCompatEditText.perform(replaceText("aaa"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.editEventName), withText("aaa"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.cardView),
+                                        0),
+                                1),
+                        isDisplayed()));
+        appCompatEditText2.perform(pressImeActionButton());
+
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.editEventLocationName),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.cardView),
+                                        0),
+                                3),
+                        isDisplayed()));
+        appCompatEditText3.perform(pressImeActionButton());
     }
 
     private static Matcher<View> childAtPosition(
