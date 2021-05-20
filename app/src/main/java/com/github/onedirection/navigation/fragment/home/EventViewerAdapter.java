@@ -54,7 +54,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
         public void setPosition(int position){
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm");
             this.name.setText(events[position].getName());
             if(events[position].getLocationName() != ""){
                 this.location.setText(events[position].getLocationName());
