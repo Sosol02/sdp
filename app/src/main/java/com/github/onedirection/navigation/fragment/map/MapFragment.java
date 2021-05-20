@@ -353,7 +353,9 @@ public class MapFragment extends Fragment {
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
             if (list.size() > 0) {
-                waitForNavStart.decrement();
+                if (waitForNavStart.isIdleNow()) {
+                    waitForNavStart.decrement();
+                }
                 navigationManager.startNavigation(list.get(0));
             }
         }
@@ -365,7 +367,6 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRequestMade() {
-            waitForNavStart.decrement();
         }
     }
 }
