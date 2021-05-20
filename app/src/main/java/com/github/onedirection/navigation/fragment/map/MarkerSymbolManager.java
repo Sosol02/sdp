@@ -14,6 +14,7 @@ import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 
 import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.geocoding.GeocodingService;
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.Pair;
@@ -113,7 +114,7 @@ public class MarkerSymbolManager {
             return future;
         } else {
             CompletableFuture<Pair<Symbol, LatLng>> future = new CompletableFuture<>();
-            NominatimGeocoding geocoding = new NominatimGeocoding(fragment.getContext());
+            GeocodingService geocoding = GeocodingService.getDefaultInstance();
             geocoding.getBestNamedCoordinates(event.getLocationName())
                     .thenApply(namedCoordinates -> {
                         LatLng latLng = new LatLng(namedCoordinates.latitude, namedCoordinates.longitude);

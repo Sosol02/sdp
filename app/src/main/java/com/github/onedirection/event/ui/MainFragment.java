@@ -52,6 +52,7 @@ public class MainFragment extends Fragment {
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
             ChronoUnit.DAYS,
             ChronoUnit.WEEKS,
+            ChronoUnit.MONTHS,
             ChronoUnit.YEARS
     ));
 
@@ -240,7 +241,7 @@ public class MainFragment extends Fragment {
             checkMsg = String.format(String.valueOf(R.string.event_name_too_long), MAX_STRING_LENGTH);
         } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
             checkMsg = String.valueOf(R.string.end_before_start);
-        } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > Duration.ofDays(1).getSeconds()) {
+        } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > ChronoUnit.DAYS.getDuration().getSeconds()) {
             checkMsg = String.valueOf(R.string.event_time_too_long);
         } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
             checkMsg = String.format(String.valueOf(R.string.location_name_too_long), MAX_STRING_LENGTH);
