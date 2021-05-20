@@ -74,7 +74,7 @@
                 android:layout_gravity="fill_horizontal"
                 android:layout_marginEnd="10dp"
                 android:text=""
-                android:textColor="?colorOnPrimary"
+                android:textColor="#b5b5b5"
                 android:textSize="16sp" />
 
 
@@ -95,11 +95,15 @@
 
             <TextView
                 android:id="@+id/stop"
-                android:layout_width="45dp"
-                android:layout_height="match_parent"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="17dp"
                 android:gravity="center"
                 android:text="@string/navigation_manager_stop"
-                android:textColor="?colorOnPrimary"
+                android:textColor="#111111"
                 android:textSize="24sp" />
 
             <TextView
@@ -107,9 +111,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/stop"
-                android:text=""
-                android:textColor="?colorOnPrimary"
+                android:text="18h55"
+                android:textColor="#02a7fa"
                 android:textSize="24sp" />
 
             <TextView
@@ -119,7 +124,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="40dp"
                 android:layout_toEndOf="@id/eta_next_destination"
-                android:text=""
+                android:text="18h55"
                 android:textColor="?colorOnPrimary"
                 android:textSize="24sp" />
 
@@ -128,6 +133,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/eta_final_destination"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="1dp"
                 android:layout_toEndOf="@+id/stop"
                 android:text=""
                 android:textColor="?colorOnPrimary"

@@ -88,7 +88,7 @@ public class NavigationManager {
     private static final double ON_EXIT_NAVIGATION_ZOOM = 20;
     private static final double ON_EXIT_NAVIGATION_TILT_VALUE_DEGREES = 0;
     private static final int MAPBOX_CAMERA_ANIMATION_DURATION = 1000;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.ROOT);
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("kk:mm", Locale.ROOT);
     private static final Map<Maneuver.Type, Integer> MANEUVER_RESOURCES_ID_BY_TYPE = buildManeuverIconResources();
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
@@ -181,14 +181,30 @@ public class NavigationManager {
         navigationManager.deinitialize();
     }
 
-    private void updateUiOnStartAndReroute(Route route) {
+    private void updateUiOnStartAndReroute(@NonNull Route route) {
         routeDisplayManager.displayRoute(route);
+
         RouteLeg lastRouteLeg = CollectionsUtil.lastValue(route.getLegs());
         long timeForNextDestination = navigationManager.getCurrentRouteLeg().getTraffic().getEstimatedTimeOfArrival().getTime();
         long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
 
+        String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
+        String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs().indexOf(navigationManager.getCurrentRouteLeg()));
+        updateUiTime(timeForNextDestination, timeForFinalDestination, lastRouteLegKey == currentRouteLegKey);
+    }
+
+    private void updateUiTime(long timeForNextDestination, long timeForFinalDestination, boolean isTheSameTime) {
+        if (timeForNextDestination == -1 || timeForFinalDestination == -1) {
+            timeNextDestination.setVisibility(View.INVISIBLE);
+            timeFinalDestination.setVisibility(View.INVISIBLE);
+        } else {
+            timeNextDestination.setVisibility(View.VISIBLE);
+            timeFinalDestination.setVisibility(View.VISIBLE);
+        }
         timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
-        timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+        if (!isTheSameTime) {
+            timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+        }
     }
 
     private String getStringDistanceFromIntDistance(int distance) {
@@ -328,11 +344,15 @@ public class NavigationManager {
         public void onEtaUpdate(@NonNull Map<String, Traffic> map, String s) {
             if (navigationManager.getRoute() != null) {
                 String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
-                long timeForNextDestination = map.get(s).getEstimatedTimeOfArrival().getTime();
-                long timeForFinalDestination = map.get(lastRouteLegKey).getEstimatedTimeOfArrival().getTime();
-
-                timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
-                timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+                long timeForNextDestination = -1;
+                if (map.containsKey(s)) {
+                   timeForNextDestination = map.get(s).getEstimatedTimeOfArrival().getTime();
+                }
+                long timeForFinalDestination = -1;
+                if (map.containsKey(lastRouteLegKey)) {
+                    timeForFinalDestination = map.get(lastRouteLegKey).getEstimatedTimeOfArrival().getTime();
+                }
+                updateUiTime(timeForNextDestination, timeForFinalDestination, s.equals(lastRouteLegKey));
             }
         }
 
