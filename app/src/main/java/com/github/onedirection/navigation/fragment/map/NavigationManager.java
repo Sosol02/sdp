@@ -226,8 +226,8 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
-                    speedLimitValue.setText(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
-                            .toKilometersPerHour()));
+                    speedLimitValue.setText(Integer.toString(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                            .toKilometersPerHour())));
                 }
             }
             speedLimitBlankSign.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);

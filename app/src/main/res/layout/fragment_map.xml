@@ -9,8 +9,7 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:visibility="gone">
+        android:layout_height="match_parent">
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
@@ -31,8 +30,7 @@
             app:layout_constraintHorizontal_bias="0.95"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.97"
-            tools:visibility="gone" />
+            app:layout_constraintVertical_bias="0.97" />
 
         <RelativeLayout
             android:id="@+id/maneuverBarLayout"
@@ -40,7 +38,7 @@
             android:layout_height="80dp"
             android:layout_marginTop="45dp"
             android:background="@drawable/background_navigation_bar"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -87,7 +85,7 @@
             android:layout_marginBottom="30dp"
             android:background="@drawable/background_navigation_bar"
             android:padding="5dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.491"
@@ -146,8 +144,8 @@
                 android:layout_height="65dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="2dp"
-                android:src="@drawable/blank_speed_limit_sign"
-                android:contentDescription="@string/speed_limit_sign_desc" />
+                android:contentDescription="@string/speed_limit_sign_desc"
+                android:src="@drawable/blank_speed_limit_sign" />
 
             <TextView
                 android:id="@+id/speed_limit"
@@ -174,8 +172,7 @@
         android:background="@color/white"
         app:behavior_hideable="true"
         app:behavior_peekHeight="230dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:visibility="gone">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <TextView
             android:id="@+id/fragment_map_event_name"

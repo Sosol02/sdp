@@ -101,9 +101,9 @@ public class MapFragment extends Fragment {
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
                 initializeDeviceLocationProvider();
                 initializeManagers(style, view);
-                LatLng LAT_LNG_1 = new LatLng(37.423018, -122.083361);
+                /*LatLng LAT_LNG_1 = new LatLng(37.423018, -122.083361);
                 LatLng LAT_LNG_2 = new LatLng(37.432067, -122.087706);
-                routesManager.findRoute(LAT_LNG_1, Collections.singletonList(LAT_LNG_2), new NavigationRouteResponseListener());
+                routesManager.findRoute(LAT_LNG_1, Collections.singletonList(LAT_LNG_2), new NavigationRouteResponseListener());*/
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
