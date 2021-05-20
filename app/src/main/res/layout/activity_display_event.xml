@@ -6,56 +6,48 @@
     android:layout_height="match_parent"
     tools:context=".navigation.fragment.home.DisplayEvent">
 
+
     <TextView
         android:id="@+id/eventEndTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="180dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="72dp"
         android:text="@string/textview"
-        app:layout_constraintBaseline_toBaselineOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintStart_toStartOf="@+id/eventNameLocation" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/eventStartTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="160dp"
         android:text="@string/textview"
-        app:layout_constraintBaseline_toBaselineOf="@+id/eventEndTimeDisplay"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/eventNameLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:layout_marginBottom="109dp"
+        android:layout_marginTop="100dp"
+        android:paddingLeft="4dp"
         android:text="No location precised"
-        app:layout_constraintBottom_toBottomOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintEnd_toEndOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintStart_toStartOf="@+id/eventStartTimeDisplay"
-        app:layout_constraintTop_toTopOf="@+id/eventNameDisplay" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay" />
 
     <TextView
         android:id="@+id/eventNameDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="37dp"
+        android:layout_marginTop="68dp"
+        android:textSize="32dp"
         android:text="@string/textview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionDisplay" />
-
-    <TextView
-        android:id="@+id/descriptionDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#000000"
-        android:text="@string/event_name"
-        android:textSize="36sp"
-        app:layout_constraintStart_toEndOf="@+id/eventNameDisplay"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
