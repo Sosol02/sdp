@@ -101,6 +101,45 @@ public class Event implements Serializable, Storable<Event> {
         this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
     }
 
+    public Event setName(String new_value) {
+        if(Objects.requireNonNull(new_value).equals(this.name)){
+            return this;
+        } else {
+            Event newEvent =  new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
+    public Event setLocation(NamedCoordinates new_value) {
+        if(Optional.of(Objects.requireNonNull(new_value)).equals(getLocation())){
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
+    public Event setStartTime(ZonedDateTime new_value) {
+        if(Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)){
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return newEvent;
+        }
+    }
+
+    public Event setEndTime(ZonedDateTime new_value) {
+        if(Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)){
+            return this;
+        } else {
+            Event newEvent = new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
+            newEvent.setEmailContacts(this.emailContacts);
+            return  newEvent;
+        }
+    }
 
     public Event setEmailContacts(List<String> contacts){
         Event newEvent = new Event(id, name, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
