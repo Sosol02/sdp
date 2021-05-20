@@ -84,7 +84,7 @@ public class DisplayEvent extends AppCompatActivity {
         name.setText(event.getName());
         TextView location = this.findViewById(R.id.eventNameLocation);
         if(event.getLocationName().equals("")){
-            location.setText("No location specified");
+            location.setText(R.string.no_loc);
         }else {
             location.setText(event.getLocationName());
         }
