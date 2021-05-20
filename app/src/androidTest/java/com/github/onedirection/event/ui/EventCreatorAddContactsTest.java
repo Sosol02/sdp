@@ -66,13 +66,13 @@ public class EventCreatorAddContactsTest {
 
     @Test
     public void eventCreatorAddContactsTest() {
-        ViewInteraction appCompatImageButton = onView(allOf(withContentDescription("Open navigation drawer"), isDisplayed()));
-        appCompatImageButton.perform(click());
 
-        ViewInteraction navigationMenuItemView = onView(allOf(withId(R.id.nav_calendar), isDisplayed()));
-        navigationMenuItemView.perform(click());
-
-        DataInteraction linearLayout = onData(anything()).inAdapterView(allOf(withId(R.id.gridView)));
+        DataInteraction linearLayout = onData(anything())
+                .inAdapterView(allOf(withId(R.id.gridView),
+                        childAtPosition(
+                                withId(R.id.custom_calendar_view),
+                                2)))
+                .atPosition(15);
         linearLayout.perform(click());
 
         ViewInteraction materialButton = onView(
