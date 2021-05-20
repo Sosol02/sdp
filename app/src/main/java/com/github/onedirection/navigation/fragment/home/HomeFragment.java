@@ -56,6 +56,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     Map<Id,Boolean> favorites = new HashMap<>();
     public static HomeFragment homeFragment;
 
+    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState){
