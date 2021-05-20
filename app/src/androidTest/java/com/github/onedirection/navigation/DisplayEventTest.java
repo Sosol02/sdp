@@ -1,4 +1,5 @@
 package com.github.onedirection.navigation;
+import junit.framework.TestCase;
 
 
 
@@ -116,5 +117,20 @@ public class DisplayEventTest {
         onView(withId(R.id.buttonDisplayDelete)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplayDelete)).perform(ViewActions.click());
+    }
+
+    @Test
+    public void displayWorksCorrectlyForFavorite() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), DisplayEvent.class);
+        Event e = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+
+        DisplayEvent.putEventExtra(intent, e);
+        ActivityScenario.launch(intent).onActivity( a->{
+            DisplayEvent activity = (DisplayEvent) a;
+        });
+        onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.favorite_button)).perform(ViewActions.click());
+        onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
+
     }
 }
