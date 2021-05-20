@@ -68,7 +68,7 @@ public class RoutesManager {
             @Override
             public void onRoutesRetrieved(List<Route> routes1) {
                 if (routes1.size() > 0) {
-                    Toast.makeText(context, R.string.route_service_success, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.route_service_success, Toast.LENGTH_SHORT).show();
                     routes = routes1;
                 }
                 routesResponseListener.onRoutesRetrieved(routes1);
@@ -77,14 +77,14 @@ public class RoutesManager {
 
             @Override
             public void onRequestFailed(@Nullable Integer httpStatusCode, @Nullable IOException exception) {
-                Toast.makeText(context, R.string.route_service_failed, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.route_service_failed, Toast.LENGTH_SHORT).show();
                 routesResponseListener.onRequestFailed(httpStatusCode, exception);
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             }
 
             @Override
             public void onRequestMade() {
-                Toast.makeText(context, R.string.route_service_request, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.route_service_request, Toast.LENGTH_SHORT).show();
                 routesResponseListener.onRequestMade();
             }
         });

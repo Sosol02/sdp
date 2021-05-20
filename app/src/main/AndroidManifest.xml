@@ -36,7 +36,7 @@
             android:name="androidx.startup.InitializationProvider"
             android:exported="false" >
             <meta-data
-                android:name="com.github.onedirection.startup.NotificationInitializer"
+                android:name="com.github.onedirection.startup.ApplicationInitializer"
                 android:value="androidx.startup" />
         </provider>
 

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -91,7 +92,6 @@ public class MapFragment extends Fragment {
                         }
                     }
                 });
-
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
@@ -190,7 +190,7 @@ public class MapFragment extends Fragment {
     }
 
     private CompletableFuture<Boolean> requestLocationPermission() {
-        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+        if (isVisible() && !DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
