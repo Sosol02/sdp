@@ -130,8 +130,6 @@ public class DisplayEventTest {
         });
         onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
         onView(withId(R.id.favorite_button)).perform(ViewActions.click());
-        e.setIsFavorite(true);
-        assert(e.getIsFavorite());
         onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
 
     }
