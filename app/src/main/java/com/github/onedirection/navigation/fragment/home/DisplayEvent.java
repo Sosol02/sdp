@@ -106,13 +106,7 @@ public class DisplayEvent extends AppCompatActivity {
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
-        ZonedDateTime date = ZonedDateTime.now();
-
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            HomeFragment.homeFragment.updateResults(monthEvents);
-            super.onBackPressed();
-        });
+        super.onBackPressed();
     }
 
     /** Called when the user taps the Delete button */

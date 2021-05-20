@@ -102,7 +102,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             events = monthEvents;
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
-        eventList.getAdapter().notifyItemRangeInserted(0, events.size());
     }
 
     public void updateModifiedEvent(Id id){
