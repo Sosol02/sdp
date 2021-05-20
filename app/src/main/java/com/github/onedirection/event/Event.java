@@ -36,7 +36,7 @@ public class Event implements Serializable, Storable<Event> {
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
      */
     final private Recurrence recurringPeriod;
-    private List emailContacts;
+    private List<String> emailContacts;
 
     public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
         this.id = Objects.requireNonNull(id);
