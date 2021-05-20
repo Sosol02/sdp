@@ -68,6 +68,7 @@ import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -94,9 +95,10 @@ public class MapFragmentTest {
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
-    private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.7326808, -73.9843407);
+    private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.6974034,-74.1197629);
     private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
     private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0, -50.0);
+    private final LatLng TEST_VALUE_LATLNG_6 = new LatLng(34.0201613,-118.6919115);
     //private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", "Paris",
     private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", new NamedCoordinates(48.511197, 2.205589, "Paris"),
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
@@ -114,6 +116,7 @@ public class MapFragmentTest {
             new Event(Id.generateRandom(), "Event 3 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
             new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria", new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
             new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile", new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 6 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_6.getLatitude(), TEST_VALUE_LATLNG_6.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
     };
 
     @Rule
@@ -522,6 +525,61 @@ public class MapFragmentTest {
         onView(withId(R.id.stop)).perform(click());
 
         assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.STOPPED));
+    }
+
+    @Test
+    public void clickingOnStartNavigationButtonWorks() throws InterruptedException {
+        IdlingRegistry.getInstance().register(fragment.waitForRoute);
+
+        Event start = testEvents[2];
+        Event end = testEvents[5];
+        Database.getDefaultInstance().store(start);
+        Database.getDefaultInstance().store(end);
+
+        BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
+
+        focusEventOnMap(start);
+        onView(withId(R.id.mapView))
+                .perform(new WaitAction(1000))
+                .perform(click())
+                .perform(new WaitAction(1000));
+
+        runOnUiThreadAndWaitEndExecution(() -> bsb.setState(BottomSheetBehavior.STATE_EXPANDED));
+
+        onView(withId(R.id.fragment_map_ui))
+                .perform(new WaitAction(1000));
+        onView(withId(R.id.fragment_map_event_nav_route_button))
+                .perform(click());
+
+        focusEventOnMap(end);
+        onView(withId(R.id.mapView))
+                .perform(click())
+                .perform(new WaitAction(1000));
+
+        runOnUiThreadAndWaitEndExecution(() -> bsb.setState(BottomSheetBehavior.STATE_EXPANDED));
+
+        onView(withId(R.id.fragment_map_ui))
+                .perform(new WaitAction(1000));
+        onView(withId(R.id.fragment_map_event_nav_route_button))
+                .perform(click());
+        onView(withId(R.id.fragment_map_ui))
+                .perform(new WaitAction(1000));
+
+
+
+        //NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+        //com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        //assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE));
+    }
+
+    private void focusEventOnMap(Event e) throws InterruptedException {
+        runOnUiThreadAndWaitEndExecution(() -> {
+            mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                    .target(e.getCoordinates().get().toLatLng())
+                    .zoom(15.)
+                    .build()
+            );
+        });
     }
 
     private <T> T getFragmentField(String fieldName, Class<T> classToCast) {

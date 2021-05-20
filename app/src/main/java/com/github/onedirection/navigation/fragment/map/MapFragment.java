@@ -14,7 +14,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
 import com.github.onedirection.event.Event;
@@ -76,6 +78,12 @@ public class MapFragment extends Fragment {
     private Button cancelButton;
     private Optional<Event> navigationStart = Optional.empty();
     private Optional<Event> navigationEnd = Optional.empty();
+
+    @VisibleForTesting
+    public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
+
+    @VisibleForTesting
+    public CountingIdlingResource waitForEventSet = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override
@@ -150,6 +158,7 @@ public class MapFragment extends Fragment {
             if (navigationStart.isPresent()) {
                 Log.d(LOG_TAG, "Nav starting!");
                 navigationEnd = Optional.of(currentEvent);
+                waitForRoute.increment();
                 routesManager.findRoute(
                         navigationStart.get().getCoordinates().get().toLatLng(),
                         Collections.singletonList(navigationEnd.get().getCoordinates().get().toLatLng()),
@@ -317,13 +326,16 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
+            waitForRoute.decrement();
             if (list.size() > 0) {
                 routeDisplayManager.displayRoute(list.get(0));
             }
         }
 
         @Override
-        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+            waitForRoute.decrement();
+        }
 
         @Override
         public void onRequestMade() {}
