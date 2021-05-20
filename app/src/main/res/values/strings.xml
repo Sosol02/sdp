@@ -49,7 +49,6 @@
     <string name="navigation_reroute_success">Reroute succeeded</string>
     <string name="navigation_distance_small_unit">m</string>
     <string name="navigation_distance_big_unit">km</string>
-    <string name="navigation_distance_format">%1$d meters</string>
     <string name="navigation_manager_stop">✖</string>
 
     <string name="route_service_request">Route has been requested</string>

@@ -89,7 +89,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.491"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/stop"
@@ -124,7 +125,8 @@
                 android:layout_toEndOf="@id/eta_next_destination"
                 android:text=""
                 android:textColor="?colorOnPrimary"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                tools:ignore="RelativeOverlap" />
 
             <TextView
                 android:id="@+id/remaining_distance"
@@ -172,7 +174,8 @@
         android:background="@color/white"
         app:behavior_hideable="true"
         app:behavior_peekHeight="230dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/fragment_map_event_name"
