@@ -19,6 +19,7 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapquest.navigation.internal.collection.CollectionsUtil;
+import com.mapquest.navigation.internal.unit.Speed;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
 import com.mapquest.navigation.listener.EtaResponseListener;
 import com.mapquest.navigation.listener.NavigationProgressListener;
@@ -30,6 +31,7 @@ import com.mapquest.navigation.model.Maneuver;
 import com.mapquest.navigation.model.Route;
 import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
+import com.mapquest.navigation.model.SpeedLimit;
 import com.mapquest.navigation.model.SpeedLimitSpan;
 import com.mapquest.navigation.model.Traffic;
 import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
@@ -46,6 +48,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -80,6 +84,8 @@ public class NavigationManager {
     private final TextView timeNextDestination;
     private final TextView timeFinalDestination;
     private final TextView remainingDistance;
+    private final ImageView speedLimitBlankSign;
+    private final TextView speedLimitValue;
 
     private final AppCompatImageButton myLocationButton;
 
@@ -123,6 +129,9 @@ public class NavigationManager {
         timeNextDestination = view.findViewById(R.id.eta_next_destination);
         timeFinalDestination = view.findViewById(R.id.eta_final_destination);
         remainingDistance = view.findViewById(R.id.remaining_distance);
+        speedLimitBlankSign = view.findViewById(R.id.speed_limit_blank);
+        speedLimitValue = view.findViewById(R.id.speed_limit);
+
         view.findViewById(R.id.stop).setOnClickListener(v -> {
             if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
                 stopNavigation();
@@ -184,13 +193,17 @@ public class NavigationManager {
     private void updateUiOnStartAndReroute(@NonNull Route route) {
         routeDisplayManager.displayRoute(route);
 
+        List<SpeedLimitSpan> speedLimitSpans = route.getLeg(0).getFeatures().getMaximumSpeedLimits();
+        Set<SpeedLimitSpan> speedLimitSpanSet = new HashSet<>(speedLimitSpans);
+        updateUiMaxSpeed(speedLimitSpanSet);
+
         RouteLeg lastRouteLeg = CollectionsUtil.lastValue(route.getLegs());
         long timeForNextDestination = navigationManager.getCurrentRouteLeg().getTraffic().getEstimatedTimeOfArrival().getTime();
         long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
 
         String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
         String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs().indexOf(navigationManager.getCurrentRouteLeg()));
-        updateUiTime(timeForNextDestination, timeForFinalDestination, lastRouteLegKey == currentRouteLegKey);
+        updateUiTime(timeForNextDestination, timeForFinalDestination, lastRouteLegKey.equals(currentRouteLegKey));
     }
 
     private void updateUiTime(long timeForNextDestination, long timeForFinalDestination, boolean isTheSameTime) {
@@ -204,6 +217,20 @@ public class NavigationManager {
         timeNextDestination.setText(DATE_FORMAT.format(new Date(timeForNextDestination)));
         if (!isTheSameTime) {
             timeFinalDestination.setText(DATE_FORMAT.format(new Date(timeForFinalDestination)));
+        }
+    }
+
+    private void updateUiMaxSpeed(Set<SpeedLimitSpan> speedLimitSpans) {
+        if (speedLimitSpans != null) {
+            boolean foundMaximumSpeed = false;
+            for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
+                if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
+                    foundMaximumSpeed = true;
+                    speedLimitValue.setText(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                            .toKilometersPerHour()));
+                }
+            }
+            speedLimitBlankSign.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -313,12 +340,11 @@ public class NavigationManager {
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             if (finalDestination) {
                 Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-                destinationAcceptanceHandler.confirmArrival(true);
                 //stopNavigation();
             } else {
                 Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
-                destinationAcceptanceHandler.confirmArrival(true);
             }
+            destinationAcceptanceHandler.confirmArrival(true);
 
         }
     }
@@ -327,11 +353,7 @@ public class NavigationManager {
 
         @Override
         public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull Set<SpeedLimitSpan> enteredSpeedLimits) {
-            /*for (SpeedLimitSpan speedLimitSpan : enteredSpeedLimits) {
-                float speed = speedLimitSpan.getSpeedLimit().getSpeed();
-                SpeedLimit.Type type = speedLimitSpan.getSpeedLimit().getType();
-                //TODO update UI
-            }*/
+            updateUiMaxSpeed(enteredSpeedLimits);
         }
     }
 
