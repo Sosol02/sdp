@@ -83,7 +83,7 @@ public class MapFragment extends Fragment {
     public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
 
     @VisibleForTesting
-    public CountingIdlingResource waitForEventSet = new CountingIdlingResource("waitForEventSet");
+    public CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override
@@ -145,9 +145,17 @@ public class MapFragment extends Fragment {
         navigationButton.setOnClickListener(but -> {
             Log.d(LOG_TAG, "Navigation button pressed.");
             cancelNavigation();
+            LatLng pos = myLocationSymbolManager.getPosition();
+            if (pos == null) {
+                Log.d(LOG_TAG, "Position is null...");
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+            waitForNavStart.increment();
             routesManager.findRoute(
-                    myLocationSymbolManager.getPosition(),
-                    Collections.singletonList(currentEvent.getCoordinates().get().toLatLng()),
+                    Objects.requireNonNull(pos),
+                    Collections.singletonList(Objects.requireNonNull(currentEvent.getCoordinates().get().toLatLng())),
                     new NavigationRouteResponseListener()
             );
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -346,6 +354,7 @@ public class MapFragment extends Fragment {
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
             if (list.size() > 0) {
+                waitForNavStart.decrement();
                 navigationManager.startNavigation(list.get(0));
             }
         }
@@ -357,7 +366,7 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRequestMade() {
-
+            waitForNavStart.decrement();
         }
     }
 }

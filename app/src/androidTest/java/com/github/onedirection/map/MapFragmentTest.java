@@ -528,7 +528,7 @@ public class MapFragmentTest {
     }
 
     @Test
-    public void clickingOnStartNavigationButtonWorks() throws InterruptedException {
+    public void findRouteBetweenEventsWorks() throws InterruptedException {
         IdlingRegistry.getInstance().register(fragment.waitForRoute);
 
         Event start = testEvents[2];
@@ -565,11 +565,34 @@ public class MapFragmentTest {
         onView(withId(R.id.fragment_map_ui))
                 .perform(new WaitAction(1000));
 
+        // the idling resource ensures it works, otherwise it timeouts after ~30 secs
+    }
 
+    @Test
+    public void startNavWithUiWorks() throws InterruptedException {
+        IdlingRegistry.getInstance().register(fragment.waitForNavStart);
+        Event dest = testEvents[2];
+        Database.getDefaultInstance().store(dest);
 
-        //NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
-        //com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
-        //assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE));
+        BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
+
+        focusEventOnMap(dest);
+        onView(withId(R.id.mapView))
+                .perform(new WaitAction(1000))
+                .perform(click())
+                .perform(new WaitAction(1000));
+
+        runOnUiThreadAndWaitEndExecution(() -> bsb.setState(BottomSheetBehavior.STATE_EXPANDED));
+
+        onView(withId(R.id.fragment_map_ui))
+                .perform(new WaitAction(1000));
+
+        onView(withId(R.id.fragment_map_event_nav_button))
+                .perform(click());
+
+        NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE));
     }
 
     private void focusEventOnMap(Event e) throws InterruptedException {
