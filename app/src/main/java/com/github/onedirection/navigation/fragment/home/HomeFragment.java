@@ -22,7 +22,9 @@ import com.github.onedirection.R;
 import com.github.onedirection.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
+import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -70,6 +72,16 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
         homeFragment = this;
 
+
+        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(root.getContext(), EventCreator.class);
+                startActivity(intent);
+            }
+        });
+
         return root;
     }
 
@@ -81,6 +93,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     public void updateResults(List<Event> events){
         this.events = events;
         eventList.setAdapter(new EventViewerAdapter(this.events, this));
+
     }
 
     public void updateResults(){
