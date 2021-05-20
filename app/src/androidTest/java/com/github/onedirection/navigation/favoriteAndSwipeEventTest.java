@@ -88,10 +88,10 @@ public class favoriteAndSwipeEventTest {
                                         0),
                                 1),
                         isDisplayed()));
-        appCompatEditText.perform(replaceText("azertu"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("nnnn"), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.editEventName), withText("azertu"),
+                allOf(withId(R.id.editEventName), withText("nnnn"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.cardView),
@@ -125,33 +125,7 @@ public class favoriteAndSwipeEventTest {
                         childAtPosition(
                                 withClassName(is("android.widget.FrameLayout")),
                                 0)));
-        recyclerView.perform(actionOnItemAtPosition(0, click()));
-
-        ViewInteraction recyclerView2 = onView(
-                allOf(withId(R.id.recyclerEventView),
-                        childAtPosition(
-                                withClassName(is("android.widget.FrameLayout")),
-                                0)));
-        recyclerView2.perform(actionOnItemAtPosition(0, longClick()));
-
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
-
-        ViewInteraction recyclerView3 = onView(
-                allOf(withId(R.id.recyclerEventView),
-                        childAtPosition(
-                                withClassName(is("android.widget.FrameLayout")),
-                                0)));
-        recyclerView3.perform(actionOnItemAtPosition(0, longClick()));
-
+        recyclerView.perform(actionOnItemAtPosition(0, longClick()));
 
         ViewInteraction materialButton2 = onView(
                 allOf(withId(R.id.buttonDisplay), withText("Edit"),
@@ -159,21 +133,11 @@ public class favoriteAndSwipeEventTest {
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                5),
+                                4),
                         isDisplayed()));
         materialButton2.perform(click());
 
-
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
+        pressBack();
 
         ViewInteraction recyclerView5 = onView(
                 allOf(withId(R.id.recyclerEventView),
@@ -182,15 +146,13 @@ public class favoriteAndSwipeEventTest {
                                 0)));
         recyclerView5.perform(actionOnItemAtPosition(0, longClick()));
 
-
-
         ViewInteraction materialButton3 = onView(
                 allOf(withId(R.id.buttonDisplayDelete), withText("Delete"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                6),
+                                5),
                         isDisplayed()));
         materialButton3.perform(click());
     }
