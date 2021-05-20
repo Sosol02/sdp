@@ -98,4 +98,27 @@ public class GoogleCalendarTest {
         assertEquals("WEEKLY", recurrence[0].substring(11));
         assertEquals("4", recurrence[1].substring(6));
     }
+
+    @Test
+    public void fromGCalendarEventsBasicTests() {
+        Id id = Id.generateRandom();
+        String name = "EVENT";
+        String locName = "LOCATION";
+        ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime endTime = startTime.plusHours(1);
+        Recurrence r = new Recurrence(id, ChronoUnit.WEEKS.getDuration(), startTime.plusWeeks(3));
+        com.github.onedirection.event.Event e =
+                new com.github.onedirection.event.Event(id, name, locName, startTime, endTime, r);
+
+        Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
+        com.github.onedirection.event.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
+
+        assertEquals(event.getId(), event.getRecurrence().get().getGroupId());
+        assertEquals(name, event.getName());
+        assertEquals("", event.getLocationName());
+        assertEquals(startTime, event.getStartTime());
+        assertEquals(endTime, event.getEndTime());
+        assertEquals(ChronoUnit.WEEKS.getDuration(), event.getRecurrence().get().getPeriod());
+        assertEquals(startTime.plusWeeks(3), event.getRecurrence().get().getEndTime());
+    }
 }

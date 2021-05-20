@@ -25,7 +25,6 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
-
     /**
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
      */
@@ -120,6 +119,8 @@ public class Event implements Serializable, Storable<Event> {
                 ? this
                 : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
     }
+
+
 
     @Override
     public Id getId() {

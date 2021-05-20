@@ -518,7 +518,7 @@ public class MapFragmentTest {
         }
 
         onView(withId(R.id.next_maneuver)).check(matches(not(withText(""))));
-        onView(withId(R.id.eta_final_destination)).check(matches(not(withText(""))));
+        onView(withId(R.id.eta_final_destination)).check(matches(not(isDisplayed())));
         onView(withId(R.id.eta_next_destination)).check(matches(not(withText(""))));
         onView(withId(R.id.arrivalBarLayout)).check(matches(isDisplayed()));
         onView(withId(R.id.maneuverBarLayout)).check(matches(isDisplayed()));
