@@ -40,10 +40,11 @@ import java.util.concurrent.CompletableFuture;
 import androidx.appcompat.app.ActionBar;
 
 
-/*
- **Home of the application
- **Display the events of the month
+/**
+ *Home of the application
+ *Display the events of the month
  */
+
 public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNoteListener{
 
     RecyclerView eventList;

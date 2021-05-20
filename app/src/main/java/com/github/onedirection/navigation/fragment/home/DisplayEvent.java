@@ -131,35 +131,17 @@ public class DisplayEvent extends AppCompatActivity {
     @SuppressLint("UseCompatLoadingForDrawables")
     public void buttonStarEvent(View view){
         Id id = event.getId();
-        /*if(!HomeFragment.homeFragment.favorites.containsKey(id)){
-            HomeFragment.homeFragment.favorites.put(id,false);
-        }*/
-        //boolean isFavorite = event.getIsFavorite();
 
         boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
         ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
         if(isFavorite){
-            //HomeFragment.homeFragment.favorites.replace(id,false);
-            //event = event.setName("tamerlachiennkaka");
-            //event.setIsFavorite(false);
-            //CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
-            //modificationOver.whenComplete((idFuture, throwable) -> {
-                //HomeFragment.homeFragment.updateModifiedEvent(id);
-            //    btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
-            //});
+
             HomeFragment.homeFragment.favorites.replace(id, false);
             HomeFragment.homeFragment.updateModifiedEvent(id);
             btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
 
         }else{
-            //HomeFragment.homeFragment.favorites.replace(id,true);
-            //event.setIsFavorite(true);
-            //event.setName("tamerlachienne "+ event.getName());
-            //CompletableFuture<Id> modificationOver = EventQueries.modifyEvent(Database.getDefaultInstance(),event);
-            //modificationOver.whenComplete((idFuture, throwable) -> {
-                //HomeFragment.homeFragment.updateModifiedEvent(id);
-                //btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
-            //});
+
             HomeFragment.homeFragment.favorites.replace(id, true);
             HomeFragment.homeFragment.updateModifiedEvent(id);
             btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
