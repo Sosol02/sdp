@@ -1,17 +1,32 @@
 package com.github.onedirection.geolocation.geocoding;
 
+import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
+
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Monads;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import kotlin.reflect.KCallable;
 
 /**
  * General interface implemented by all geocoding services.
  * Geocoding consist of mapping a name into its geographical coordinates.
  */
 public interface GeocodingService {
+
+    static GeocodingService getDefaultInstance() {
+        return GeocodingServices.getDefaultInstance();
+    }
+
+    static void init(Context ctx){
+        GeocodingServices.init(ctx);
+    }
 
     /**
      * @param locationName Some location's name.
@@ -57,5 +72,53 @@ public interface GeocodingService {
      * @return The coordinates and their associated name if the location is found.
      */
     CompletableFuture<NamedCoordinates> getBestNamedCoordinates(Coordinates coordinates);
+
+}
+
+class GeocodingServices {
+    private static final String LOGCAT_TAG = "GeocodingServices";
+
+    private GeocodingServices() {}
+
+    private final static String CACHE_FILE_NAME = "GeocodingCache";
+    private final static int CACHING_DELAY_MS = 60 * 1000;
+
+    private static GeocodingService DEFAULT = null;
+    private static GeocodingCache CACHED_DEFAULT = null;
+
+    static GeocodingService getDefaultInstance() {
+        if(DEFAULT == null){
+            throw new IllegalStateException("Geocoding not initialized");
+        }
+
+        return CACHED_DEFAULT;
+    }
+
+    static void init(Context ctx){
+        DEFAULT = new NominatimGeocoding(ctx);
+        Optional<GeocodingCache> maybeCache = GeocodingCache.loadFromAndroidCache(
+                ctx,
+                CACHE_FILE_NAME,
+                DEFAULT
+        );
+
+        if(maybeCache.isPresent()){
+            Log.d(LOGCAT_TAG, "Cache loaded from file");
+            CACHED_DEFAULT = maybeCache.get();
+        }
+        else{
+            Log.d(LOGCAT_TAG, "Cache could not be loaded");
+            CACHED_DEFAULT = new GeocodingCache(DEFAULT);
+        }
+
+        Handler periodical = new Handler(ctx.getMainLooper());
+        periodical.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(LOGCAT_TAG, "Dumping cache to file: " + CACHED_DEFAULT.dumpToAndroidCache(ctx, CACHE_FILE_NAME));
+                periodical.postDelayed(this, CACHING_DELAY_MS);
+            }
+        });
+    }
 
 }

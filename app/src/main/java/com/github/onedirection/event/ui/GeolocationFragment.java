@@ -87,7 +87,7 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
 
 
         this.model = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        this.geocoding = new NominatimGeocoding(getContext());
+        this.geocoding = GeocodingService.getDefaultInstance();
 
         this.usePhoneLocation = getView().findViewById(R.id.buttonUseCurrentLocation);
 

@@ -15,6 +15,9 @@ checks:
   file-lines:
     config:
       threshold: 400
+  method-count:
+    config:
+      threshold: 25
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
