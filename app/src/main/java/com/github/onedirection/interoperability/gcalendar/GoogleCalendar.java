@@ -2,28 +2,23 @@ package com.github.onedirection.interoperability.gcalendar;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.util.Log;
 
+import com.github.onedirection.R;
+import com.github.onedirection.event.Event;
 import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.event.ui.MainFragment;
-import com.github.onedirection.utils.Monads;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.github.onedirection.utils.Id;
+import com.github.onedirection.utils.TimeUtils;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.CalendarList;
-import com.google.api.services.calendar.model.CalendarListEntry;
-import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 
+import java.time.Duration;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,13 +37,14 @@ public final class GoogleCalendar {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     static final String LOGCAT_TAG = "GCalendar";
+    private static final String DEFAULT_NAME = "No Name";
 
-    private final static Map<TemporalUnit, String> PERIODS = Collections.unmodifiableMap(new HashMap<TemporalUnit, String>() {
+    private final static Map<String, TemporalUnit> PERIODS = Collections.unmodifiableMap(new HashMap<String, TemporalUnit>() {
         {
-            put(ChronoUnit.DAYS, "DAILY");
-            put(ChronoUnit.WEEKS, "WEEKLY");
-            put(ChronoUnit.MONTHS, "MONTHLY");
-            put(ChronoUnit.YEARS, "YEARLY");
+            put("DAILY", ChronoUnit.DAYS);
+            put("WEEKLY", ChronoUnit.WEEKS);
+            put("MONTHLY", ChronoUnit.MONTHS);
+            put("YEARLY", ChronoUnit.YEARS);
         }});
 
     private GoogleCalendar() {
@@ -62,10 +58,10 @@ public final class GoogleCalendar {
      * @param event (Event): the Event to convert into a Google Calendar Event
      * @return (com.google.api.services.calendar.model.Event): a Google Calendar Event
      */
-    public static Event toGCalendarEvents(com.github.onedirection.event.Event event) {
+    public static com.google.api.services.calendar.model.Event toGCalendarEvents(Event event) {
         Objects.requireNonNull(event);
 
-        Event gcEvent = new Event()
+        com.google.api.services.calendar.model.Event gcEvent = new com.google.api.services.calendar.model.Event()
                 .setSummary(event.getName())
                 .setId(event.getId().getUuid());
 
@@ -77,9 +73,9 @@ public final class GoogleCalendar {
             gcEvent.setRecurringEventId(recurrence.getGroupId().getUuid());
 
             String recurrencePeriod = null;
-            for(Map.Entry<TemporalUnit, String> t : PERIODS.entrySet()) {
-                if(recurrence.getPeriod().equals(t.getKey().getDuration())) {
-                    recurrencePeriod = t.getValue();
+            for(Map.Entry<String, TemporalUnit> t : PERIODS.entrySet()) {
+                if(recurrence.getPeriod().equals(t.getValue().getDuration())) {
+                    recurrencePeriod = t.getKey();
                 }
             }
             if(recurrencePeriod == null) {
@@ -111,10 +107,69 @@ public final class GoogleCalendar {
         return gcEvent;
     }
 
-    public static com.github.onedirection.event.Event fromGCalendarEvents(Event event) {
-        // TODO: Task #???
+    /**
+     * Converts a Google Calendar Event into an Event
+     * Note: The resulting new Event doesn't have a location specified with coordinates, so technically it doesn't have
+     * a location. The only information we have on a potential location is the locationName.
+     * The id of the new Event is a new (generated) Id, because one cannot be sure that the Google Calendar Event
+     * id is in the same format as the local Event id UUID format.
+     * @param event (com.google.api.services.calendar.model.Event) : The Google Calendar Event to convert into an Event
+     * @return (Event) : a new Event
+     */
+    public static Event fromGCalendarEvents(com.google.api.services.calendar.model.Event event) {
+        Objects.requireNonNull(event);
+        if(event.getStart() == null || event.getEnd() == null) {
+            throw new IllegalArgumentException("Event should have at least a start time and an end time.");
+        }
 
-        return null;
+        Id newId = Id.generateRandom();
+        String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
+        String locationName = (event.getLocation() != null) ? event.getLocation() : "";
+
+        long epochSecondStartTime = event.getStart().getDateTime().getValue()/1000;
+        ZonedDateTime startTime = TimeUtils.epochToZonedDateTime(epochSecondStartTime);
+        long epochSecondEndTime = event.getEnd().getDateTime().getValue()/1000;
+        ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
+
+        Event newEvent = new Event(newId, name, locationName, startTime, endTime);
+
+        if(event.getRecurrence() != null) {
+            List<String> recurrences = event.getRecurrence();
+            String periodically = null;
+            int eventCount = 0;
+            boolean rule_found = false;
+            String ruleFoundString = "";
+
+            for(String rule : recurrences) {
+                //Refer to https://developers.google.com/calendar/create-events to see how to retrieve recurrence
+                if(rule.substring(0, 5).equals("RRULE")) {
+                    if(rule_found && !rule.equals(ruleFoundString)) {
+                        throw new IllegalArgumentException("There are two different matching rule formats for the recurrence.");
+                    }
+                    String[] info = rule.substring(11).split(";COUNT=");
+                    periodically = info[0];
+                    eventCount = Integer.parseInt(info[1]);
+                    rule_found = true;
+                    ruleFoundString = rule;
+                }
+            }
+            if(periodically == null) {
+                throw new IllegalArgumentException("No recurrence rule matches the one used by "+ R.string.app_name+" Events");
+            }
+
+            TemporalUnit period = PERIODS.getOrDefault(periodically, null);
+            if(period == null) {
+                throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+            }
+
+            ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
+                    (startTime.toEpochSecond() + (eventCount-1) * period.getDuration().getSeconds());
+
+            Recurrence newRecurrence = new Recurrence(newEvent.getId(), period.getDuration(), recEndTime);
+            newEvent = newEvent.setRecurrence(newRecurrence);
+        }
+
+        return newEvent;
     }
 
     public static CompletableFuture<Void> exportEvents(Context ctx, Account account, CompletableFuture<List<com.github.onedirection.event.Event>> ls) {
