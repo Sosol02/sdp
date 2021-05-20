@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -24,6 +25,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.onedirection.R;
 import com.github.onedirection.event.Event;
 
+import net.hockeyapp.android.Strings;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -32,6 +36,7 @@ import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
@@ -41,10 +46,13 @@ import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
  */
 public class MainFragment extends Fragment {
 
+    @VisibleForTesting
+    final static int MAX_STRING_LENGTH = 50;
+
     private final static List<TemporalUnit> PERIODS = Collections.unmodifiableList(Arrays.asList(
-            ChronoUnit.MINUTES,
-            ChronoUnit.HOURS,
+            ChronoUnit.DAYS,
             ChronoUnit.WEEKS,
+            ChronoUnit.MONTHS,
             ChronoUnit.YEARS
     ));
 
@@ -115,6 +123,7 @@ public class MainFragment extends Fragment {
 
         geolocation.setOnClickListener(v -> gotoGeolocation());
 
+        // 'Add Event' button listener
         getView().findViewById(R.id.buttonEventAdd).setOnClickListener(this::addEventCallback);
 
         // Text listeners
@@ -224,15 +233,45 @@ public class MainFragment extends Fragment {
         return model.generateEvent();
     }
 
-    private void addEventCallback(View v) {
-        model.incrementLoad();
-        requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
-        model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) ->  {
-            if(throwable != null){
-                Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
+    private boolean fieldsAreValid() {
+        String checkMsg = null;
+        if(model.name.getValue() == null || model.name.getValue().equals("")) {
+            checkMsg = String.valueOf(R.string.empty_event_name);
+        } else if(model.name.getValue().length() > MAX_STRING_LENGTH) {
+            checkMsg = String.format(String.valueOf(R.string.event_name_too_long), MAX_STRING_LENGTH);
+        } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
+            checkMsg = String.valueOf(R.string.end_before_start);
+        } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > ChronoUnit.DAYS.getDuration().getSeconds()) {
+            checkMsg = String.valueOf(R.string.event_time_too_long);
+        } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
+            checkMsg = String.format(String.valueOf(R.string.location_name_too_long), MAX_STRING_LENGTH);
+        } else if(model.isRecurrent.getValue()) {
+            if(model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
+                checkMsg = String.valueOf(R.string.recurrence_end_too_soon);
             }
-            model.decrementLoad();
-            requireActivity().finish();
-        });
+        }
+        if(checkMsg != null) {
+            TextView checksText = getView().findViewById(R.id.checkArgsText);
+            checksText.setText(checkMsg);
+            checksText.setVisibility(View.VISIBLE);
+            return false;
+        } else {
+            getView().findViewById(R.id.checkArgsText).setVisibility(View.GONE);
+            return true;
+        }
+    }
+
+    private void addEventCallback(View v) {
+        if(fieldsAreValid()) {
+            model.incrementLoad();
+            requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
+            model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) -> {
+                if (throwable != null) {
+                    Log.d(EventCreator.LOGCAT_TAG, "Event callback failed: " + throwable);
+                }
+                model.decrementLoad();
+                requireActivity().finish();
+            });
+        }
     }
 }
