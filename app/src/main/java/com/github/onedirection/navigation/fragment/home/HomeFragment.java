@@ -23,6 +23,7 @@ import com.github.onedirection.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
+import com.github.onedirection.navigation.fragment.calendar.DayEventsListView;
 import com.github.onedirection.utils.Id;
 
 import java.time.ZoneId;
@@ -115,7 +116,18 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         CompletableFuture<Event> e = database.retrieve(Objects.requireNonNull(id), EventStorer.getInstance());
         eventList.setAdapter(new EventViewerAdapter(events, this));
         eventViewerAdapter.notifyItemChanged(position);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ZonedDateTime date = ZonedDateTime.now();
+
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
+            events = monthEvents;
+            eventList.setAdapter(new EventViewerAdapter(events, this));
+        });
     }
 
     public void deleteEvent(Id id){
