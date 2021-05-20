@@ -72,6 +72,7 @@ public class MapFragment extends Fragment {
     private CompletableFuture<Boolean> permissionRequestResult;
 
     private Button navigationButton;
+    private Button navigationRouteButton;
     private Button cancelButton;
     private Optional<Event> navigationStart = Optional.empty();
     private Optional<Event> navigationEnd = Optional.empty();
@@ -129,10 +130,22 @@ public class MapFragment extends Fragment {
         event_location = view.findViewById(R.id.fragment_map_event_location);
 
         navigationButton = view.findViewById(R.id.fragment_map_event_nav_button);
+        navigationRouteButton = view.findViewById(R.id.fragment_map_event_nav_route_button);
         cancelButton = view.findViewById(R.id.fragment_map_event_nav_cancel);
         cancelNavigation();
 
         navigationButton.setOnClickListener(but -> {
+            Log.d(LOG_TAG, "Navigation button pressed.");
+            cancelNavigation();
+            routesManager.findRoute(
+                    myLocationSymbolManager.getPosition(),
+                    Collections.singletonList(currentEvent.getCoordinates().get().toLatLng()),
+                    new NavigationRouteResponseListener()
+            );
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        navigationRouteButton.setOnClickListener(but -> {
             Log.d(LOG_TAG, "Nav button clicked: navigationStart: " + navigationStart + ", navigationEnd: " + navigationEnd);
             if (navigationStart.isPresent()) {
                 Log.d(LOG_TAG, "Nav starting!");
@@ -140,14 +153,14 @@ public class MapFragment extends Fragment {
                 routesManager.findRoute(
                         navigationStart.get().getCoordinates().get().toLatLng(),
                         Collections.singletonList(navigationEnd.get().getCoordinates().get().toLatLng()),
-                        new NavigationRouteResponseListener()
+                        new DisplayRouteResponseListener()
                 );
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 cancelNavigation();
             } else {
                 navigationStart = Optional.of(currentEvent);
                 cancelButton.setVisibility(View.VISIBLE);
-                navigationButton.setText(R.string.select_end_point);
+                navigationRouteButton.setText(R.string.set_end_point);
                 markerSymbolManager.setTripStartMarker(currentEvent.getCoordinates().get().toLatLng());
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }
@@ -163,7 +176,7 @@ public class MapFragment extends Fragment {
         navigationStart = Optional.empty();
         navigationEnd = Optional.empty();
         cancelButton.setVisibility(View.GONE);
-        navigationButton.setText(R.string.start_navigation);
+        navigationRouteButton.setText(R.string.set_starting_point);
         if (markerSymbolManager != null) {
             markerSymbolManager.removeTripStartMarker();
         }

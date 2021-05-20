@@ -190,15 +190,26 @@
             app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_location" />
 
         <Button
-            android:id="@+id/fragment_map_event_nav_cancel"
+            android:id="@+id/fragment_map_event_nav_route_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="@string/fragment_map_event_nav_cancel"
+            android:text="@string/start_navigation"
             android:textSize="25sp"
             android:textAlignment="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_nav_button" />
+
+        <Button
+            android:id="@+id/fragment_map_event_nav_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/nav_cancel"
+            android:textSize="25sp"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_nav_route_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
