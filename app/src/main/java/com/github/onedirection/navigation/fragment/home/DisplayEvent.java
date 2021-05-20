@@ -3,6 +3,7 @@ package com.github.onedirection.navigation.fragment.home;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -97,7 +98,7 @@ public class DisplayEvent extends AppCompatActivity {
         }
         if(HomeFragment.homeFragment.favorites.get(event.getId())){
             ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
-            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
 
@@ -135,24 +136,19 @@ public class DisplayEvent extends AppCompatActivity {
     }
 
     /** Called when the user taps the star button */
-    @SuppressLint("UseCompatLoadingForDrawables")
     public void buttonStarEvent(View view){
         Id id = event.getId();
 
         boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
         ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
         if(isFavorite){
-
             HomeFragment.homeFragment.favorites.replace(id, false);
             HomeFragment.homeFragment.updateModifiedEvent(id);
-            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
-
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
         }else{
-
             HomeFragment.homeFragment.favorites.replace(id, true);
             HomeFragment.homeFragment.updateModifiedEvent(id);
-            btn.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
-
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
 
@@ -161,7 +157,6 @@ public class DisplayEvent extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
-
         return super.onOptionsItemSelected(item);
     }
 

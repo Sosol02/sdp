@@ -42,23 +42,11 @@
         android:id="@+id/eventNameDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="37dp"
-        android:layout_marginEnd="195dp"
+        android:layout_marginTop="68dp"
+        android:textSize="32dp"
         android:text="@string/textview"
-        app:layout_constraintEnd_toStartOf="@+id/favorite_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionDisplay" />
-
-    <TextView
-        android:id="@+id/descriptionDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#000000"
-        android:text="@string/event_name"
-        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -76,8 +64,8 @@
 
     <Button
         android:id="@+id/buttonDisplayDelete"
-        android:layout_width="119dp"
-        android:layout_height="84dp"
+        android:layout_width="0dp"
+        android:layout_height="85dp"
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="144dp"
         android:onClick="buttonStartDeleteEvent"
