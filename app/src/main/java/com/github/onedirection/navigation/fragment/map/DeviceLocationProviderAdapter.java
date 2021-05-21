@@ -39,7 +39,9 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = androidLocationToMapquestLocation(locationResult.getLastLocation());
-                notifyListenersLocationChanged(location);
+                if (location != null) {
+                    notifyListenersLocationChanged(location);
+                }
             }
         });
         requestLocationUpdates();

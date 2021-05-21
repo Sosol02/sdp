@@ -1,5 +1,6 @@
 package com.github.onedirection.utils;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ import java.util.Objects;
  * @param <S> The first type
  * @param <T> The second type
  */
-public final class Pair<S, T> {
+public final class Pair<S, T> implements Serializable {
     public final S first;
     public final T second;
 

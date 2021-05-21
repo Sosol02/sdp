@@ -7,13 +7,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
 import com.github.onedirection.event.Event;
@@ -35,9 +38,11 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -62,10 +67,23 @@ public class MapFragment extends Fragment {
     private TextView event_time_start;
     private TextView event_time_end;
     private TextView event_location;
+    private Event currentEvent;
 
     private DeviceLocationProvider deviceLocationProvider;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
+
+    private Button navigationButton;
+    private Button navigationRouteButton;
+    private Button cancelButton;
+    private Optional<Event> navigationStart = Optional.empty();
+    private Optional<Event> navigationEnd = Optional.empty();
+
+    @VisibleForTesting
+    public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
+
+    @VisibleForTesting
+    public CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override
@@ -91,7 +109,6 @@ public class MapFragment extends Fragment {
                         }
                     }
                 });
-
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(mapboxMap -> {
@@ -119,7 +136,66 @@ public class MapFragment extends Fragment {
         event_time_end = view.findViewById(R.id.fragment_map_event_time_end);
         event_location = view.findViewById(R.id.fragment_map_event_location);
 
+        navigationButton = view.findViewById(R.id.fragment_map_event_nav_button);
+        navigationRouteButton = view.findViewById(R.id.fragment_map_event_nav_route_button);
+        cancelButton = view.findViewById(R.id.fragment_map_event_nav_cancel);
+        cancelNavigation();
+
+        navigationButton.setOnClickListener(but -> {
+            Log.d(LOG_TAG, "Navigation button pressed.");
+            cancelNavigation();
+            LatLng pos = myLocationSymbolManager.getPosition();
+            if (pos == null) {
+                Log.d(LOG_TAG, "Position is null...");
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+            waitForNavStart.increment();
+            routesManager.findRoute(
+                    Objects.requireNonNull(pos),
+                    Collections.singletonList(Objects.requireNonNull(currentEvent.getCoordinates().get().toLatLng())),
+                    new NavigationRouteResponseListener()
+            );
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        navigationRouteButton.setOnClickListener(but -> {
+            Log.d(LOG_TAG, "Nav button clicked: navigationStart: " + navigationStart + ", navigationEnd: " + navigationEnd);
+            if (navigationStart.isPresent()) {
+                Log.d(LOG_TAG, "Nav starting!");
+                navigationEnd = Optional.of(currentEvent);
+                waitForRoute.increment();
+                routesManager.findRoute(
+                        navigationStart.get().getCoordinates().get().toLatLng(),
+                        Collections.singletonList(navigationEnd.get().getCoordinates().get().toLatLng()),
+                        new DisplayRouteResponseListener()
+                );
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                cancelNavigation();
+            } else {
+                navigationStart = Optional.of(currentEvent);
+                cancelButton.setVisibility(View.VISIBLE);
+                navigationRouteButton.setText(R.string.set_end_point);
+                markerSymbolManager.setTripStartMarker(currentEvent.getCoordinates().get().toLatLng());
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        cancelButton.setOnClickListener(but -> cancelNavigation());
+
         return view;
+    }
+
+    private void cancelNavigation() {
+        Log.d(LOG_TAG, "Cancel navigation.");
+        navigationStart = Optional.empty();
+        navigationEnd = Optional.empty();
+        cancelButton.setVisibility(View.GONE);
+        navigationRouteButton.setText(R.string.set_starting_point);
+        if (markerSymbolManager != null) {
+            markerSymbolManager.removeTripStartMarker();
+        }
     }
 
     @Override
@@ -136,6 +212,7 @@ public class MapFragment extends Fragment {
     
     public void setBottomSheetEvent(Event event) {
         Objects.requireNonNull(event);
+        currentEvent = event;
         event_name.setText(event.getName());
         ZonedDateTime start = event.getStartTime();
         event_time_start.setText(String.format(Locale.getDefault(),
@@ -190,7 +267,7 @@ public class MapFragment extends Fragment {
     }
 
     private CompletableFuture<Boolean> requestLocationPermission() {
-        if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+        if (isVisible() && !DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             permissionRequestResult = new CompletableFuture<>();
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
@@ -256,13 +333,16 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
+            waitForRoute.decrement();
             if (list.size() > 0) {
                 routeDisplayManager.displayRoute(list.get(0));
             }
         }
 
         @Override
-        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
+        public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
+            waitForRoute.decrement();
+        }
 
         @Override
         public void onRequestMade() {}
@@ -273,6 +353,9 @@ public class MapFragment extends Fragment {
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
             if (list.size() > 0) {
+                if (waitForNavStart.isIdleNow()) {
+                    waitForNavStart.decrement();
+                }
                 navigationManager.startNavigation(list.get(0));
             }
         }
@@ -284,7 +367,6 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRequestMade() {
-
         }
     }
 }

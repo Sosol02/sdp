@@ -109,6 +109,7 @@ public class EventCreator extends DeviceLocationProviderActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+
         }
 
         Intent intent = getIntent();
