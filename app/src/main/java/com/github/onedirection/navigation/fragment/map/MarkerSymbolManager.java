@@ -50,7 +50,10 @@ public class MarkerSymbolManager {
     private final Map<Symbol, Event> eventMap = new HashMap<>();
     private final MapFragment fragment;
 
-    private final String SYMBOL_ID = "MARKER_MAP";
+    private Symbol tripStartMarker;
+
+    private final static String SYMBOL_ID = "MARKER_MAP";
+    private final static String TRIP_ORIGIIN_ID = "MARKER_TRIP_ORIGIN";
 
     public MarkerSymbolManager(Context context, MapView mapView, MapboxMap mapboxMap, Style style, MapFragment fragment) {
         Objects.requireNonNull(fragment);
@@ -77,10 +80,28 @@ public class MarkerSymbolManager {
                 .withLatLng(position)
                 .withIconImage(SYMBOL_ID)
                 .withIconSize(2f)
-                );
+        );
         Log.d(LOG_TAG, "Finished adding marker at LatLng: "  + position.toString());
         markers.add(marker);
         return marker;
+    }
+
+    public Symbol setTripStartMarker(LatLng position) {
+        Log.d(LOG_TAG, "setTripStartMarker");
+        removeTripStartMarker();
+        tripStartMarker = symbolManager.create(new SymbolOptions()
+                .withLatLng(position)
+                .withIconImage(TRIP_ORIGIIN_ID)
+                .withIconSize(1f)
+        );
+        return tripStartMarker;
+    }
+
+    public void removeTripStartMarker() {
+        Log.d(LOG_TAG, "removeTripStartMarker");
+        if (tripStartMarker != null) {
+            symbolManager.delete(tripStartMarker);
+        }
     }
 
     public CompletableFuture<Pair<Symbol, LatLng>> addGeocodedEventMarker(@NonNull Event event) {
@@ -143,6 +164,8 @@ public class MarkerSymbolManager {
     private void initializeSymbolImage(Context context, Style style) {
         Drawable marker = ContextCompat.getDrawable(context, R.drawable.ic_marker_map);
         style.addImage(SYMBOL_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(marker)));
+        Drawable markerTripOrigin = ContextCompat.getDrawable(context, R.drawable.ic_baseline_trip_origin_24);
+        style.addImage(TRIP_ORIGIIN_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(markerTripOrigin)));
     }
 
     public List<Symbol> getAllMarkers() {
