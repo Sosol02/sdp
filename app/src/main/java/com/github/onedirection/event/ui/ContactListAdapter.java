@@ -49,8 +49,8 @@ public class ContactListAdapter extends ArrayAdapter {
             convertView = layoutInflater.inflate(R.layout.single_contact_view, parent, false);
         }
 
-        Button deleteContact = (Button) convertView.findViewById(R.id.contactDeleteButton);
-        TextView emailView = (TextView) convertView.findViewById(R.id.contactEmailView);
+        Button deleteContact = convertView.findViewById(R.id.contactDeleteButton);
+        TextView emailView = convertView.findViewById(R.id.contactEmailView);
         emailView.setText(contacts.getValue().get(position));
 
         deleteContact.setOnClickListener(v -> {

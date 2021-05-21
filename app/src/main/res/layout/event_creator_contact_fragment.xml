@@ -9,7 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="100dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+        tools:ignore="UselessParent">
 
     <LinearLayout
         android:id="@+id/contact_email_adder"
@@ -29,7 +30,8 @@
             android:maxLines="1"
             android:scrollHorizontally="true"
             android:inputType="text"
-            android:hint="@string/example_email" />
+            android:hint="@string/example_email"
+            tools:ignore="Autofill" />
 
         <Button
             android:id="@+id/addContactButton"
