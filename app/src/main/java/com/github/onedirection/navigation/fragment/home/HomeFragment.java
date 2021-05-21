@@ -50,13 +50,17 @@ import androidx.appcompat.app.ActionBar;
 
 public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNoteListener{
 
-    RecyclerView eventList;
-    EventViewerAdapter eventViewerAdapter;
+    private RecyclerView eventList;
+    private EventViewerAdapter eventViewerAdapter;
     List<Event> events = new ArrayList<Event>();
     Map<Id,Boolean> favorites = new HashMap<>();
     public static HomeFragment homeFragment;
+    private EventViewerAdapter.OnNoteListener onNoteListener;
+    private boolean isOnFavoriteView = false;
+    private boolean isOnOrderedView = false;
+    private List<Event> favoritesEvents;
+    private List<Event> orderedEvents;
 
-    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState){
@@ -82,16 +86,16 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         });
 
         homeFragment = this;
+        onNoteListener = this;
 
+        FloatingActionButton fabAdd = (FloatingActionButton) root.findViewById(R.id.fab);
+        fabAdd.setOnClickListener(fabAdd());
 
-        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(root.getContext(), EventCreator.class);
-                startActivity(intent);
-            }
-        });
+        FloatingActionButton fabFavorite = (FloatingActionButton) root.findViewById(R.id.fabFavorite);
+        fabFavorite.setOnClickListener(fabFavorite());
+
+        FloatingActionButton fabOrder = (FloatingActionButton) root.findViewById(R.id.fabOrder);
+        fabOrder.setOnClickListener(fabSortTime());
 
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
 
@@ -194,5 +198,78 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         startActivity(intent);
     }
 
+    public View.OnClickListener fabAdd(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), EventCreator.class);
+                startActivity(intent);
+            }
+        };
+    }
 
+    public View.OnClickListener fabFavorite(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isOnFavoriteView) {
+                    List<Event> listFavorites = new ArrayList<>();
+                    if(isOnOrderedView){
+                        for (Event e : orderedEvents) {
+                            if (favorites.get(e.getId())) listFavorites.add(e);
+                        }
+                    }else{
+                        for (Event e : events) {
+                            if (favorites.get(e.getId())) listFavorites.add(e);
+                        }
+                    }
+                    eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
+                    isOnFavoriteView = true;
+                    favoritesEvents = listFavorites;
+                }else{
+                    if(isOnOrderedView){
+                        eventList.setAdapter(new EventViewerAdapter(orderedEvents, onNoteListener));
+                    }else {
+                        eventList.setAdapter(new EventViewerAdapter(events, onNoteListener));
+                    }
+                    isOnFavoriteView = false;
+                }
+            }
+        };
+    }
+
+    public View.OnClickListener fabSortTime(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!isOnOrderedView) {
+                    List<Event> listOrdered = new ArrayList<>();
+                    if(isOnFavoriteView){
+                        for (Event event : favoritesEvents) {
+                            listOrdered.add(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence()));
+                        }
+                    }else{
+                        for (Event event : events) {
+                            listOrdered.add(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence()));
+                        }
+                    }
+                    listOrdered.sort((l, r) -> {
+                        if (l.equals(r)) return 0;
+                        return l.getStartTime().isBefore(r.getStartTime()) ? -1 : 1;
+                    });
+                    eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
+                    isOnOrderedView = true;
+                    orderedEvents = listOrdered;
+                }else{
+                    if(isOnFavoriteView){
+                        eventList.setAdapter(new EventViewerAdapter(favoritesEvents, onNoteListener));
+                    }else{
+                        eventList.setAdapter(new EventViewerAdapter(events, onNoteListener));
+                    }
+                    isOnOrderedView = false;
+                }
+            };
+        };
+    }
 }
