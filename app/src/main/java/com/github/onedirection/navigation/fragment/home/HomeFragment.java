@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     private List<Event> favoritesEvents;
     private List<Event> orderedEvents;
 
+    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState){
