@@ -3,11 +3,14 @@ package com.github.onedirection.navigation.fragment.home;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
@@ -81,7 +84,7 @@ public class DisplayEvent extends AppCompatActivity {
         name.setText(event.getName());
         TextView location = this.findViewById(R.id.eventNameLocation);
         if(event.getLocationName().equals("")){
-            location.setText("No location specified");
+            location.setText(R.string.no_loc);
         }else {
             location.setText(event.getLocationName());
         }
@@ -89,6 +92,14 @@ public class DisplayEvent extends AppCompatActivity {
         startTime.setText(event.getStartTime().format(formatter));
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
         endTime.setText(event.getEndTime().format(formatter));
+
+        if(!HomeFragment.homeFragment.favorites.containsKey(event.getId())){
+            HomeFragment.homeFragment.favorites.put(event.getId(),false);
+        }
+        if(HomeFragment.homeFragment.favorites.get(event.getId())){
+            ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
+        }
     }
 
     /** Called when the user taps the Edit button */
@@ -96,6 +107,7 @@ public class DisplayEvent extends AppCompatActivity {
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
+        super.onBackPressed();
         ZonedDateTime date = ZonedDateTime.now();
 
         CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
@@ -123,13 +135,30 @@ public class DisplayEvent extends AppCompatActivity {
               }));
     }
 
+    /** Called when the user taps the star button */
+    public void buttonStarEvent(View view){
+        Id id = event.getId();
+
+        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
+        ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+        if(isFavorite){
+            HomeFragment.homeFragment.favorites.replace(id, false);
+            HomeFragment.homeFragment.updateModifiedEvent(id);
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
+        }else{
+            HomeFragment.homeFragment.favorites.replace(id, true);
+            HomeFragment.homeFragment.updateModifiedEvent(id);
+            btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
-
         return super.onOptionsItemSelected(item);
     }
+
+
 }
