@@ -1,4 +1,4 @@
-package com.github.onedirection.navigation;
+package com.github.onedirection.navigation.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

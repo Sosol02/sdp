@@ -24,7 +24,7 @@ import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.model.NamedCoordinates;
-import com.github.onedirection.navigation.NavigationActivity;
+import com.github.onedirection.navigation.activity.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.DeviceLocationProviderAdapter;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.navigation.fragment.map.MarkerSymbolManager;

@@ -14,6 +14,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
+import com.github.onedirection.navigation.activity.NavigationActivity;
 import com.github.onedirection.navigation.fragment.calendar.CalendarFragment;
 
 import org.hamcrest.Description;
