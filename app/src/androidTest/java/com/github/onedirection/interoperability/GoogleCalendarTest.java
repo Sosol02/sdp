@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.event.model.Recurrence;
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
 import com.github.onedirection.interoperability.gcalendar.GoogleCalendar;
 import com.github.onedirection.utils.Id;

@@ -6,7 +6,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.utils.Cache;
+import com.github.onedirection.cache.Cache;
 import com.github.onedirection.utils.Id;
 
 import java.util.ArrayList;

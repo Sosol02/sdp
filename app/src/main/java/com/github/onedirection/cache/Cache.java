@@ -1,4 +1,7 @@
-package com.github.onedirection.utils;
+package com.github.onedirection.cache;
+
+import com.github.onedirection.utils.Monads;
+import com.github.onedirection.utils.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;

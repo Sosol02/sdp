@@ -14,7 +14,7 @@ import androidx.test.rule.ActivityTestRule;
 import com.github.onedirection.R;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.navigation.fragment.home.DisplayEvent;
 import com.github.onedirection.utils.Id;
 

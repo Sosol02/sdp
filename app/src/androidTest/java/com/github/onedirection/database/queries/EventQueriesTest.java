@@ -7,7 +7,7 @@ import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 

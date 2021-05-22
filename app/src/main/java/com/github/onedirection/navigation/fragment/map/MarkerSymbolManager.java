@@ -13,7 +13,7 @@ import com.github.onedirection.database.database.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.geocoding.GeocodingService;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.Pair;

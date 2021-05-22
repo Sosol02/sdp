@@ -1,4 +1,4 @@
-package com.github.onedirection.utils;
+package com.github.onedirection.cache;
 
 import android.content.Context;
 

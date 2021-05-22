@@ -5,7 +5,7 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;

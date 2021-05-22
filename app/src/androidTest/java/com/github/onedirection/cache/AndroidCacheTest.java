@@ -1,10 +1,13 @@
-package com.github.onedirection.utils;
+package com.github.onedirection.cache;
 
 
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.onedirection.cache.AndroidCache;
+import com.github.onedirection.cache.Cache;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
