@@ -15,7 +15,7 @@
         android:theme="@style/Theme.1Direction">
         <activity android:name=".navigation.fragment.home.DisplayEvent"></activity>
         <activity
-            android:name=".navigation.activity.NavigationActivity"
+            android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.1Direction.NoActionBar">
             <intent-filter>
@@ -27,7 +27,7 @@
 
         </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
 
-        <activity android:name=".event.ui.EventCreator" />
+        <activity android:name=".event.creator.EventCreator" />
 
         <receiver android:name=".notification.NotificationPublisher" />
 

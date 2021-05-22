@@ -1,4 +1,4 @@
-package com.github.onedirection.navigation.activity;
+package com.github.onedirection.navigation;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,7 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.github.onedirection.R;
 import com.github.onedirection.authentication.service.FirebaseAuthentication;
 import com.github.onedirection.event.model.Event;
-import com.github.onedirection.event.ui.EventCreator;
+import com.github.onedirection.event.creator.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
