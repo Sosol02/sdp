@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import com.github.onedirection.R;
 
-import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 
