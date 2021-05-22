@@ -13,19 +13,49 @@
         android:orientation="vertical"
         tools:ignore="UselessParent">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            app:srcCompat="@mipmap/ic_launcher_round"
+            android:contentDescription="@string/nav_header_desc" />
+
+        <TextView
+            android:id="@+id/nav_header_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:text="@string/nav_header_username"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/col_on_secondary"
+            android:textStyle="bold"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_your_calendar"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAlignment="center"
+            android:paddingBottom="@dimen/nav_header_vertical_spacing"
+            android:textColor="@color/col_on_secondary"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/buttonGCalendarExport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/export_to_google_calendar" />
+            android:text="@string/export_to_google_calendar"
+            app:cornerRadius="50dp" />
     </LinearLayout>
 
 </FrameLayout>
