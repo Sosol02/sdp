@@ -49,8 +49,8 @@ public class GoogleCalendarTest {
         Id id = Id.generateRandom();
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, "EVENT", "LOCATION", startTime, endTime);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, "EVENT", "LOCATION", startTime, endTime);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
 
@@ -65,8 +65,8 @@ public class GoogleCalendarTest {
         String locName = "LOCATION";
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, new Coordinates(0, 0), startTime, endTime);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, new Coordinates(0, 0), startTime, endTime);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
 
@@ -83,8 +83,8 @@ public class GoogleCalendarTest {
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
         Recurrence r = new Recurrence(id, ChronoUnit.WEEKS.getDuration(), startTime.plusWeeks(3));
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, startTime, endTime, r);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, startTime, endTime, r);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
         String[] recurrence = gcEvent.getRecurrence().get(0).split(";");
@@ -102,11 +102,11 @@ public class GoogleCalendarTest {
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
         Recurrence r = new Recurrence(id, ChronoUnit.WEEKS.getDuration(), startTime.plusWeeks(3));
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, startTime, endTime, r);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, startTime, endTime, r);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
-        com.github.onedirection.event.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
+        com.github.onedirection.event.model.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
 
         assertEquals(event.getId(), event.getRecurrence().get().getGroupId());
         assertEquals(name, event.getName());
