@@ -68,11 +68,17 @@ public final class GoogleCalendar {
     private GoogleCalendar() {
     }
 
+    /** Remove '-' from Id, as they are not allowed by GCalendar: https://developers.google.com/calendar/v3/reference/events/insert */
+    private static String fromId(Id id){
+        return id.getUuid().replace("-", "");
+    }
+
     private static Id toId(String str) {
         if (str.length() != Id.LENGTH - Id.SEP_COUNT) {
             throw new IllegalArgumentException("Invalid string for id: " + str);
         }
 
+        // Put back the '-'; not in the cleanest way tho
         String result = new StringJoiner("-")
                 .add(str.substring(0, 8))
                 .add(str.substring(8, 12))
@@ -80,10 +86,6 @@ public final class GoogleCalendar {
                 .add(str.substring(16, 20))
                 .add(str.substring(20))
                 .toString();
-
-        if (BuildConfig.DEBUG && result.length() != Id.LENGTH) {
-            throw new AssertionError("Assertion failed");
-        }
 
         return new Id(UUID.fromString(result));
     }
@@ -102,7 +104,7 @@ public final class GoogleCalendar {
 
         com.google.api.services.calendar.model.Event gcEvent = new com.google.api.services.calendar.model.Event()
                 .setSummary(event.getName())
-                .setId(event.getId().getUuid().replace("-", ""));
+                .setId(fromId(event.getId()));
 
         if (event.isRecurrent()) {
             Recurrence recurrence = event.getRecurrence().get();
@@ -127,10 +129,7 @@ public final class GoogleCalendar {
             gcEvent.setRecurrence(Arrays.asList(recurr));
         }
 
-        // TODO: support feature
-//        if(event.getLocation().isPresent()) {
-//            gcEvent.setLocation(event.getLocationName());
-//        }
+        // TODO: feature - geolocate event back
         gcEvent.setLocation(event.getLocationName());
 
         DateTime startDateTime = new DateTime(event.getStartTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
@@ -157,6 +156,8 @@ public final class GoogleCalendar {
      *
      * @param event (com.google.api.services.calendar.model.Event) : The Google Calendar Event to convert into an Event
      * @return (Event) : a new Event
+     *
+     * TODO: return multiple events if recurrent
      */
     public static Event fromGCalendarEvents(com.google.api.services.calendar.model.Event event) {
         Objects.requireNonNull(event);

@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasLength;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -94,6 +96,18 @@ public class GoogleCalendarTest {
         com.github.onedirection.event.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
 
         assertEquals(GEO_EVENT, event);
+    }
+
+    @Ignore("Missing feature")
+    @Test
+    public void conversionBijectionRecurrence() {
+        Id id = Id.generateRandom();
+        Recurrence rec = new Recurrence(id, Duration.ofDays(1), ZonedDateTime.now().plusDays(3));
+        com.github.onedirection.event.Event recRoot =
+                new com.github.onedirection.event.Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+
+        Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(recRoot));
+        //assertThat(e, hasSize(3));
     }
 
     @Test
