@@ -1,16 +1,17 @@
-package com.github.onedirection;
+package com.github.onedirection.authentication.service;
 
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.authentication.AuthenticationService;
+import com.github.onedirection.R;
+import com.github.onedirection.authentication.service.AuthenticationService;
 import com.github.onedirection.authentication.exceptions.FailedLoginException;
 import com.github.onedirection.authentication.exceptions.FailedRegistrationException;
-import com.github.onedirection.authentication.FirebaseAuthentication;
+import com.github.onedirection.authentication.service.FirebaseAuthentication;
 import com.github.onedirection.authentication.exceptions.NoUserLoggedInException;
-import com.github.onedirection.authentication.User;
+import com.github.onedirection.authentication.service.User;
 
 import org.junit.Before;
 import org.junit.Test;

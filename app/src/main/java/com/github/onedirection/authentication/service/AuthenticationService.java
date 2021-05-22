@@ -1,4 +1,4 @@
-package com.github.onedirection.authentication;
+package com.github.onedirection.authentication.service;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

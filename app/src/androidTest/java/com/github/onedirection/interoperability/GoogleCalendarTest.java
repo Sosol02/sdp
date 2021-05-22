@@ -1,18 +1,15 @@
 package com.github.onedirection.interoperability;
 
-import android.util.Log;
-
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
 import com.github.onedirection.interoperability.gcalendar.GoogleCalendar;
 import com.github.onedirection.utils.Id;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 
 import org.junit.Test;
@@ -20,8 +17,6 @@ import org.junit.runner.RunWith;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;

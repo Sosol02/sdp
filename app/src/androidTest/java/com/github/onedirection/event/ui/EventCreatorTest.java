@@ -2,7 +2,6 @@ package com.github.onedirection.event.ui;
 
 
 import android.content.Intent;
-import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -17,10 +16,8 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.event.ui.EventCreator;
-import com.github.onedirection.event.ui.MainFragment;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
@@ -28,7 +25,6 @@ import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.ObserverPattern;
 import com.github.onedirection.utils.Pair;
 
-import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

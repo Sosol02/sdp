@@ -1,10 +1,10 @@
 package com.github.onedirection.database.database;
 
-import com.github.onedirection.database.Item;
+import com.github.onedirection.database.store.Item;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Before;

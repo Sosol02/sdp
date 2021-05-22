@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.User;
+import com.github.onedirection.authentication.service.User;
 import com.google.android.material.navigation.NavigationView;
 
 public class SignFragment extends Fragment {

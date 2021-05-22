@@ -21,7 +21,7 @@ import com.github.onedirection.database.database.ConcreteDatabase;
 import com.github.onedirection.database.database.Database;
 import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.Coordinates;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;

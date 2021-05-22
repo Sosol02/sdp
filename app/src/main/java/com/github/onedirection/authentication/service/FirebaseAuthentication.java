@@ -1,4 +1,4 @@
-package com.github.onedirection.authentication;
+package com.github.onedirection.authentication.service;
 
 import android.util.Log;
 

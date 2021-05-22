@@ -1,8 +1,8 @@
 package com.github.onedirection.database.database;
 
-import com.github.onedirection.EventQueriesTest;
+import com.github.onedirection.database.queries.EventQueriesTest;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.utils.Id;
 
 import java.time.ZonedDateTime;

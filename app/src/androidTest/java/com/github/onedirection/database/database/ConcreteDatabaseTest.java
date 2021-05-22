@@ -3,7 +3,7 @@ package com.github.onedirection.database.database;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.utils.Id;
 

@@ -1,8 +1,6 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.store;
 
 import com.github.onedirection.utils.Id;
-import com.github.onedirection.database.store.Storable;
-import com.github.onedirection.database.store.Storer;
 
 import java.util.Objects;
 

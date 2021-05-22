@@ -1,4 +1,4 @@
-package com.github.onedirection.event;
+package com.github.onedirection.event.model;
 
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;

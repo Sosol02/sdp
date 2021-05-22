@@ -1,16 +1,15 @@
-package com.github.onedirection;
+package com.github.onedirection.database.queries;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.database.database.ConcreteDatabase;
 import com.github.onedirection.database.database.DefaultDatabase;
-import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.utils.Id;
+import com.github.onedirection.utils.TimeUtils;
 
 import org.junit.Before;
 import org.junit.Test;

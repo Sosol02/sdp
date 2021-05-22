@@ -17,7 +17,7 @@ import com.github.onedirection.database.database.Database;
 import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.database.ObservableDatabase;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.R;
 
 import java.time.ZonedDateTime;

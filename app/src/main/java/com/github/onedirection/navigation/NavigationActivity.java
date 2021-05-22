@@ -17,8 +17,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.authentication.service.FirebaseAuthentication;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 

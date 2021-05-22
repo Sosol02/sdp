@@ -15,8 +15,8 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.geolocation.NamedCoordinates;
 import com.github.onedirection.navigation.fragment.home.DisplayEvent;
 import com.github.onedirection.utils.Id;
