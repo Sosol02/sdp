@@ -3,44 +3,34 @@ package com.github.onedirection.navigation.fragment.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
-import com.github.onedirection.navigation.fragment.calendar.DayEventsListView;
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import androidx.appcompat.app.ActionBar;
 
 
 /**

@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -14,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.database.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.event.ui.EventCreator;
@@ -22,7 +21,6 @@ import com.github.onedirection.utils.Id;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 

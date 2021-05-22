@@ -13,7 +13,7 @@ import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.database.Database;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 

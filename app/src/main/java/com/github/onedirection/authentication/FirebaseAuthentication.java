@@ -2,6 +2,9 @@ package com.github.onedirection.authentication;
 
 import android.util.Log;
 
+import com.github.onedirection.authentication.exceptions.FailedLoginException;
+import com.github.onedirection.authentication.exceptions.FailedRegistrationException;
+import com.github.onedirection.authentication.exceptions.NoUserLoggedInException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;

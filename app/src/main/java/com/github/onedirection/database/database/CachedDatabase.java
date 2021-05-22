@@ -1,4 +1,4 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.database;
 
 import android.util.Log;
 

@@ -17,9 +17,9 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.database.ConcreteDatabase;
+import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.geolocation.Coordinates;
@@ -45,10 +45,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
-import com.mapquest.navigation.listener.RerouteBehaviorOverride;
 import com.mapquest.navigation.model.Route;
 import com.mapquest.navigation.model.RouteStoppedReason;
-import com.mapquest.navigation.model.location.Coordinate;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,7 +67,6 @@ import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;

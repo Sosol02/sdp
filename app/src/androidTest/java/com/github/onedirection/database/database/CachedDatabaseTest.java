@@ -1,5 +1,6 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.database;
 
+import com.github.onedirection.database.Item;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;

@@ -6,14 +6,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.database.ConcreteDatabase;
+import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Event;
 import com.github.onedirection.navigation.NavigationActivity;
-import com.github.onedirection.testhelpers.WaitAction;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Before;
@@ -27,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import static androidx.test.espresso.Espresso.*;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 

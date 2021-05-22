@@ -52,7 +52,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class favoriteAndSwipeEventTest {
+public class FavoriteAndSwipeEventTest {
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";

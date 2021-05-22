@@ -1,4 +1,4 @@
-package com.github.onedirection.database;
+package com.github.onedirection.database.database;
 
 import com.github.onedirection.EventQueriesTest;
 import com.github.onedirection.database.store.EventStorer;

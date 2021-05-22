@@ -1,4 +1,4 @@
-package com.github.onedirection.authentication;
+package com.github.onedirection.authentication.exceptions;
 
 /**
  * Represents a failed login attempt, due to

@@ -6,10 +6,10 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.authentication.AuthenticationService;
-import com.github.onedirection.authentication.FailedLoginException;
-import com.github.onedirection.authentication.FailedRegistrationException;
+import com.github.onedirection.authentication.exceptions.FailedLoginException;
+import com.github.onedirection.authentication.exceptions.FailedRegistrationException;
 import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.authentication.NoUserLoggedInException;
+import com.github.onedirection.authentication.exceptions.NoUserLoggedInException;
 import com.github.onedirection.authentication.User;
 
 import org.junit.Before;

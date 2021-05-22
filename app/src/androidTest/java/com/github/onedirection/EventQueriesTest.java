@@ -2,8 +2,8 @@ package com.github.onedirection;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.database.ConcreteDatabase;
+import com.github.onedirection.database.database.DefaultDatabase;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.Recurrence;

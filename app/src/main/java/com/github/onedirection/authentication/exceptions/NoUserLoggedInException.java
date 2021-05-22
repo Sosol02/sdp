@@ -1,4 +1,4 @@
-package com.github.onedirection.authentication;
+package com.github.onedirection.authentication.exceptions;
 
 /**
  * Used when an operation require a user logged in, and
