@@ -48,6 +48,7 @@ public class GoogleCalendarTest {
 
         Intents.release();
     }
+<<<<<<< HEAD
 
     @Test
     public void toGCalendarEventConvertsStartEndProperly() {
@@ -121,4 +122,6 @@ public class GoogleCalendarTest {
         assertEquals(ChronoUnit.WEEKS.getDuration(), event.getRecurrence().get().getPeriod());
         assertEquals(startTime.plusWeeks(3), event.getRecurrence().get().getEndTime());
     }
+=======
+>>>>>>> d3ddd31... Fix IDing and recurrence handling in GCalendar export
 }
