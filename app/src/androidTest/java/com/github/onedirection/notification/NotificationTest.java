@@ -6,9 +6,9 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.onedirection.database.database.ConcreteDatabase;
-import com.github.onedirection.database.database.Database;
-import com.github.onedirection.database.database.DefaultDatabase;
+import com.github.onedirection.database.implementation.ConcreteDatabase;
+import com.github.onedirection.database.implementation.Database;
+import com.github.onedirection.database.implementation.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.navigation.NavigationActivity;

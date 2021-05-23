@@ -10,10 +10,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.model.Event;
-import com.github.onedirection.event.ui.EventCreator;
+import com.github.onedirection.event.creator.EventCreator;
 import com.github.onedirection.utils.Id;
 
 import java.time.format.DateTimeFormatter;

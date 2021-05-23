@@ -1,6 +1,6 @@
 package com.github.onedirection.database.queries;
 
-import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;

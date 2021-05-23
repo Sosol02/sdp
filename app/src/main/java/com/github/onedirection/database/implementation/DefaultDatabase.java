@@ -1,4 +1,4 @@
-package com.github.onedirection.database.database;
+package com.github.onedirection.database.implementation;
 
 import androidx.annotation.VisibleForTesting;
 

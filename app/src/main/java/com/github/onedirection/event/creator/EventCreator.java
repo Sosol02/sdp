@@ -1,4 +1,4 @@
-package com.github.onedirection.event.ui;
+package com.github.onedirection.event.creator;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import androidx.test.espresso.IdlingResource;
 
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.R;
-import com.github.onedirection.database.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.location.DeviceLocationProviderActivity;
 

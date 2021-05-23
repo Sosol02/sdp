@@ -1,4 +1,4 @@
-package com.github.onedirection.database.database;
+package com.github.onedirection.database.implementation;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
