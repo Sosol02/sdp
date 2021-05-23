@@ -30,7 +30,7 @@ public class SignViewModel extends ViewModel {
                     .exceptionally(error -> {userResult.setValue(null); return null; });
         } else {
             auth.loginUser(username, password).thenAccept(userResult::setValue)
-                    .exceptionally(error -> {userResult.setValue(null); return null; });;
+                    .exceptionally(error -> {userResult.setValue(null); return null; });
         }
     }
 

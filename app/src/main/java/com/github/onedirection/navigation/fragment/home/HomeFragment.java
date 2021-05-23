@@ -64,12 +64,12 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
         ZonedDateTime date = ZonedDateTime.now();
 
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
 
         View root = inflater.inflate(R.layout.event_viewer, container, false);
 
         eventViewerAdapter = new EventViewerAdapter(events, this);
-        eventList = (RecyclerView) root.findViewById(R.id.recyclerEventView);
+        eventList = root.findViewById(R.id.recyclerEventView);
         eventList.setAdapter(eventViewerAdapter);
         eventList.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         homeFragment = this;
 
 
-        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
+        FloatingActionButton fab = root.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +93,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             }
         });
 
-        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
+        Toolbar toolbar = root.findViewById(R.id.toolbar);
 
         return root;
     }
@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    };
+    }
 
     public void updateResults(List<Event> events){
         this.events = events;
@@ -116,7 +116,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     public void updateResultsWithCallToDb(){
         ZonedDateTime date = ZonedDateTime.now();
 
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
             eventList.setAdapter(new EventViewerAdapter(events, this));
@@ -141,7 +141,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         super.onResume();
         ZonedDateTime date = ZonedDateTime.now();
 
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
+        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
             eventList.setAdapter(new EventViewerAdapter(events, this));

@@ -247,7 +247,7 @@ public class MapFragmentTest {
 
         // Wait acton to make getMarkerSymbolManager work.
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
-        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);;
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
         markerSymbolManager.syncEventsWithDb().join();
 
         Semaphore waitForBsbCollapsed = new Semaphore(0);

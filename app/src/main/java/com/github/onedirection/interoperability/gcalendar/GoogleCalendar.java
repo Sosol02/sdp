@@ -152,7 +152,7 @@ public final class GoogleCalendar {
 
             for(String rule : recurrences) {
                 //Refer to https://developers.google.com/calendar/create-events to see how to retrieve recurrence
-                if(rule.substring(0, 5).equals("RRULE")) {
+                if(rule.startsWith("RRULE")) {
                     if(rule_found && !rule.equals(ruleFoundString)) {
                         throw new IllegalArgumentException("There are two different matching rule formats for the recurrence.");
                     }

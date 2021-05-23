@@ -23,7 +23,7 @@ import java.util.List;
 
 public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.ViewHolder> {
 
-    private OnNoteListener mOnNoteListener;
+    private final OnNoteListener mOnNoteListener;
     private final Event[] events;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnLongClickListener {

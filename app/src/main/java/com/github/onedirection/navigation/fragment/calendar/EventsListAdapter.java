@@ -57,13 +57,13 @@ public class EventsListAdapter extends ArrayAdapter {
         if(convertView == null){
             convertView = layoutInflater.inflate(R.layout.event_view_in_list, parent, false);
         }
-        TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
-        TextView eventDate = (TextView) convertView.findViewById(R.id.eventDate);
-        TextView eventStartTime = (TextView) convertView.findViewById(R.id.eventStartTime);
-        TextView eventEndTime = (TextView) convertView.findViewById(R.id.eventEndTime);
-        TextView eventLocation = (TextView) convertView.findViewById(R.id.eventLocation);
-        Button eventEditButton = (Button) convertView.findViewById(R.id.eventEditButton);
-        Button eventDeleteButton = (Button) convertView.findViewById(R.id.eventDeleteButton);
+        TextView eventName = convertView.findViewById(R.id.eventName);
+        TextView eventDate = convertView.findViewById(R.id.eventDate);
+        TextView eventStartTime = convertView.findViewById(R.id.eventStartTime);
+        TextView eventEndTime = convertView.findViewById(R.id.eventEndTime);
+        TextView eventLocation = convertView.findViewById(R.id.eventLocation);
+        Button eventEditButton = convertView.findViewById(R.id.eventEditButton);
+        Button eventDeleteButton = convertView.findViewById(R.id.eventDeleteButton);
 
 
         Event event = events.get(position);

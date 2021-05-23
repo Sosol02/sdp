@@ -104,7 +104,7 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
         this.validate = getView().findViewById(R.id.buttonSetGeolocation);
 
         // Setup recycler view
-        this.locationList = (RecyclerView) getView().findViewById(R.id.locationMatchesList);
+        this.locationList = getView().findViewById(R.id.locationMatchesList);
         this.locationList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
