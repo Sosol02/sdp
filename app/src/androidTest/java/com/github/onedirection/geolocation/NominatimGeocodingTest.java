@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.onedirection.geolocation.geocoding.NominatimGeocoding;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Monads;
 
 import org.junit.Test;

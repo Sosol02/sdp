@@ -4,15 +4,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Monads;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import kotlin.reflect.KCallable;
 
 /**
  * General interface implemented by all geocoding services.

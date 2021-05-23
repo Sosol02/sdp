@@ -1,18 +1,15 @@
 package com.github.onedirection.interoperability;
 
-import android.util.Log;
-
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.event.model.Recurrence;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
 import com.github.onedirection.interoperability.gcalendar.GoogleCalendar;
 import com.github.onedirection.utils.Id;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 
 import org.junit.Test;
@@ -20,8 +17,6 @@ import org.junit.runner.RunWith;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -54,8 +49,8 @@ public class GoogleCalendarTest {
         Id id = Id.generateRandom();
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, "EVENT", "LOCATION", startTime, endTime);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, "EVENT", "LOCATION", startTime, endTime);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
 
@@ -70,8 +65,8 @@ public class GoogleCalendarTest {
         String locName = "LOCATION";
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, new Coordinates(0, 0), startTime, endTime);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, new Coordinates(0, 0), startTime, endTime);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
 
@@ -88,8 +83,8 @@ public class GoogleCalendarTest {
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
         Recurrence r = new Recurrence(id, ChronoUnit.WEEKS.getDuration(), startTime.plusWeeks(3));
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, startTime, endTime, r);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, startTime, endTime, r);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
         String[] recurrence = gcEvent.getRecurrence().get(0).split(";");
@@ -107,11 +102,11 @@ public class GoogleCalendarTest {
         ZonedDateTime startTime = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         ZonedDateTime endTime = startTime.plusHours(1);
         Recurrence r = new Recurrence(id, ChronoUnit.WEEKS.getDuration(), startTime.plusWeeks(3));
-        com.github.onedirection.event.Event e =
-                new com.github.onedirection.event.Event(id, name, locName, startTime, endTime, r);
+        com.github.onedirection.event.model.Event e =
+                new com.github.onedirection.event.model.Event(id, name, locName, startTime, endTime, r);
 
         Event gcEvent = GoogleCalendar.toGCalendarEvents(e);
-        com.github.onedirection.event.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
+        com.github.onedirection.event.model.Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
 
         assertEquals(event.getId(), event.getRecurrence().get().getGroupId());
         assertEquals(name, event.getName());
