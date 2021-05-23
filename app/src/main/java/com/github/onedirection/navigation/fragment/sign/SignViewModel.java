@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.AuthenticationService;
-import com.github.onedirection.authentication.User;
+import com.github.onedirection.authentication.service.AuthenticationService;
+import com.github.onedirection.authentication.service.User;
 
 public class SignViewModel extends ViewModel {
 

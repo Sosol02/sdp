@@ -1,6 +1,5 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -11,9 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 
