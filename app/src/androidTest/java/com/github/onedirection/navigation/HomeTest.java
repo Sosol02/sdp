@@ -13,7 +13,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import com.github.onedirection.R;
-import com.github.onedirection.navigation.activity.NavigationActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
