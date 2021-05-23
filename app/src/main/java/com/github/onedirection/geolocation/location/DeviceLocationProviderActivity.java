@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 

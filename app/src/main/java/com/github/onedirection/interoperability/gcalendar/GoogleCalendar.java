@@ -8,8 +8,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.TimeUtils;
