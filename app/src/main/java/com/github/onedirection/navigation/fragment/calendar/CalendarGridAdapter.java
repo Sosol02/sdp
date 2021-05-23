@@ -99,15 +99,11 @@ public class CalendarGridAdapter extends ArrayAdapter {
     }
 
     @Override
-    public int getPosition(@Nullable Object item) {
-        return dates.indexOf(item);
-    }
-
-    @Nullable
-    @Override
     public Object getItem(int position) {
         return dates.get(position);
     }
+
+
 }
 
 
