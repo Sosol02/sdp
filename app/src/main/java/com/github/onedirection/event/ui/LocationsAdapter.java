@@ -1,4 +1,4 @@
-package com.github.onedirection.event.creator;
+package com.github.onedirection.event.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
