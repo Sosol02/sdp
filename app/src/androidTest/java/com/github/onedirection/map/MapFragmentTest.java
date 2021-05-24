@@ -117,7 +117,7 @@ public class MapFragmentTest {
     };
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    public final ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Rule
     public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(

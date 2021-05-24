@@ -78,10 +78,10 @@ public class MapFragment extends Fragment {
     private Optional<Event> navigationEnd = Optional.empty();
 
     @VisibleForTesting
-    public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
+    public final CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
 
     @VisibleForTesting
-    public CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
+    public final CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override

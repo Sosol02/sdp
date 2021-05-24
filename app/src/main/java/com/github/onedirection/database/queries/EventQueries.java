@@ -155,7 +155,6 @@ public class EventQueries {
         List<Event> eventsToStore = new ArrayList<Event>();
         Recurrence newEventRecurrence = event.getRecurrence().get();
 
-        Id groupId = newEventRecurrence.getGroupId();
         final long period = newEventRecurrence.getPeriod().getSeconds();
         final long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
         final long refStartTime = event.getStartTime().toEpochSecond();

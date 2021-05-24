@@ -34,7 +34,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
         private final ImageButton favorite;
 
 
-        OnNoteListener onNoteListener;
+        final OnNoteListener onNoteListener;
 
         private ViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
             super(itemView);
