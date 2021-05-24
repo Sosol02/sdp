@@ -11,6 +11,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Represents a cache for the app to optimize the number of queries into the database.
+ */
 public final class AndroidCache {
 
     private AndroidCache() {
