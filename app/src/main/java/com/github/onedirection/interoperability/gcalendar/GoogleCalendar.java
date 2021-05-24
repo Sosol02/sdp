@@ -168,13 +168,14 @@ public final class GoogleCalendar {
         Id newId = toId(event.getId());
         String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
         String locationName = (event.getLocation() != null) ? event.getLocation() : "";
+        boolean isFavorite = false;
 
         long epochSecondStartTime = event.getStart().getDateTime().getValue() / 1000;
         ZonedDateTime startTime = TimeUtils.epochToZonedDateTime(epochSecondStartTime);
         long epochSecondEndTime = event.getEnd().getDateTime().getValue() / 1000;
         ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
 
-        Event newEvent = new Event(newId, name, locationName, startTime, endTime);
+        Event newEvent = new Event(newId, name, locationName, startTime, endTime, isFavorite);
 
         if (event.getRecurrence() != null) {
             List<String> recurrences = event.getRecurrence();
