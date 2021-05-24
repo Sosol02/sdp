@@ -72,7 +72,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                 }
             }
             if(nbOfEventsInDay > 0) {
-                eventNumber.setText(Integer.toString(nbOfEventsInDay));
+                eventNumber.setText(String.valueOf(nbOfEventsInDay));
                 eventNumber.setBackgroundResource(R.drawable.rounded_corner);
             } else {
                 eventNumber.setBackgroundResource(android.R.color.transparent);

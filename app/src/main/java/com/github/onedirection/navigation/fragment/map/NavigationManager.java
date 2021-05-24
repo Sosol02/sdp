@@ -226,7 +226,7 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
-                    speedLimitValue.setText(Integer.toString(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                    speedLimitValue.setText(String.valueOf(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
                             .toKilometersPerHour())));
                 }
             }
