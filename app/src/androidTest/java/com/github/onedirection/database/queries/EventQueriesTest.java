@@ -387,6 +387,8 @@ public class EventQueriesTest {
         });
         Id id0 = recurrEvents.get(0).getId();
         Id id2 = recurrEvents.get(2).getId();
+        Id idRemoved = queries.removeEvent(recurrEvents.get(1).getId()).get();
+        assertEquals(recurrEvents.get(1).getId(), idRemoved);
         recurrEvents = queries.getRecurrEventSeriesOf(recurrence.getGroupId()).get();
         assertEquals(2, recurrEvents.size());
         recurrEvents.sort((e1, e2) -> {
