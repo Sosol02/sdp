@@ -10,6 +10,9 @@ import com.github.onedirection.R;
 import com.github.onedirection.authentication.service.AuthenticationService;
 import com.github.onedirection.authentication.service.User;
 
+/**
+ * A ViewModel that manages the data for the Signin fragment and the communication to activity
+ */
 public class SignViewModel extends ViewModel {
 
     private final MutableLiveData<SignFormState> signFormState = new MutableLiveData<>();

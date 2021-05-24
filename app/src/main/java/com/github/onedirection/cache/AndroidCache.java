@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Represents a cache for the app to optimize the number of queries into the database.
+ * Represents a general cache for the app.
  */
 public final class AndroidCache {
 

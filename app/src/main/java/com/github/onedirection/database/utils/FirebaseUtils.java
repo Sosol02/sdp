@@ -4,6 +4,9 @@ import com.github.onedirection.BuildConfig;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+/**
+ * Utility class for using Firebase 'Firestore' database tools
+ */
 public class FirebaseUtils {
     private static final boolean useEmulator = BuildConfig.DEBUG;
     private static FirebaseFirestore firestore = null;

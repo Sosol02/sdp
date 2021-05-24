@@ -172,7 +172,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             Id id = events.get(viewHolder.getPosition()).getId();
             queryManager.removeEvent(id);
             deleteEvent(id);
-            //eventList.getAdapter().notifyItemRemoved(viewHolder.getPosition());
         }
     };
 

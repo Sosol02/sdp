@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 
+/**
+ * Fragment for he Account view
+ */
 public class AccountFragment extends Fragment {
 
     @Override

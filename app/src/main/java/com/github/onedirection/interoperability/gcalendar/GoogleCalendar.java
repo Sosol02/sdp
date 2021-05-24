@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class GoogleCalendar {
 
-    // Don't ask my the hows-and-whys of this string, all I know is that it doesn't work otherwise
+    // Required string ; should not be changed
     private static final String OAUTH_SCOPE = "oauth2:profile email";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
@@ -67,7 +67,7 @@ public final class GoogleCalendar {
     private GoogleCalendar() {
     }
 
-    /** Remove '-' from Id, as they are not allowed by GCalendar: https://developers.google.com/calendar/v3/reference/events/insert */
+    /* Remove '-' from Id, as they are not allowed by GCalendar: https://developers.google.com/calendar/v3/reference/events/insert */
     private static String fromId(Id id){
         return id.getUuid().replace("-", "");
     }
@@ -77,7 +77,7 @@ public final class GoogleCalendar {
             throw new IllegalArgumentException("Invalid string for id: " + str);
         }
 
-        // Put back the '-'; not in the cleanest way tho
+        // Put back the '-'
         String result = new StringJoiner("-")
                 .add(str.substring(0, 8))
                 .add(str.substring(8, 12))

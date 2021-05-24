@@ -340,7 +340,6 @@ public class NavigationManager {
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             if (finalDestination) {
                 Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-                //stopNavigation();
             } else {
                 Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
             }

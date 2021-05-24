@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
 
+/**
+ * Fragment which allows to import a Google Calendar into the calendar.
+ */
 public class ImportFragment extends Fragment {
 
     @Override
