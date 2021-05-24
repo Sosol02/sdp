@@ -25,6 +25,7 @@ public class Event implements Serializable, Storable<Event> {
     final private Coordinates location;
     final private ZonedDateTime startTime;
     final private ZonedDateTime endTime;
+    private boolean favorite;
     /**
      * A recurrence period of the event. This object contains references to the previous and the next event in the recurrence series, as well as the recurrence period.
      */
@@ -35,7 +36,7 @@ public class Event implements Serializable, Storable<Event> {
      */
     final public static ChronoUnit TIME_PRECISION = ChronoUnit.MINUTES;
 
-    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
+    public Event(Id id, String name, String locationName, Optional<Coordinates> location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod, boolean favorite) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.locationName = Objects.requireNonNull(locationName);
@@ -46,30 +47,31 @@ public class Event implements Serializable, Storable<Event> {
         if (this.startTime.until(this.endTime, TIME_PRECISION) < 0) {
             throw new IllegalArgumentException("The end date should be later than the start date.");
         }
+        this.favorite = favorite;
     }
 
-    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
-        this(id, name, locationName, Optional.of(location), startTime, endTime, recurringPeriod);
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod, boolean favorite) {
+        this(id, name, locationName, Optional.of(location), startTime, endTime, recurringPeriod, favorite);
     }
 
-    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) {
-        this(id, name, locationName, Optional.empty(), startTime, endTime, recurringPeriod);
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod, boolean favorite) {
+        this(id, name, locationName, Optional.empty(), startTime, endTime, recurringPeriod, favorite);
     }
 
-    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime) {
-        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.empty());
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, boolean favorite) {
+        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.empty(), favorite);
     }
 
-    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime) {
-        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.empty());
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, boolean favorite) {
+        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.empty(), favorite);
     }
 
-    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) {
-        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.of(recurringPeriod));
+    public Event(Id id, String name, String locationName, Coordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod, boolean favorite) {
+        this(id, name, locationName, Optional.of(location), startTime, endTime, Optional.of(recurringPeriod), favorite);
     }
 
-    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) {
-        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.of(recurringPeriod));
+    public Event(Id id, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod, boolean favorite) {
+        this(id, name, locationName, Optional.empty(), startTime, endTime, Optional.of(recurringPeriod), favorite);
     }
 
     /**
@@ -82,42 +84,46 @@ public class Event implements Serializable, Storable<Event> {
      * @param endTime   When the event ends.
      * @throws IllegalArgumentException If startTime happens before endTime.
      */
-    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime) throws IllegalArgumentException {
-        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.empty());
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, boolean favorite) throws IllegalArgumentException {
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.empty(), favorite);
     }
 
-    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod) throws IllegalArgumentException {
-        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.of(recurringPeriod));
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Recurrence recurringPeriod, boolean favorite) throws IllegalArgumentException {
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, Optional.of(recurringPeriod), favorite);
     }
 
-    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod) throws IllegalArgumentException {
-        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod);
+    public Event(Id id, String name, NamedCoordinates location, ZonedDateTime startTime, ZonedDateTime endTime, Optional<Recurrence> recurringPeriod, boolean favorite) throws IllegalArgumentException {
+        this(id, name, Objects.requireNonNull(location).name, Optional.of(location.dropName()), startTime, endTime, recurringPeriod, favorite);
     }
 
     public Event setName(String new_value) {
-        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod));
+        return Objects.requireNonNull(new_value).equals(this.name) ? this : new Event(id, new_value, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod), favorite);
     }
 
     public Event setLocation(NamedCoordinates new_value) {
-        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod));
+        return Optional.of(Objects.requireNonNull(new_value)).equals(getLocation()) ? this : new Event(id, name, new_value, startTime, endTime, Optional.ofNullable(recurringPeriod), favorite);
     }
 
     public Event setStartTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.startTime)
                 ? this
-                : new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod));
+                : new Event(id, name, locationName, Optional.ofNullable(location), new_value, endTime, Optional.ofNullable(recurringPeriod), favorite);
     }
 
     public Event setEndTime(ZonedDateTime new_value) {
         return Objects.requireNonNull(new_value).truncatedTo(TIME_PRECISION).equals(this.endTime)
                 ? this
-                : new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod));
+                : new Event(id, name, locationName,  Optional.ofNullable(location), startTime, new_value, Optional.ofNullable(recurringPeriod), favorite);
     }
 
     public Event setRecurrence(Recurrence period) {
         return Optional.of(Objects.requireNonNull(period)).equals(getRecurrence())
                 ? this
-                : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period));
+                : new Event(id, name, locationName, Optional.ofNullable(location),  startTime, endTime, Optional.of(period), favorite);
+    }
+
+    public Event setFavorite(boolean new_value){
+        return Objects.requireNonNull(new_value).equals(this.favorite) ? this :  new Event(id, name, locationName, Optional.ofNullable(location), startTime, endTime, Optional.ofNullable(recurringPeriod), new_value);
     }
 
 
@@ -168,6 +174,8 @@ public class Event implements Serializable, Storable<Event> {
         return Optional.ofNullable(recurringPeriod);
     }
 
+    public boolean getFavorite(){ return favorite;}
+
     @Override
     public String toString() {
         return "Event" + id +
@@ -176,7 +184,8 @@ public class Event implements Serializable, Storable<Event> {
                 (location == null ? "" : "[" + location + "]") +
                 ':' + startTime +
                 "-" + endTime +
-                ')' + (recurringPeriod == null ? "" : " recurrence: " + recurringPeriod);
+                ')' + (recurringPeriod == null ? "" : " recurrence: " + recurringPeriod)
+                + (favorite? "favorite event":"");
     }
 
     @Override
@@ -189,11 +198,12 @@ public class Event implements Serializable, Storable<Event> {
                 getLocation().equals(event.getLocation()) &&
                 startTime.equals(event.startTime) &&
                 endTime.equals(event.endTime) &&
-                getRecurrence().equals(event.getRecurrence());
+                getRecurrence().equals(event.getRecurrence())
+                && (favorite  == event.getFavorite());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, locationName, location, startTime, endTime, recurringPeriod);
+        return Objects.hash(id, name, locationName, location, startTime, endTime, recurringPeriod, favorite);
     }
 }

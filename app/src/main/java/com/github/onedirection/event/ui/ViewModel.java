@@ -81,9 +81,10 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
 
     private void init(ZonedDateTime start, BiFunction<Event, Boolean, CompletableFuture<?>> callback) {
         init(
-                new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION)),
+                new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION),false),
                 callback,
-                false
+                false,
+
         );
     }
 
@@ -109,7 +110,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
                         coordinates.getValue().get(),
                         startTime.getValue(),
                         endTime.getValue(),
-                        generateRecurrence()
+                        generateRecurrence(), false
                 ) :
                 new Event(
                         eventId,
@@ -117,7 +118,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
                         customLocation.getValue(),
                         startTime.getValue(),
                         endTime.getValue(),
-                        generateRecurrence()
+                        generateRecurrence(),false
                 );
     }
 
