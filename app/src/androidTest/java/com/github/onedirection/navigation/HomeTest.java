@@ -88,7 +88,7 @@ public class HomeTest {
     @Test
     public void testFabButton(){
         ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
+                allOf(withId(R.id.fab), withContentDescription("Add Event"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.nav_host_fragment),
