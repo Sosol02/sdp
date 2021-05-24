@@ -1,5 +1,8 @@
 package com.github.onedirection.geolocation;
 
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
+
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
