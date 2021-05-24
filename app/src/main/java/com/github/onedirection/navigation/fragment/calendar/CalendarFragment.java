@@ -55,6 +55,7 @@ public class CalendarFragment extends Fragment {
 
     private View calendarView;
     private CalendarGridAdapter calendarGridAdapter;
+    private DayEventsListView eventsListView;
 
     private final String EXTRA_MESSAGE_DATE = "DATE";
     private CalendarViewModel mViewModel;
@@ -83,13 +84,11 @@ public class CalendarFragment extends Fragment {
         super.onResume();
         calendarGridAdapter = null;
         setupGrid();
-//        DayEventsListView eventsListView = calendarView.getDayEventView();
-//        if(eventsListView != null){
-//            eventsListView.refreshView();
-//        }
+
+        if(eventsListView != null){
+            eventsListView.updateEventsList();
+        }
     }
-
-
 
 
     private void setupGeneral() {
@@ -138,13 +137,18 @@ public class CalendarFragment extends Fragment {
         });
 
         gridView.setOnItemClickListener((parent, view, position, id) -> {
-            int dateOfMonth = dateOfMonthAtPosition(position);
-            LocalDate localDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
-            setupAlertDialog(localDate);
+            LocalDate date = dateAtPosition(position);
+            List<Event> dayEvents = dayEventsList(date);
+            if(dayEvents.size() == 0){
+                callEventCreator(date);
+            } else {
+                setupAlertDialog(date, dayEvents);
+            }
         });
     }
 
-    private void setupAlertDialog(LocalDate localDate){
+    private void setupAlertDialog(LocalDate localDate, List<Event> dayEvents){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(true);
         View onDaySelectedPopup = LayoutInflater.from(getContext()).inflate(R.layout.day_select_popup, null);
@@ -159,10 +163,13 @@ public class CalendarFragment extends Fragment {
             callEventCreator(localDate);
             alertDialog.cancel();
         });
+
         viewEvents.setOnClickListener(v -> {
             alertDialog.cancel();
-            //callDayEventsList(localDate.atStartOfDay(ZoneId.systemDefault()));
+            ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
+            eventsListView = new DayEventsListView(getContext(), zonedDate, dayEvents, () -> refreshGrid(), null);
         });
+
         alertDialog.show();
     }
 
@@ -176,13 +183,15 @@ public class CalendarFragment extends Fragment {
 
 
 
-    private int dateOfMonthAtPosition(int positionInGrid) {
+    private LocalDate dateAtPosition(int dayPositionInGrid) {
         Calendar monthCalendar = (Calendar) calendar.clone();
         monthCalendar.set(Calendar.DAY_OF_MONTH, 1);
         int FirstDayOfMonth = monthCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         monthCalendar.add(Calendar.DAY_OF_MONTH, -FirstDayOfMonth);
-        monthCalendar.add(Calendar.DAY_OF_MONTH, positionInGrid);
-        return monthCalendar.get(Calendar.DAY_OF_MONTH);
+        monthCalendar.add(Calendar.DAY_OF_MONTH, dayPositionInGrid);
+        int dateOfMonth = monthCalendar.get(Calendar.DAY_OF_MONTH);
+        LocalDate localDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, dateOfMonth);
+        return localDate;
     }
 
     private void callEventCreator(LocalDate date) {
@@ -191,13 +200,26 @@ public class CalendarFragment extends Fragment {
         this.getContext().startActivity(intent);
     }
 
-    private void callDayEventsList(ZonedDateTime day) {
-        //dayEventsView = new DayEventsListView(getContext(), day, this::refreshCalendarView, idling);
+    private List<Event> dayEventsList(LocalDate localDate) {
+        List<Event> dayEvents = new ArrayList<>();
+        for(Event event : eventsList){
+            if(event.getStartTime().getDayOfYear() == localDate.getDayOfYear() &&
+                    event.getStartTime().getYear() == localDate.getYear()) {
+                dayEvents.add(event);
+            }
+        }
+        return dayEvents;
     }
+
+    private void refreshGrid() {
+        setupGrid();
+    }
+
 
     private int getMonthNumber(Calendar cal) {
         return cal.get(Calendar.MONTH) + 1;
     }
+
 
     private LoadingDialog startLoadingAnimation() {
         LoadingDialog loadingDialog = new LoadingDialog(this.getContext());
