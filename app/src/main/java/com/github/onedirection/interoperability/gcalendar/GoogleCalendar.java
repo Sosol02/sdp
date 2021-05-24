@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;
