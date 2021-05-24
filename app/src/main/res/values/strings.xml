@@ -111,6 +111,8 @@
     <!-- Google calendar related -->
     <string name="export_your_calendar">Export your calendar:</string>
     <string name="export_to_google_calendar">Export to Google Calendar</string>
+    <string name="import_your_calendar">Import a Google Calendar:</string>
+    <string name="import_from_google_calendar">Import from Google Calendar</string>
     <string name="next_maneuver_icon_desc">next maneuver icon</string>
     <string name="speed_limit_sign_desc">speed limit sign</string>
 
