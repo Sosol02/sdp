@@ -215,14 +215,8 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             public void onClick(View view) {
                 if(!isOnFavoriteView) {
                     List<Event> listFavorites = new ArrayList<>();
-                    if(isOnOrderedView){
-                        for (Event e : orderedEvents) {
-                            if (favorites.get(e.getId())) listFavorites.add(e);
-                        }
-                    }else{
-                        for (Event e : events) {
-                            if (favorites.get(e.getId())) listFavorites.add(e);
-                        }
+                    for (Event e : isOnOrderedView ? orderedEvents : events) {
+                        if (favorites.get(e.getId())) listFavorites.add(e);
                     }
                     eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
                     isOnFavoriteView = true;
@@ -246,18 +240,12 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
                 if (!isOnOrderedView) {
                     List<Event> listOrdered = new ArrayList<>();
-                    if(isOnFavoriteView){
-                        for (Event event : favoritesEvents) {
-                            listOrdered.add(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence()));
-                        }
-                    }else{
-                        for (Event event : events) {
-                            listOrdered.add(new Event(event.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence()));
-                        }
+                    for (Event e : isOnFavoriteView ? orderedEvents : events) {
+                        if (favorites.get(e.getId())) listOrdered.add(e);
                     }
                     listOrdered.sort((l, r) -> {
                         if (l.equals(r)) return 0;
-                        return l.getStartTime().isBefore(r.getStartTime()) ? -1 : 1;
+                        return Long.compare(l.getStartTime().toEpochSecond(), r.getStartTime().toEpochSecond());
                     });
                     eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
                     isOnOrderedView = true;
