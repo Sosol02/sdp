@@ -24,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
  * Adapter used by views listing events that displays a concise description of the events
  */
 public class EventsListAdapter extends ArrayAdapter {
-    private final Context context;
     private final List<Event> events;
     private final LayoutInflater layoutInflater;
     private final Runnable onEditEvent;
@@ -32,11 +31,10 @@ public class EventsListAdapter extends ArrayAdapter {
 
     public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent) {
         super(applicationContext, R.layout.event_view_in_list);
-        this.context = applicationContext;
         this.onEditEvent = onEditEvent;
         this.onDeleteEvent = onDeleteEvent;
         this.events = events;
-        this.layoutInflater = LayoutInflater.from(context);
+        this.layoutInflater = LayoutInflater.from(applicationContext);
     }
 
     @Override

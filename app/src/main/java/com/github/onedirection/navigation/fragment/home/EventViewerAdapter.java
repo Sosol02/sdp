@@ -27,7 +27,6 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnLongClickListener {
 
-        private final View fullView;
         private final TextView name;
         private final TextView location;
         private final TextView startTime;
@@ -39,7 +38,6 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
         private ViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
             super(itemView);
-            this.fullView = itemView;
             this.name = itemView.findViewById(R.id.eventName);
             this.location = itemView.findViewById(R.id.eventLocation);
             this.startTime = itemView.findViewById(R.id.eventStartTime);

@@ -88,7 +88,6 @@ public class MapFragmentTest {
     private MapboxMap mapboxMap;
     private MapFragment fragment;
     private OnMapReadyIdlingResource onMapReadyIdlingResource;
-    private EspressoIdlingResource espressoIdlingResource;
     private CountingIdlingResource countingIdlingResource;
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
@@ -139,7 +138,7 @@ public class MapFragmentTest {
             onMapReadyIdlingResource = new OnMapReadyIdlingResource(fragment);
         });
 
-        espressoIdlingResource = EspressoIdlingResource.getInstance();
+        EspressoIdlingResource espressoIdlingResource = EspressoIdlingResource.getInstance();
         countingIdlingResource = espressoIdlingResource.getCountingIdlingResource();
 
         IdlingRegistry.getInstance().register(onMapReadyIdlingResource);

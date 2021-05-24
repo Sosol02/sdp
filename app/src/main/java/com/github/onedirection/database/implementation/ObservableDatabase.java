@@ -69,13 +69,12 @@ filterWhereGreaterLessEq
 
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
-        CompletableFuture<T> result = innerDb.retrieve(id, storer)
+
+        return innerDb.retrieve(id, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Retrieve, id, res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
