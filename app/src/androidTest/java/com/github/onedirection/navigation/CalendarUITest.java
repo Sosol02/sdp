@@ -30,6 +30,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -87,15 +88,8 @@ public class CalendarUITest {
     public void changeMonthTest() {
         ViewInteraction currentMonth = onView(allOf(withId(R.id.currentDate)));
 
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withId(R.id.nextBtn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom_calendar_view),
-                                        0),
-                                2),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
+        ViewInteraction nextBtn = onView(allOf(withId(R.id.nextBtn)));
+        nextBtn.perform(click());
 
         ViewInteraction newMonth = onView(allOf(withId(R.id.currentDate)));
         assertThat(currentMonth, not(newMonth));
@@ -103,76 +97,37 @@ public class CalendarUITest {
 
     @Test
     public void testAddEvent() {
-        DataInteraction date = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withId(R.id.custom_calendar_view),
-                                2)))
-                .atPosition(9);
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(14);
         date.perform(click());
 
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.addEvent), withText("Add Event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton.perform(click());
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("Shrek is love"), ViewActions.closeSoftKeyboard());
 
-        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
-        materialButton2.perform(scrollTo(), click());
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
 
         assertThat(date.onChildView(allOf(withId(R.id.events_id))).toString(), not(""));
     }
 
     @Test
     public void testViewEvents() throws InterruptedException {
-        DataInteraction date = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withId(R.id.custom_calendar_view),
-                                2)))
-                .atPosition(9);
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
         date.perform(click());
 
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.addEvent), withText("Add Event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton.perform(click());
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("Shrek is life"), ViewActions.closeSoftKeyboard());
 
-        onView(withId(R.id.editEventName)).perform(
-                scrollTo(),
-                click(),
-                clearText(),
-                typeText("6chars")
-        );
-        closeSoftKeyboard();
-        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
-        materialButton2.perform(scrollTo(), click());
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
 
         date.perform(click());
 
-
-        ViewInteraction viewEventsButton = onView(
-                allOf(withId(R.id.viewEvents), withText(R.string.view_events),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                1),
-                        isDisplayed()));
+        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
         viewEventsButton.perform(click());
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
 
-        ViewInteraction materialButton4 = onView(
+        ViewInteraction deleteBtn = onView(
                 firstMatch(withId(R.id.eventDeleteButton)));
     }
 

@@ -44,7 +44,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class CalendarFragment extends Fragment {
 
-    public CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
+
 
     private static final int MAX_CALENDAR_DAYS = 42;
 
@@ -57,8 +57,8 @@ public class CalendarFragment extends Fragment {
     private CalendarGridAdapter calendarGridAdapter;
     private DayEventsListView eventsListView;
 
-    private final String EXTRA_MESSAGE_DATE = "DATE";
-    private CalendarViewModel mViewModel;
+    private final CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -167,7 +167,7 @@ public class CalendarFragment extends Fragment {
         viewEvents.setOnClickListener(v -> {
             alertDialog.cancel();
             ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
-            eventsListView = new DayEventsListView(getContext(), zonedDate, dayEvents, () -> refreshGrid(), null);
+            eventsListView = new DayEventsListView(getContext(), zonedDate, dayEvents, () -> refreshGrid(), idling);
         });
 
         alertDialog.show();

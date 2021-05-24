@@ -54,11 +54,18 @@ public class DayEventsListView extends LinearLayout {
     }
 
     public void updateEventsList(){
+        if(idling != null){
+            idling.increment();
+        }
         CompletableFuture<List<Event>> newEventsList = getDayEvents(day);
         newEventsList.whenComplete((events, throwable) -> {
             dayEvents.clear();
             dayEvents.addAll(events);
             eventsListAdapter.notifyDataSetChanged();
+
+            if(idling != null){
+                idling.decrement();
+            }
         });
     }
 
