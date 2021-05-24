@@ -25,14 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -41,6 +38,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.onedirection.testhelpers.FirstMatch.firstMatch;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -106,7 +104,7 @@ public class CalendarUITest {
         ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
         eventCreatorCreateBtn.perform(scrollTo(), click());
 
-        assertThat(date.onChildView(allOf(withId(R.id.events_id))).toString(), not(""));
+        assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), not(""));
     }
 
     @Test
@@ -127,8 +125,33 @@ public class CalendarUITest {
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
 
-        ViewInteraction deleteBtn = onView(
-                firstMatch(withId(R.id.eventDeleteButton)));
+
+    }
+
+    @Test
+    public void testDeleteEvent() {
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
+        String nbEvents = date.onChildView(allOf(withId(R.id.nb_events))).toString();
+        date.perform(click());
+
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("Shrek is life"), ViewActions.closeSoftKeyboard());
+
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
+
+        date.perform(click());
+
+        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
+        viewEventsButton.perform(click());
+
+        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
+
+        ViewInteraction deleteBtn = onView(firstMatch(withId(R.id.eventDeleteButton)));
+        deleteBtn.perform(click());
+
+        assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), is(nbEvents));
+
     }
 
     @After

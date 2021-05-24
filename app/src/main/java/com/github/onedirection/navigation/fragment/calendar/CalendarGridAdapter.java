@@ -1,13 +1,10 @@
 package com.github.onedirection.navigation.fragment.calendar;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,7 +59,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
 
         if (displayMonth == currentMonth) {
             TextView textDayNumber = view.findViewById(R.id.calendar_day);
-            TextView eventNumber = view.findViewById(R.id.events_id);
+            TextView eventNumber = view.findViewById(R.id.nb_events);
 
             textDayNumber.setText(String.valueOf(dayNumber));
             Calendar eventCalendar = Calendar.getInstance();
