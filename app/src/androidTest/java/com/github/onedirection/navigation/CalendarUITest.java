@@ -108,27 +108,6 @@ public class CalendarUITest {
     }
 
     @Test
-    public void testViewEvents() throws InterruptedException {
-        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
-        date.perform(click());
-
-        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
-        eventName.perform(replaceText("Shrek is life"), ViewActions.closeSoftKeyboard());
-
-        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
-        eventCreatorCreateBtn.perform(scrollTo(), click());
-
-        date.perform(click());
-
-        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
-        viewEventsButton.perform(click());
-
-        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
-
-
-    }
-
-    @Test
     public void testDeleteEvent() {
         DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
         String nbEvents = date.onChildView(allOf(withId(R.id.nb_events))).toString();
@@ -151,8 +130,28 @@ public class CalendarUITest {
         deleteBtn.perform(click());
 
         assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), is(nbEvents));
-
     }
+
+    @Test
+    public void testViewEvents() throws InterruptedException {
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
+        date.perform(click());
+
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("It's all ogre now"), ViewActions.closeSoftKeyboard());
+
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
+
+        date.perform(click());
+
+        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
+        viewEventsButton.perform(click());
+
+        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
+    }
+
+
 
     @After
     public void AtEndTest() {
