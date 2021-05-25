@@ -121,13 +121,13 @@ public class CalendarUITest {
 
         date.perform(click());
 
-        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
+        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), isDisplayed()));
         viewEventsButton.perform(click());
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
 
         ViewInteraction deleteBtn = onView(allOf(withId(R.id.eventDeleteButton)));
-        deleteBtn.perform(click());
+        deleteBtn.perform(scrollTo(), click());
 
         assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), is(nbEvents));
     }
