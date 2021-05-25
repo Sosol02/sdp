@@ -109,7 +109,7 @@ public class CalendarUITest {
 
     @Test
     public void testDeleteEvent() {
-        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
         String nbEvents = date.onChildView(allOf(withId(R.id.nb_events))).toString();
         date.perform(click());
 
@@ -126,7 +126,7 @@ public class CalendarUITest {
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
 
-        ViewInteraction deleteBtn = onView(firstMatch(withId(R.id.eventDeleteButton)));
+        ViewInteraction deleteBtn = onView(allOf(withId(R.id.eventDeleteButton)));
         deleteBtn.perform(click());
 
         assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), is(nbEvents));
@@ -134,7 +134,7 @@ public class CalendarUITest {
 
     @Test
     public void testViewEvents() throws InterruptedException {
-        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
         date.perform(click());
 
         ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
