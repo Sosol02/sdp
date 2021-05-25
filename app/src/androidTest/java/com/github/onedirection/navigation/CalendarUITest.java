@@ -107,30 +107,7 @@ public class CalendarUITest {
         assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), not(""));
     }
 
-    @Test
-    public void testDeleteEvent() {
-        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(15);
-        String nbEvents = date.onChildView(allOf(withId(R.id.nb_events))).toString();
-        date.perform(click());
-
-        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
-        eventName.perform(replaceText("Shrek is life"), ViewActions.closeSoftKeyboard());
-
-        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
-        eventCreatorCreateBtn.perform(scrollTo(), click());
-
-        date.perform(click());
-
-        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), isDisplayed()));
-        viewEventsButton.perform(click());
-
-        onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
-
-        ViewInteraction deleteBtn = onView(allOf(withId(R.id.eventDeleteButton)));
-        deleteBtn.perform(scrollTo(), click());
-
-        assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), is(nbEvents));
-    }
+ 
 
     @Test
     public void testViewEvents() throws InterruptedException {
