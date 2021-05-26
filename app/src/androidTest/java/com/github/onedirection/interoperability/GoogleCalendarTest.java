@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
 import com.github.onedirection.interoperability.gcalendar.ExportFragment;
+import com.github.onedirection.interoperability.gcalendar.ImportFragment;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,20 @@ public class GoogleCalendarTest {
         assertThat(Intents.getIntents().isEmpty(), is(true));
 
         onView(withId(R.id.buttonGCalendarExport)).perform(click());
+
+        assertThat(Intents.getIntents().isEmpty(), is(false));
+
+        Intents.release();
+    }
+
+    @Test
+    public void importButtonCanBeClicked() {
+        FragmentScenario<ImportFragment> fragment = FragmentScenario.launchInContainer(ImportFragment.class);
+        onView(withId(R.id.buttonGCalendarImport)).check(matches(isClickable()));
+        Intents.init();
+        assertThat(Intents.getIntents().isEmpty(), is(true));
+
+        onView(withId(R.id.buttonGCalendarImport)).perform(click());
 
         assertThat(Intents.getIntents().isEmpty(), is(false));
 
