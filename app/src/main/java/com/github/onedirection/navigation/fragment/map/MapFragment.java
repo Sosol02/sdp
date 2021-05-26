@@ -72,6 +72,7 @@ public class MapFragment extends Fragment {
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
+    private Button navigationButton;
     private Button navigationRouteButton;
     private Button cancelButton;
     private Optional<Event> navigationStart = Optional.empty();
@@ -134,7 +135,7 @@ public class MapFragment extends Fragment {
         event_time_end = view.findViewById(R.id.fragment_map_event_time_end);
         event_location = view.findViewById(R.id.fragment_map_event_location);
 
-        Button navigationButton = view.findViewById(R.id.fragment_map_event_nav_button);
+        navigationButton = view.findViewById(R.id.fragment_map_event_nav_button);
         navigationRouteButton = view.findViewById(R.id.fragment_map_event_nav_route_button);
         cancelButton = view.findViewById(R.id.fragment_map_event_nav_cancel);
         cancelNavigation();

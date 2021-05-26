@@ -165,7 +165,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.Eq, key, value);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereEquals(key, value, storer))
                 .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
@@ -174,7 +173,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.Gr, key, value);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreater(key, value, storer))
                 .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
@@ -183,7 +181,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.GrEq, key, value);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterEq(key, value, storer))
                 .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
@@ -192,7 +189,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.Le, key, value);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereLess(key, value, storer))
                 .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
@@ -201,7 +197,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.LeEq, key, value);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereLessEq(key, value, storer))
                 .whenComplete((res, err) -> { if (err != null) queryCache.invalidate(query); })
@@ -210,7 +205,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.GrEqLe, key, valueGreaterEq, valueLess);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterEqLess(key, valueGreaterEq, valueLess, storer))
                 .whenComplete((res, err) -> {
@@ -221,7 +215,6 @@ public class CachedDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
-        // 'null' checks are done in the Query constructor.
         final Query query = new Query(storer.classTag(), Query.QueryType.GrLeEq, key, valueGreater, valueLessEq);
         return queryCache.get(query, sameQuery -> innerDatabase.filterWhereGreaterLessEq(key, valueGreater, valueLessEq, storer))
                 .whenComplete((res, err) -> {

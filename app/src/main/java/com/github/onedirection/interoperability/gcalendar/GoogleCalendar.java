@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class GoogleCalendar {
 
-    // Required string ; should not be changed
+    // Required string ; should be changed only if one understands the interactions between oAuth2, GoogleSignIn and Google Calendar
     private static final String OAUTH_SCOPE = "oauth2:profile email";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
