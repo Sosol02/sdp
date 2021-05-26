@@ -83,7 +83,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
         init(
                 new Event(Id.generateRandom(), "", "", start, start.plus(DEFAULT_EVENT_DURATION),false),
                 callback,
-                false,
+                false
 
         );
     }
