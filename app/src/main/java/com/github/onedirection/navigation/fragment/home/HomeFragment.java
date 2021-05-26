@@ -251,7 +251,6 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
                         listOrdered.add(e);
                     }
                     listOrdered.sort((l, r) -> {
-                        //if (l.equals(r)) return 0;
                         return Long.compare(l.getStartTime().toEpochSecond(), r.getStartTime().toEpochSecond());
                     });
                     eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
