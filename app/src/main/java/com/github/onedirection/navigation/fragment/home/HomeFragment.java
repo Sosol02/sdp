@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
     public static HomeFragment homeFragment;
     List<Event> events = new ArrayList<Event>();
-    Map<Id, Boolean> favorites = new HashMap<>();
+    //Map<Id, Boolean> favorites = new HashMap<>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
     private EventViewerAdapter.OnNoteListener onNoteListener;
@@ -222,7 +222,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
                 if (!isOnFavoriteView) {
                     List<Event> listFavorites = new ArrayList<>();
                     for (Event e : isOnOrderedView ? orderedEvents : events) {
-                        if (favorites.get(e.getId())) listFavorites.add(e);
+                        if (e.getIsFavorite()) listFavorites.add(e);
                     }
                     eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
                     isOnFavoriteView = true;

@@ -137,15 +137,18 @@ public class DisplayEvent extends AppCompatActivity {
     public void buttonStarEvent(View view){
         Id id = event.getId();
 
-        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
+        //boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
+        boolean isFavorite = event.getIsFavorite();
         ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
-        if(isFavorite){
-            HomeFragment.homeFragment.favorites.replace(id, false);
-            HomeFragment.homeFragment.updateModifiedEvent(id);
+        if(!isFavorite){
+            //HomeFragment.homeFragment.favorites.replace(id, false);
+            //HomeFragment.homeFragment.updateModifiedEvent(id);
+            event.setFavorite(true);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
         }else{
-            HomeFragment.homeFragment.favorites.replace(id, true);
-            HomeFragment.homeFragment.updateModifiedEvent(id);
+            //HomeFragment.homeFragment.favorites.replace(id, true);
+            //HomeFragment.homeFragment.updateModifiedEvent(id);
+            event.setFavorite(false);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
