@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 
 import java.util.Arrays;
 import java.util.List;

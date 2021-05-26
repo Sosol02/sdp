@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -16,10 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Event;
+
+import com.github.onedirection.event.model.Event;
+
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

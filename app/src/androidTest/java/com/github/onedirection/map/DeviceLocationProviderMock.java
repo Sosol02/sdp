@@ -2,7 +2,7 @@ package com.github.onedirection.map;
 
 import android.location.Location;
 
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.ObserverPattern;
 import com.google.android.gms.location.LocationCallback;

@@ -23,11 +23,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 
-import net.hockeyapp.android.Strings;
-
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -36,7 +33,6 @@ import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static com.github.onedirection.utils.OnTextChanged.onTextChanged;
 
@@ -236,18 +232,18 @@ public class MainFragment extends Fragment {
     private boolean fieldsAreValid() {
         String checkMsg = null;
         if(model.name.getValue() == null || model.name.getValue().equals("")) {
-            checkMsg = String.valueOf(R.string.empty_event_name);
+            checkMsg = getContext().getString(R.string.empty_event_name);
         } else if(model.name.getValue().length() > MAX_STRING_LENGTH) {
-            checkMsg = String.format(String.valueOf(R.string.event_name_too_long), MAX_STRING_LENGTH);
+            checkMsg = String.format(getContext().getString(R.string.event_name_too_long), MAX_STRING_LENGTH);
         } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
-            checkMsg = String.valueOf(R.string.end_before_start);
+            checkMsg = getContext().getString(R.string.end_before_start);
         } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > ChronoUnit.DAYS.getDuration().getSeconds()) {
-            checkMsg = String.valueOf(R.string.event_time_too_long);
+            checkMsg = getContext().getString(R.string.event_time_too_long);
         } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
-            checkMsg = String.format(String.valueOf(R.string.location_name_too_long), MAX_STRING_LENGTH);
+            checkMsg = String.format(getContext().getString(R.string.location_name_too_long), MAX_STRING_LENGTH);
         } else if(model.isRecurrent.getValue()) {
             if(model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
-                checkMsg = String.valueOf(R.string.recurrence_end_too_soon);
+                checkMsg = getContext().getString(R.string.recurrence_end_too_soon);
             }
         }
         if(checkMsg != null) {

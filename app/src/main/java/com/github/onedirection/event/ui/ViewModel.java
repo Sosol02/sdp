@@ -3,9 +3,9 @@ package com.github.onedirection.event.ui;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
