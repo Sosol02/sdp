@@ -9,7 +9,8 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:visibility="gone">
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
@@ -165,6 +166,57 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/destinationReachedBarLayout"
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/background_navigation_bar"
+            android:padding="5dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/arrivalBarLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/destination_reached_text"
+                android:layout_width="180dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:text="@string/destination_reached"
+                android:textAlignment="viewStart"
+                android:textColor="?colorOnPrimary"
+                android:textSize="18sp"
+                tools:ignore="RtlCompat" />
+
+            <TextView
+                android:id="@+id/destination_reached_acceptance"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="15dp"
+                android:layout_toStartOf="@+id/destination_reached_cancel"
+                android:text="@string/destination_reached_acceptance"
+                android:textColor="#02a7fa"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/destination_reached_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:text="@string/destination_reached_cancel"
+                android:textColor="#b5b5b5"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -223,8 +275,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:text="@string/start_navigation"
-            android:textSize="25sp"
             android:textAlignment="center"
+            android:textSize="25sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_location" />
 
@@ -234,8 +286,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:text="@string/start_navigation"
-            android:textSize="25sp"
             android:textAlignment="center"
+            android:textSize="25sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_nav_button" />
 
@@ -245,8 +297,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:text="@string/nav_cancel"
-            android:textSize="25sp"
             android:textAlignment="center"
+            android:textSize="25sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fragment_map_event_nav_route_button" />
 

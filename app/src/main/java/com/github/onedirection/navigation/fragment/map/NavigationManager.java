@@ -1,6 +1,7 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -87,6 +88,10 @@ public class NavigationManager {
     private final ImageView speedLimitBlankSign;
     private final TextView speedLimitValue;
 
+    private final RelativeLayout destinationReachedBar;
+    private final TextView destinationAccept;
+    private final TextView destinationRefuse;
+
     private final AppCompatImageButton myLocationButton;
 
     private static final double NAVIGATION_ZOOM = 18;
@@ -120,8 +125,10 @@ public class NavigationManager {
         myLocationButton = view.findViewById(R.id.my_location_button);
         maneuverBar = view.findViewById(R.id.maneuverBarLayout);
         arrivalBar = view.findViewById(R.id.arrivalBarLayout);
+        destinationReachedBar = view.findViewById(R.id.destinationReachedBarLayout);
         maneuverBar.setVisibility(View.GONE);
         arrivalBar.setVisibility(View.GONE);
+        destinationReachedBar.setVisibility(View.GONE);
 
         nextManeuverIcon = view.findViewById(R.id.next_maneuver_icon);
         nextManeuverDistance = view.findViewById(R.id.next_maneuver_distance);
@@ -131,6 +138,8 @@ public class NavigationManager {
         remainingDistance = view.findViewById(R.id.remaining_distance);
         speedLimitBlankSign = view.findViewById(R.id.speed_limit_blank);
         speedLimitValue = view.findViewById(R.id.speed_limit);
+        destinationAccept = view.findViewById(R.id.destination_reached_acceptance);
+        destinationRefuse = view.findViewById(R.id.destination_reached_cancel);
 
         view.findViewById(R.id.stop).setOnClickListener(v -> {
             if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
@@ -166,9 +175,6 @@ public class NavigationManager {
     }
 
     public void stopNavigation() {
-        if (navigationManager.getNavigationState() == NavigationState.STOPPED) {
-            throw new IllegalStateException("You cannot stop the navigation manager when it has not started");
-        }
         navigationManager.cancelNavigation();
 
         routeDisplayManager.clearDisplayedRoute();
@@ -180,6 +186,7 @@ public class NavigationManager {
         myLocationButton.setVisibility(View.VISIBLE);
         maneuverBar.setVisibility(View.GONE);
         arrivalBar.setVisibility(View.GONE);
+        destinationReachedBar.setVisibility(View.GONE);
 
         navigationManager.removeProgressListener(centeringMapOnLocationProgressListener);
         navigationManager.removeRerouteListener(routeUpdatingRerouteListener);
@@ -227,10 +234,11 @@ public class NavigationManager {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
                     speedLimitValue.setText(Integer.toString(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
-                            .toKilometersPerHour())));
+                            .toKilometersPerHour() / 10) * 10));
                 }
             }
             speedLimitBlankSign.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);
+            speedLimitValue.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -338,13 +346,43 @@ public class NavigationManager {
         @Override
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
+            destinationReachedBar.setVisibility(View.VISIBLE);
             if (finalDestination) {
                 Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-                //stopNavigation();
+                destinationAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        destinationAcceptanceHandler.confirmArrival(true);
+                        stopNavigation();
+                        destinationAccept.setClickable(false);
+                        destinationAccept.setOnClickListener(null);
+                        destinationReachedBar.setVisibility(View.GONE);
+                    }
+                });
+                destinationAccept.setClickable(true);
             } else {
                 Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
+                destinationAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        destinationAcceptanceHandler.confirmArrival(true);
+                        destinationAccept.setClickable(false);
+                        destinationAccept.setOnClickListener(null);
+                        destinationReachedBar.setVisibility(View.GONE);
+                    }
+                });
+                destinationAccept.setClickable(true);
             }
-            destinationAcceptanceHandler.confirmArrival(true);
+            destinationRefuse.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    destinationAcceptanceHandler.confirmArrival(false);
+                    navigationManager.resumeNavigation();
+                    destinationAccept.setClickable(false);
+                    destinationAccept.setOnClickListener(null);
+                    destinationReachedBar.setVisibility(View.GONE);
+                }
+            });
 
         }
     }
