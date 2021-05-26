@@ -407,7 +407,7 @@ public final class GoogleCalendar {
                 Log.d(LOGCAT_TAG, newEvents.size() + " g-events to add to DB.");
                 EventQueries adder = new EventQueries(Database.getDefaultInstance());
 
-                for (Event event : gcalendar) {
+                for (Event event : newEvents) {
                     if (event.isRecurrent()) {
                         adder.addRecurringEvent(event);
                     } else {
