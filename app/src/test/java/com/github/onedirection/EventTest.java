@@ -1,8 +1,8 @@
 package com.github.onedirection;
 
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Test;

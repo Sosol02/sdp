@@ -19,7 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -37,7 +37,6 @@ import com.mapquest.navigation.model.Route;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;

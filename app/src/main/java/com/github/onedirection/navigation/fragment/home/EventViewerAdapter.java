@@ -3,7 +3,6 @@ package com.github.onedirection.navigation.fragment.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -11,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
     private OnNoteListener mOnNoteListener;
     private final Event[] events;
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
         private final View fullView;
         private final TextView name;
@@ -48,7 +47,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
             this.favorite = itemView.findViewById(R.id.favoriteButton);
 
             this.onNoteListener = onNoteListener;
-            itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
 
         }
 
@@ -83,9 +82,8 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
 
         @Override
-        public boolean onLongClick(View view) {
+        public void onClick(View view) {
             onNoteListener.onNoteClick(getAdapterPosition());
-            return false;
         }
     }
 

@@ -13,11 +13,11 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.DefaultDatabase;
-import com.github.onedirection.database.ObservableDatabase;
+import com.github.onedirection.database.implementation.Database;
+import com.github.onedirection.database.implementation.DefaultDatabase;
+import com.github.onedirection.database.implementation.ObservableDatabase;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.R;
 
 import java.time.ZonedDateTime;
