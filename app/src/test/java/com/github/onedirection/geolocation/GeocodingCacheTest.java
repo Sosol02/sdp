@@ -2,6 +2,8 @@ package com.github.onedirection.geolocation;
 
 import com.github.onedirection.geolocation.geocoding.GeocodingCache;
 import com.github.onedirection.geolocation.geocoding.GeocodingService;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 
 import org.junit.Test;
 

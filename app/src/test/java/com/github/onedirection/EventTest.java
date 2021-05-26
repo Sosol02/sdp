@@ -1,8 +1,8 @@
 package com.github.onedirection;
 
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 
 import org.junit.Test;
@@ -26,19 +26,20 @@ public class EventTest {
 
     private final static Id ID = Id.generateRandom();
     private final static String NAME = "Event name";
+    private final static boolean IS_FAVORITE = true;
     private final static NamedCoordinates LOCATION = new NamedCoordinates(0, 0, "Location name");
     private final static ZonedDateTime START_TIME = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
     private final static Duration DURATION = Duration.of(1, ChronoUnit.HOURS);
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
     private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
-    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
 
     @Test
     public void testEventWithNullArgument() {
-        assertThrows(NullPointerException.class, () -> new Event(ID, null, LOCATION, START_TIME, END_TIME));
-        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, null, END_TIME));
-        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, START_TIME, null));
+        assertThrows(NullPointerException.class, () -> new Event(ID, null, LOCATION, START_TIME, END_TIME, IS_FAVORITE));
+        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, null, END_TIME, IS_FAVORITE));
+        assertThrows(NullPointerException.class, () -> new Event(ID, NAME, LOCATION, START_TIME, null, IS_FAVORITE));
     }
 
     @Test
@@ -111,14 +112,14 @@ public class EventTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Event(
-                        ID, NAME, LOCATION, START_TIME, START_TIME.minus(1, Event.TIME_PRECISION)
+                        ID, NAME, LOCATION, START_TIME, START_TIME.minus(1, Event.TIME_PRECISION), IS_FAVORITE
                 )
         );
     }
 
     @Test
     public void eventCanEndInstantly(){
-        Event event = new Event(ID, NAME, LOCATION, START_TIME, START_TIME);
+        Event event = new Event(ID, NAME, LOCATION, START_TIME, START_TIME, IS_FAVORITE);
         assertThat(event.getStartTime(), is(event.getEndTime()));
     }
 
@@ -132,17 +133,19 @@ public class EventTest {
         assertThat(str, containsString(START_TIME.toString()));
         assertThat(str, containsString(END_TIME.toString()));
         assertThat(str, containsString(RECURRING_PERIOD.toString()));
+        assertThat(str, containsString(EVENT.getIsFavorite() ? "favorite event" : ""));
     }
 
     @Test
     public void equalsBehavesAsExpected(){
-        Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1), RECURRING_PERIOD);
-        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD);
-        Event event7 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD.setPeriod(RECURRING_PERIOD.getPeriod().plusMinutes(1)));
+        Event event1 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
+        Event event2 = new Event(Id.generateRandom(), NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
+        Event event3 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME.plusHours(1), RECURRING_PERIOD, IS_FAVORITE);
+        Event event4 = new Event(ID, NAME, LOCATION.name, START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
+        Event event5 = new Event(ID, NAME, LOCATION.name, LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
+        Event event6 = new Event(ID, NAME, "Another name", LOCATION.dropName(), START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
+        Event event7 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD.setPeriod(RECURRING_PERIOD.getPeriod().plusMinutes(1)), IS_FAVORITE);
+        Event event8 = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD, !IS_FAVORITE);
         assertThat(EVENT, is(EVENT));
         assertThat(EVENT, is(event1));
         assertThat(EVENT, not(is(1)));
@@ -152,11 +155,12 @@ public class EventTest {
         assertThat(EVENT, is(event5));
         assertThat(EVENT, not(is(event6)));
         assertThat(EVENT, not(is(event7)));
+        assertThat(EVENT, not(is(event8)));
     }
 
     @Test
     public void hashCodeIsEqualCompatible(){
-        Event event = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+        Event event = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD, IS_FAVORITE);
         assertThat(event, is(EVENT));
         assertThat(event, not(sameInstance(EVENT)));
         assertThat(event.hashCode(), is(EVENT.hashCode()));

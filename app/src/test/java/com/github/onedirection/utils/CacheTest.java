@@ -1,5 +1,7 @@
 package com.github.onedirection.utils;
 
+import com.github.onedirection.cache.Cache;
+
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

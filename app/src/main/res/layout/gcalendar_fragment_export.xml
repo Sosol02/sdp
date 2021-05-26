@@ -17,15 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_your_calendar"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textAlignment="center"
+            android:paddingBottom="@dimen/nav_header_vertical_spacing"
+            android:textColor="@color/col_on_secondary"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/buttonGCalendarExport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/export_to_google_calendar" />
+            android:text="@string/export_to_google_calendar"
+            app:cornerRadius="50dp" />
     </LinearLayout>
 
 </FrameLayout>

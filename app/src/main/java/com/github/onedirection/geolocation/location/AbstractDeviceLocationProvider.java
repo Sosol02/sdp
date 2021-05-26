@@ -7,7 +7,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.ObserverPattern;
 import com.google.android.gms.location.FusedLocationProviderClient;

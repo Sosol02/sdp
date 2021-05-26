@@ -1,9 +1,9 @@
 package com.github.onedirection.database.store;
 
-import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.utils.TimeUtils;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.geolocation.Coordinates;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.utils.Id;
 
 import java.time.Duration;
@@ -31,6 +31,7 @@ public class EventStorer extends Storer<Event> {
     public static final String KEY_RECURR_ID = "recurrId";
     public static final String KEY_RECURR_END_TIME = "recurrEndTime";
     public static final String KEY_RECURR_PERIOD = "recurrPeriod";
+    public static final String KEY_FAVORITE = "favorite";
 
     public static EventStorer getInstance() {
         return GLOBAL;
@@ -68,6 +69,7 @@ public class EventStorer extends Storer<Event> {
             map.put(KEY_RECURR_PERIOD, recurrence.getPeriod().getSeconds());
             map.put(KEY_RECURR_END_TIME, recurrence.getEndTime().toEpochSecond());
         });
+        map.put(KEY_FAVORITE, storable.getIsFavorite());
         return map;
     }
 
@@ -78,6 +80,7 @@ public class EventStorer extends Storer<Event> {
         String id = (String) m.get(KEY_ID);
         String name = (String) m.get(KEY_NAME);
         String locationName = (String) m.get(KEY_COORD_NAME);
+        boolean isFavorite = (boolean) m.get(KEY_FAVORITE);
         long epochStartTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_START_TIME));
         long epochEndTime = (long) Objects.requireNonNull(m.get(KEY_EPOCH_END_TIME));
 
@@ -92,7 +95,7 @@ public class EventStorer extends Storer<Event> {
 
         return new Event(new Id(UUID.fromString(id)), name, locationName, Optional.ofNullable(coords),
                 TimeUtils.epochToZonedDateTime(epochStartTime),
-                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(recurrence));
+                TimeUtils.epochToZonedDateTime(epochEndTime), Optional.ofNullable(recurrence), isFavorite);
     }
 
 }
