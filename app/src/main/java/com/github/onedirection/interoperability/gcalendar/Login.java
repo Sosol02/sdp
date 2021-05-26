@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.Task;
 
 import static com.github.onedirection.interoperability.gcalendar.GoogleCalendar.LOGCAT_TAG;
 
+/**
+ * Provide Google Login capabilities for use with Google Calendar.
+ */
 class Login {
     // From https://developers.google.com/identity/protocols/oauth2/scopes#calendar
     private static final String CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar";

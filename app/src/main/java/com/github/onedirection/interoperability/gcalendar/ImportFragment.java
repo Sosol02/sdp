@@ -21,6 +21,9 @@ import static com.github.onedirection.interoperability.gcalendar.Login.createLog
 import static com.github.onedirection.interoperability.gcalendar.Login.logIn;
 import static com.github.onedirection.interoperability.gcalendar.Login.logOut;
 
+/**
+ * Fragment which allows to import the calendar into Google Calendar.
+ */
 public class ImportFragment extends Fragment {
 
     private ActivityResultLauncher<Intent> loginGoogle;
