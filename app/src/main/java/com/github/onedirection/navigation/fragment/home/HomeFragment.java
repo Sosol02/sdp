@@ -52,6 +52,8 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private List<Event> favoritesEvents;
     private List<Event> orderedEvents;
     private View root;
+    private TextView displayEmpty;
+
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override
@@ -75,7 +77,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             queryManager.removeEvent(id);
             deleteEvent(id);
             checkEventListIsEmpty();
-            //eventList.getAdapter().notifyItemRemoved(viewHolder.getPosition());
         }
     };
 
@@ -118,6 +119,8 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         Toolbar toolbar = root.findViewById(R.id.toolbar);
 
         this.root = root;
+
+        displayEmpty = root.findViewById(R.id.displayNoEvents);
 
         checkEventListIsEmpty();
 
@@ -256,7 +259,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     }
 
     public void checkEventListIsEmpty() {
-        TextView displayEmpty = root.findViewById(R.id.displayNoEvents);
         if (events.isEmpty()) {
             displayEmpty.setVisibility(View.VISIBLE);
         } else {
