@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
     private boolean isOnOrderedView = false;
     private List<Event> favoritesEvents;
     private List<Event> orderedEvents;
-
+    private View root;
     
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -89,16 +89,20 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         homeFragment = this;
         onNoteListener = this;
 
-        FloatingActionButton fabAdd = (FloatingActionButton) root.findViewById(R.id.fab);
+        FloatingActionButton fabAdd = root.findViewById(R.id.fab);
         fabAdd.setOnClickListener(fabAdd());
 
-        FloatingActionButton fabFavorite = (FloatingActionButton) root.findViewById(R.id.fabFavorite);
+        FloatingActionButton fabFavorite = root.findViewById(R.id.fabFavorite);
         fabFavorite.setOnClickListener(fabFavorite());
 
-        FloatingActionButton fabOrder = (FloatingActionButton) root.findViewById(R.id.fabOrder);
+        FloatingActionButton fabOrder = root.findViewById(R.id.fabOrder);
         fabOrder.setOnClickListener(fabSortTime());
 
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
+
+        this.root = root;
+
+        checkEventListIsEmpty();
 
         return root;
     }
@@ -110,11 +114,13 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
     public void updateResults(List<Event> events){
         this.events = events;
+        checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(this.events, this));
 
     }
 
     public void updateResults(){
+        checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
@@ -124,6 +130,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
+            checkEventListIsEmpty();
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
     }
@@ -137,6 +144,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         }
         Database database = Database.getDefaultInstance();
         CompletableFuture<Event> e = database.retrieve(Objects.requireNonNull(id), EventStorer.getInstance());
+        checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
         eventViewerAdapter.notifyItemChanged(position);
     }
@@ -149,6 +157,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
         CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));;
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
+            checkEventListIsEmpty();
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
     }
@@ -161,6 +170,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
                 position = i;
             }
         }
+        checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
         eventViewerAdapter.notifyItemRemoved(position);
     }
@@ -187,6 +197,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
             Id id = events.get(viewHolder.getPosition()).getId();
             queryManager.removeEvent(id);
             deleteEvent(id);
+            checkEventListIsEmpty();
             //eventList.getAdapter().notifyItemRemoved(viewHolder.getPosition());
         }
     };
@@ -222,11 +233,7 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
                     isOnFavoriteView = true;
                     favoritesEvents = listFavorites;
                 }else{
-                    if(isOnOrderedView){
-                        eventList.setAdapter(new EventViewerAdapter(orderedEvents, onNoteListener));
-                    }else {
-                        eventList.setAdapter(new EventViewerAdapter(events, onNoteListener));
-                    }
+                    eventList.setAdapter(new EventViewerAdapter(isOnOrderedView? orderedEvents : events, onNoteListener));
                     isOnFavoriteView = false;
                 }
             }
@@ -240,25 +247,30 @@ public class HomeFragment extends Fragment implements  EventViewerAdapter.OnNote
 
                 if (!isOnOrderedView) {
                     List<Event> listOrdered = new ArrayList<>();
-                    for (Event e : isOnFavoriteView ? orderedEvents : events) {
-                        if (favorites.get(e.getId())) listOrdered.add(e);
+                    for (Event e : isOnFavoriteView ? favoritesEvents : events) {
+                        listOrdered.add(e);
                     }
                     listOrdered.sort((l, r) -> {
-                        if (l.equals(r)) return 0;
+                        //if (l.equals(r)) return 0;
                         return Long.compare(l.getStartTime().toEpochSecond(), r.getStartTime().toEpochSecond());
                     });
                     eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
                     isOnOrderedView = true;
                     orderedEvents = listOrdered;
                 }else{
-                    if(isOnFavoriteView){
-                        eventList.setAdapter(new EventViewerAdapter(favoritesEvents, onNoteListener));
-                    }else{
-                        eventList.setAdapter(new EventViewerAdapter(events, onNoteListener));
-                    }
+                    eventList.setAdapter(new EventViewerAdapter(isOnFavoriteView? favoritesEvents: events, onNoteListener));
                     isOnOrderedView = false;
                 }
             };
         };
+    }
+
+    public void checkEventListIsEmpty(){
+        TextView displayEmpty = root.findViewById(R.id.displayNoEvents);
+        if(events.isEmpty()){
+            displayEmpty.setVisibility(View.VISIBLE);
+        }else{
+            displayEmpty.setVisibility(View.INVISIBLE);
+        }
     }
 }

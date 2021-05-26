@@ -35,6 +35,7 @@
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
     <string name="update_event">Modify Event</string>
+    <string name="no_events_yet">You do not have any events yet</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>

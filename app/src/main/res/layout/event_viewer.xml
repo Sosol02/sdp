@@ -44,4 +44,12 @@
         android:src="@drawable/baseline_reorder_24"
         app:tint="@color/white" />
 
+    <TextView
+        android:id="@+id/displayNoEvents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_events_yet"
+        android:textSize="24sp" />
+
 </FrameLayout >
