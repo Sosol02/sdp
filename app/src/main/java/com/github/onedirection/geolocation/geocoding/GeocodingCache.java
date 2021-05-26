@@ -2,14 +2,12 @@ package com.github.onedirection.geolocation.geocoding;
 
 import android.content.Context;
 
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.NamedCoordinates;
-import com.github.onedirection.utils.AndroidCache;
-import com.github.onedirection.utils.Cache;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
+import com.github.onedirection.cache.AndroidCache;
+import com.github.onedirection.cache.Cache;
 import com.github.onedirection.utils.Pair;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;

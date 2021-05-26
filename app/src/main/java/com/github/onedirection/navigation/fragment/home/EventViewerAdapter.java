@@ -3,7 +3,6 @@ package com.github.onedirection.navigation.fragment.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -11,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
