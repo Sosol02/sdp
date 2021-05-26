@@ -6,7 +6,6 @@ import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.interoperability.gcalendar.GoogleCalendar;
 import com.github.onedirection.utils.Id;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -14,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -87,7 +87,6 @@ public class GoogleCalendarTest {
         assertEquals(EVENT, event);
     }
 
-    @Ignore("Missing feature")
     @Test
     public void conversionBijectionGeolocation() {
         com.google.api.services.calendar.model.Event gcEvent = GoogleCalendar.toGCalendarEvents(GEO_EVENT);
@@ -96,16 +95,17 @@ public class GoogleCalendarTest {
         assertEquals(GEO_EVENT, event);
     }
 
-    @Ignore("Missing feature")
     @Test
-    public void conversionBijectionRecurrence() {
+    public void conversionBijectionRecurrence() throws ExecutionException, InterruptedException {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofDays(1), ZonedDateTime.now().plusDays(3));
         Event recRoot =
                 new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
 
         Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(recRoot));
-        //assertThat(e, hasSize(3));
+        System.out.println(recRoot);
+        System.out.println(e);
+        assertThat(e, is(recRoot));
     }
 
     @Test

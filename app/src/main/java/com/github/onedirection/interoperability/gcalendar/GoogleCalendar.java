@@ -11,6 +11,8 @@ import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.model.Recurrence;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.TimeUtils;
@@ -41,11 +43,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Methods to interact with Google Calendar using our classes.
@@ -69,6 +74,8 @@ public final class GoogleCalendar {
     });
 
     private static final String CALENDAR_SUMMARY = "1DirectionBackup";
+
+    private static final Pattern LOCATION_REGEX = Pattern.compile("(?<name>.*)\nlat=(?<lat>[+-]?([0-9]*[.])?[0-9]+);lon=(?<lon>[+-]?([0-9]*[.])?[0-9]+)");
 
     private GoogleCalendar() {
     }
@@ -114,6 +121,27 @@ public final class GoogleCalendar {
                     .setSummary(event.getName())
                     .setId(fromId(event.getId()));
 
+            String location = event.getLocationName();
+            Optional<Coordinates> coords = event.getCoordinates();
+            if (coords.isPresent()) {
+                Coordinates coordinates = coords.get();
+                location += "\nlat=" + coordinates.latitude + ";lon=" + coordinates.longitude;
+            }
+            gcEvent.setLocation(location);
+
+            DateTime startDateTime = new DateTime(event.getStartTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
+            EventDateTime start = new EventDateTime()
+                    .setDateTime(startDateTime)
+                    .setTimeZone(ZoneId.SHORT_IDS.get(event.getStartTime().getZone().getId()));
+            gcEvent.setStart(start);
+
+            DateTime endDateTime = new DateTime(event.getEndTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
+            EventDateTime end = new EventDateTime()
+                    .setDateTime(endDateTime)
+                    .setTimeZone(ZoneId.SHORT_IDS.get(event.getEndTime().getZone().getId()));
+            gcEvent.setEnd(end);
+
+
             if (event.isRecurrent()) {
                 Recurrence recurrence = event.getRecurrence().get();
                 if (!event.getId().equals(recurrence.getGroupId())) {
@@ -137,25 +165,28 @@ public final class GoogleCalendar {
                 gcEvent.setRecurrence(Arrays.asList(recurr));
             }
 
-            // TODO: feature - geolocate event back
-            gcEvent.setLocation(event.getLocationName());
-
-            DateTime startDateTime = new DateTime(event.getStartTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone(ZoneId.SHORT_IDS.get(event.getStartTime().getZone().getId()));
-            gcEvent.setStart(start);
-
-            DateTime endDateTime = new DateTime(event.getEndTime().format(DateTimeFormatter.ofPattern(RFC3339_FORMAT)));
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone(ZoneId.SHORT_IDS.get(event.getEndTime().getZone().getId()));
-            gcEvent.setEnd(end);
-
             return gcEvent;
         } catch (RuntimeException e) {
             Log.d(LOGCAT_TAG, e.getMessage());
             throw e;
+        }
+    }
+
+    private static Event generateEvent(Id newId, String name, String locationName, ZonedDateTime startTime, ZonedDateTime endTime) {
+        Matcher locMatch = LOCATION_REGEX.matcher(locationName);
+        if (locMatch.matches()) {
+            return new Event(
+                    newId,
+                    name,
+                    new NamedCoordinates(
+                            Double.parseDouble(Objects.requireNonNull(locMatch.group("lat"))),
+                            Double.parseDouble(Objects.requireNonNull(locMatch.group("lon"))),
+                            locMatch.group("name")),
+                    startTime,
+                    endTime
+            );
+        } else {
+            return new Event(newId, name, locationName, startTime, endTime);
         }
     }
 
@@ -187,7 +218,8 @@ public final class GoogleCalendar {
             long epochSecondEndTime = event.getEnd().getDateTime().getValue() / 1000;
             ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
 
-            Event newEvent = new Event(newId, name, locationName, startTime, endTime);
+
+            Event newEvent = generateEvent(newId, name, locationName, startTime, endTime);
 
             if (event.getRecurrence() != null) {
                 List<String> recurrences = event.getRecurrence();
