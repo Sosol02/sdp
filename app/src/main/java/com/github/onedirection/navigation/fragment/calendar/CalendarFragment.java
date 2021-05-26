@@ -48,7 +48,7 @@ public class CalendarFragment extends Fragment {
 
     private static final int MAX_CALENDAR_DAYS = 42;
 
-    private final Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+    private final Calendar calendar = Calendar.getInstance(Locale.getDefault());
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
     private List<Event> eventsList = new ArrayList<>();
