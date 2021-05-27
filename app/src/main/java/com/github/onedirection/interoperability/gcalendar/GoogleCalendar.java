@@ -177,53 +177,54 @@ public final class GoogleCalendar {
             if (event.getStart() == null || event.getEnd() == null) {
                 throw new IllegalArgumentException("Event should have at least a start time and an end time.");
             }
-        Id newId = toId(event.getId());
-        String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
-        String locationName = (event.getLocation() != null) ? event.getLocation() : "";
-        boolean isFavorite = false;
+            Id newId = toId(event.getId());
+            String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
+            String locationName = (event.getLocation() != null) ? event.getLocation() : "";
+            boolean isFavorite = false;
 
-        long epochSecondStartTime = event.getStart().getDateTime().getValue() / 1000;
-        ZonedDateTime startTime = TimeUtils.epochToZonedDateTime(epochSecondStartTime);
-        long epochSecondEndTime = event.getEnd().getDateTime().getValue() / 1000;
-        ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
+            long epochSecondStartTime = event.getStart().getDateTime().getValue() / 1000;
+            ZonedDateTime startTime = TimeUtils.epochToZonedDateTime(epochSecondStartTime);
+            long epochSecondEndTime = event.getEnd().getDateTime().getValue() / 1000;
+            ZonedDateTime endTime = TimeUtils.epochToZonedDateTime(epochSecondEndTime);
 
-        Event newEvent = new Event(newId, name, locationName, startTime, endTime, isFavorite);
+            Event newEvent = new Event(newId, name, locationName, startTime, endTime, isFavorite);
 
-        if (event.getRecurrence() != null) {
-            List<String> recurrences = event.getRecurrence();
-            String periodically = null;
-            int eventCount = 0;
-            boolean rule_found = false;
-            String ruleFoundString = "";
+            if (event.getRecurrence() != null) {
+                List<String> recurrences = event.getRecurrence();
+                String periodically = null;
+                int eventCount = 0;
+                boolean rule_found = false;
+                String ruleFoundString = "";
 
-            for (String rule : recurrences) {
-                //Refer to https://developers.google.com/calendar/create-events to see how to retrieve recurrence
-                if (rule.startsWith("RRULE")) {
-                    if (rule_found && !rule.equals(ruleFoundString)) {
-                        throw new IllegalArgumentException("There are two different matching rule formats for the recurrence.");
+                for (String rule : recurrences) {
+                    //Refer to https://developers.google.com/calendar/create-events to see how to retrieve recurrence
+                    if (rule.startsWith("RRULE")) {
+                        if (rule_found && !rule.equals(ruleFoundString)) {
+                            throw new IllegalArgumentException("There are two different matching rule formats for the recurrence.");
+                        }
                     }
-                }
-                if (periodically == null) {
-                    throw new IllegalArgumentException("No recurrence rule matches the one used by " + R.string.app_name + " Events");
-                }
+                    if (periodically == null) {
+                        throw new IllegalArgumentException("No recurrence rule matches the one used by " + R.string.app_name + " Events");
+                    }
 
-                TemporalUnit period = PERIODS.getOrDefault(periodically, null);
-                if (period == null) {
-                    throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+                    TemporalUnit period = PERIODS.getOrDefault(periodically, null);
+                    if (period == null) {
+                        throw new IllegalArgumentException("The event recurrence period does not match any possible periods proposed.");
+                    }
+
+                    ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
+                            (startTime.toEpochSecond() + (eventCount - 1) * period.getDuration().getSeconds());
+
+                    Recurrence newRecurrence = new Recurrence(newEvent.getId(), period.getDuration(), recEndTime);
+                    newEvent = newEvent.setRecurrence(newRecurrence);
                 }
-
-                ZonedDateTime recEndTime = TimeUtils.epochToZonedDateTime
-                        (startTime.toEpochSecond() + (eventCount - 1) * period.getDuration().getSeconds());
-
-                Recurrence newRecurrence = new Recurrence(newEvent.getId(), period.getDuration(), recEndTime);
-                newEvent = newEvent.setRecurrence(newRecurrence);
             }
 
-            return newEvent;
-        } catch (RuntimeException e) {
-            Log.d(LOGCAT_TAG, e.getMessage());
-            throw e;
-        }
+                return newEvent;
+            } catch(RuntimeException e){
+                Log.d(LOGCAT_TAG, e.getMessage());
+                throw e;
+            }
     }
 
     private static List<String> listMatchingCalendarIds(Calendar service, String summary) {
