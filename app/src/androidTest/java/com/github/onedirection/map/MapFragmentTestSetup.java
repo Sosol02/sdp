@@ -8,6 +8,7 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
@@ -25,6 +26,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -41,6 +43,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public abstract class MapFragmentTestSetup {
 
     protected MapboxMap mapboxMap;
