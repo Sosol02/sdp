@@ -1,22 +1,9 @@
 package com.github.onedirection.notification;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import androidx.annotation.VisibleForTesting;
-
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
-
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * This class is called when it's time to publish a notification.
@@ -28,8 +15,9 @@ public class NotificationPublisher extends BroadcastReceiver {
 
     private static final String LOG_TAG = "NotificationPublisher";
 
-    // need public 0 argument constructor to exist otherwise it crashes
-    public NotificationPublisher() {}
+    public NotificationPublisher() {
+        //Empty constructor required
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

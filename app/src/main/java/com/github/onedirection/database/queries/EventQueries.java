@@ -1,9 +1,9 @@
 package com.github.onedirection.database.queries;
 
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.event.Recurrence;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.event.model.Recurrence;
 import com.github.onedirection.utils.Id;
 import com.github.onedirection.utils.TimeUtils;
 
@@ -155,7 +155,6 @@ public class EventQueries {
         List<Event> eventsToStore = new ArrayList<Event>();
         Recurrence newEventRecurrence = event.getRecurrence().get();
 
-        Id groupId = newEventRecurrence.getGroupId();
         final long period = newEventRecurrence.getPeriod().getSeconds();
         final long recurrenceLimit = newEventRecurrence.getEndTime().toEpochSecond();
         final long refStartTime = event.getStartTime().toEpochSecond();
@@ -283,7 +282,8 @@ public class EventQueries {
                             }
                         }
 
-                        return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence())) ? CompletableFuture.completedFuture(event.getId())
+                        return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence())) ? CompletableFuture.completedFuture(event.getId())
+
                                 : db.store(event);
                     }
                 } else {

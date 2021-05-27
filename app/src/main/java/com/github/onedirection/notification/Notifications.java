@@ -13,18 +13,23 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.DefaultDatabase;
-import com.github.onedirection.database.ObservableDatabase;
+import com.github.onedirection.database.implementation.Database;
+import com.github.onedirection.database.implementation.DefaultDatabase;
+import com.github.onedirection.database.implementation.ObservableDatabase;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.R;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A notification system for the application
+ */
 public class Notifications {
     private static final String CHANNEL_ID = "com.1Direction.events";
     private static final String CHANNEL_NAME = "1directionChannel";
@@ -70,7 +75,9 @@ public class Notifications {
     @VisibleForTesting
     public void installNotificationsObserver(Context context) {
         DefaultDatabase.getDefaultInstance().addObserver((observer, obj) -> {
+            Log.d(LOG_TAG, "DB change observed: " + obj.kind.toString());
             if (obj.kind == ObservableDatabase.ActionKind.Store || obj.kind == ObservableDatabase.ActionKind.Remove) {
+                Log.d(LOG_TAG, "--> reschedule notifs.");
                 lastPendingIntent.cancel();
                 onCheck(context, new NotificationPublisher());
             }
@@ -105,11 +112,21 @@ public class Notifications {
                 Log.d(LOG_TAG, "ERROR ENCOUNTERED: " + err);
             } else {
                 Objects.requireNonNull(events);
-                events.sort((l, r) -> {
+
+                // Add a copy of each event 5 min earlier to trigger a notif at these moments
+                List<Event> triggerPoints = new ArrayList<>();
+                for (Event e : events) {
+                    triggerPoints.add(e);
+                    // setEndTime returns a new Event
+                    Event earlierTrigger = e.setStartTime(e.getStartTime().minusMinutes(5));
+                    triggerPoints.add(earlierTrigger);
+                }
+
+                triggerPoints.sort((l, r) -> {
                     if (l.equals(r)) return 0;
                     return l.getStartTime().isBefore(r.getStartTime()) ? -1 : 1;
                 });
-                Log.d(LOG_TAG, "Sorted events: " + events);
+                Log.d(LOG_TAG, "Sorted trigger points: " + triggerPoints);
                 // Events is now sorted by Events's start date (early to late):
                 // We look through and: if an event happens before now ~ slack,
                 // we ignore it ; if it happens within now +- slack, we notify ;
@@ -118,7 +135,7 @@ public class Notifications {
                 ZonedDateTime lowerBound = now.minusSeconds(SLACK);
                 ZonedDateTime upperBound = now.plusSeconds(SLACK);
                 boolean scheduledNextTime = false;
-                for (Event e : events) {
+                for (Event e : triggerPoints) {
                     if (e.getStartTime().isBefore(lowerBound)) {
                         Log.d(LOG_TAG, "Event happens before now: " + e);
                         continue;
@@ -152,7 +169,7 @@ public class Notifications {
 
         Intent intent = new Intent(context, handler.getClass());
         // https://stackoverflow.com/questions/21526319/whats-requestcode-used-for-on-pendingintent
-        // The request code seems to not really matter for our usecase.
+        // The request code does not matter for our use case.
         if (lastPendingIntent != null) {
             lastPendingIntent.cancel();
         }

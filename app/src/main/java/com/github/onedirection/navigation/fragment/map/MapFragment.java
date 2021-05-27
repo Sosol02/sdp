@@ -19,7 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.location.AbstractDeviceLocationProvider;
 import com.github.onedirection.geolocation.location.DeviceLocationProvider;
 import com.github.onedirection.utils.EspressoIdlingResource;
@@ -37,7 +37,6 @@ import com.mapquest.navigation.model.Route;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -70,6 +69,7 @@ public class MapFragment extends Fragment {
     private Event currentEvent;
 
     private DeviceLocationProvider deviceLocationProvider;
+    private boolean isFirstUpdate;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -80,10 +80,10 @@ public class MapFragment extends Fragment {
     private Optional<Event> navigationEnd = Optional.empty();
 
     @VisibleForTesting
-    public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
+    public final CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
 
     @VisibleForTesting
-    public CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
+    public final CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override
@@ -183,6 +183,7 @@ public class MapFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(but -> cancelNavigation());
+        isFirstUpdate = true;
 
         return view;
     }
@@ -284,7 +285,7 @@ public class MapFragment extends Fragment {
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
         navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
 
-        // now that markerSymbolManager is non null, sync
+        // Now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();
     }
 
@@ -305,6 +306,10 @@ public class MapFragment extends Fragment {
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 myLocationSymbolManager.update(value);
+                if (isFirstUpdate) {
+                    isFirstUpdate = false;
+                    OnMyLocationButtonClickResponse();
+                }
             }
         });
     }
@@ -362,11 +367,12 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
+            //Intentionally left empty
         }
 
         @Override
         public void onRequestMade() {
+            //Intentionally left empty
         }
     }
 }

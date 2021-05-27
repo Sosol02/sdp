@@ -5,7 +5,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.geolocation.geocoding.GeocodingCache;
 import com.github.onedirection.geolocation.geocoding.GeocodingService;
-import com.google.android.gms.location.GeofencingEvent;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -12,9 +12,9 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -46,7 +46,7 @@ public class DayEventsListView extends LinearLayout {
         this.day = day;
         this.dayEvents = dayEvents;
         this.onDialogDismiss = onDialogDismiss;
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.view = inflater.inflate(R.layout.day_events_list, this);
         if(idling != null){
             this.idling = idling;

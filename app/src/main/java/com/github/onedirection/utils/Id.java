@@ -6,11 +6,17 @@ import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Class representing an ID to give to storable objects to uniquely identify them.
+ */
 @Immutable
 public class Id implements Serializable {
-    // these fields are what's compared for equality
-    // the UUID are extremely unique (2^122 possibilities)
-    // and the time thing uniques it
+    public final static int LENGTH = 36;
+    public final static int SEP_COUNT = 4;
+
+    // This field is what's compared for equality
+    // the UUIDs are extremely unique (2^122 possibilities)
+    // and the time attribute uniques it
     // It would need the same uuid to be generated in the same millis
     // for a collision to happen.
     private final String uuid;
@@ -28,6 +34,10 @@ public class Id implements Serializable {
 
     public Id(UUID uuid) {
         this.uuid = uuid.toString();
+
+        if(this.uuid.length() != LENGTH){
+            throw new IllegalArgumentException("Invalid UUID length: " + this.uuid.length());
+        }
     }
 
     public String getUuid() {

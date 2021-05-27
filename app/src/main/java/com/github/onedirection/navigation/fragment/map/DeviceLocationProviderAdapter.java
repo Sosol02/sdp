@@ -31,7 +31,7 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
         }
     };
 
-    private DeviceLocationProvider deviceLocationProvider;
+    private final DeviceLocationProvider deviceLocationProvider;
 
     public DeviceLocationProviderAdapter(DeviceLocationProvider deviceLocationProvider) {
         this.deviceLocationProvider = deviceLocationProvider;

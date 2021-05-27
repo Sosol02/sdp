@@ -35,6 +35,7 @@
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
     <string name="update_event">Modify Event</string>
+    <string name="no_events_yet">You do not have any events yet</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>
@@ -55,6 +56,10 @@
     <string name="route_service_request">Route has been requested</string>
     <string name="route_service_failed">Route request has failed</string>
     <string name="route_service_success">Route has been retrieved</string>
+
+    <string name="destination_reached">Destination Reached !</string>
+    <string name="destination_reached_acceptance">Proceed</string>
+    <string name="destination_reached_cancel">Cancel</string>
 
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">CREATE AN EVENT</string>
@@ -105,19 +110,23 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
 
-    <string name="event_name">Event Name</string>
     <string name="textview">TextView</string>
 
     <!-- Google calendar related -->
     <string name="export_your_calendar">Export your calendar:</string>
     <string name="export_to_google_calendar">Export to Google Calendar</string>
+    <string name="import_your_calendar">Import a Google Calendar:</string>
+    <string name="import_from_google_calendar">Import from Google Calendar</string>
     <string name="next_maneuver_icon_desc">next maneuver icon</string>
     <string name="speed_limit_sign_desc">speed limit sign</string>
 
     <!-- Navigation -->
     <string name="set_starting_point">Set starting point</string>
-    <string name="nav_cancel">cancel</string>
+    <string name="nav_cancel">Cancel</string>
     <string name="set_end_point">Set end point</string>
     <string name="start_navigation">Start Navigation</string>
+
+    <!-- Misc -->
+    <string name="text_view">TextView</string>
 
 </resources>

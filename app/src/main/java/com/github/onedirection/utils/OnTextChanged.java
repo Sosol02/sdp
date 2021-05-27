@@ -5,6 +5,9 @@ import android.text.TextWatcher;
 
 import java.util.function.Consumer;
 
+/**
+ * Class representing a text observer
+ */
 public final class OnTextChanged implements TextWatcher {
 
     private final Consumer<String> callback;

@@ -20,8 +20,36 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:contentDescription="Add event"
+        android:contentDescription="@string/add_event"
         android:src="@drawable/baseline_add_24"
         app:tint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="Add event"
+        android:src="@drawable/baseline_star_border_24"
+        app:tint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="Add event"
+        android:src="@drawable/baseline_reorder_24"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/displayNoEvents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_events_yet"
+        android:textSize="24sp" />
 
 </FrameLayout >

@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -14,15 +13,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.Database;
+import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -97,7 +95,7 @@ public class DisplayEvent extends AppCompatActivity {
             HomeFragment.homeFragment.favorites.put(event.getId(),false);
         }
         if(HomeFragment.homeFragment.favorites.get(event.getId())){
-            ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+            ImageButton btn = findViewById(R.id.favorite_button);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
@@ -140,7 +138,7 @@ public class DisplayEvent extends AppCompatActivity {
         Id id = event.getId();
 
         boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
-        ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+        ImageButton btn = findViewById(R.id.favorite_button);
         if(isFavorite){
             HomeFragment.homeFragment.favorites.replace(id, false);
             HomeFragment.homeFragment.updateModifiedEvent(id);

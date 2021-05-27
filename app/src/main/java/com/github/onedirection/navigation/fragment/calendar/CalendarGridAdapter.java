@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.onedirection.R;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.event.model.Event;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -22,7 +22,6 @@ import java.util.List;
  * Adapter used by the calendar to display the date and number of events on that day
  */
 public class CalendarGridAdapter extends ArrayAdapter {
-    private final Calendar currentDate;
     private final List<Event> events;
     private final LayoutInflater inflater;
     private final List<Date> dates;
@@ -32,7 +31,6 @@ public class CalendarGridAdapter extends ArrayAdapter {
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
-        this.currentDate = currentDate;
         this.events = events;
         this.inflater = LayoutInflater.from(context);
         this.dates = dates;
@@ -72,7 +70,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                 }
             }
             if(nbOfEventsInDay > 0) {
-                eventNumber.setText(Integer.toString(nbOfEventsInDay));
+                eventNumber.setText(String.valueOf(nbOfEventsInDay));
                 eventNumber.setBackgroundResource(R.drawable.rounded_corner);
             } else {
                 eventNumber.setBackgroundResource(android.R.color.transparent);

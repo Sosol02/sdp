@@ -17,20 +17,17 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.FirebaseAuthentication;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.event.Event;
+import com.github.onedirection.authentication.service.FirebaseAuthentication;
+import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * Activity to navigate into the app.
+ */
 public class NavigationActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;

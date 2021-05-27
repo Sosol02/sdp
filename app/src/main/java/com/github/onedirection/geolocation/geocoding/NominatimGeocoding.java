@@ -5,14 +5,13 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.utils.HTTP;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.Pair;
@@ -98,7 +97,7 @@ public final class NominatimGeocoding implements GeocodingService {
                 result::completeExceptionally
         ){
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 return Collections.singletonMap("User-Agent", USER_AGENT);
             }
         };
@@ -117,7 +116,7 @@ public final class NominatimGeocoding implements GeocodingService {
                 result::completeExceptionally
         ){
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 return Collections.singletonMap("User-agent", USER_AGENT);
             }
         };

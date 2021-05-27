@@ -17,13 +17,13 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.BuildConfig;
 import com.github.onedirection.R;
-import com.github.onedirection.database.ConcreteDatabase;
-import com.github.onedirection.database.Database;
-import com.github.onedirection.database.DefaultDatabase;
+import com.github.onedirection.database.implementation.ConcreteDatabase;
+import com.github.onedirection.database.implementation.Database;
+import com.github.onedirection.database.implementation.DefaultDatabase;
 import com.github.onedirection.database.store.EventStorer;
-import com.github.onedirection.event.Event;
-import com.github.onedirection.geolocation.Coordinates;
-import com.github.onedirection.geolocation.NamedCoordinates;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.geolocation.model.Coordinates;
+import com.github.onedirection.geolocation.model.NamedCoordinates;
 import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.DeviceLocationProviderAdapter;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
@@ -44,11 +44,17 @@ import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.listener.NavigationProgressListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
 import com.mapquest.navigation.listener.RerouteBehaviorOverride;
+import com.mapquest.navigation.model.Maneuver;
 import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
 import com.mapquest.navigation.model.location.Coordinate;
+import com.mapquest.navigation.model.location.Destination;
+import com.mapquest.navigation.model.location.Location;
+import com.mapquest.navigation.model.location.LocationObservation;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,7 +75,6 @@ import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -91,7 +96,6 @@ public class MapFragmentTest {
     private MapboxMap mapboxMap;
     private MapFragment fragment;
     private OnMapReadyIdlingResource onMapReadyIdlingResource;
-    private EspressoIdlingResource espressoIdlingResource;
     private CountingIdlingResource countingIdlingResource;
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
@@ -121,7 +125,7 @@ public class MapFragmentTest {
     };
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    public final ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Rule
     public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(
@@ -142,7 +146,7 @@ public class MapFragmentTest {
             onMapReadyIdlingResource = new OnMapReadyIdlingResource(fragment);
         });
 
-        espressoIdlingResource = EspressoIdlingResource.getInstance();
+        EspressoIdlingResource espressoIdlingResource = EspressoIdlingResource.getInstance();
         countingIdlingResource = espressoIdlingResource.getCountingIdlingResource();
 
         IdlingRegistry.getInstance().register(onMapReadyIdlingResource);
@@ -247,7 +251,7 @@ public class MapFragmentTest {
 
         // Wait acton to make getMarkerSymbolManager work.
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
-        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);;
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
         markerSymbolManager.syncEventsWithDb().join();
 
         Semaphore waitForBsbCollapsed = new Semaphore(0);
@@ -523,6 +527,10 @@ public class MapFragmentTest {
         onView(withId(R.id.eta_next_destination)).check(matches(not(withText(""))));
         onView(withId(R.id.arrivalBarLayout)).check(matches(isDisplayed()));
         onView(withId(R.id.maneuverBarLayout)).check(matches(isDisplayed()));
+        onView(withId(R.id.destinationReachedBarLayout)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.speed_limit_blank)).check(matches(isDisplayed()));
+        onView(withId(R.id.speed_limit)).check(matches(withText("40")));
+
         onView(withId(R.id.stop)).perform(click());
 
         assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.STOPPED));
