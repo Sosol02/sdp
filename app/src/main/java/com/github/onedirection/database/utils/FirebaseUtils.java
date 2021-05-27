@@ -16,7 +16,7 @@ public class FirebaseUtils {
                 FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                         .setHost("10.0.2.2:8080")
                         .setSslEnabled(false)
-                        .setPersistenceEnabled(false)
+                        .setPersistenceEnabled(true)
                         .build();
                 firestore.setFirestoreSettings(settings);
             }
