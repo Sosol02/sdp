@@ -32,8 +32,7 @@ public class GoogleCalendarTest {
             NAME,
             LOCATION,
             START_TIME,
-            END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3))
+            END_TIME
     );
 
     private static final Event GEO_EVENT = new Event(
@@ -41,8 +40,7 @@ public class GoogleCalendarTest {
             NAME,
             new NamedCoordinates(0, 0, LOCATION),
             START_TIME,
-            END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3))
+            END_TIME
     );
 
     @Test
@@ -62,16 +60,6 @@ public class GoogleCalendarTest {
     }
 
     @Test
-    public void toGCalendarEventConvertsRecurrenceFirstOccurrence() {
-        com.google.api.services.calendar.model.Event gcEvent = GoogleCalendar.toGCalendarEvents(EVENT);
-        String[] recurrence = gcEvent.getRecurrence().get(0).split(";");
-
-        assertEquals(ID.getUuid(), gcEvent.getRecurringEventId());
-        assertEquals("WEEKLY", recurrence[0].substring(11));
-        assertEquals("4", recurrence[1].substring(6));
-    }
-
-    @Test
     public void conversionBijection() {
         com.google.api.services.calendar.model.Event gcEvent = GoogleCalendar.toGCalendarEvents(EVENT);
         Event event = GoogleCalendar.fromGCalendarEvents(gcEvent);
@@ -81,8 +69,6 @@ public class GoogleCalendarTest {
         assertEquals(LOCATION, event.getLocationName());
         assertEquals(START_TIME, event.getStartTime());
         assertEquals(END_TIME, event.getEndTime());
-        assertEquals(ChronoUnit.WEEKS.getDuration(), event.getRecurrence().get().getPeriod());
-        assertEquals(START_TIME.plusWeeks(3), event.getRecurrence().get().getEndTime());
 
         assertEquals(EVENT, event);
     }
@@ -96,16 +82,9 @@ public class GoogleCalendarTest {
     }
 
     @Test
-    public void conversionBijectionRecurrence() throws ExecutionException, InterruptedException {
-        Id id = Id.generateRandom();
-        Recurrence rec = new Recurrence(id, Duration.ofDays(1), ZonedDateTime.now().plusDays(3));
-        Event recRoot =
-                new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-
-        Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(recRoot));
-        System.out.println(recRoot);
-        System.out.println(e);
-        assertThat(e, is(recRoot));
+    public void conversionRecurrenceDropsRec() throws ExecutionException, InterruptedException {
+        Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(EVENT));
+        assertThat(e.isRecurrent(), is(false));
     }
 
     @Test
