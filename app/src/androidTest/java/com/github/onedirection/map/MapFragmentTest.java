@@ -96,7 +96,6 @@ public class MapFragmentTest {
     private MapboxMap mapboxMap;
     private MapFragment fragment;
     private OnMapReadyIdlingResource onMapReadyIdlingResource;
-    private EspressoIdlingResource espressoIdlingResource;
     private CountingIdlingResource countingIdlingResource;
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
@@ -126,7 +125,7 @@ public class MapFragmentTest {
     };
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    public final ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Rule
     public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(
@@ -147,7 +146,7 @@ public class MapFragmentTest {
             onMapReadyIdlingResource = new OnMapReadyIdlingResource(fragment);
         });
 
-        espressoIdlingResource = EspressoIdlingResource.getInstance();
+        EspressoIdlingResource espressoIdlingResource = EspressoIdlingResource.getInstance();
         countingIdlingResource = espressoIdlingResource.getCountingIdlingResource();
 
         IdlingRegistry.getInstance().register(onMapReadyIdlingResource);
@@ -252,7 +251,7 @@ public class MapFragmentTest {
 
         // Wait acton to make getMarkerSymbolManager work.
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
-        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);;
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
         markerSymbolManager.syncEventsWithDb().join();
 
         Semaphore waitForBsbCollapsed = new Semaphore(0);

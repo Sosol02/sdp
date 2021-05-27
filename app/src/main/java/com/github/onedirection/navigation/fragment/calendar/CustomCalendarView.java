@@ -47,7 +47,7 @@ public class CustomCalendarView extends LinearLayout {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
     private final SimpleDateFormat monthFormat = new SimpleDateFormat(("MMM"), Locale.ENGLISH);
     private final List<Date> dates = new ArrayList<>();
-    public CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
+    public final CountingIdlingResource idling = new CountingIdlingResource("Calendar events are loading.");
     private List<Event> eventsList = new ArrayList<>();
 
     private DayEventsListView dayEventsView;

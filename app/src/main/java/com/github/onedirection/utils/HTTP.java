@@ -3,6 +3,9 @@ package com.github.onedirection.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+/**
+ * Simple HTTP class to provide an encode URL encoding
+ */
 public final class HTTP {
 
     private HTTP() {}

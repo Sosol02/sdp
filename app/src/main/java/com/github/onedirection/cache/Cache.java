@@ -72,9 +72,6 @@ public final class Cache<K, V> {
         this.maxHistory = maxHistory;
         this.map = map;
         this.history = history;
-
-        // Note: I did not a find a way to verify that the capacity of the queue
-        // is indeed maxHistory...
     }
 
     public Cache(
@@ -146,8 +143,6 @@ public final class Cache<K, V> {
         V res = f.apply(key);
         if (res == null) {
             // Don't store null: map and queue don't accept null keys
-            // Should it be an exception? In case of a backing function that
-            // returns mostly null values, performance would suffer.
             return null;
         }
 
@@ -162,7 +157,7 @@ public final class Cache<K, V> {
         if (!history.offer(key)) {
             // the history is full
             K oldest;
-            // while because invalidated may still be in the history and need to be skipped
+            // While loop because invalidated may still be in the history and need to be skipped
             do {
                 oldest = history.remove();
             } while (map.remove(oldest) == null);

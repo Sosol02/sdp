@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.not;
 public class CalendarUITest {
 
     @Rule
-    public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
+    public final ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
     private CountingIdlingResource idling;
     private CalendarFragment fragment;
 
@@ -70,7 +70,7 @@ public class CalendarUITest {
     }
 
     @Before
-    public void setupForTest() throws InterruptedException {
+    public void setupForTest() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()));
         onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
@@ -128,7 +128,7 @@ public class CalendarUITest {
     }
 
     @Test
-    public void testViewEvents() throws InterruptedException {
+    public void testViewEvents() {
         DataInteraction date = onData(anything())
                 .inAdapterView(allOf(withId(R.id.gridView),
                         childAtPosition(
