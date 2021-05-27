@@ -110,7 +110,6 @@ public class CalendarUITest {
  
 
     @Test
-<<<<<<< HEAD
     public void testViewEvents() throws InterruptedException {
         DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
 
