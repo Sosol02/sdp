@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
@@ -47,25 +48,25 @@ public class DayEventsListView extends LinearLayout {
         this.onDialogDismiss = onDialogDismiss;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.view = inflater.inflate(R.layout.day_events_list, this);
-        this.idling = idling;
+        if(idling != null){
+            this.idling = idling;
+        } else {
+            this.idling = new CountingIdlingResource("Day events loading");
+        }
 
         setupEventsListView(view);
         setupDialog();
     }
 
     public void updateEventsList(){
-        if(idling != null){
-            idling.increment();
-        }
+
+        idling.increment();
         CompletableFuture<List<Event>> newEventsList = getDayEvents(day);
         newEventsList.whenComplete((events, throwable) -> {
             dayEvents.clear();
             dayEvents.addAll(events);
             eventsListAdapter.notifyDataSetChanged();
-
-            if(idling != null){
-                idling.decrement();
-            }
+            idling.decrement();
         });
     }
 
