@@ -233,7 +233,7 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
-                    speedLimitValue.setText(Integer.toString(Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                    speedLimitValue.setText(String.format(Locale.getDefault(), "%d",Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
                             .toKilometersPerHour() / 10) * 10));
                 }
             }
@@ -343,44 +343,36 @@ public class NavigationManager {
         @Override
         public void onInaccurateObservationReceived(Location location) {}
 
+        private void onDestinationReachedResponse(boolean finalDestination, boolean accepted, DestinationAcceptanceHandler destinationAcceptanceHandler) {
+            destinationAcceptanceHandler.confirmArrival(accepted);
+            if (finalDestination) {
+                stopNavigation();
+            }
+            destinationAccept.setClickable(false);
+            destinationAccept.setOnClickListener(null);
+            destinationReachedBar.setVisibility(View.GONE);
+        }
+
         @Override
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationReachedBar.setVisibility(View.VISIBLE);
             if (finalDestination) {
                 Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-                destinationAccept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        destinationAcceptanceHandler.confirmArrival(true);
-                        stopNavigation();
-                        destinationAccept.setClickable(false);
-                        destinationAccept.setOnClickListener(null);
-                        destinationReachedBar.setVisibility(View.GONE);
-                    }
-                });
-                destinationAccept.setClickable(true);
             } else {
                 Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
-                destinationAccept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        destinationAcceptanceHandler.confirmArrival(true);
-                        destinationAccept.setClickable(false);
-                        destinationAccept.setOnClickListener(null);
-                        destinationReachedBar.setVisibility(View.GONE);
-                    }
-                });
-                destinationAccept.setClickable(true);
             }
+            destinationAccept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler);
+                }
+            });
+            destinationAccept.setClickable(true);
             destinationRefuse.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    destinationAcceptanceHandler.confirmArrival(false);
-                    navigationManager.resumeNavigation();
-                    destinationAccept.setClickable(false);
-                    destinationAccept.setOnClickListener(null);
-                    destinationReachedBar.setVisibility(View.GONE);
+                    onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler);
                 }
             });
 
