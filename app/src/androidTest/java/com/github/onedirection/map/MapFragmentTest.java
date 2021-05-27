@@ -44,9 +44,17 @@ import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapquest.navigation.dataclient.RouteService;
 import com.mapquest.navigation.dataclient.listener.RoutesResponseListener;
+import com.mapquest.navigation.listener.NavigationProgressListener;
 import com.mapquest.navigation.listener.NavigationStateListener;
+import com.mapquest.navigation.listener.RerouteBehaviorOverride;
+import com.mapquest.navigation.model.Maneuver;
 import com.mapquest.navigation.model.Route;
+import com.mapquest.navigation.model.RouteLeg;
 import com.mapquest.navigation.model.RouteStoppedReason;
+import com.mapquest.navigation.model.location.Coordinate;
+import com.mapquest.navigation.model.location.Destination;
+import com.mapquest.navigation.model.location.Location;
+import com.mapquest.navigation.model.location.LocationObservation;
 
 import org.junit.After;
 import org.junit.Before;
@@ -520,6 +528,10 @@ public class MapFragmentTest {
         onView(withId(R.id.eta_next_destination)).check(matches(not(withText(""))));
         onView(withId(R.id.arrivalBarLayout)).check(matches(isDisplayed()));
         onView(withId(R.id.maneuverBarLayout)).check(matches(isDisplayed()));
+        onView(withId(R.id.destinationReachedBarLayout)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.speed_limit_blank)).check(matches(isDisplayed()));
+        onView(withId(R.id.speed_limit)).check(matches(withText("40")));
+
         onView(withId(R.id.stop)).perform(click());
 
         assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.STOPPED));
