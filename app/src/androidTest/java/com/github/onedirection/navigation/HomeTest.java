@@ -17,6 +17,7 @@ import com.github.onedirection.R;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -130,6 +131,7 @@ public class HomeTest {
         appCompatEditText3.perform(pressImeActionButton());
     }
 
+    @Ignore
     @Test
     public void orderAndFavTest(){
         ViewInteraction floatingActionButton = onView(
