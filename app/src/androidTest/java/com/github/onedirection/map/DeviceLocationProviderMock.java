@@ -17,14 +17,22 @@ public class DeviceLocationProviderMock implements DeviceLocationProvider {
     public static final Coordinates COORDINATES_LOCATION = new Coordinates(32.22222, 43.33333);
 
     private final ArrayList<ObserverPattern.Observer<Coordinates>> observers = new ArrayList<>();
+    private final boolean locationPermission;
+
+    public DeviceLocationProviderMock(boolean locationPermission) {
+        this.locationPermission = locationPermission;
+    }
 
     @Override
     public CompletableFuture<Boolean> requestFineLocationPermission() {
-        return CompletableFuture.completedFuture(true);
+        return CompletableFuture.completedFuture(locationPermission);
     }
 
     @Override
     public Location getLastAndroidLocation() {
+        if (!locationPermission) {
+            return null;
+        }
         Location location = new Location("test");
         location.setLatitude(LOCATION_1_latitude);
         location.setLongitude(LOCATION_1_longitude);
@@ -43,6 +51,9 @@ public class DeviceLocationProviderMock implements DeviceLocationProvider {
 
     @Override
     public Coordinates getLastLocation() {
+        if (!locationPermission) {
+            return null;
+        }
         return COORDINATES_LOCATION;
     }
 

@@ -50,7 +50,7 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
         final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
         runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
                 fragment.requireContext().getApplicationContext(), BuildConfig.API_KEY,
-                new DeviceLocationProviderAdapter(new DeviceLocationProviderMock()))
+                new DeviceLocationProviderAdapter(new DeviceLocationProviderMock(true)))
                 .build());
         setAttributeField("navigationManager", navigationManager, nav[0]);
 
@@ -117,7 +117,7 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
         RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
         final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
-        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock(true);
         runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
                 fragment.requireContext().getApplicationContext(), BuildConfig.API_KEY,
                 new DeviceLocationProviderAdapter(deviceLocationProviderMock))

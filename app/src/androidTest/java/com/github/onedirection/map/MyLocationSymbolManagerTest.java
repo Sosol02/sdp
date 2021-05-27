@@ -1,16 +1,13 @@
 package com.github.onedirection.map;
 
-import android.Manifest;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
 import com.github.onedirection.navigation.fragment.map.MyLocationSymbolManager;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(AndroidJUnit4.class)
 public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
@@ -29,18 +27,7 @@ public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
     @Test
     public void testMyLocationIsAppearing() throws InterruptedException {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
-        deviceLocationProviderMock.addObserver((subject, value) -> {
-            if (myLocationSymbolManager != null) {
-                try {
-                    runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        deviceLocationProviderMock.notifyObservers();
-        setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
+        setupDeviceLocationProviderMock(true);
         LatLng last = mapboxMap.getCameraPosition().target;
         assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
         Semaphore semaphore = new Semaphore(0);
@@ -59,7 +46,22 @@ public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
     @Test
     public void testMyLocationButton() {
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
-        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock();
+        setupDeviceLocationProviderMock(true);
+        onView(withId(R.id.my_location_button)).perform(click());
+        assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
+    }
+
+    @Test
+    public void testMyLocationIsNotAppearingWhenNotAuthorized() {
+        MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
+        setupDeviceLocationProviderMock(false);
+        Symbol myLocation = getAttributeField("myLocation", myLocationSymbolManager, Symbol.class);
+        assertThat(myLocation.getIconOpacity(), is(0.0f));
+    }
+
+    private void setupDeviceLocationProviderMock(boolean locationPermission) {
+        MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
+        DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock(locationPermission);
         deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 try {
@@ -71,7 +73,5 @@ public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
         });
         deviceLocationProviderMock.notifyObservers();
         setFragmentField("deviceLocationProvider", deviceLocationProviderMock);
-        onView(withId(R.id.my_location_button)).perform(click());
-        assertThat(myLocationSymbolManager.getPosition(), is(notNullValue()));
     }
 }
