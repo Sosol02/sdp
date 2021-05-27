@@ -21,6 +21,8 @@ import com.github.onedirection.event.model.Event;
 import com.github.onedirection.R;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -70,7 +72,9 @@ public class Notifications {
     @VisibleForTesting
     public void installNotificationsObserver(Context context) {
         DefaultDatabase.getDefaultInstance().addObserver((observer, obj) -> {
+            Log.d(LOG_TAG, "DB change observed: " + obj.kind.toString());
             if (obj.kind == ObservableDatabase.ActionKind.Store || obj.kind == ObservableDatabase.ActionKind.Remove) {
+                Log.d(LOG_TAG, "--> reschedule notifs.");
                 lastPendingIntent.cancel();
                 onCheck(context, new NotificationPublisher());
             }
@@ -105,11 +109,21 @@ public class Notifications {
                 Log.d(LOG_TAG, "ERROR ENCOUNTERED: " + err);
             } else {
                 Objects.requireNonNull(events);
-                events.sort((l, r) -> {
+
+                // Add a copy of each event 5 min earlier to trigger a notif at these moments
+                List<Event> triggerPoints = new ArrayList<>();
+                for (Event e : events) {
+                    triggerPoints.add(e);
+                    // setEndTime returns a new Event
+                    Event earlierTrigger = e.setStartTime(e.getStartTime().minusMinutes(5));
+                    triggerPoints.add(earlierTrigger);
+                }
+
+                triggerPoints.sort((l, r) -> {
                     if (l.equals(r)) return 0;
                     return l.getStartTime().isBefore(r.getStartTime()) ? -1 : 1;
                 });
-                Log.d(LOG_TAG, "Sorted events: " + events);
+                Log.d(LOG_TAG, "Sorted trigger points: " + triggerPoints);
                 // Events is now sorted by Events's start date (early to late):
                 // We look through and: if an event happens before now ~ slack,
                 // we ignore it ; if it happens within now +- slack, we notify ;
@@ -118,7 +132,7 @@ public class Notifications {
                 ZonedDateTime lowerBound = now.minusSeconds(SLACK);
                 ZonedDateTime upperBound = now.plusSeconds(SLACK);
                 boolean scheduledNextTime = false;
-                for (Event e : events) {
+                for (Event e : triggerPoints) {
                     if (e.getStartTime().isBefore(lowerBound)) {
                         Log.d(LOG_TAG, "Event happens before now: " + e);
                         continue;

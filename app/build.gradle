@@ -34,6 +34,7 @@ android {
     }
 
     applicationVariants.all { variant ->
+        variant.buildConfigField "Boolean", "USE_PROD_DB", "false" // set to false to use the emulator
         variant.buildConfigField "String", "API_KEY", getApiKey() // Provides key for the Navigation SDK
         variant.resValue "string", "API_KEY", getApiKey()         // Provides key for the MapView used in app layouts
     }
