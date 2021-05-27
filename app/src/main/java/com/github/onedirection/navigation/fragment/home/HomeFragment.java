@@ -18,10 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.onedirection.R;
 import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.database.store.EventStorer;
-
 import com.github.onedirection.event.model.Event;
-
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,10 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 
