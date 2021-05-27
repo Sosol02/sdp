@@ -101,11 +101,11 @@ public class MapFragment extends Fragment {
                     if (result) {
                         deviceLocationProvider.startLocationTracking();
                         if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.SetEnableSymbol(true);
+                            myLocationSymbolManager.setEnableSymbol(true);
                         }
                     } else {
                         if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.SetEnableSymbol(false);
+                            myLocationSymbolManager.setEnableSymbol(false);
                         }
                     }
                 });
@@ -300,7 +300,7 @@ public class MapFragment extends Fragment {
         if (DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
             deviceLocationProvider.startLocationTracking();
             if (myLocationSymbolManager != null) {
-                myLocationSymbolManager.SetEnableSymbol(true);
+                myLocationSymbolManager.setEnableSymbol(true);
             }
         }
         deviceLocationProvider.addObserver((subject, value) -> {
