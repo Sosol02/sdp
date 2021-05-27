@@ -106,9 +106,5 @@ public class DisplayEventTest {
         ActivityScenario.launch(intent).onActivity( a->{
             DisplayEvent activity = (DisplayEvent) a;
         });
-        onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.favorite_button)).perform(ViewActions.click());
-        onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
-
     }
 }
