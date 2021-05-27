@@ -17,9 +17,11 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
@@ -56,7 +58,7 @@ public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
         MyLocationSymbolManager myLocationSymbolManager = getFragmentField("myLocationSymbolManager", MyLocationSymbolManager.class);
         setupDeviceLocationProviderMock(false);
         Symbol myLocation = getAttributeField("myLocation", myLocationSymbolManager, Symbol.class);
-        assertThat(myLocation.getIconOpacity(), is(0.0f));
+        assertTrue(myLocation == null || myLocation.getIconOpacity() == 0.0f);
     }
 
     private void setupDeviceLocationProviderMock(boolean locationPermission) {
