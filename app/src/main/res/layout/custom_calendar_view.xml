@@ -60,6 +60,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="@string/sun"
+            android:textAlignment="center"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/mon"
             android:textAlignment="center"
             android:layout_marginTop="4dp"
@@ -106,15 +115,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/sat"
-            android:textAlignment="center"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/sun"
             android:textAlignment="center"
             android:layout_marginTop="4dp"
             android:layout_weight="1"

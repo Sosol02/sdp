@@ -34,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:paddingLeft="4dp"
         android:text="@string/no_loc"
         android:textColor="@color/col_on_secondary"
         android:textSize="14sp"
@@ -47,9 +46,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
+        android:textSize="32sp"
         android:text="@string/textview"
         android:textColor="@color/col_on_secondary"
-        android:textSize="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,6 +93,7 @@
         android:onClick="buttonStarEvent"
         android:src="@android:drawable/btn_star_big_off"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/favIcon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

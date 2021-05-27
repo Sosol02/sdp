@@ -24,6 +24,9 @@ import com.github.onedirection.R;
 import com.github.onedirection.authentication.service.User;
 import com.google.android.material.navigation.NavigationView;
 
+/**
+ * Fragment for the Login/SignIn view
+ */
 public class SignFragment extends Fragment {
 
     private SignViewModel signViewModel;

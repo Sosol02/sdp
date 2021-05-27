@@ -32,10 +32,9 @@ public class DayEventsListView extends LinearLayout{
     private final static int WINDOW_LAYOUT_HEIGHT = 1200;
     private final Context context;
     private final ZonedDateTime day;
-    private final LayoutInflater inflater;
-    private View view;
-    private CountingIdlingResource idling;
-    private Runnable onDialogDismiss;
+    private final View view;
+    private final CountingIdlingResource idling;
+    private final Runnable onDialogDismiss;
     private AlertDialog alertDialog;
 
     public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {
@@ -43,7 +42,7 @@ public class DayEventsListView extends LinearLayout{
         this.context = context;
         this.day = day;
         this.onDialogDismiss = onDialogDismiss;
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.view = inflater.inflate(R.layout.day_events_list, this);
         this.idling = idling;
 

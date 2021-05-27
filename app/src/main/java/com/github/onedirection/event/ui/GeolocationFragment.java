@@ -59,10 +59,8 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
     private ProgressBar requestLoading;
     private CompletableFuture<List<NamedCoordinates>> lastRequest;
 
-    private EditText locationQuery;
     private TextView locationSelected;
     private TextView locationSelectedFull;
-    private Button cancel;
     private Button validate;
 
     private RecyclerView locationList;
@@ -96,14 +94,14 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
         this.requestLoading = getView().findViewById(R.id.progressBarEventCreatorLoading);
         this.lastRequest = CompletableFuture.completedFuture(null);
 
-        this.locationQuery = getView().findViewById(R.id.editLocationQuery);
+        EditText locationQuery = getView().findViewById(R.id.editLocationQuery);
         this.locationSelected = getView().findViewById(R.id.textLocationResult);
         this.locationSelectedFull = getView().findViewById(R.id.textSelectedLocationFull);
-        this.cancel = getView().findViewById(R.id.buttonCancelGeolocation);
+        Button cancel = getView().findViewById(R.id.buttonCancelGeolocation);
         this.validate = getView().findViewById(R.id.buttonSetGeolocation);
 
         // Setup recycler view
-        this.locationList = (RecyclerView) getView().findViewById(R.id.locationMatchesList);
+        this.locationList = getView().findViewById(R.id.locationMatchesList);
         this.locationList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 

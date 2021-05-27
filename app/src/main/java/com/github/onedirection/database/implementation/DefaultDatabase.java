@@ -14,5 +14,5 @@ public class DefaultDatabase {
     public static ObservableDatabase getDefaultInstance() { return database; }
 
     @VisibleForTesting
-    public static final ConcreteDatabase getDefaultConcreteInstance() { return concreteDatabase; }
+    public static ConcreteDatabase getDefaultConcreteInstance() { return concreteDatabase; }
 }

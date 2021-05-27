@@ -58,165 +58,151 @@ filterWhereGreaterLessEq
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
-        CompletableFuture<Id> result = innerDb.store(toStore)
+
+        return innerDb.store(toStore)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Store, res, toStore)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
-        CompletableFuture<T> result = innerDb.retrieve(id, storer)
+
+        return innerDb.retrieve(id, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Retrieve, id, res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> remove(Id id, Storer<T> storer) {
-        CompletableFuture<Id> result = innerDb.remove(id, storer)
+
+        return innerDb.remove(id, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Remove, id, null)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(T storable) {
-        CompletableFuture<Boolean> result = innerDb.contains(storable)
+
+        return innerDb.contains(storable)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Retrieve, storable.getId(), storable)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer) {
-        CompletableFuture<Boolean> result = innerDb.contains(id, storer)
+
+        return innerDb.contains(id, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this, new Action(ActionKind.Retrieve, id, null)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> storeAll(List<T> listToStore) {
-        CompletableFuture<Boolean> result = innerDb.storeAll(listToStore)
+
+        return innerDb.storeAll(listToStore)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Store, listToStore.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> retrieveAll(Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.retrieveAll(storer)
+
+        return innerDb.retrieveAll(storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereEquals(key, value, storer)
+
+        return innerDb.filterWhereEquals(key, value, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereGreater(key, value, storer)
+
+        return innerDb.filterWhereGreater(key, value, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereGreaterEq(key, value, storer)
+
+        return innerDb.filterWhereGreaterEq(key, value, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereLess(key, value, storer)
+
+        return innerDb.filterWhereLess(key, value, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereLessEq(key, value, storer)
+
+        return innerDb.filterWhereLessEq(key, value, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereGreaterEqLess(key, valueGreaterEq, valueLess, storer)
+
+        return innerDb.filterWhereGreaterEqLess(key, valueGreaterEq, valueLess, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
-        CompletableFuture<List<T>> result = innerDb.filterWhereGreaterLessEq(key, valueGreater, valueLessEq, storer)
+
+        return innerDb.filterWhereGreaterLessEq(key, valueGreater, valueLessEq, storer)
                 .thenApply(res -> {
                     observers.forEach(obs -> obs.onObservableUpdate(this,
                             new Action(ActionKind.Retrieve, res.stream().map(Storable::getId).collect(Collectors.toList()), res)));
                     return res;
                 });
-
-        return result;
     }
 
     public enum ActionKind {
