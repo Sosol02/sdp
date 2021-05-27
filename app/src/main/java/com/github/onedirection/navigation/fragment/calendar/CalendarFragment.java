@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The fragment displaying the elements related to the calendar of the app
+ * The fragment displaying the elements related to the calendar of the application
  */
 public class CalendarFragment extends Fragment {
 
