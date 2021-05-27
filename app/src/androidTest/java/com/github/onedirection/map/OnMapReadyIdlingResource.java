@@ -13,11 +13,9 @@ import java.lang.reflect.Field;
 public class OnMapReadyIdlingResource implements IdlingResource, OnMapReadyCallback {
 
     private MapboxMap mapboxMap;
-    private MapFragment fragment;
     private IdlingResource.ResourceCallback resourceCallback;
 
     public OnMapReadyIdlingResource(MapFragment fragment) {
-        this.fragment = fragment;
         this.mapboxMap = null;
         this.resourceCallback = null;
         try {

@@ -1,5 +1,8 @@
 package com.github.onedirection.utils;
 
+/**
+ * An observer pattern
+ */
 public final class ObserverPattern {
     private ObserverPattern() {}
 

@@ -52,7 +52,7 @@ import java.util.concurrent.ExecutionException;
  */
 public final class GoogleCalendar {
 
-    // Don't ask my the hows-and-whys of this string, all I know is that it doesn't work otherwise
+    // Required string ; should be changed only if one understands the interactions between oAuth2, GoogleSignIn and Google Calendar
     private static final String OAUTH_SCOPE = "oauth2:profile email";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
@@ -85,7 +85,7 @@ public final class GoogleCalendar {
             throw new IllegalArgumentException("Invalid string for id: " + str);
         }
 
-        // Put back the '-'; not in the cleanest way tho
+        // Put back the '-'
         String result = new StringJoiner("-")
                 .add(str.substring(0, 8))
                 .add(str.substring(8, 12))

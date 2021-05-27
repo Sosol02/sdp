@@ -22,12 +22,11 @@ import java.util.List;
 
 public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.ViewHolder> {
 
-    private OnNoteListener mOnNoteListener;
+    private final OnNoteListener mOnNoteListener;
     private final Event[] events;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
-        private final View fullView;
         private final TextView name;
         private final TextView location;
         private final TextView startTime;
@@ -35,11 +34,10 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
         private final ImageButton favorite;
 
 
-        OnNoteListener onNoteListener;
+        final OnNoteListener onNoteListener;
 
         private ViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
             super(itemView);
-            this.fullView = itemView;
             this.name = itemView.findViewById(R.id.eventName);
             this.location = itemView.findViewById(R.id.eventLocation);
             this.startTime = itemView.findViewById(R.id.eventStartTime);

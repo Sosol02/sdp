@@ -33,7 +33,7 @@ public class RoutesManager {
 
     private final RouteService routeService;
     private List<Route> routes;
-    private Context context;
+    private final Context context;
 
     public RoutesManager(Context context) {
         Objects.requireNonNull(context);

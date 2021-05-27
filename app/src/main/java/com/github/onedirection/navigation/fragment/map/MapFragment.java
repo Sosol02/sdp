@@ -80,10 +80,10 @@ public class MapFragment extends Fragment {
     private Optional<Event> navigationEnd = Optional.empty();
 
     @VisibleForTesting
-    public CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
+    public final CountingIdlingResource waitForRoute = new CountingIdlingResource("waitForRoute");
 
     @VisibleForTesting
-    public CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
+    public final CountingIdlingResource waitForNavStart = new CountingIdlingResource("waitForEventSet");
 
     @Nullable
     @Override
@@ -285,7 +285,7 @@ public class MapFragment extends Fragment {
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
         navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
 
-        // now that markerSymbolManager is non null, sync
+        // Now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();
     }
 
@@ -367,11 +367,12 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
+            //Intentionally left empty
         }
 
         @Override
         public void onRequestMade() {
+            //Intentionally left empty
         }
     }
 }
