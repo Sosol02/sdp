@@ -25,7 +25,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
     private final OnNoteListener mOnNoteListener;
     private final Event[] events;
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
         private final TextView name;
         private final TextView location;
@@ -45,7 +45,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
             this.favorite = itemView.findViewById(R.id.favoriteButton);
 
             this.onNoteListener = onNoteListener;
-            itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
 
         }
 
@@ -80,9 +80,8 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
 
         @Override
-        public boolean onLongClick(View view) {
+        public void onClick(View view) {
             onNoteListener.onNoteClick(getAdapterPosition());
-            return false;
         }
     }
 

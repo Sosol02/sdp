@@ -69,6 +69,7 @@ public class MapFragment extends Fragment {
     private Event currentEvent;
 
     private DeviceLocationProvider deviceLocationProvider;
+    private boolean isFirstUpdate;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -182,6 +183,7 @@ public class MapFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(but -> cancelNavigation());
+        isFirstUpdate = true;
 
         return view;
     }
@@ -304,6 +306,10 @@ public class MapFragment extends Fragment {
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 myLocationSymbolManager.update(value);
+                if (isFirstUpdate) {
+                    isFirstUpdate = false;
+                    OnMyLocationButtonClickResponse();
+                }
             }
         });
     }

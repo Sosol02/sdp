@@ -282,7 +282,8 @@ public class EventQueries {
                             }
                         }
 
-                        return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence())) ? CompletableFuture.completedFuture(event.getId())
+                        return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence())) ? CompletableFuture.completedFuture(event.getId())
+
                                 : db.store(event);
                     }
                 } else {
