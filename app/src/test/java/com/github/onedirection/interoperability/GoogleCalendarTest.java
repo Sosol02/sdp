@@ -33,7 +33,7 @@ public class GoogleCalendarTest {
             LOCATION,
             START_TIME,
             END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3))
+            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3)), false
     );
 
     private static final Event GEO_EVENT = new Event(
@@ -42,7 +42,7 @@ public class GoogleCalendarTest {
             new NamedCoordinates(0, 0, LOCATION),
             START_TIME,
             END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3))
+            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3)), false
     );
 
     @Test
@@ -102,7 +102,7 @@ public class GoogleCalendarTest {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofDays(1), ZonedDateTime.now().plusDays(3));
         Event recRoot =
-                new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+                new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
 
         Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(recRoot));
         //assertThat(e, hasSize(3));
@@ -112,9 +112,9 @@ public class GoogleCalendarTest {
     public void eventsFilteringFilterCorrectly() {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofSeconds(1), ZonedDateTime.now());
-        Event recRoot = new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+        Event recRoot = new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
 
         List<Event> events = Arrays.asList(EVENT, recRoot, rec1, rec2);
         List<Event> result = GoogleCalendar.removeRecurrent(events);
@@ -126,8 +126,8 @@ public class GoogleCalendarTest {
     public void eventsFilteringThrowsOnMissingRoot() {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofSeconds(1), ZonedDateTime.now());
-        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
 
         List<Event> events = Arrays.asList(EVENT, rec1, rec2);
         assertThrows(IllegalArgumentException.class, () -> GoogleCalendar.removeRecurrent(events));
