@@ -11,6 +11,9 @@ import com.github.onedirection.notification.Notifications;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * An application initializer that initializes the notification system
+ */
 public class ApplicationInitializer implements Initializer<Notifications> {
 
     @NonNull

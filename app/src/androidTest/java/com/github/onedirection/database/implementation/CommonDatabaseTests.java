@@ -141,7 +141,7 @@ public class CommonDatabaseTests {
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
         Boolean stored2 = db.storeAll(Arrays.asList(events)).get();
-        assertTrue(stored);
+        assertTrue(stored2);
         List<Event> eventsInDb= db.retrieveAll(EventStorer.getInstance()).get();
         assertEquals(events.length, eventsInDb.size());
         for (Event event : events) {

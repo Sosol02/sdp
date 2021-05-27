@@ -16,6 +16,10 @@ import java.util.Optional;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents an event that occurs in time, and optionally at a specific location.
+ * This event may be recurring, in which case it will have a recurrence period.
+ */
 @Immutable
 public class Event implements Serializable, Storable<Event> {
 
