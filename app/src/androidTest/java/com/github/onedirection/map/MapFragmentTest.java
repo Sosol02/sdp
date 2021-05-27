@@ -67,10 +67,11 @@ public class MapFragmentTest extends MapFragmentTestSetup {
         Database.getDefaultInstance().store(end);
 
         BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
+        getFragmentField("markerSymbolManager", MarkerSymbolManager.class).syncEventsWithDb();
 
         focusEventOnMap(start);
         onView(withId(R.id.mapView))
-                .perform(new WaitAction(1000))
+                .perform(new WaitAction(10000))
                 .perform(click())
                 .perform(new WaitAction(1000));
 
