@@ -84,7 +84,6 @@ public final class GoogleCalendar {
         if (str.length() != Id.LENGTH - Id.SEP_COUNT) {
             throw new IllegalArgumentException("Invalid string for id: " + str);
         }
-
         // Put back the '-'; not in the cleanest way tho
         String result = new StringJoiner("-")
                 .add(str.substring(0, 8))
