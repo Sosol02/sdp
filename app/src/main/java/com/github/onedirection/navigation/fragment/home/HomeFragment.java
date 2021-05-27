@@ -138,7 +138,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         this.events = events;
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(this.events, this));
-
     }
 
     public void updateResults() {
@@ -157,18 +156,20 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         });
     }
 
-    public void updateModifiedEvent(Id id) {
+    public void updateModifiedEvent(Id id, boolean isFavorite) {
         int position = 0;
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getId().equals(id)) {
                 position = i;
             }
         }
+        Event event = events.get(position).setFavorite(isFavorite);
+        events.set(position, event);
         Database database = Database.getDefaultInstance();
-        CompletableFuture<Event> e = database.retrieve(Objects.requireNonNull(id), EventStorer.getInstance());
+        database.store(event);
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
-        eventViewerAdapter.notifyItemChanged(position);
+        //eventViewerAdapter.notifyItemChanged(position);
     }
 
     @Override
