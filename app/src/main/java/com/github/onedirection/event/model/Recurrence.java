@@ -30,7 +30,7 @@ public class Recurrence implements Serializable {
     public Recurrence(Id groupId, Duration period, ZonedDateTime endTime) {
         this.groupId = Objects.requireNonNull(groupId);
         this.period = Objects.requireNonNull(period);
-        this.endTime = Objects.requireNonNull(endTime);
+        this.endTime = Objects.requireNonNull(endTime).truncatedTo(Event.TIME_PRECISION);
     }
 
     public Recurrence(Id groupId, long periodSeconds, ZonedDateTime endTime) {
