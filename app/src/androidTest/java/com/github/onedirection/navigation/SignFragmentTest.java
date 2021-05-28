@@ -11,11 +11,14 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
+import com.github.onedirection.testhelpers.WaitAction;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -33,13 +36,17 @@ public class SignFragmentTest {
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
-    private static final Context ctx = ApplicationProvider.getApplicationContext();
+    private final Context ctx = ApplicationProvider.getApplicationContext();
+
+    @Before
+    public void openSignFragment() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_sign)).perform(click());
+    }
 
     @Test
-    public void testNormalSignInAndLogout() throws InterruptedException {
-        onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open());
+    public void testNormalSignInAndLogout() {
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
-        onView(withId(R.id.nav_sign)).perform(click());
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_sign)));
@@ -47,8 +54,9 @@ public class SignFragmentTest {
         onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
         onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
         onView(withId(R.id.sign)).perform(click());
-        // TODO: find better alternative than this crap
-        Thread.sleep(1000);
+
+        onView(withId(R.id.drawer_layout)).perform(new WaitAction(1000));
+
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.test_account))));
 
@@ -67,9 +75,6 @@ public class SignFragmentTest {
 
     @Test
     public void testSignToggle() {
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_sign)).perform(click());
-
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_sign)));
 
@@ -79,6 +84,28 @@ public class SignFragmentTest {
 
     @Test
     public void testRegisterFailed() {
-        //TODO
+        onView(withId(R.id.sign_toggle)).perform(click());
+        onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
+        onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
+        onView(withId(R.id.sign)).perform(click());
+        closeSoftKeyboard();
+
+        onView(withId(R.id.drawer_layout)).perform(new WaitAction(1000));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
+    }
+
+    @Test
+    public void testLoginFailed() {
+        onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_disabled_account)));
+        onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
+        onView(withId(R.id.sign)).perform(click());
+        closeSoftKeyboard();
+
+        onView(withId(R.id.drawer_layout)).perform(new WaitAction(1000));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
     }
 }
