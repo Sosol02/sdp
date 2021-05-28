@@ -19,11 +19,19 @@ import java.util.concurrent.ExecutionException;
 
 public class ObservableDatabaseTest {
 
+<<<<<<< HEAD
     private static Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event 1", "nowhere", Optional.empty(),
             ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), Optional.empty(),false);
 
     private static Event TEST_EVENT_2 = new Event(Id.generateRandom(), "Test event 2", "nowhreerfwfeewe", Optional.empty(),
             ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(10), Optional.empty(),false);
+=======
+    private static final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event 1", "nowhere", Optional.empty(),
+            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), Optional.empty());
+
+    private static final Event TEST_EVENT_2 = new Event(Id.generateRandom(), "Test event 2", "nowhreerfwfeewe", Optional.empty(),
+            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(10), Optional.empty());
+>>>>>>> origin/main
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
@@ -95,7 +103,7 @@ public class ObservableDatabaseTest {
     public void testStoreRetrieveAllObservesWell() {
         ObservableDatabase odb = DefaultDatabase.getDefaultInstance();
         odb.addObserver((observable, obj) -> {
-            assertThat((Boolean) obj.element, is(true));
+            assertThat(obj.element, is(true));
 
             assertThat(obj.ids.get(0), is(TEST_EVENT_1.getId()));
             assertThat(obj.ids.get(1), is(TEST_EVENT_2.getId()));

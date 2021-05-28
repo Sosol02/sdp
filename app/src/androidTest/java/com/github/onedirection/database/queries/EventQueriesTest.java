@@ -59,7 +59,7 @@ public class EventQueriesTest {
     }
 
     @Before
-    public void deleteAllEvents() throws ExecutionException, InterruptedException, ParseException {
+    public void deleteAllEvents() throws ExecutionException, InterruptedException {
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         List<Event> events = db.retrieveAll(EventStorer.getInstance()).get();
         for (Event e : events) {
@@ -93,7 +93,6 @@ public class EventQueriesTest {
     public void returnNoEventsWhenTimeFrameIsInvalid() throws ExecutionException, InterruptedException, ParseException {
         List<Event> events = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
-        ZonedDateTime end = start.plusMinutes(10);
         for (int i = 0; i < 5; ++i) {
             events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i),false));
         }
@@ -389,6 +388,7 @@ public class EventQueriesTest {
         Id id0 = recurrEvents.get(0).getId();
         Id id2 = recurrEvents.get(2).getId();
         Id idRemoved = queries.removeEvent(recurrEvents.get(1).getId()).get();
+        assertEquals(recurrEvents.get(1).getId(), idRemoved);
         recurrEvents = queries.getRecurrEventSeriesOf(recurrence.getGroupId()).get();
         assertEquals(2, recurrEvents.size());
         recurrEvents.sort((e1, e2) -> {

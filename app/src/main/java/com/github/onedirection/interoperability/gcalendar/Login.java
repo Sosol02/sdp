@@ -35,6 +35,7 @@ class Login {
         return self.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
             task.addOnSuccessListener(callback);
+            task.addOnFailureListener(e -> Log.d(LOGCAT_TAG, "Login failed: " + e.getMessage()));
         });
     }
 

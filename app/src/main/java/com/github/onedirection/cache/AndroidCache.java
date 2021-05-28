@@ -11,6 +11,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Represents a general cache for the app.
+ */
 public final class AndroidCache {
 
     private AndroidCache() {

@@ -10,6 +10,9 @@ import com.github.onedirection.R;
 import com.github.onedirection.authentication.service.AuthenticationService;
 import com.github.onedirection.authentication.service.User;
 
+/**
+ * A ViewModel that manages the data for the Signin fragment and the communication to activity
+ */
 public class SignViewModel extends ViewModel {
 
     private final MutableLiveData<SignFormState> signFormState = new MutableLiveData<>();
@@ -30,7 +33,7 @@ public class SignViewModel extends ViewModel {
                     .exceptionally(error -> {userResult.setValue(null); return null; });
         } else {
             auth.loginUser(username, password).thenAccept(userResult::setValue)
-                    .exceptionally(error -> {userResult.setValue(null); return null; });;
+                    .exceptionally(error -> {userResult.setValue(null); return null; });
         }
     }
 

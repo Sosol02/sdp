@@ -73,7 +73,7 @@ public class FavoriteAndSwipeEventTest {
     @Test
     public void favoriteAndSwipeEventTest() {
         ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
+                allOf(withId(R.id.fab), withContentDescription("Add Event"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.nav_host_fragment),

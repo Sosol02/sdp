@@ -22,7 +22,6 @@ import java.util.List;
  * Adapter used by the calendar to display the date and number of events on that day
  */
 public class CalendarGridAdapter extends ArrayAdapter {
-    private final Calendar currentDate;
     private final List<Event> events;
     private final LayoutInflater inflater;
     private final List<Date> dates;
@@ -32,7 +31,6 @@ public class CalendarGridAdapter extends ArrayAdapter {
 
     public CalendarGridAdapter(@NonNull Context context, List<Date> dates, Calendar currentDate, List<Event> events) {
         super(context, R.layout.single_cell_layout);
-        this.currentDate = currentDate;
         this.events = events;
         this.inflater = LayoutInflater.from(context);
         this.dates = dates;
@@ -59,7 +57,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
 
         if (displayMonth == currentMonth) {
             TextView textDayNumber = view.findViewById(R.id.calendar_day);
-            TextView eventNumber = view.findViewById(R.id.events_id);
+            TextView eventNumber = view.findViewById(R.id.nb_events);
 
             textDayNumber.setText(String.valueOf(dayNumber));
             Calendar eventCalendar = Calendar.getInstance();
@@ -72,7 +70,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
                 }
             }
             if(nbOfEventsInDay > 0) {
-                eventNumber.setText(Integer.toString(nbOfEventsInDay));
+                eventNumber.setText(String.valueOf(nbOfEventsInDay));
                 eventNumber.setBackgroundResource(R.drawable.rounded_corner);
             } else {
                 eventNumber.setBackgroundResource(android.R.color.transparent);
@@ -96,15 +94,11 @@ public class CalendarGridAdapter extends ArrayAdapter {
     }
 
     @Override
-    public int getPosition(@Nullable Object item) {
-        return dates.indexOf(item);
-    }
-
-    @Nullable
-    @Override
     public Object getItem(int position) {
         return dates.get(position);
     }
+
+
 }
 
 

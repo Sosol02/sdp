@@ -502,7 +502,6 @@ public class EventCreatorTest {
             sb.append('o');
         }
         String nameTooLong = sb.toString();
-        String locationTooLong = nameTooLong;
         String name = "EVENT NAME";
         String location = "EVENT LOCATION";
 
@@ -537,7 +536,7 @@ public class EventCreatorTest {
                             scrollTo(),
                             click(),
                             clearText(),
-                            typeText(locationTooLong)
+                            typeText(nameTooLong)
                     );
                     closeSoftKeyboard();
 
