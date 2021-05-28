@@ -39,7 +39,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
     public static HomeFragment homeFragment;
     List<Event> events = new ArrayList<Event>();
-    //Map<Id, Boolean> favorites = new HashMap<>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
     private EventViewerAdapter.OnNoteListener onNoteListener;
@@ -163,7 +162,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         database.store(event);
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
-        //eventViewerAdapter.notifyItemChanged(position);
     }
 
     @Override
