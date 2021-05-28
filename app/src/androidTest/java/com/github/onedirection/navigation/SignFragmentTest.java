@@ -76,4 +76,9 @@ public class SignFragmentTest {
         onView(withId(R.id.sign_toggle)).perform(click());
         onView(withId(R.id.sign_toggle)).check(matches(withText(R.string.clickable_text_to_sign_in)));
     }
+
+    @Test
+    public void testRegisterFailed() {
+        //TODO
+    }
 }

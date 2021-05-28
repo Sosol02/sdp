@@ -1,7 +1,6 @@
 package com.github.onedirection.navigation;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -73,7 +72,6 @@ public class NavigationActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -81,32 +79,25 @@ public class NavigationActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+
     private void logout(MenuItem signMenuItem, MenuItem logoutMenuItem, TextView drawerUsername,
                         TextView drawerEmail, DrawerLayout drawer) {
         AlertDialog.Builder confirmationWindows = new AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_logout_tittle)
                 .setMessage(R.string.dialog_logout_body)
-                .setPositiveButton(R.string.dialog_logout_yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
-                        auth.logoutUser();
-                        drawerUsername.setText(R.string.nav_header_username);
-                        drawerEmail.setText(R.string.nav_header_email);
-                        signMenuItem.setVisible(true);
-                        logoutMenuItem.setVisible(false);
-                        drawer.close();
-                    }
-                }).setNegativeButton(R.string.dialog_logout_no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
+                .setPositiveButton(R.string.dialog_logout_yes, (dialogInterface, i) -> {
+                    FirebaseAuthentication auth = FirebaseAuthentication.getInstance();
+                    auth.logoutUser();
+                    drawerUsername.setText(R.string.nav_header_username);
+                    drawerEmail.setText(R.string.nav_header_email);
+                    signMenuItem.setVisible(true);
+                    logoutMenuItem.setVisible(false);
+                    drawer.close();
+                }).setNegativeButton(R.string.dialog_logout_no, (dialogInterface, i) -> {});
         confirmationWindows.show();
     }
 
-
+    //TODO Is this method useful?
     private List<Event> getEvents(){
         return this.events;
     }

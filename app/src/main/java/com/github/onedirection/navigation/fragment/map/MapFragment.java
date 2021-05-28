@@ -121,9 +121,7 @@ public class MapFragment extends Fragment {
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
-            view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
-                OnMyLocationButtonClickResponse();
-            });
+            view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> OnMyLocationButtonClickResponse());
 
         });
 

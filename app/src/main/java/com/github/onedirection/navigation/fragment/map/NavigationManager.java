@@ -1,7 +1,6 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,6 +18,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapquest.navigation.NavigationManager.NavigationState;
 import com.mapquest.navigation.internal.collection.CollectionsUtil;
 import com.mapquest.navigation.internal.unit.Speed;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
@@ -39,7 +39,6 @@ import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
 import com.mapquest.navigation.model.location.Destination;
 import com.mapquest.navigation.model.location.Location;
 import com.mapquest.navigation.model.location.LocationObservation;
-import com.mapquest.navigation.NavigationManager.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -246,7 +245,7 @@ public class NavigationManager {
         if (distance > 5000) {
             double distanceKm = ((double) distance) / 1000;
             BigDecimal b = new BigDecimal(Double.toString(distanceKm));
-            b.setScale(1, RoundingMode.CEILING);
+            b = b.setScale(1, RoundingMode.CEILING);
             return b.toString() + " " + context.getResources().getString(R.string.navigation_distance_big_unit);
         } else {
             return distance + " " + context.getResources().getString(R.string.navigation_distance_small_unit);
@@ -362,19 +361,9 @@ public class NavigationManager {
             } else {
                 Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
             }
-            destinationAccept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler);
-                }
-            });
+            destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler));
             destinationAccept.setClickable(true);
-            destinationRefuse.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler);
-                }
-            });
+            destinationRefuse.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler));
             destinationRefuse.setClickable(true);
         }
     }
@@ -414,7 +403,6 @@ public class NavigationManager {
         @Override
         public void onRequestMade() {}
     }
-
 
     private static Map<Maneuver.Type, Integer> buildManeuverIconResources() {
         Map<Maneuver.Type,Integer> mapManeuverIdByType = new HashMap<>();
