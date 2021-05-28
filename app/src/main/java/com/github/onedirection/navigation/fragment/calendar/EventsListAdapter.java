@@ -26,12 +26,10 @@ import java.util.concurrent.CompletableFuture;
 public class EventsListAdapter extends ArrayAdapter {
     private final List<Event> events;
     private final LayoutInflater layoutInflater;
-    private final Runnable onEditEvent;
     private final Runnable onDeleteEvent;
 
-    public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onEditEvent, Runnable onDeleteEvent) {
+    public EventsListAdapter(Context applicationContext, List<Event> events, Runnable onDeleteEvent) {
         super(applicationContext, R.layout.event_view_in_list);
-        this.onEditEvent = onEditEvent;
         this.onDeleteEvent = onDeleteEvent;
         this.events = events;
         this.layoutInflater = LayoutInflater.from(applicationContext);
@@ -71,26 +69,22 @@ public class EventsListAdapter extends ArrayAdapter {
         eventLocation.setText(event.getLocationName());
 
         eventEditButton.setOnClickListener(v -> {
-            if (onEditEvent != null) {
-                Intent intent = new Intent(this.getContext(), EventCreator.class);
-                EventCreator.putEventExtra(intent, event);
-                this.getContext().startActivity(intent);
-                onEditEvent.run();
-            }
+            Intent intent = new Intent(this.getContext(), EventCreator.class);
+            EventCreator.putEventExtra(intent, event);
+            this.getContext().startActivity(intent);
         });
 
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
+
         eventDeleteButton.setOnClickListener(v -> {
-            CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
-            eventDeleted.whenComplete((id, throwable) -> {
-                if (onDeleteEvent != null) {
-                    onDeleteEvent.run();
-                }
-            });
+            queryManager.removeEvent(event.getId());
+            events.remove(position);
+            this.notifyDataSetChanged();
+            onDeleteEvent.run();
         });
         return convertView;
-
-
     }
+
+
 }

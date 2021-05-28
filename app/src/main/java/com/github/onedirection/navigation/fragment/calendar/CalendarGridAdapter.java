@@ -57,7 +57,7 @@ public class CalendarGridAdapter extends ArrayAdapter {
 
         if (displayMonth == currentMonth) {
             TextView textDayNumber = view.findViewById(R.id.calendar_day);
-            TextView eventNumber = view.findViewById(R.id.events_id);
+            TextView eventNumber = view.findViewById(R.id.nb_events);
 
             textDayNumber.setText(String.valueOf(dayNumber));
             Calendar eventCalendar = Calendar.getInstance();
@@ -94,15 +94,11 @@ public class CalendarGridAdapter extends ArrayAdapter {
     }
 
     @Override
-    public int getPosition(@Nullable Object item) {
-        return dates.indexOf(item);
-    }
-
-    @Nullable
-    @Override
     public Object getItem(int position) {
         return dates.get(position);
     }
+
+
 }
 
 

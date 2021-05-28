@@ -25,13 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -40,6 +38,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.onedirection.testhelpers.FirstMatch.firstMatch;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -87,15 +86,8 @@ public class CalendarUITest {
     public void changeMonthTest() {
         ViewInteraction currentMonth = onView(allOf(withId(R.id.currentDate)));
 
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withId(R.id.nextBtn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom_calendar_view),
-                                        0),
-                                2),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
+        ViewInteraction nextBtn = onView(allOf(withId(R.id.nextBtn)));
+        nextBtn.perform(click());
 
         ViewInteraction newMonth = onView(allOf(withId(R.id.currentDate)));
         assertThat(currentMonth, not(newMonth));
@@ -103,78 +95,41 @@ public class CalendarUITest {
 
     @Test
     public void testAddEvent() {
-        DataInteraction date = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withId(R.id.custom_calendar_view),
-                                2)))
-                .atPosition(9);
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(14);
         date.perform(click());
 
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.addEvent), withText("Add Event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton.perform(click());
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("Shrek is love"), ViewActions.closeSoftKeyboard());
 
-        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
-        materialButton2.perform(scrollTo(), click());
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
 
-        assertThat(date.onChildView(allOf(withId(R.id.events_id))).toString(), not(""));
+        assertThat(date.onChildView(allOf(withId(R.id.nb_events))).toString(), not(""));
     }
 
+ 
+
     @Test
-    public void testViewEvents() {
-        DataInteraction date = onData(anything())
-                .inAdapterView(allOf(withId(R.id.gridView),
-                        childAtPosition(
-                                withId(R.id.custom_calendar_view),
-                                2)))
-                .atPosition(9);
-        date.perform(click());
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.addEvent), withText("Add Event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        materialButton.perform(click());
-
-        onView(withId(R.id.editEventName)).perform(
-                scrollTo(),
-                click(),
-                clearText(),
-                typeText("6chars")
-        );
-        closeSoftKeyboard();
-        ViewInteraction materialButton2 = onView(allOf(withId(R.id.buttonEventAdd)));
-        materialButton2.perform(scrollTo(), click());
+    public void testViewEvents() throws InterruptedException {
+        DataInteraction date = onData(anything()).inAdapterView(allOf(withId(R.id.gridView))).atPosition(16);
 
         date.perform(click());
 
+        ViewInteraction eventName = onView(allOf(withId(R.id.editEventName), isDisplayed()));
+        eventName.perform(replaceText("It's all ogre now"), ViewActions.closeSoftKeyboard());
 
-        ViewInteraction viewEventsButton = onView(
-                allOf(withId(R.id.viewEvents), withText(R.string.view_events),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.custom),
-                                        0),
-                                1),
-                        isDisplayed()));
+        ViewInteraction eventCreatorCreateBtn = onView(allOf(withId(R.id.buttonEventAdd)));
+        eventCreatorCreateBtn.perform(scrollTo(), click());
+
+        date.perform(click());
+
+        ViewInteraction viewEventsButton = onView(allOf(withId(R.id.viewEvents), withText(R.string.view_events), isDisplayed()));
         viewEventsButton.perform(click());
 
         onView(withId(R.id.dayEventsList)).check(matches(isDisplayed()));
-
-        ViewInteraction materialButton4 = onView(
-                firstMatch(withId(R.id.eventDeleteButton)));
     }
+
+
 
     @After
     public void AtEndTest() {

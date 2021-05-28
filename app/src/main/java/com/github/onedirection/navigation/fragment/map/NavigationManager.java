@@ -345,7 +345,7 @@ public class NavigationManager {
 
         private void onDestinationReachedResponse(boolean finalDestination, boolean accepted, DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationAcceptanceHandler.confirmArrival(accepted);
-            if (finalDestination) {
+            if (finalDestination && accepted) {
                 stopNavigation();
             }
             destinationAccept.setClickable(false);
@@ -375,7 +375,7 @@ public class NavigationManager {
                     onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler);
                 }
             });
-
+            destinationRefuse.setClickable(true);
         }
     }
 
