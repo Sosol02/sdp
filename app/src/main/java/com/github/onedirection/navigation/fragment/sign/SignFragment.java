@@ -50,7 +50,7 @@ public class SignFragment extends Fragment {
         final Button signButton = view.findViewById(R.id.sign);
         final TextView signToggle = view.findViewById(R.id.sign_toggle);
 
-        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        NavigationView navigationView = requireActivity().findViewById(R.id.nav_view);
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
         MenuItem logoutMenuItem = navigationView.getMenu().findItem(R.id.nav_logout);
 

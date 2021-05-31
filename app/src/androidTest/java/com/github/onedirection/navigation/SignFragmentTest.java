@@ -1,6 +1,7 @@
 package com.github.onedirection.navigation;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -21,6 +22,9 @@ import org.junit.runner.RunWith;
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -80,6 +84,9 @@ public class SignFragmentTest {
 
         onView(withId(R.id.sign_toggle)).perform(click());
         onView(withId(R.id.sign_toggle)).check(matches(withText(R.string.clickable_text_to_sign_in)));
+
+        onView(withId(R.id.sign_toggle)).perform(click());
+        onView(withId(R.id.sign_toggle)).check(matches(withText(R.string.clickable_text_to_register)));
     }
 
     @Test
@@ -94,6 +101,23 @@ public class SignFragmentTest {
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
+    }
+
+    @Test
+    public void testIAmDoneActionOnSign() {
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.nav_header_email))));
+
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText(R.string.menu_sign)));
+
+        onView(withId(R.id.email)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
+        onView(withId(R.id.password)).perform(ViewActions.typeText(ctx.getString(R.string.test_password)));
+        onView(withId(R.id.password)).perform(pressImeActionButton());
+
+        onView(withId(R.id.drawer_layout)).perform(new WaitAction(1000));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.test_account))));
     }
 
     @Test

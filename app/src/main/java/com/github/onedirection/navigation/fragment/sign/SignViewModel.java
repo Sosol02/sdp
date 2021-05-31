@@ -2,6 +2,7 @@ package com.github.onedirection.navigation.fragment.sign;
 
 import android.util.Patterns;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -18,11 +19,12 @@ public class SignViewModel extends ViewModel {
     private final MutableLiveData<SignFormState> signFormState = new MutableLiveData<>();
     private final MutableLiveData<User> userResult = new MutableLiveData<>();
 
-    LiveData<SignFormState> getLoginFormState() {
+    @NonNull
+    public LiveData<SignFormState> getLoginFormState() {
         return signFormState;
     }
 
-    LiveData<User> getUserResult() {
+    public LiveData<User> getUserResult() {
         return userResult;
     }
 
