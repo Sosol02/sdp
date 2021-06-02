@@ -277,7 +277,8 @@ public class MapFragment extends Fragment {
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
         routesManager = new RoutesManager(context);
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
-        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap,
+                routeDisplayManager, view, this);
 
         // Now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();

@@ -2,6 +2,7 @@ package com.github.onedirection.navigation;
 
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -18,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
@@ -43,7 +46,24 @@ public class SignFragmentTest {
     private final Context ctx = ApplicationProvider.getApplicationContext();
 
     @Before
-    public void openSignFragment() {
+    public void openSignFragment() throws InterruptedException {
+        Semaphore semaphore = new Semaphore(0);
+        final boolean[] needLogout = {false};
+        testRule.getScenario().onActivity(activity -> {
+            if (activity.findViewById(R.id.nav_logout) != null &&
+                    activity.findViewById(R.id.nav_logout).getVisibility() == View.VISIBLE) {
+                needLogout[0] = true;
+            }
+            semaphore.release();
+        });
+        semaphore.acquire();
+
+        if (needLogout[0]) {
+            onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+            onView(withId(R.id.nav_logout)).perform(click());
+            onView(withText(R.string.dialog_logout_yes)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+        }
+
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_sign)).perform(click());
     }
@@ -118,6 +138,8 @@ public class SignFragmentTest {
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_header_email)).check(matches(withText(ctx.getString(R.string.test_account))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
     }
 
     @Test

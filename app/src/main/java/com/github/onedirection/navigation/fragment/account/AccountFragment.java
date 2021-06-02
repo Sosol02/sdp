@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.onedirection.R;
-import com.github.onedirection.authentication.exceptions.NoUserLoggedInException;
 import com.github.onedirection.authentication.service.AuthenticationService;
 import com.google.android.material.navigation.NavigationView;
 

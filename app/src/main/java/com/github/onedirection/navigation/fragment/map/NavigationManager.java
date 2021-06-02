@@ -75,7 +75,7 @@ public class NavigationManager {
     private final UpdatingSpeedLimitSpanListener updatingSpeedLimitSpanListener;
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
-    private final View fragmentView;
+    private final MapFragment mapFragment;
 
     private final RelativeLayout maneuverBar;
     private final ImageView nextManeuverIcon;
@@ -104,7 +104,8 @@ public class NavigationManager {
     private static final Map<Maneuver.Type, Integer> MANEUVER_RESOURCES_ID_BY_TYPE = buildManeuverIconResources();
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
-                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
+                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view,
+                             MapFragment mapFragment) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
         Objects.requireNonNull(routeDisplayManager);
@@ -141,7 +142,8 @@ public class NavigationManager {
         speedLimitValue = view.findViewById(R.id.speed_limit);
         destinationAccept = view.findViewById(R.id.destination_reached_acceptance);
         destinationRefuse = view.findViewById(R.id.destination_reached_cancel);
-        fragmentView = view;
+
+        this.mapFragment = mapFragment;
 
         view.findViewById(R.id.stop).setOnClickListener(v -> {
             if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
@@ -259,7 +261,7 @@ public class NavigationManager {
 
         @Override
         public void onNavigationStarted() {
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
             }
             updateUiOnStartAndReroute(navigationManager.getRoute());
@@ -267,7 +269,7 @@ public class NavigationManager {
 
         @Override
         public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
             }
         }
@@ -300,14 +302,14 @@ public class NavigationManager {
 
         @Override
         public void onRerouteRequested(Location location) {
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
         public void onRerouteReceived(Route route) {
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
             }
             if (route != null) {
@@ -318,7 +320,7 @@ public class NavigationManager {
 
         @Override
         public void onRerouteFailed() {
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
             }
         }
@@ -369,7 +371,7 @@ public class NavigationManager {
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationReachedBar.setVisibility(View.VISIBLE);
-            if (fragmentView.getVisibility() == View.VISIBLE) {
+            if (mapFragment.isVisible()) {
                 if (finalDestination) {
                     Toast.makeText(context, R.string.navigation_final_destination_reached, Toast.LENGTH_LONG).show();
                 } else {
