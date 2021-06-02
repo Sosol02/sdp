@@ -49,6 +49,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private View root;
     private TextView displayEmpty;
 
+    
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override
