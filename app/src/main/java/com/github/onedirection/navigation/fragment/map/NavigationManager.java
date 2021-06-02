@@ -375,7 +375,7 @@ public class NavigationManager {
                 if (finalDestination) {
                     Toast.makeText(context, R.string.navigation_final_destination_reached, Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(context, R.string.navigation_waypoint_destionation_reached, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.navigation_waypoint_destination_reached, Toast.LENGTH_LONG).show();
                 }
             }
             destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler));
