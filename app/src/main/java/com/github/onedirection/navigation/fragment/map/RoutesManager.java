@@ -90,10 +90,6 @@ public class RoutesManager {
         });
     }
 
-    public long getTimeUntilArrival(@NonNull Route route) {
-        return CollectionsUtil.lastValue(route.getLegs()).getTraffic().getEstimatedTimeOfArrival().getTime();
-    }
-
     public void clearRoutes() {
         routes = null;
     }

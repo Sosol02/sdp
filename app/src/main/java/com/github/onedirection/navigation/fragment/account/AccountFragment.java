@@ -36,7 +36,7 @@ public class AccountFragment extends Fragment {
         TextView drawerUsername = headerView.findViewById(R.id.nav_header_username);
         TextView accountUsername = view.findViewById(R.id.account_username);
         EditText changeUsernameEdit = view.findViewById(R.id.change_username_account_display);
-        Button changeUsername = view.findViewById(R.id.button_change_username);
+        Button changeUsernameButton = view.findViewById(R.id.button_change_username);
 
         accountUsername.setText(drawerUsername.getText());
         drawerUsername.addTextChangedListener(new TextWatcher() {
@@ -55,7 +55,7 @@ public class AccountFragment extends Fragment {
                 accountUsername.setText(drawerUsername.getText());
             }
         });
-        changeUsername.setOnClickListener(v -> {
+        changeUsernameButton.setOnClickListener(v -> {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             AuthenticationService auth = AuthenticationService.getDefaultInstance();
