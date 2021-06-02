@@ -65,7 +65,7 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonDisplayDelete"
         app:layout_constraintEnd_toStartOf="@+id/buttonDisplayDelete"
         app:layout_constraintStart_toStartOf="parent"
-        app:cornerRadius="50dp"/>
+        app:cornerRadius="50dp" />
 
     <Button
         android:id="@+id/buttonDisplayDelete"
