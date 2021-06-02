@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * RoutesManager is use with mapquest to able to query a route between events
+ * RoutesManager is used with mapquest to able to query a route between events
  */
 public class RoutesManager {
 

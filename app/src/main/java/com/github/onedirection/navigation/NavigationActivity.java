@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Activity to navigate into the app.
+ * Activity to navigate into the app. The app start on this activity.
  */
 public class NavigationActivity extends AppCompatActivity {
 
@@ -73,11 +73,11 @@ public class NavigationActivity extends AppCompatActivity {
         });
 
         AuthenticationService auth = AuthenticationService.getDefaultInstance();
-        Optional<User> user = auth.getCurrentUser();
-        if (user.isPresent()) {
-            User user1 = user.get();
-            drawerUsername.setText(user1.getName());
-            drawerEmail.setText(user1.getEmail());
+        Optional<User> userOptional = auth.getCurrentUser();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            drawerUsername.setText(user.getName());
+            drawerEmail.setText(user.getEmail());
             signMenuItem.setVisible(false);
             logoutMenuItem.setVisible(true);
         }
