@@ -5,9 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -29,6 +32,8 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
+import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -59,7 +64,13 @@ public class HomeTest {
         //pressBack();
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_home)).perform(ViewActions.click());
-        onView(withId(R.id.recyclerEventView)).perform(ViewActions.longClick());
+        onView(withId(R.id.recyclerEventView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, swipeLeft()));
+        onView(withId(R.id.recyclerEventView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, swipeRight()));
+        onView(withId(R.id.recyclerEventView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        //onView(withId(R.id.recyclerEventView)).perform(ViewActions.longClick());
     }
 
     @Test
@@ -380,5 +391,29 @@ public class HomeTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
+    }
+
+    public static class MyViewAction {
+
+        public static ViewAction clickChildViewWithId(final int id) {
+            return new ViewAction() {
+                @Override
+                public Matcher<View> getConstraints() {
+                    return null;
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Click on a child view with specified id.";
+                }
+
+                @Override
+                public void perform(UiController uiController, View view) {
+                    View v = view.findViewById(id);
+                    v.performClick();
+                }
+            };
+        }
+
     }
 }
