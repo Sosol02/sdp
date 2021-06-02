@@ -35,51 +35,16 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(AndroidJUnit4.class)
-<<<<<<< HEAD
-public class MapFragmentTest {
 
-    private MapboxMap mapboxMap;
-    private MapFragment fragment;
-    private OnMapReadyIdlingResource onMapReadyIdlingResource;
-    private EspressoIdlingResource espressoIdlingResource;
-    private CountingIdlingResource countingIdlingResource;
-
-    private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(2f, 0.003f);
-    private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34f, 0.1543f);
-    private final LatLng TEST_VALUE_LATLNG_3 = new LatLng(40.6974034,-74.1197629);
-    private final LatLng TEST_VALUE_LATLNG_4 = new LatLng(42.355097, -71.055464);
-    private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0, -50.0);
-    private final LatLng TEST_VALUE_LATLNG_6 = new LatLng(34.0201613,-118.6919115);
-    //private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", "Paris",
-    private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", new NamedCoordinates(48.511197, 2.205589, "Paris"),
-            ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
-            ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()), false);
-
-    public static final double LOCATION_1_latitude = 32.22222;
-    public static final double LOCATION_1_longitude = 43.33333;
-    public static final Coordinates COORDINATES_LOCATION = new Coordinates(32.22222, 43.33333);
-    public static final LatLng LAT_LNG_1 = new LatLng(40.7326808, -73.9843407);
-    public static final LatLng LAT_LNG_2 = new LatLng(40.7326808, -73.9843407);
-
-    private final Event[] testEvents = new Event[] {
-            new Event(Id.generateRandom(), "Event 1 Paris", "Paris France", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-            new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-            new Event(Id.generateRandom(), "Event 3 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-            new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria", new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-            new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile", new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-            new Event(Id.generateRandom(), "Event 6 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_6.getLatitude(), TEST_VALUE_LATLNG_6.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), false),
-    };
-=======
 public class MapFragmentTest extends MapFragmentTestSetup {
->>>>>>> origin/main
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(40.6974034,-74.1197629);
     private final LatLng TEST_VALUE_LATLNG_2 = new LatLng(34.0201613,-118.6919115);
 
 
     private final Event[] testEvents = new Event[] {
-            new Event(Id.generateRandom(), "Event 1 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 1 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
     };
 
     @Test
