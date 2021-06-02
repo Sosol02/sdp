@@ -69,14 +69,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-
-            int fromPosition = viewHolder.getAdapterPosition();
-            int toPosition = target.getAdapterPosition();
-
-            Collections.swap(events, fromPosition, toPosition);
-
-            recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
-
             return false;
         }
 
@@ -176,17 +168,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     public void updateResults() {
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
-    }
-
-    public void updateResultsWithCallToDb() {
-        ZonedDateTime date = ZonedDateTime.now();
-
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(), date, date.plusMonths(1));
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            events = monthEvents;
-            checkEventListIsEmpty();
-            eventList.setAdapter(new EventViewerAdapter(events, this));
-        });
     }
 
     public void updateModifiedEvent(Id id) {

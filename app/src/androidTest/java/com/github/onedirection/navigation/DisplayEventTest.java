@@ -7,6 +7,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -28,9 +29,13 @@ import java.time.temporal.ChronoUnit;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -70,14 +75,11 @@ public class DisplayEventTest {
         ActivityScenario.launch(intent).onActivity( a->{
             DisplayEvent activity = (DisplayEvent) a;
         });
-
         onView(withId(R.id.eventNameDisplay)).check(matches(isDisplayed()));
-        //onView(withId(R.id.eventNameLocation)).check(matches(isDisplayed()));
         onView(withId(R.id.eventStartTimeDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.eventEndTimeDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplayDelete)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplay)).check(matches(isDisplayed()));
-        //onView(withId(R.id.buttonDisplay)).perform(ViewActions.click());
     }
 
     @Test
@@ -105,5 +107,28 @@ public class DisplayEventTest {
         onView(withId(R.id.favorite_button)).perform(ViewActions.click());
         onView(withId(R.id.favorite_button)).check(matches(isDisplayed()));
 
+    }
+
+    @Test
+    public void testAllFunctionalitiesWork() {
+        ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
+        onView(withId(R.id.fab)).perform(click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("shrek"));
+        pressBack();
+        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
+        onView(withId(R.id.recyclerEventView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.favorite_button)).perform(click());
+        onView(withId(R.id.favorite_button)).perform(click());
+        onView(withId(R.id.favorite_button)).perform(click());
+        onView(withId(R.id.buttonDisplay)).perform(click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("shrek"));
+        pressBack();
+        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
+        onView(withId(R.id.recyclerEventView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        pressBack();
     }
 }

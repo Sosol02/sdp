@@ -65,10 +65,10 @@ public class DisplayEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_event);
 
-        ActionBar actionBar = getSupportActionBar();
+        /*ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        }*/
 
         Intent intent = getIntent();
 
@@ -150,6 +150,7 @@ public class DisplayEvent extends AppCompatActivity {
         }
     }
 
+    /** Arrow to go back to the main menu */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

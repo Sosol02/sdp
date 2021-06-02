@@ -8,6 +8,7 @@ import android.view.ViewParent;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.CoordinatesProvider;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -419,6 +420,6 @@ public class HomeTest {
                 }
             };
         }
-
     }
 }
+
