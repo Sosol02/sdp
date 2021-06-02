@@ -65,10 +65,10 @@ public class DisplayEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_event);
 
-        /*ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-        }*/
+        }
 
         Intent intent = getIntent();
 
@@ -158,6 +158,4 @@ public class DisplayEvent extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
