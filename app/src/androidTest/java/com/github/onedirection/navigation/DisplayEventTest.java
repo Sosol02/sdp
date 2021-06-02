@@ -72,12 +72,10 @@ public class DisplayEventTest {
         });
 
         onView(withId(R.id.eventNameDisplay)).check(matches(isDisplayed()));
-        //onView(withId(R.id.eventNameLocation)).check(matches(isDisplayed()));
         onView(withId(R.id.eventStartTimeDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.eventEndTimeDisplay)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplayDelete)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonDisplay)).check(matches(isDisplayed()));
-        //onView(withId(R.id.buttonDisplay)).perform(ViewActions.click());
     }
 
     @Test
