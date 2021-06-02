@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -17,7 +17,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;

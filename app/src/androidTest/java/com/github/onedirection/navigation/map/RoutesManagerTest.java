@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

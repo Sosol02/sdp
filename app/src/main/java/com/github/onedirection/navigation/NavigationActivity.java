@@ -16,13 +16,16 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.github.onedirection.R;
+import com.github.onedirection.authentication.service.AuthenticationService;
 import com.github.onedirection.authentication.service.FirebaseAuthentication;
+import com.github.onedirection.authentication.service.User;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.event.ui.EventCreator;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Activity to navigate into the app.
@@ -30,8 +33,6 @@ import java.util.List;
 public class NavigationActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    List<Event> events = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,16 @@ public class NavigationActivity extends AppCompatActivity {
             logout(signMenuItem, logoutMenuItem, drawerUsername, drawerEmail, drawer);
             return false;
         });
+
+        AuthenticationService auth = AuthenticationService.getDefaultInstance();
+        Optional<User> user = auth.getCurrentUser();
+        if (user.isPresent()) {
+            User user1 = user.get();
+            drawerUsername.setText(user1.getName());
+            drawerEmail.setText(user1.getEmail());
+            signMenuItem.setVisible(false);
+            logoutMenuItem.setVisible(true);
+        }
     }
 
     @Override
@@ -95,10 +106,5 @@ public class NavigationActivity extends AppCompatActivity {
                     drawer.close();
                 }).setNegativeButton(R.string.dialog_logout_no, (dialogInterface, i) -> {});
         confirmationWindows.show();
-    }
-
-    //TODO Is this method useful?
-    private List<Event> getEvents(){
-        return this.events;
     }
 }

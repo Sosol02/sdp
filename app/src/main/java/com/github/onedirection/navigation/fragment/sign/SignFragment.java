@@ -23,7 +23,7 @@ import com.github.onedirection.authentication.service.User;
 import com.google.android.material.navigation.NavigationView;
 
 /**
- * Fragment for the Login/SignIn view
+ * Fragment for the SignIn/Register view
  */
 public class SignFragment extends Fragment {
 
@@ -45,10 +45,10 @@ public class SignFragment extends Fragment {
         signViewModel = new ViewModelProvider(this).get(SignViewModel.class);
         register = false;
 
-        final EditText emailEditText = view.findViewById(R.id.email);
-        final EditText passwordEditText = view.findViewById(R.id.password);
-        final Button signButton = view.findViewById(R.id.sign);
-        final TextView signToggle = view.findViewById(R.id.sign_toggle);
+        EditText emailEditText = view.findViewById(R.id.email);
+        EditText passwordEditText = view.findViewById(R.id.password);
+        Button signButton = view.findViewById(R.id.sign);
+        TextView signToggle = view.findViewById(R.id.sign_toggle);
 
         NavigationView navigationView = requireActivity().findViewById(R.id.nav_view);
         MenuItem signMenuItem = navigationView.getMenu().findItem(R.id.nav_sign);
@@ -57,6 +57,7 @@ public class SignFragment extends Fragment {
         View headerView = navigationView.getHeaderView(0);
         TextView drawerUsername = headerView.findViewById(R.id.nav_header_username);
         TextView drawerEmail = headerView.findViewById(R.id.nav_header_email);
+
 
         signViewModel.getLoginFormState().observe(getViewLifecycleOwner(), loginFormState -> {
             if (loginFormState == null) {
@@ -80,9 +81,7 @@ public class SignFragment extends Fragment {
                 signMenuItem.setVisible(false);
                 logoutMenuItem.setVisible(true);
                 showSignSuccess(user);
-                if (getActivity() != null) {
-                    getActivity().findViewById(R.id.nav_home).performClick();
-                }
+                requireActivity().findViewById(R.id.nav_home).performClick();
             }
         });
 

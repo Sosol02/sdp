@@ -75,6 +75,8 @@ public class NavigationManager {
     private final UpdatingSpeedLimitSpanListener updatingSpeedLimitSpanListener;
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
+    private final View fragmentView;
+
     private final RelativeLayout maneuverBar;
     private final ImageView nextManeuverIcon;
     private final TextView nextManeuverDistance;
@@ -139,6 +141,7 @@ public class NavigationManager {
         speedLimitValue = view.findViewById(R.id.speed_limit);
         destinationAccept = view.findViewById(R.id.destination_reached_acceptance);
         destinationRefuse = view.findViewById(R.id.destination_reached_cancel);
+        fragmentView = view;
 
         view.findViewById(R.id.stop).setOnClickListener(v -> {
             if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
@@ -256,13 +259,17 @@ public class NavigationManager {
 
         @Override
         public void onNavigationStarted() {
-            Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
+            }
             updateUiOnStartAndReroute(navigationManager.getRoute());
         }
 
         @Override
         public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-            Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override
@@ -293,12 +300,16 @@ public class NavigationManager {
 
         @Override
         public void onRerouteRequested(Location location) {
-            Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
         public void onRerouteReceived(Route route) {
-            Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
+            }
             if (route != null) {
                 routeDisplayManager.displayRoute(route);
                 updateUiOnStartAndReroute(route);
@@ -307,7 +318,9 @@ public class NavigationManager {
 
         @Override
         public void onRerouteFailed() {
-            Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -356,10 +369,12 @@ public class NavigationManager {
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationReachedBar.setVisibility(View.VISIBLE);
-            if (finalDestination) {
-                Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
+            if (fragmentView.getVisibility() == View.VISIBLE) {
+                if (finalDestination) {
+                    Toast.makeText(context, R.string.navigation_final_destination_reached, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, R.string.navigation_waypoint_destionation_reached, Toast.LENGTH_LONG).show();
+                }
             }
             destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler));
             destinationAccept.setClickable(true);

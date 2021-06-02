@@ -12,29 +12,29 @@ class SignFormState {
     private final Integer passwordError;
     private final boolean isDataValid;
 
-    SignFormState(@Nullable Integer emailError, @Nullable Integer passwordError) {
+    public SignFormState(@Nullable Integer emailError, @Nullable Integer passwordError) {
         this.emailError = emailError;
         this.passwordError = passwordError;
         this.isDataValid = false;
     }
 
-    SignFormState(boolean isDataValid) {
+    public SignFormState(boolean isDataValid) {
         this.emailError = null;
         this.passwordError = null;
         this.isDataValid = isDataValid;
     }
 
     @Nullable
-    Integer getEmailError() {
+    public Integer getEmailError() {
         return emailError;
     }
 
     @Nullable
-    Integer getPasswordError() {
+    public Integer getPasswordError() {
         return passwordError;
     }
 
-    boolean isDataValid() {
+    public boolean isDataValid() {
         return isDataValid;
     }
 }

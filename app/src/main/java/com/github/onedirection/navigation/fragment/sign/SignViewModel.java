@@ -19,7 +19,6 @@ public class SignViewModel extends ViewModel {
     private final MutableLiveData<SignFormState> signFormState = new MutableLiveData<>();
     private final MutableLiveData<User> userResult = new MutableLiveData<>();
 
-    @NonNull
     public LiveData<SignFormState> getLoginFormState() {
         return signFormState;
     }

@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import android.util.Log;
 import android.view.View;
@@ -7,10 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.implementation.ConcreteDatabase;
 import com.github.onedirection.database.implementation.Database;
-import com.github.onedirection.database.implementation.DefaultDatabase;
-import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.model.NamedCoordinates;
@@ -23,7 +20,6 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,7 +27,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;

@@ -100,13 +100,9 @@ public class MapFragment extends Fragment {
                     permissionRequestResult.complete(result);
                     if (result) {
                         deviceLocationProvider.startLocationTracking();
-                        if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.setEnableSymbol(true);
-                        }
-                    } else {
-                        if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.setEnableSymbol(false);
-                        }
+                    }
+                    if (myLocationSymbolManager != null) {
+                        myLocationSymbolManager.setEnableSymbol(result);
                     }
                 });
         mapView = view.findViewById(R.id.mapView);
