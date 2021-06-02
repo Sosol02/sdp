@@ -32,12 +32,8 @@ public class GoogleCalendarTest {
             NAME,
             LOCATION,
             START_TIME,
-<<<<<<< HEAD
             END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3)), false
-=======
-            END_TIME
->>>>>>> origin/main
+            false
     );
 
     private static final Event GEO_EVENT = new Event(
@@ -45,12 +41,8 @@ public class GoogleCalendarTest {
             NAME,
             new NamedCoordinates(0, 0, LOCATION),
             START_TIME,
-<<<<<<< HEAD
             END_TIME,
-            new Recurrence(ID, ChronoUnit.WEEKS.getDuration(), START_TIME.plusWeeks(3)), false
-=======
-            END_TIME
->>>>>>> origin/main
+            false
     );
 
     @Test
@@ -92,20 +84,9 @@ public class GoogleCalendarTest {
     }
 
     @Test
-<<<<<<< HEAD
-    public void conversionBijectionRecurrence() {
-        Id id = Id.generateRandom();
-        Recurrence rec = new Recurrence(id, Duration.ofDays(1), ZonedDateTime.now().plusDays(3));
-        Event recRoot =
-                new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
-
-        Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(recRoot));
-        //assertThat(e, hasSize(3));
-=======
     public void conversionRecurrenceDropsRec() throws ExecutionException, InterruptedException {
         Event e = GoogleCalendar.fromGCalendarEvents(GoogleCalendar.toGCalendarEvents(EVENT));
         assertThat(e.isRecurrent(), is(false));
->>>>>>> origin/main
     }
 
     @Test
