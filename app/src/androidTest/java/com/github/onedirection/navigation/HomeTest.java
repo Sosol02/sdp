@@ -61,16 +61,21 @@ public class HomeTest {
         onView(withId(R.id.editEventName)).perform(ViewActions.typeText("event yeah"));
         pressBack();
         onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
-        //pressBack();
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_home)).perform(ViewActions.click());
-        onView(withId(R.id.recyclerEventView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, swipeLeft()));
+        onView(withId(R.id.recyclerEventView)).perform(ViewActions.longClick());
+    }
+
+    @Test
+    public void homeTestFabAndSwap() {
+        ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
+        onView(withId(R.id.fab)).perform(click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("event yeah"));
+        pressBack();
+        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
         onView(withId(R.id.recyclerEventView))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, swipeRight()));
-        onView(withId(R.id.recyclerEventView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        //onView(withId(R.id.recyclerEventView)).perform(ViewActions.longClick());
     }
 
     @Test
