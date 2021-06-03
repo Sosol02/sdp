@@ -29,11 +29,11 @@ public class EventQueries {
         this.db = db;
     }
 
-    public static CompletableFuture<List<Event>> getAllEvents(Database db){
+    public static CompletableFuture<List<Event>> getAllEvents(Database db) {
         return new EventQueries(db).getAllEvents();
     }
 
-    public CompletableFuture<List<Event>> getAllEvents(){
+    public CompletableFuture<List<Event>> getAllEvents() {
         return db.retrieveAll(EventStorer.getInstance());
     }
 
