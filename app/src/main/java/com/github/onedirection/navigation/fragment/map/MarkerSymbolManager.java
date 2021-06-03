@@ -129,13 +129,13 @@ public class MarkerSymbolManager {
      * @return The symbol associated to the added event.
      * @throws IllegalArgumentException if the symbol has no coordinates.
      */
-    public Symbol addEventMarker(@NonNull Event event) {
+    public void addEventMarker(@NonNull Event event) {
         Optional<Coordinates> optCoords = event.getCoordinates();
         if (!optCoords.isPresent())
-            throw new IllegalArgumentException("The event has no coordinates: " + event.toString());
+            return;
         Coordinates coords = optCoords.get();
         LatLng latLng = new LatLng(coords.latitude, coords.longitude);
-        return addEventMarkerAt(event, latLng);
+        addEventMarkerAt(event, latLng);
     }
 
     public Symbol addEventMarkerAt(@NonNull Event event, @NonNull LatLng position) {
@@ -168,10 +168,6 @@ public class MarkerSymbolManager {
         return Collections.unmodifiableList(markers);
     }
 
-    public Map<Symbol, Event> getEventMap() {
-        return Collections.unmodifiableMap(eventMap);
-    }
-
     public CompletableFuture<Void> syncEventsWithDb() {
         Log.d(LOG_TAG, "syncEventsWithDb");
         Database db = Database.getDefaultInstance();
@@ -184,11 +180,12 @@ public class MarkerSymbolManager {
             } else {
                 Log.d(LOG_TAG, "syncEventsWithDb: register db events: " + ls);
                 removeAllMarkers();
-                ArrayList<CompletableFuture<Pair<Symbol, LatLng>>> futures = new ArrayList<>();
+                //ArrayList<CompletableFuture<Pair<Symbol, LatLng>>> futures = new ArrayList<>();
                 for (Event e : ls) {
-                    futures.add(addGeocodedEventMarker(e));
+                    //futures.add(addGeocodedEventMarker(e));
+                    addEventMarker(e);
                 }
-                return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                return CompletableFuture.completedFuture(null);
             }
         });
         return Monads.flattenFuture(futAddEvents);
