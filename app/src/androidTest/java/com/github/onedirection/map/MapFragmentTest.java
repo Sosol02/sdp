@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(AndroidJUnit4.class)
+
 public class MapFragmentTest extends MapFragmentTestSetup {
 
     private final LatLng TEST_VALUE_LATLNG_1 = new LatLng(40.6974034,-74.1197629);
@@ -42,8 +43,8 @@ public class MapFragmentTest extends MapFragmentTestSetup {
 
 
     private final Event[] testEvents = new Event[] {
-            new Event(Id.generateRandom(), "Event 1 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 1 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
     };
 
     @Test

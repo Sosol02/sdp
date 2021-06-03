@@ -80,7 +80,6 @@ public final class GoogleCalendar {
             throw new IllegalArgumentException("Invalid string for id: " + str);
         }
 
-        // Put back the '-'
         String result = new StringJoiner("-")
                 .add(str.substring(0, 8))
                 .add(str.substring(8, 12))
@@ -154,10 +153,10 @@ public final class GoogleCalendar {
             if (event.getStart() == null || event.getEnd() == null) {
                 throw new IllegalArgumentException("Event should have at least a start time and an end time.");
             }
-
             Id newId = toId(event.getId());
             String name = (event.getSummary() != null) ? event.getSummary() : DEFAULT_NAME;
             String locationName = (event.getLocation() != null) ? event.getLocation() : "";
+            boolean isFavorite = false;
 
             long epochSecondStartTime = event.getStart().getDateTime().getValue() / 1000;
             ZonedDateTime startTime = TimeUtils.epochToZonedDateTime(epochSecondStartTime);
@@ -174,10 +173,11 @@ public final class GoogleCalendar {
                                 Double.parseDouble(Objects.requireNonNull(locMatch.group("lon"))),
                                 locMatch.group("name")),
                         startTime,
-                        endTime
+                        endTime,
+                        false
                 );
             } else {
-                return new Event(newId, name, locationName, startTime, endTime);
+                return new Event(newId, name, locationName, startTime, endTime, false);
             }
         } catch (RuntimeException e) {
             Log.d(LOGCAT_TAG, e.getMessage());

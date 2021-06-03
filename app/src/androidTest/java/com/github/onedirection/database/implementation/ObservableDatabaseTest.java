@@ -20,10 +20,11 @@ import java.util.concurrent.ExecutionException;
 public class ObservableDatabaseTest {
 
     private static final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event 1", "nowhere", Optional.empty(),
-            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), Optional.empty());
+            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5), Optional.empty(),false);
 
     private static final Event TEST_EVENT_2 = new Event(Id.generateRandom(), "Test event 2", "nowhreerfwfeewe", Optional.empty(),
-            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(10), Optional.empty());
+            ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(10), Optional.empty(),false);
+
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {
