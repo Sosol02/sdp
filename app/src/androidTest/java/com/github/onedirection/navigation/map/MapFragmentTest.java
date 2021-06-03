@@ -154,26 +154,17 @@ public class MapFragmentTest extends MapFragmentTestSetup {
         onView(withId(R.id.fragment_map_ui))
                 .perform(new WaitAction(1000));
 
-        onView(withId(R.id.fragment_map_event_nav_button))
-                .perform(click());
-
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
-
-        final boolean[] isNavigationStarted = {false};
-
         com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
                 navigationManager, com.mapquest.navigation.NavigationManager.class);
         navigationManager1.addNavigationStateListener(new NavigationStateListener() {
             @Override
             public void onNavigationStarted() {
-                isNavigationStarted[0] = true;
                 semaphore.release();
             }
 
             @Override
-            public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-                isNavigationStarted[0] = false;
-            }
+            public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {}
 
             @Override
             public void onNavigationPaused() {}
@@ -181,8 +172,13 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             @Override
             public void onNavigationResumed() {}
         });
+
+        onView(withId(R.id.fragment_map_event_nav_button))
+                .perform(click());
         semaphore.acquire();
-        assertThat(isNavigationStarted[0], is(true));
+        
+        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager
+                .NavigationState.ACTIVE));
     }
 
     private void focusEventOnMap(Event e) throws InterruptedException {
