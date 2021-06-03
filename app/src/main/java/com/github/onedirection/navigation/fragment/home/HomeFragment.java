@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -155,48 +157,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
         displayEmpty = root.findViewById(R.id.displayNoEvents);
 
-        this.newEventsList = requireActivity().registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            Intent data = result.getData();
-            if(data.hasExtra(DisplayEvent.EXTRA_MODIFIED)){
-                Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_MODIFIED);
-                Id id = newEvent.getId();
-                int position = 0;
-                for (int i = 0; i < events.size(); i++) {
-                    if (events.get(i).getId().equals(id)) {
-                        events.set(position, newEvent);
-                        position = i;
-                    }
-                }
-                checkEventListIsEmpty();
-                eventViewerAdapter.notifyItemChanged(position);
-                eventList.setAdapter(new EventViewerAdapter(events, this));
-            }else if(data.hasExtra(DisplayEvent.EXTRA_DELETED)){
-                Id id = (Id) data.getSerializableExtra(DisplayEvent.EXTRA_DELETED);
-                int position = 0;
-                for (int i = 0; i < events.size(); i++) {
-                    if (events.get(i).getId().equals(id)) {
-                        events.remove(i);
-                        position = i;
-                    }
-                }
-                checkEventListIsEmpty();
-                eventViewerAdapter.notifyItemRemoved(position);
-                eventList.setAdapter(new EventViewerAdapter(events, this));
-            }else if(data.hasExtra(DisplayEvent.EXTRA_FAVORITE)){
-                Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_FAVORITE);
-                Id id = newEvent.getId();
-                int position = 0;
-                for (int i = 0; i < events.size(); i++) {
-                    if (events.get(i).getId().equals(id)) {
-                        events.get(position).setFavorite(newEvent.getIsFavorite());
-                        position = i;
-                        eventViewerAdapter.notifyItemChanged(position);
-                    }
-                }
-                checkEventListIsEmpty();
-                eventList.setAdapter(new EventViewerAdapter(events, this));
-            }
-        });
+        this.newEventsList = requireActivity().registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::processInfoBackFromDisplayEvent);
 
         checkEventListIsEmpty();
 
@@ -298,6 +259,50 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             displayEmpty.setVisibility(View.VISIBLE);
         } else {
             displayEmpty.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /** Process the result back from the DisplayEvent to update the view instantly and do not have to wait for the database to be updated */
+    public void processInfoBackFromDisplayEvent(ActivityResult result) {
+        Intent data = result.getData();
+        if (data.hasExtra(DisplayEvent.EXTRA_MODIFIED)) {
+            Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_MODIFIED);
+            Id id = newEvent.getId();
+            int position = 0;
+            for (int i = 0; i < events.size(); i++) {
+                if (events.get(i).getId().equals(id)) {
+                    events.set(position, newEvent);
+                    position = i;
+                }
+            }
+            checkEventListIsEmpty();
+            eventViewerAdapter.notifyItemChanged(position);
+            eventList.setAdapter(new EventViewerAdapter(events, this));
+        } else if (data.hasExtra(DisplayEvent.EXTRA_DELETED)) {
+            Id id = (Id) data.getSerializableExtra(DisplayEvent.EXTRA_DELETED);
+            int position = 0;
+            for (int i = 0; i < events.size(); i++) {
+                if (events.get(i).getId().equals(id)) {
+                    events.remove(i);
+                    position = i;
+                }
+            }
+            checkEventListIsEmpty();
+            eventViewerAdapter.notifyItemRemoved(position);
+            eventList.setAdapter(new EventViewerAdapter(events, this));
+        } else if (data.hasExtra(DisplayEvent.EXTRA_FAVORITE)) {
+            Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_FAVORITE);
+            Id id = newEvent.getId();
+            int position = 0;
+            for (int i = 0; i < events.size(); i++) {
+                if (events.get(i).getId().equals(id)) {
+                    events.get(position).setFavorite(newEvent.getIsFavorite());
+                    position = i;
+                    eventViewerAdapter.notifyItemChanged(position);
+                }
+            }
+            checkEventListIsEmpty();
+            eventList.setAdapter(new EventViewerAdapter(events, this));
         }
     }
 }
