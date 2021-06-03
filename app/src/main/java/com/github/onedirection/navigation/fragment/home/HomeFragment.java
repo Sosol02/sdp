@@ -37,6 +37,8 @@ import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +53,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteListener {
 
-    List<Event> events = new ArrayList<Event>();
+    List<Event> events = new ArrayList<>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
     private EventViewerAdapter.OnNoteListener onNoteListener;
@@ -59,9 +61,8 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private boolean isOnOrderedView = false;
     private List<Event> favoritesEvents;
     private List<Event> orderedEvents;
-    private View root;
     private TextView displayEmpty;
-    private ActivityResultLauncher<Intent> newEventsList;
+    private final ActivityResultLauncher<Intent> newEventsList = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::processInfoBackFromDisplayEvent);
 
     /** Callback for swiping */
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
@@ -91,8 +92,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         }
 
         @Override
-        public void onChildDraw (Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive){
-            Bitmap icon;
+        public void onChildDraw (@NotNull Canvas c, @NotNull RecyclerView recyclerView, @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive){
             if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                 View itemView = viewHolder.itemView;
 
@@ -113,7 +113,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             }
         }
     };
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -153,11 +152,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         FloatingActionButton fabOrder = root.findViewById(R.id.fabOrder);
         fabOrder.setOnClickListener(fabSortTime());
 
-        this.root = root;
-
         displayEmpty = root.findViewById(R.id.displayNoEvents);
-
-        this.newEventsList = requireActivity().registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::processInfoBackFromDisplayEvent);
 
         checkEventListIsEmpty();
 
@@ -197,59 +192,49 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
     /** Assign functionality to the fabAdd button */
     public View.OnClickListener fabAdd() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), EventCreator.class);
-                startActivity(intent);
-            }
+        return view -> {
+            Intent intent = new Intent(view.getContext(), EventCreator.class);
+            startActivity(intent);
         };
     }
 
     /** Assign functionality to the fabFavorite button */
     public View.OnClickListener fabFavorite() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isOnFavoriteView) {
-                    List<Event> listFavorites = new ArrayList<>();
-                    for (Event e : isOnOrderedView ? orderedEvents : events) {
-                        if (e.getIsFavorite()) listFavorites.add(e);
-                    }
-                    eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
-                    isOnFavoriteView = true;
-                    favoritesEvents = listFavorites;
-                } else {
-                    eventList.setAdapter(new EventViewerAdapter(isOnOrderedView ? orderedEvents : events, onNoteListener));
-                    isOnFavoriteView = false;
+        return view -> {
+            if (!isOnFavoriteView) {
+                List<Event> listFavorites = new ArrayList<>();
+                for (Event e : isOnOrderedView ? orderedEvents : events) {
+                    if (e.getIsFavorite()) listFavorites.add(e);
                 }
+                eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
+                isOnFavoriteView = true;
+                favoritesEvents = listFavorites;
+            } else {
+                eventList.setAdapter(new EventViewerAdapter(isOnOrderedView ? orderedEvents : events, onNoteListener));
+                isOnFavoriteView = false;
             }
         };
     }
 
     /** Assign functionality to the fabOrder button */
     public View.OnClickListener fabSortTime() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        return view -> {
 
-                if (!isOnOrderedView) {
-                    List<Event> listOrdered = new ArrayList<>();
-                    for (Event e : isOnFavoriteView ? favoritesEvents : events) {
-                        listOrdered.add(e);
-                    }
-                    listOrdered.sort((l, r) -> {
-                        return Long.compare(l.getStartTime().toEpochSecond(), r.getStartTime().toEpochSecond());
-                    });
-                    eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
-                    isOnOrderedView = true;
-                    orderedEvents = listOrdered;
-                } else {
-                    eventList.setAdapter(new EventViewerAdapter(isOnFavoriteView ? favoritesEvents : events, onNoteListener));
-                    isOnOrderedView = false;
+            if (!isOnOrderedView) {
+                List<Event> listOrdered = new ArrayList<>();
+                for (Event e : isOnFavoriteView ? favoritesEvents : events) {
+                    listOrdered.add(e);
                 }
+                listOrdered.sort((l, r) -> {
+                    return Long.compare(l.getStartTime().toEpochSecond(), r.getStartTime().toEpochSecond());
+                });
+                eventList.setAdapter(new EventViewerAdapter(listOrdered, onNoteListener));
+                isOnOrderedView = true;
+                orderedEvents = listOrdered;
+            } else {
+                eventList.setAdapter(new EventViewerAdapter(isOnFavoriteView ? favoritesEvents : events, onNoteListener));
+                isOnOrderedView = false;
             }
-
         };
     }
 
