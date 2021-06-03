@@ -32,7 +32,7 @@ public class DayEventsListView extends LinearLayout {
     private final static int WINDOW_LAYOUT_HEIGHT = 1200;
     private final Context context;
     private final ZonedDateTime day;
-    private List<Event> dayEvents;
+    private final List<Event> dayEvents;
     private final LayoutInflater inflater;
     private final View view;
     private final CountingIdlingResource idling;

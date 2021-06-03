@@ -69,7 +69,7 @@ public class MapFragment extends Fragment {
     private Event currentEvent;
 
     private DeviceLocationProvider deviceLocationProvider;
-    private boolean isFirstUpdate;
+    private boolean isFirstLocationUpdate;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -100,13 +100,9 @@ public class MapFragment extends Fragment {
                     permissionRequestResult.complete(result);
                     if (result) {
                         deviceLocationProvider.startLocationTracking();
-                        if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.setEnableSymbol(true);
-                        }
-                    } else {
-                        if (myLocationSymbolManager != null) {
-                            myLocationSymbolManager.setEnableSymbol(false);
-                        }
+                    }
+                    if (myLocationSymbolManager != null) {
+                        myLocationSymbolManager.setEnableSymbol(result);
                     }
                 });
         mapView = view.findViewById(R.id.mapView);
@@ -121,9 +117,7 @@ public class MapFragment extends Fragment {
                 EspressoIdlingResource.getInstance().unlockIdlingResource();
             });
 
-            view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> {
-                OnMyLocationButtonClickResponse();
-            });
+            view.findViewById(R.id.my_location_button).setOnClickListener(view1 -> OnMyLocationButtonClickResponse());
 
         });
 
@@ -183,7 +177,7 @@ public class MapFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(but -> cancelNavigation());
-        isFirstUpdate = true;
+        isFirstLocationUpdate = true;
 
         return view;
     }
@@ -283,7 +277,8 @@ public class MapFragment extends Fragment {
         myLocationSymbolManager = new MyLocationSymbolManager(context, mapView, mapboxMap, style);
         routesManager = new RoutesManager(context);
         routeDisplayManager = new RouteDisplayManager(mapView, mapboxMap, style);
-        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap, routeDisplayManager, view);
+        navigationManager = new NavigationManager(context, deviceLocationProvider, mapboxMap,
+                routeDisplayManager, view, this);
 
         // Now that markerSymbolManager is non null, sync
         markerSymbolManager.syncEventsWithDb();
@@ -305,9 +300,9 @@ public class MapFragment extends Fragment {
         }
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
-                myLocationSymbolManager.update(value);
-                if (isFirstUpdate) {
-                    isFirstUpdate = false;
+                myLocationSymbolManager.updateCoordinates(value);
+                if (isFirstLocationUpdate) {
+                    isFirstLocationUpdate = false;
                     OnMyLocationButtonClickResponse();
                 }
             }
@@ -317,9 +312,12 @@ public class MapFragment extends Fragment {
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
             EspressoIdlingResource.getInstance().lockIdlingResource();
-            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
-                permissionRequestResult = new CompletableFuture<>();
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            Context context = getContext();
+            if (context != null) {
+                if (!DeviceLocationProvider.fineLocationUsageIsAllowed(context.getApplicationContext())) {
+                    permissionRequestResult = new CompletableFuture<>();
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
             }
             deviceLocationProvider.startLocationTracking();
             LatLng latLng = myLocationSymbolManager.getPosition();
@@ -357,10 +355,8 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
+            waitForNavStart.decrement();
             if (list.size() > 0) {
-                if (waitForNavStart.isIdleNow()) {
-                    waitForNavStart.decrement();
-                }
                 navigationManager.startNavigation(list.get(0));
             }
         }
