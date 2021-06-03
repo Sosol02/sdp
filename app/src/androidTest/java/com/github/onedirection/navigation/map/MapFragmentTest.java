@@ -158,17 +158,21 @@ public class MapFragmentTest extends MapFragmentTestSetup {
                 .perform(click());
 
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
+
+        final boolean[] isNavigationStarted = {false};
+
         com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
                 navigationManager, com.mapquest.navigation.NavigationManager.class);
-
         navigationManager1.addNavigationStateListener(new NavigationStateListener() {
             @Override
             public void onNavigationStarted() {
-                semaphore.release();
+                isNavigationStarted[0] = true;
             }
 
             @Override
-            public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {}
+            public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
+                isNavigationStarted[0] = false;
+            }
 
             @Override
             public void onNavigationPaused() {}
@@ -176,9 +180,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             @Override
             public void onNavigationResumed() {}
         });
-        semaphore.acquire();
-        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager
-                .NavigationState.ACTIVE));
+        assertThat(isNavigationStarted[0], is(true));
     }
 
     private void focusEventOnMap(Event e) throws InterruptedException {
