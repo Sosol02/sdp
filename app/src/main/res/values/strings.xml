@@ -34,6 +34,9 @@
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
     <string name="add_event">Add Event</string>
+    <string name="fab_favorite">Fab favorite</string>
+    <string name="fab_order">Fab order</string>
+    <string name="recycler_view_events">Recycler view for events</string>
     <string name="update_event">Modify Event</string>
     <string name="no_events_yet">You do not have any events yet</string>
     <string name="eventEndTimeDisplay">eventEndTimeDisplay</string>

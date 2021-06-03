@@ -28,7 +28,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventStartTime"
         app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        tools:ignore="RtlHardcoded,RtlSymmetry,TextViewEdits" />
 
     <TextView
         android:id="@+id/eventName"
