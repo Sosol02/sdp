@@ -81,6 +81,8 @@ public class NavigationActivity extends AppCompatActivity {
             drawerEmail.setText(user.getEmail());
             signMenuItem.setVisible(false);
             logoutMenuItem.setVisible(true);
+            navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            //needed to highlight home item instead of logout
         }
     }
 
