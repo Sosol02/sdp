@@ -21,9 +21,6 @@ public class FirebaseUtils {
     }
 
     public static void init() {
-        if(INITIALIZED){
-            throw new IllegalStateException("Firestore already initialized");
-        }
         INITIALIZED = true;
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
