@@ -84,6 +84,7 @@
     <string name="event_time_too_long">The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.</string>
     <string name="location_name_too_long">The custom location name is too long. Provide a name no longer than %d characters.</string>
     <string name="recurrence_end_too_soon">The recurrence end time is too soon. It should be at least the event start time.</string>
+    <string name="no_geoloc_set">The geolocation must be set.</string>
 
     <string name="my_location_button_desc">my_location_button</string>
 
