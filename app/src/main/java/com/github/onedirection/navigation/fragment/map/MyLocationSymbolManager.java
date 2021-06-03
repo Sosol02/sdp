@@ -37,7 +37,7 @@ public class MyLocationSymbolManager {
         symbolManager.setIconAllowOverlap(true);
     }
 
-    public void update(Coordinates value) {
+    public void updateCoordinates(Coordinates value) {
         if (value == null) {
             setEnableSymbol(false);
         } else {

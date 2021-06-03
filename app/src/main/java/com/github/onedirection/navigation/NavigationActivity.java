@@ -72,6 +72,7 @@ public class NavigationActivity extends AppCompatActivity {
             return false;
         });
 
+        //check if an user is already connected
         AuthenticationService auth = AuthenticationService.getDefaultInstance();
         Optional<User> userOptional = auth.getCurrentUser();
         if (userOptional.isPresent()) {

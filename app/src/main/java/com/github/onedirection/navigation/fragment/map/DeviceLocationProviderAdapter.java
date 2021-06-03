@@ -19,18 +19,6 @@ import com.mapquest.navigation.model.location.Location;
 
 public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        @Override
-        public DeviceLocationProviderAdapter createFromParcel(Parcel in) {
-            throw new UnsupportedOperationException("DeviceLocationProvider is not parcelable");
-        }
-
-        @Override
-        public DeviceLocationProviderAdapter[] newArray(int size) {
-            throw new UnsupportedOperationException("DeviceLocationProvider is not parcelable");
-        }
-    };
-
     private final DeviceLocationProvider deviceLocationProvider;
 
     public DeviceLocationProviderAdapter(DeviceLocationProvider deviceLocationProvider) {
@@ -63,6 +51,16 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
         return androidLocationToMapquestLocation(deviceLocationProvider.getLastAndroidLocation());
     }
 
+    public Location androidLocationToMapquestLocation(android.location.Location location) {
+        return new Location(location.getLatitude(),
+                location.getLongitude(), location.getAltitude(), location.getBearing(),
+                location.getSpeed(), location.getAccuracy(), location.getTime());
+    }
+
+
+    /*DeviceLocationProvider is not parcelable, so we cannot implement the parcelable interface correctly,
+    therefore we throw an exception when used */
+
     @Override
     public String getLocationProviderId() {
         return "device-location-provider";
@@ -78,9 +76,16 @@ public class DeviceLocationProviderAdapter extends LocationProviderAdapter {
         throw new UnsupportedOperationException("DeviceLocationProvider is not parcelable");
     }
 
-    public Location androidLocationToMapquestLocation(android.location.Location location) {
-        return new Location(location.getLatitude(),
-                location.getLongitude(), location.getAltitude(), location.getBearing(),
-                location.getSpeed(), location.getAccuracy(), location.getTime());
-    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        @Override
+        public DeviceLocationProviderAdapter createFromParcel(Parcel in) {
+            throw new UnsupportedOperationException("DeviceLocationProvider is not parcelable");
+        }
+
+        @Override
+        public DeviceLocationProviderAdapter[] newArray(int size) {
+            throw new UnsupportedOperationException("DeviceLocationProvider is not parcelable");
+        }
+    };
 }

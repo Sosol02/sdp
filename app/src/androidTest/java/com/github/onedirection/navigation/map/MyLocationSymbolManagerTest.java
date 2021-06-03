@@ -66,7 +66,7 @@ public class MyLocationSymbolManagerTest extends MapFragmentTestSetup{
         deviceLocationProviderMock.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
                 try {
-                    runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.update(value));
+                    runOnUiThreadAndWaitEndExecution(() -> myLocationSymbolManager.updateCoordinates(value));
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

@@ -69,7 +69,7 @@ public class MapFragment extends Fragment {
     private Event currentEvent;
 
     private DeviceLocationProvider deviceLocationProvider;
-    private boolean isFirstUpdate;
+    private boolean isFirstLocationUpdate;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private CompletableFuture<Boolean> permissionRequestResult;
 
@@ -177,7 +177,7 @@ public class MapFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(but -> cancelNavigation());
-        isFirstUpdate = true;
+        isFirstLocationUpdate = true;
 
         return view;
     }
@@ -300,9 +300,9 @@ public class MapFragment extends Fragment {
         }
         deviceLocationProvider.addObserver((subject, value) -> {
             if (myLocationSymbolManager != null) {
-                myLocationSymbolManager.update(value);
-                if (isFirstUpdate) {
-                    isFirstUpdate = false;
+                myLocationSymbolManager.updateCoordinates(value);
+                if (isFirstLocationUpdate) {
+                    isFirstLocationUpdate = false;
                     OnMyLocationButtonClickResponse();
                 }
             }
@@ -353,9 +353,7 @@ public class MapFragment extends Fragment {
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
             if (list.size() > 0) {
-                if (waitForNavStart.isIdleNow()) {
-                    waitForNavStart.decrement();
-                }
+                waitForNavStart.decrement();
                 navigationManager.startNavigation(list.get(0));
             }
         }

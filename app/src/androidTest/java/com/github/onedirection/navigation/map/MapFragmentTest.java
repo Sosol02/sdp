@@ -42,8 +42,12 @@ public class MapFragmentTest extends MapFragmentTestSetup {
 
 
     private final Event[] testEvents = new Event[] {
-            new Event(Id.generateRandom(), "Event 1 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 1 New York", "New York USA",
+                    new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 2 Los Angeles", "Los Angeles",
+                    new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
     };
 
     @Test
@@ -76,7 +80,8 @@ public class MapFragmentTest extends MapFragmentTestSetup {
                 .perform(new WaitAction(1000));
 
         Semaphore semaphore = new Semaphore(0);
-        getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
@@ -85,9 +90,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
 
         runOnUiThreadAndWaitEndExecution(() -> bsb.setState(BottomSheetBehavior.STATE_EXPANDED));
@@ -116,7 +119,6 @@ public class MapFragmentTest extends MapFragmentTestSetup {
         // the idling resource ensures it works, otherwise it timeouts after ~30 secs
     }
 
-    @Ignore("Cirrus' reject")
     @Test
     public void startNavWithUiWorks() throws InterruptedException {
         IdlingRegistry.getInstance().register(fragment.waitForNavStart);
@@ -125,6 +127,19 @@ public class MapFragmentTest extends MapFragmentTestSetup {
 
         BottomSheetBehavior<View> bsb = getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class);
 
+        Semaphore semaphore = new Semaphore(0);
+        bsb.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    semaphore.release();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
+        });
+
         focusEventOnMap(dest);
         onView(withId(R.id.mapView))
                 .perform(new WaitAction(1000))
@@ -132,6 +147,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
                 .perform(new WaitAction(1000));
 
         runOnUiThreadAndWaitEndExecution(() -> bsb.setState(BottomSheetBehavior.STATE_EXPANDED));
+        semaphore.acquire();
 
         onView(withId(R.id.fragment_map_ui))
                 .perform(new WaitAction(1000));
@@ -140,7 +156,8 @@ public class MapFragmentTest extends MapFragmentTestSetup {
                 .perform(click());
 
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
-        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
+                navigationManager, com.mapquest.navigation.NavigationManager.class);
         assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE));
     }
 

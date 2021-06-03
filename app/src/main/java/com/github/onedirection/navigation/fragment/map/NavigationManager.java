@@ -109,6 +109,7 @@ public class NavigationManager {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
         Objects.requireNonNull(routeDisplayManager);
+        Objects.requireNonNull(mapFragment);
         this.mapboxMap = mapboxMap;
         this.context = context;
         this.routeDisplayManager = routeDisplayManager;
@@ -213,7 +214,8 @@ public class NavigationManager {
         long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
 
         String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
-        String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs().indexOf(navigationManager.getCurrentRouteLeg()));
+        String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs()
+                .indexOf(navigationManager.getCurrentRouteLeg()));
         updateUiTime(timeForNextDestination, timeForFinalDestination, lastRouteLegKey.equals(currentRouteLegKey));
     }
 
@@ -237,8 +239,9 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
-                    speedLimitValue.setText(String.format(Locale.getDefault(), "%d",Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
-                            .toKilometersPerHour() / 10) * 10));
+                    speedLimitValue.setText(String.format(Locale.getDefault(), "%d",
+                            Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                            .toKilometersPerHour() / 10) * 10)); // round to a multiple of ten
                 }
             }
             speedLimitBlankSign.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);
@@ -247,7 +250,7 @@ public class NavigationManager {
     }
 
     private String getStringDistanceFromIntDistance(int distance) {
-        if (distance > 5000) {
+        if (distance > 5000) { // if the distance is more than 5000 m returns it in km instead
             double distanceKm = ((double) distance) / 1000;
             BigDecimal b = new BigDecimal(Double.toString(distanceKm));
             b = b.setScale(1, RoundingMode.CEILING);
@@ -357,7 +360,8 @@ public class NavigationManager {
         @Override
         public void onInaccurateObservationReceived(Location location) {}
 
-        private void onDestinationReachedResponse(boolean finalDestination, boolean accepted, DestinationAcceptanceHandler destinationAcceptanceHandler) {
+        private void onDestinationReachedResponse(boolean finalDestination, boolean accepted,
+                                                  DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationAcceptanceHandler.confirmArrival(accepted);
             if (finalDestination && accepted) {
                 stopNavigation();
@@ -378,9 +382,11 @@ public class NavigationManager {
                     Toast.makeText(context, R.string.navigation_waypoint_destination_reached, Toast.LENGTH_LONG).show();
                 }
             }
-            destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler));
+            destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true,
+                    destinationAcceptanceHandler));
             destinationAccept.setClickable(true);
-            destinationRefuse.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler));
+            destinationRefuse.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, false,
+                    destinationAcceptanceHandler));
             destinationRefuse.setClickable(true);
         }
     }
@@ -388,7 +394,8 @@ public class NavigationManager {
     private class UpdatingSpeedLimitSpanListener implements SpeedLimitSpanListener {
 
         @Override
-        public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull Set<SpeedLimitSpan> enteredSpeedLimits) {
+        public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull
+                Set<SpeedLimitSpan> enteredSpeedLimits) {
             updateUiMaxSpeed(enteredSpeedLimits);
         }
     }

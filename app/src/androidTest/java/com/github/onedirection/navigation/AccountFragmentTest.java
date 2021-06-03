@@ -89,7 +89,8 @@ public class AccountFragmentTest {
         onView(withId(R.id.nav_header_username)).check(matches(withText(USERNAME_1)));
         onView(withId(R.id.account_username)).check(matches(withText(USERNAME_1)));
 
-        onView(withId(R.id.change_username_account_display)).perform(ViewActions.clearText(), ViewActions.typeText(ctx.getString(R.string.test_account)));
+        onView(withId(R.id.change_username_account_display)).perform(ViewActions.clearText(),
+                ViewActions.typeText(ctx.getString(R.string.test_account)));
         onView(withId(R.id.button_change_username)).perform(click());
 
         onView(withId(R.id.drawer_layout)).perform(new WaitAction(1000));

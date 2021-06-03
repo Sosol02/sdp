@@ -93,7 +93,7 @@ public abstract class MapFragmentTestSetup {
     }
 
     @After
-    public void AtEndTest() {
+    public void atEndTest() {
         IdlingRegistry.getInstance().unregister(onMapReadyIdlingResource);
         IdlingRegistry.getInstance().unregister(countingIdlingResource);
     }

@@ -57,11 +57,13 @@ public class AccountFragment extends Fragment {
         });
         changeUsernameButton.setOnClickListener(v -> {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0); //close the soft keyboard on the app
+
             AuthenticationService auth = AuthenticationService.getDefaultInstance();
             auth.updateDisplayName(changeUsernameEdit.getText().toString()).thenAccept(user -> {
                 drawerUsername.setText(user.getName());
-                Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_success) + " " + user.getName(), Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_success) + " " + user.getName(),
+                        Toast.LENGTH_LONG).show();
             }).exceptionally(error -> {
                 Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_failure), Toast.LENGTH_LONG).show();
                 return null;
