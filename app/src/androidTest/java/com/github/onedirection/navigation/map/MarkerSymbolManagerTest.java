@@ -53,27 +53,27 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
             ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0,
                     ZoneId.systemDefault()),
             ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0,
-                    ZoneId.systemDefault()));
+                    ZoneId.systemDefault()),false);
 
     private final Event[] testEvents = new Event[] {
             new Event(Id.generateRandom(), "Event 1 Paris", "Paris France",
                     new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
             new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia",
                     new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
             new Event(Id.generateRandom(), "Event 3 New York", "New York USA",
                     new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
             new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria",
                     new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
             new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile",
                     new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
             new Event(Id.generateRandom(), "Event 6 Los Angeles", "Los Angeles",
                     new Coordinates(TEST_VALUE_LATLNG_6.getLatitude(), TEST_VALUE_LATLNG_6.getLongitude()),
-                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
     };
 
     @Test

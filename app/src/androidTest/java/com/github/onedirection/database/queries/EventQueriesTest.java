@@ -42,9 +42,9 @@ public class EventQueriesTest {
         Random r = new Random();
         for (int i = 0; i < count; ++i) {
             if (r.nextInt(emptyCoordProportion) % emptyCoordProportion == 0) {
-                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city" + i, ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
+                l[i] = new Event(Id.generateRandom(), "MyCity" + i, "city" + i, ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i),false);
             } else {
-                l[i] = new Event(Id.generateRandom(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i));
+                l[i] = new Event(Id.generateRandom(), "MyCity" + i, new NamedCoordinates(i, i, "city" + i), ZonedDateTime.now().plusHours(i), ZonedDateTime.now().plusHours(i),false);
             }
         }
         return l;
@@ -74,8 +74,8 @@ public class EventQueriesTest {
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
         for (int i = 0; i < 5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(20 + 2 * i), end.plusMinutes(20 + 2 * i + 1)));
-            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20 + 2 * i), start.minusMinutes(20 + 2 * i).plusMinutes(1)));
+            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(20 + 2 * i), end.plusMinutes(20 + 2 * i + 1),false));
+            events.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20 + 2 * i), start.minusMinutes(20 + 2 * i).plusMinutes(1),false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
@@ -94,7 +94,7 @@ public class EventQueriesTest {
         List<Event> events = new ArrayList<Event>();
         ZonedDateTime start = getConventionStartTime();
         for (int i = 0; i < 5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
+            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i),false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
@@ -115,13 +115,13 @@ public class EventQueriesTest {
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
         for (int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(5 + i), start.plusMinutes(20 + i)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20), start.plusMinutes(5).minusMinutes(i)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + (-2) * i, "loc" + 2 * i, start.minusMinutes(i + 1), end.plusMinutes(i + 1)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i, "loc" + 2 * i, start.plusMinutes(5 + i), start.plusMinutes(20 + i), false));
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + 2 * i + 1, "loc" + 2 * i + 1, start.minusMinutes(20), start.plusMinutes(5).minusMinutes(i), false));
+            eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent" + (-2) * i, "loc" + 2 * i, start.minusMinutes(i + 1), end.plusMinutes(i + 1), false));
         }
-        eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent", "loc", start, end));
-        eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", end, end.plusMinutes(1)));
-        eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", start.minusMinutes(1), start));
+        eventsAccepted.add(new Event(Id.generateRandom(), "MyEvent", "loc", start, end, false));
+        eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", end, end.plusMinutes(1), false));
+        eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent", "nopeLoc", start.minusMinutes(1), start, false));
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
         b = b && db.storeAll(eventsAccepted).get();
@@ -149,7 +149,7 @@ public class EventQueriesTest {
         ZonedDateTime start = getConventionStartTime();
         ZonedDateTime end = start.plusMinutes(10);
         for (int i = 0; i < 5; ++i) {
-            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i)));
+            events.add(new Event(Id.generateRandom(), "MyEvent" + i, "loc" + i, start.plusMinutes(5).minusMinutes(i + 1), start.plusMinutes(5).plusMinutes(i), false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = db.storeAll(events).get();
@@ -170,9 +170,9 @@ public class EventQueriesTest {
         ZonedDateTime today = TimeUtils.truncateTimeToDays(getConventionStartTime());
 
         for (int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, today.plusHours(2 * i), today.plusHours(2 * i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.minusDays(i + 2), today.minusDays(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.plusDays(i + 1), today.plusDays(i + 2)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, today.plusHours(2 * i), today.plusHours(2 * i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.minusDays(i + 2), today.minusDays(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, today.plusDays(i + 1), today.plusDays(i + 2), false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
@@ -201,11 +201,11 @@ public class EventQueriesTest {
         ZonedDateTime thisWeek = TimeUtils.truncateTimeToWeeks(getConventionStartTime());
 
         for (int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusHours(2 * i), thisWeek.plusHours(2 * i + 1)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusDays(i), thisWeek.plusDays(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusDays(i + 2), thisWeek.minusDays(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusWeeks(i + 2), thisWeek.minusWeeks(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.plusWeeks(i + 1), thisWeek.plusWeeks(i + 2)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusHours(2 * i), thisWeek.plusHours(2 * i + 1), false));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisWeek.plusDays(i), thisWeek.plusDays(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusDays(i + 2), thisWeek.minusDays(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.minusWeeks(i + 2), thisWeek.minusWeeks(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisWeek.plusWeeks(i + 1), thisWeek.plusWeeks(i + 2), false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
@@ -234,11 +234,11 @@ public class EventQueriesTest {
         ZonedDateTime thisMonth = TimeUtils.truncateTimeToMonths(getConventionStartTime());
 
         for (int i = 0; i < 5; ++i) {
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.plusDays(2 * i + 3), thisMonth.plusDays(2 * i + 4)));
-            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i + 2)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusDays(i + 2), thisMonth.minusDays(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusWeeks(i + 2), thisMonth.minusWeeks(i + 1)));
-            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.plusMonths(i + 1), thisMonth.plusMonths(i + 2)));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.plusDays(2 * i + 3), thisMonth.plusDays(2 * i + 4), false));
+            eventsAccepted.add(new Event(Id.generateRandom(), "validEvent" + i, "validLoc" + i, thisMonth.minusWeeks(i), thisMonth.plusWeeks(i + 2), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusDays(i + 2), thisMonth.minusDays(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.minusWeeks(i + 2), thisMonth.minusWeeks(i + 1), false));
+            eventsRejected.add(new Event(Id.generateRandom(), "nopeEvent" + i, "nopeLoc" + i, thisMonth.plusMonths(i + 1), thisMonth.plusMonths(i + 2), false));
         }
         ConcreteDatabase db = DefaultDatabase.getDefaultConcreteInstance();
         boolean b = true;
@@ -268,7 +268,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(1000).plusMinutes(2));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(1001, storeRecurrEvent);
         if(storeRecurrEvent != 0) {
@@ -286,7 +286,7 @@ public class EventQueriesTest {
     @Test
     public void modifyEventStoresCorrectModifiedVersion() throws ExecutionException, InterruptedException {
         ZonedDateTime time = ZonedDateTime.now();
-        Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
+        Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty(), false);
         assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
         Event modifiedEvent = event.setName("modified");
         assertEquals(modifiedEvent.getId(), EventQueries.modifyEvent(DefaultDatabase.getDefaultConcreteInstance(), modifiedEvent).get());
@@ -305,7 +305,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
@@ -324,7 +324,7 @@ public class EventQueriesTest {
         ZonedDateTime time = ZonedDateTime.now();
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
-        Event event = new Event(rootId, "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
+        Event event = new Event(rootId, "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty(), false);
         assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
         Recurrence recurrence = new Recurrence(rootId, period, time.plusDays(6));
         Event recurrEvent = event.setRecurrence(recurrence);
@@ -344,12 +344,12 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
         Event nonRecurrEvent = new Event(recurrEvent.getId(), recurrEvent.getName(), recurrEvent.getLocationName(), recurrEvent.getCoordinates(),
-                recurrEvent.getStartTime(), recurrEvent.getEndTime(), Optional.empty());
+                recurrEvent.getStartTime(), recurrEvent.getEndTime(), Optional.empty(), false);
         assertTrue(EventQueries.modifyEvent(db, nonRecurrEvent).get().equals(recurrEvent.getId()));
 
         List<Event> eventSeries = new EventQueries(db).getRecurrEventSeriesOf(recurrEvent.getRecurrence().get().getGroupId()).get();
@@ -363,7 +363,7 @@ public class EventQueriesTest {
     @Test
     public void removeNonRecurringEventRemovesItFromDatabase() throws ExecutionException, InterruptedException {
         ZonedDateTime time = ZonedDateTime.now();
-        Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty());
+        Event event = new Event(Id.generateRandom(), "any", "loc", Optional.empty(), time, time.plusHours(1), Optional.empty(), false);
         assertEquals(event.getId(), DefaultDatabase.getDefaultConcreteInstance().store(event).get());
         assertTrue(DefaultDatabase.getDefaultConcreteInstance().contains(event.getId(), event.storer()).get());
         assertEquals(event.getId(), EventQueries.removeEvent(DefaultDatabase.getDefaultConcreteInstance(), event.getId()).get());
@@ -378,7 +378,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(2).plusMinutes(2));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(3, storeRecurrEvent);
         List<Event> recurrEvents = queries.getRecurrEventSeriesOf(recurrence.getGroupId()).get();
@@ -409,7 +409,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
         List<Event> events = queries.getRecurrEventSeriesOf(recurrence.getGroupId()).get();
@@ -427,7 +427,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
         if(storeRecurrEvent != 0) {
@@ -441,7 +441,7 @@ public class EventQueriesTest {
         EventQueries queries = new EventQueries(DefaultDatabase.getDefaultConcreteInstance());
         ZonedDateTime start = ZonedDateTime.now().truncatedTo(Event.TIME_PRECISION);
         ZonedDateTime end = start.plusHours(1);
-        Event e = new Event(Id.generateRandom(), "e", "noLoc", Optional.empty(), start, end, Optional.empty());
+        Event e = new Event(Id.generateRandom(), "e", "noLoc", Optional.empty(), start, end, Optional.empty(), false);
         assertFalse(DefaultDatabase.getDefaultConcreteInstance().contains(e.getId(), e.storer()).get());
         Id id = queries.addNonRecurringEvent(e).get();
         assertEquals(e.getId(), id);
@@ -457,7 +457,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
@@ -478,7 +478,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
@@ -499,7 +499,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
@@ -520,7 +520,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
 
@@ -541,7 +541,7 @@ public class EventQueriesTest {
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
         Recurrence recurrence = new Recurrence(rootId, period, start.plusDays(6));
-        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence));
+        Event recurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.of(recurrence), false);
         int storeRecurrEvent = queries.addRecurringEvent(recurrEvent).get();
         assertEquals(7, storeRecurrEvent);
         List<Event> events = queries.getRecurrEventSeriesOf(recurrence.getGroupId()).get();
@@ -559,7 +559,7 @@ public class EventQueriesTest {
         ZonedDateTime end = start.plusHours(1);
         Duration period = Duration.ofDays(1);
         Id rootId = Id.generateRandom();
-        Event nonRecurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.empty());
+        Event nonRecurrEvent = new Event(rootId, "recurrEvent", "noLocation", Optional.empty(), start, end, Optional.empty(), false);
         Id groupId = Id.generateRandom();
         int storeRecurrEvent = queries.convertToRecurring(nonRecurrEvent, new Recurrence(groupId, period, start.plusDays(6))).get();
         assertEquals(7, storeRecurrEvent);
