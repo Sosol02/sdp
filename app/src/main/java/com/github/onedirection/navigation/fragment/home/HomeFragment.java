@@ -59,7 +59,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private TextView displayEmpty;
 
     /** Callback for swiping */
-
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override

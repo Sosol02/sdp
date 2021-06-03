@@ -34,7 +34,6 @@ public class DisplayEvent extends AppCompatActivity {
 
     Event event;
 
-
     public static boolean hasEventExtra(Intent intent) {
         return intent.hasExtra(EXTRA_EVENT);
     }
@@ -96,7 +95,6 @@ public class DisplayEvent extends AppCompatActivity {
 
         if(event.getIsFavorite()){
             ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
-
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
@@ -135,7 +133,7 @@ public class DisplayEvent extends AppCompatActivity {
                    }
             HomeFragment.homeFragment.updateResults();
             super.onBackPressed();
-              }));
+        }));
     }
 
     /** Called when the user taps the star button to assign an event as favorite */
