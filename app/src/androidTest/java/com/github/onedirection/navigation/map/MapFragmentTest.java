@@ -174,6 +174,9 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             public void onNavigationResumed() {}
         });
 
+        onView(withId(R.id.fragment_map_ui))
+                .perform(new WaitAction(2000));
+
         onView(withId(R.id.fragment_map_event_nav_button))
                 .perform(click());
         semaphore.acquire();
