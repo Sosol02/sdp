@@ -82,17 +82,22 @@ public class RouteServiceMock implements RouteService {
     }
 
     @Override
-    public void requestRoutesForCoordinates(@NonNull Coordinate coordinate, @NonNull List<Coordinate> list, @NonNull RouteOptions routeOptions, @NonNull RoutesResponseListener routesResponseListener) {
+    public void requestRoutesForCoordinates(@NonNull Coordinate coordinate, @NonNull List<Coordinate> list,
+                                            @NonNull RouteOptions routeOptions,
+                                            @NonNull RoutesResponseListener routesResponseListener) {
 
     }
 
     @Override
-    public void getRouteSummary(@NonNull Coordinate coordinate, @NonNull Destination destination, @NonNull RouteSummaryResponseListener routeSummaryResponseListener) {
+    public void getRouteSummary(@NonNull Coordinate coordinate, @NonNull Destination destination,
+                                @NonNull RouteSummaryResponseListener routeSummaryResponseListener) {
 
     }
 
     @Override
-    public void getRouteSummary(@NonNull Coordinate coordinate, @NonNull Destination destination, @NonNull RouteSummaryResponseListener routeSummaryResponseListener, @NonNull RouteSummaryOptions routeSummaryOptions) {
+    public void getRouteSummary(@NonNull Coordinate coordinate, @NonNull Destination destination,
+                                @NonNull RouteSummaryResponseListener routeSummaryResponseListener,
+                                @NonNull RouteSummaryOptions routeSummaryOptions) {
 
     }
 

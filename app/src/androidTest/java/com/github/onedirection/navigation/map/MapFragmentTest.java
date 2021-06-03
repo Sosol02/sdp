@@ -18,6 +18,8 @@ import com.github.onedirection.utils.Id;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapquest.navigation.listener.NavigationStateListener;
+import com.mapquest.navigation.model.RouteStoppedReason;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -158,7 +160,25 @@ public class MapFragmentTest extends MapFragmentTestSetup {
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
         com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
                 navigationManager, com.mapquest.navigation.NavigationManager.class);
-        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.ACTIVE));
+
+        navigationManager1.addNavigationStateListener(new NavigationStateListener() {
+            @Override
+            public void onNavigationStarted() {
+                semaphore.release();
+            }
+
+            @Override
+            public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {}
+
+            @Override
+            public void onNavigationPaused() {}
+
+            @Override
+            public void onNavigationResumed() {}
+        });
+        semaphore.acquire();
+        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager
+                .NavigationState.ACTIVE));
     }
 
     private void focusEventOnMap(Event e) throws InterruptedException {

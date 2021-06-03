@@ -69,14 +69,10 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onNavigationPaused() {
-
-            }
+            public void onNavigationPaused() {}
 
             @Override
-            public void onNavigationResumed() {
-
-            }
+            public void onNavigationResumed() {}
         });
 
         RouteService routeService = new RouteServiceMock();
@@ -91,14 +87,10 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-            }
+            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
 
             @Override
-            public void onRequestMade() {
-
-            }
+            public void onRequestMade() {}
         }));
         try {
             semaphore.acquire();
@@ -138,14 +130,10 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-            }
+            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
 
             @Override
-            public void onRequestMade() {
-
-            }
+            public void onRequestMade() {}
         }));
         try {
             semaphore.acquire();

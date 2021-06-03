@@ -129,9 +129,7 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
         onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
         semaphore.acquire();
