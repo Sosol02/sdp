@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             Database database = Database.getDefaultInstance();
             EventQueries queryManager = new EventQueries(database);
-            Id id = events.get(viewHolder.getPosition()).getId();
+            Id id = events.get(viewHolder.getBindingAdapterPosition()).getId();
             queryManager.removeEvent(id);
             int position = 0;
             for (int i = 0; i < events.size(); i++) {

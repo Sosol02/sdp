@@ -49,7 +49,7 @@ public class DisplayEventTest {
 
     @SuppressWarnings("deprecation")
     @Rule
-    public ActivityTestRule<NavigationActivity> mActivityTestRule = new ActivityTestRule<>(NavigationActivity.class);
+    public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
     @Test
     public void displayEventTest() {
