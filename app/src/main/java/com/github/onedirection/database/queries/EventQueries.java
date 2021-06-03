@@ -164,7 +164,7 @@ public class EventQueries {
         long tmpStartTime = refStartTime + x * period;
         while(x > 0) {
             Event newEvent = new Event(Id.generateRandom(), event.getName(), event.getLocationName(), event.getCoordinates(),
-                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+duration), Optional.of(newEventRecurrence));
+                    TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+duration), Optional.of(newEventRecurrence), event.getIsFavorite());
             eventsToStore.add(newEvent);
             tmpStartTime = refStartTime + (--x) * period;
         }
@@ -235,7 +235,7 @@ public class EventQueries {
                 long tmpStartTime = refStartTime + x * period;
                 while(x > 0) {
                     Event newEvent = new Event(Id.generateRandom(), lastEvent.getName(), lastEvent.getLocationName(), lastEvent.getCoordinates(),
-                            TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newRecurrence));
+                            TimeUtils.epochToZonedDateTime(tmpStartTime), TimeUtils.epochToZonedDateTime(tmpStartTime+period), Optional.of(newRecurrence), event.getIsFavorite());
                     changedEvents.add(newEvent);
                     tmpStartTime = refStartTime + (--x) * period;
                 }
@@ -271,9 +271,9 @@ public class EventQueries {
             return changedRecurringEndTime.thenCompose(t -> {
                 if(t) {
                     if(e.getRecurrence().isPresent() && !event.getRecurrence().isPresent()) { //Remove from recurrence series
-                        return db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty()));
+                        return db.store(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty(), event.getIsFavorite()));
                     } else if(!e.getRecurrence().isPresent() && event.getRecurrence().isPresent()) { //Convert to recurring
-                        Event newEvent = new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty());
+                        Event newEvent = new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), Optional.empty(), event.getIsFavorite());
                         return convertToRecurring(newEvent, event.getRecurrence().get()).thenApply(n -> n != 0 ? e.getId() : null);
                     } else { //No changes on the recurrence option
                         if(e.getRecurrence().isPresent() && event.getRecurrence().isPresent()) {
@@ -281,8 +281,7 @@ public class EventQueries {
                                 return CompletableFuture.completedFuture(e.getId()); //The event has been removed when changing the recurrence end time, so it is not modified in the database
                             }
                         }
-
-                        return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), event.getRecurrence())) ? CompletableFuture.completedFuture(event.getId())
+                         return e.equals(new Event(e.getId(), event.getName(), event.getLocationName(), event.getCoordinates(), event.getStartTime(), event.getEndTime(), e.getRecurrence(), event.getIsFavorite())) ? CompletableFuture.completedFuture(event.getId())
 
                                 : db.store(event);
                     }
