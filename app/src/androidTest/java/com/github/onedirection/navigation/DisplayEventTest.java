@@ -1,6 +1,5 @@
 package com.github.onedirection.navigation;
 
-
 import android.content.Intent;
 
 import androidx.test.core.app.ActivityScenario;

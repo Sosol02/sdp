@@ -65,6 +65,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private View root;
     private TextView displayEmpty;
 
+    /** Callback for swiping */
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
         @Override
@@ -106,6 +107,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         }
     };
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -113,6 +115,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
         ZonedDateTime date = ZonedDateTime.now();
 
+        //Get the events of the month as a future
         CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(), date, date.plusMonths(1));
 
         View root = inflater.inflate(R.layout.event_viewer, container, false);
@@ -125,6 +128,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(eventList);
 
+        //Retrieve the events of the month once they are fetch from the database
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
             eventList.setAdapter(new EventViewerAdapter(events, this));
@@ -133,6 +137,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         homeFragment = this;
         onNoteListener = this;
 
+        //Set actions for the different fab buttons
         FloatingActionButton fabAdd = root.findViewById(R.id.fab);
         fabAdd.setOnClickListener(fabAdd());
 
@@ -141,8 +146,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
         FloatingActionButton fabOrder = root.findViewById(R.id.fabOrder);
         fabOrder.setOnClickListener(fabSortTime());
-
-        Toolbar toolbar = root.findViewById(R.id.toolbar);
 
         this.root = root;
 
@@ -158,6 +161,11 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         super.onViewCreated(view, savedInstanceState);
     }
 
+    /**
+     * used to update the event list in the recycler view with a new event list
+     *
+     * @param events The new list of events.
+     * */
     public void updateResults(List<Event> events) {
         this.events = events;
         checkEventListIsEmpty();
@@ -165,11 +173,17 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
     }
 
+    /** used to update the event list in the recycler view if there was a change directly on the list*/
     public void updateResults() {
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
+    /**
+     * used to update the event list in the recycler view when there a specific event with Id that was changed
+     *
+     * @param id The id of the event to be modified in the list of events
+     * */
     public void updateModifiedEvent(Id id) {
         int position = 0;
         for (int i = 0; i < events.size(); i++) {
@@ -184,6 +198,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         eventViewerAdapter.notifyItemChanged(position);
     }
 
+    /** Method executed each time we come back to the fragment*/
     @Override
     public void onResume() {
         super.onResume();
@@ -197,6 +212,11 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         });
     }
 
+    /**
+     * used to delete an event list and update the recycler view
+     *
+     * @param id The id of the event to be deleted in the list of events
+     * */
     public void deleteEvent(Id id) {
         int position = 0;
         for (int i = 0; i < events.size(); i++) {
@@ -210,6 +230,11 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         eventViewerAdapter.notifyItemRemoved(position);
     }
 
+    /**
+     * Listener to the event in the recycler view to launch DisplayEvent with that specific event
+     *
+     * @param position The position of the events in the recyclerView to be launched
+     * */
     @Override
     public void onNoteClick(int position) {
         Event event = events.get(position);
@@ -218,6 +243,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         startActivity(intent);
     }
 
+    /** Assign functionality to the fabAdd button */
     public View.OnClickListener fabAdd() {
         return new View.OnClickListener() {
             @Override
@@ -228,6 +254,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         };
     }
 
+    /** Assign functionality to the fabFavorite button */
     public View.OnClickListener fabFavorite() {
         return new View.OnClickListener() {
             @Override
@@ -248,6 +275,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         };
     }
 
+    /** Assign functionality to the fabOrder button */
     public View.OnClickListener fabSortTime() {
         return new View.OnClickListener() {
             @Override
@@ -273,6 +301,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         };
     }
 
+    /** Check the list of events to display is not empty an update the view accordingly */
     public void checkEventListIsEmpty() {
         if (events.isEmpty()) {
             displayEmpty.setVisibility(View.VISIBLE);

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * To use to view a unique events, just start the activity an provide the event
+ * To use to view a unique events, just start the activity an provide the event as an intent
  */
 
 public class DisplayEvent extends AppCompatActivity {
@@ -80,27 +80,33 @@ public class DisplayEvent extends AppCompatActivity {
 
         TextView name = this.findViewById(R.id.eventNameDisplay);
         name.setText(event.getName());
+
         TextView location = this.findViewById(R.id.eventNameLocation);
         if(event.getLocationName().equals("")){
             location.setText(R.string.no_loc);
         }else {
             location.setText(event.getLocationName());
         }
+
         TextView startTime = this.findViewById(R.id.eventStartTimeDisplay);
         startTime.setText(event.getStartTime().format(formatter));
+
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
         endTime.setText(event.getEndTime().format(formatter));
 
         if(!HomeFragment.homeFragment.favorites.containsKey(event.getId())){
             HomeFragment.homeFragment.favorites.put(event.getId(),false);
         }
+
         if(HomeFragment.homeFragment.favorites.get(event.getId())){
             ImageButton btn = findViewById(R.id.favorite_button);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
 
-    /** Called when the user taps the Edit button */
+    /**
+     * Called when the user taps the Edit button, gets the new list with the modified events and pass it to the homeFragment
+     */
     public void buttonStartEditEvent(View view){
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
@@ -115,7 +121,9 @@ public class DisplayEvent extends AppCompatActivity {
         });
     }
 
-    /** Called when the user taps the Delete button */
+    /**
+     * Called when the user taps the Delete button, deletes the event in the database and update the list of events in homeFragment
+     */
     public void buttonStartDeleteEvent(View view){
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
@@ -133,7 +141,7 @@ public class DisplayEvent extends AppCompatActivity {
               }));
     }
 
-    /** Called when the user taps the star button */
+    /** Called when the user taps the star button to assign an event as favorite */
     public void buttonStarEvent(View view){
         Id id = event.getId();
 
