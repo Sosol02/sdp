@@ -60,14 +60,18 @@ public class AccountFragment extends Fragment {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0); //close the soft keyboard on the app
 
             AuthenticationService auth = AuthenticationService.getDefaultInstance();
-            auth.updateDisplayName(changeUsernameEdit.getText().toString()).thenAccept(user -> {
-                drawerUsername.setText(user.getName());
-                Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_success) + " " + user.getName(),
-                        Toast.LENGTH_LONG).show();
-            }).exceptionally(error -> {
-                Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_failure), Toast.LENGTH_LONG).show();
-                return null;
-            });
+            if (changeUsernameEdit.getText().toString().length() > 20) {
+                Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_too_long), Toast.LENGTH_LONG).show();
+            } else {
+                auth.updateDisplayName(changeUsernameEdit.getText().toString()).thenAccept(user -> {
+                    drawerUsername.setText(user.getName());
+                    Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_success) + " " + user.getName(),
+                            Toast.LENGTH_LONG).show();
+                }).exceptionally(error -> {
+                    Toast.makeText(requireContext().getApplicationContext(), getString(R.string.changed_name_failure), Toast.LENGTH_LONG).show();
+                    return null;
+                });
+            }
         });
 
         return view;

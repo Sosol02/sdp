@@ -71,6 +71,7 @@
     <string name="changed_name_failure">No user logged in</string>
     <string name="change_username_fill">Username</string>
     <string name="change_username_button">Change username</string>
+    <string name="changed_name_too_long">Username is too long</string>
 
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">CREATE AN EVENT</string>
@@ -140,5 +141,6 @@
     <!-- Misc -->
     <string name="text_view">TextView</string>
     <string name="favIcon">Favorite Icon</string>
+
 
 </resources>
