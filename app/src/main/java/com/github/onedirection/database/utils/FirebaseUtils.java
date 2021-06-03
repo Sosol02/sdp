@@ -21,6 +21,10 @@ public class FirebaseUtils {
     }
 
     public static void init() {
+        if(INITIALIZED){
+            return;
+        }
+
         INITIALIZED = true;
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
