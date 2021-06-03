@@ -167,6 +167,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             @Override
             public void onNavigationStarted() {
                 isNavigationStarted[0] = true;
+                semaphore.release();
             }
 
             @Override
@@ -180,6 +181,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
             @Override
             public void onNavigationResumed() {}
         });
+        semaphore.acquire();
         assertThat(isNavigationStarted[0], is(true));
     }
 
