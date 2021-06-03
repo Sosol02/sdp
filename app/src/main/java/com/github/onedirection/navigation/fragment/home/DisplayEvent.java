@@ -91,11 +91,9 @@ public class DisplayEvent extends AppCompatActivity {
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
         endTime.setText(event.getEndTime().format(formatter));
 
-        if(!HomeFragment.homeFragment.favorites.containsKey(event.getId())){
-            HomeFragment.homeFragment.favorites.put(event.getId(),false);
-        }
-        if(HomeFragment.homeFragment.favorites.get(event.getId())){
-            ImageButton btn = findViewById(R.id.favorite_button);
+        if(event.getIsFavorite()){
+            ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
+
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
@@ -137,15 +135,16 @@ public class DisplayEvent extends AppCompatActivity {
     public void buttonStarEvent(View view){
         Id id = event.getId();
 
-        boolean isFavorite = HomeFragment.homeFragment.favorites.get(id);
-        ImageButton btn = findViewById(R.id.favorite_button);
+        boolean isFavorite = event.getIsFavorite();
+        ImageButton btn = (ImageButton) findViewById(R.id.favorite_button);
+
         if(isFavorite){
-            HomeFragment.homeFragment.favorites.replace(id, false);
-            HomeFragment.homeFragment.updateModifiedEvent(id);
+            HomeFragment.homeFragment.updateModifiedEvent(id,false);
+            event = event.setFavorite(false);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
         }else{
-            HomeFragment.homeFragment.favorites.replace(id, true);
-            HomeFragment.homeFragment.updateModifiedEvent(id);
+            HomeFragment.homeFragment.updateModifiedEvent(id,true);
+            event = event.setFavorite(true);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }

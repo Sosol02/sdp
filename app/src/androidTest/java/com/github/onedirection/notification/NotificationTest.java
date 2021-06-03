@@ -59,7 +59,7 @@ public class NotificationTest {
             db.store(new Event(Id.generateRandom(), "Event" + i, "Place" + i, Optional.empty(),
                     ZonedDateTime.now().plusSeconds(5 * i),
                     ZonedDateTime.now().plusSeconds(5 * i + 1),
-                    Optional.empty())).get();
+                    Optional.empty(),false)).get();
         }
 
         // now notifs should eventually show up

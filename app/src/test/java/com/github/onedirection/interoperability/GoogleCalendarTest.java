@@ -32,7 +32,8 @@ public class GoogleCalendarTest {
             NAME,
             LOCATION,
             START_TIME,
-            END_TIME
+            END_TIME,
+            false
     );
 
     private static final Event GEO_EVENT = new Event(
@@ -40,7 +41,8 @@ public class GoogleCalendarTest {
             NAME,
             new NamedCoordinates(0, 0, LOCATION),
             START_TIME,
-            END_TIME
+            END_TIME,
+            false
     );
 
     @Test
@@ -91,9 +93,9 @@ public class GoogleCalendarTest {
     public void eventsFilteringFilterCorrectly() {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofSeconds(1), ZonedDateTime.now());
-        Event recRoot = new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+        Event recRoot = new Event(id, "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
 
         List<Event> events = Arrays.asList(EVENT, recRoot, rec1, rec2);
         List<Event> result = GoogleCalendar.removeRecurrent(events);
@@ -105,8 +107,8 @@ public class GoogleCalendarTest {
     public void eventsFilteringThrowsOnMissingRoot() {
         Id id = Id.generateRandom();
         Recurrence rec = new Recurrence(id, Duration.ofSeconds(1), ZonedDateTime.now());
-        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
-        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec);
+        Event rec1 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
+        Event rec2 = new Event(Id.generateRandom(), "Event", "", ZonedDateTime.now(), ZonedDateTime.now(), rec, false);
 
         List<Event> events = Arrays.asList(EVENT, rec1, rec2);
         assertThrows(IllegalArgumentException.class, () -> GoogleCalendar.removeRecurrent(events));
