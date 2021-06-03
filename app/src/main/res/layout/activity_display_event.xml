@@ -14,6 +14,7 @@
         android:layout_marginTop="160dp"
         android:layout_marginEnd="72dp"
         android:text="@string/textview"
+        android:textColor="@color/col_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,6 +25,7 @@
         android:layout_marginStart="76dp"
         android:layout_marginTop="160dp"
         android:text="@string/textview"
+        android:textColor="@color/col_primary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,6 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="@string/no_loc"
+        android:textColor="@color/col_on_secondary"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay" />
@@ -44,6 +48,7 @@
         android:layout_marginTop="68dp"
         android:textSize="32sp"
         android:text="@string/textview"
+        android:textColor="@color/col_on_secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,26 +57,28 @@
     <Button
         android:id="@+id/buttonDisplay"
         android:layout_width="0dp"
-        android:layout_height="85dp"
+        android:layout_height="65dp"
         android:layout_marginStart="48dp"
         android:layout_marginEnd="73dp"
         android:onClick="buttonStartEditEvent"
         android:text="@string/edit"
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonDisplayDelete"
         app:layout_constraintEnd_toStartOf="@+id/buttonDisplayDelete"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:cornerRadius="50dp" />
 
     <Button
         android:id="@+id/buttonDisplayDelete"
         android:layout_width="0dp"
-        android:layout_height="85dp"
+        android:layout_height="65dp"
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="144dp"
         android:onClick="buttonStartDeleteEvent"
         android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonDisplay" />
+        app:layout_constraintStart_toEndOf="@+id/buttonDisplay"
+        app:cornerRadius="50dp"/>
 
     <ImageButton
         android:id="@+id/favorite_button"
@@ -86,6 +93,7 @@
         android:onClick="buttonStarEvent"
         android:src="@android:drawable/btn_star_big_off"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/favIcon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
