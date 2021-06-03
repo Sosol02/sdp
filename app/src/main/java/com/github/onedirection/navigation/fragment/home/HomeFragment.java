@@ -10,12 +10,15 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -46,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteListener {
 
-    public static HomeFragment homeFragment;
+    //public static HomeFragment homeFragment;
     List<Event> events = new ArrayList<Event>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
@@ -57,6 +60,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private List<Event> orderedEvents;
     private View root;
     private TextView displayEmpty;
+    private ActivityResultLauncher<Intent> newEventsList;
 
     /** Callback for swiping */
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
@@ -72,7 +76,16 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             EventQueries queryManager = new EventQueries(database);
             Id id = events.get(viewHolder.getPosition()).getId();
             queryManager.removeEvent(id);
-            deleteEvent(id);
+            int position = 0;
+            for (int i = 0; i < events.size(); i++) {
+                if (events.get(i).getId().equals(id)) {
+                    events.remove(i);
+                    position = i;
+                }
+            }
+            checkEventListIsEmpty();
+            eventList.setAdapter(new EventViewerAdapter(events, onNoteListener));
+            eventViewerAdapter.notifyItemRemoved(position);
             checkEventListIsEmpty();
         }
 
@@ -127,7 +140,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
 
-        homeFragment = this;
+        //homeFragment = this;
         onNoteListener = this;
 
         //Set actions for the different fab buttons
@@ -143,6 +156,49 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         this.root = root;
 
         displayEmpty = root.findViewById(R.id.displayNoEvents);
+
+        this.newEventsList = requireActivity().registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            Intent data = result.getData();
+            if(data.hasExtra(DisplayEvent.EXTRA_MODIFIED)){
+                Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_MODIFIED);
+                Id id = newEvent.getId();
+                int position = 0;
+                for (int i = 0; i < events.size(); i++) {
+                    if (events.get(i).getId().equals(id)) {
+                        events.set(position, newEvent);
+                        position = i;
+                    }
+                }
+                checkEventListIsEmpty();
+                eventViewerAdapter.notifyItemChanged(position);
+                eventList.setAdapter(new EventViewerAdapter(events, this));
+            }else if(data.hasExtra(DisplayEvent.EXTRA_DELETED)){
+                Id id = (Id) data.getSerializableExtra(DisplayEvent.EXTRA_DELETED);
+                int position = 0;
+                for (int i = 0; i < events.size(); i++) {
+                    if (events.get(i).getId().equals(id)) {
+                        events.remove(i);
+                        position = i;
+                    }
+                }
+                checkEventListIsEmpty();
+                eventViewerAdapter.notifyItemRemoved(position);
+                eventList.setAdapter(new EventViewerAdapter(events, this));
+            }else if(data.hasExtra(DisplayEvent.EXTRA_FAVORITE)){
+                Event newEvent = (Event) data.getSerializableExtra(DisplayEvent.EXTRA_FAVORITE);
+                Id id = newEvent.getId();
+                int position = 0;
+                for (int i = 0; i < events.size(); i++) {
+                    if (events.get(i).getId().equals(id)) {
+                        events.get(position).setFavorite(newEvent.getIsFavorite());
+                        position = i;
+                        eventViewerAdapter.notifyItemChanged(position);
+                    }
+                }
+                checkEventListIsEmpty();
+                eventList.setAdapter(new EventViewerAdapter(events, this));
+            }
+        });
 
         checkEventListIsEmpty();
 
@@ -196,31 +252,12 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     public void onResume() {
         super.onResume();
         ZonedDateTime date = ZonedDateTime.now();
-
         CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(), date, date.plusMonths(1));
         monthEventsFuture.whenComplete((monthEvents, throwable) -> {
             events = monthEvents;
             checkEventListIsEmpty();
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
-    }
-
-    /**
-     * used to delete an event list and update the recycler view
-     *
-     * @param id The id of the event to be deleted in the list of events
-     * */
-    public void deleteEvent(Id id) {
-        int position = 0;
-        for (int i = 0; i < events.size(); i++) {
-            if (events.get(i).getId().equals(id)) {
-                events.remove(i);
-                position = i;
-            }
-        }
-        checkEventListIsEmpty();
-        eventList.setAdapter(new EventViewerAdapter(events, this));
-        eventViewerAdapter.notifyItemRemoved(position);
     }
 
     /**
@@ -233,7 +270,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         Event event = events.get(position);
         Intent intent = new Intent(this.getContext(), DisplayEvent.class);
         intent = DisplayEvent.putEventExtra(intent, event);
-        startActivity(intent);
+        newEventsList.launch(intent);
     }
 
     /** Assign functionality to the fabAdd button */

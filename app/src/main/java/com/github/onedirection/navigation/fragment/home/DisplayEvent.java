@@ -31,6 +31,9 @@ import java.util.concurrent.CompletableFuture;
 public class DisplayEvent extends AppCompatActivity {
 
     public static final String EXTRA_EVENT = "EVENT_ID";
+    public static final String EXTRA_MODIFIED = "EVENT__MODIFIED_ID";
+    public static final String EXTRA_DELETED = "EVENT_DELETED_ID";
+    public static final String EXTRA_FAVORITE = "EVENT_FAVORITE_ID";
 
     Event event;
 
@@ -106,14 +109,10 @@ public class DisplayEvent extends AppCompatActivity {
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
-        super.onBackPressed();
-        ZonedDateTime date = ZonedDateTime.now();
-
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            HomeFragment.homeFragment.updateResults(monthEvents);
-            super.onBackPressed();
-        });
+        Intent intent2 = new Intent();
+        intent2.putExtra(EXTRA_MODIFIED, event);
+        setResult(RESULT_OK,intent2);
+        finish();
     }
 
     /**
@@ -125,15 +124,19 @@ public class DisplayEvent extends AppCompatActivity {
 
         CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
 
-        eventDeleted.whenComplete(((id, throwable) -> {
+        /*eventDeleted.whenComplete(((id, throwable) -> {
                     for (int i = 0; i < HomeFragment.homeFragment.events.size(); i++) {
                         if (HomeFragment.homeFragment.events.get(i).getId().equals(id)){
                           HomeFragment.homeFragment.events.remove(i);
                        }
                    }
-            HomeFragment.homeFragment.updateResults();
+            //HomeFragment.homeFragment.updateResults();
             super.onBackPressed();
-        }));
+        }));*/
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_DELETED, event.getId());
+        setResult(RESULT_OK,intent);
+        finish();
     }
 
     /** Called when the user taps the star button to assign an event as favorite */
@@ -142,16 +145,22 @@ public class DisplayEvent extends AppCompatActivity {
 
         boolean isFavorite = event.getIsFavorite();
         ImageButton btn = (ImageButton) findViewById(R.id.favorite_button);
-
+        Database database = Database.getDefaultInstance();
         if(isFavorite){
-            HomeFragment.homeFragment.updateModifiedEvent(id,false);
+            //HomeFragment.homeFragment.updateModifiedEvent(id,false);
             event = event.setFavorite(false);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
+            database.store(event);
         }else{
-            HomeFragment.homeFragment.updateModifiedEvent(id,true);
+            //HomeFragment.homeFragment.updateModifiedEvent(id,true);
             event = event.setFavorite(true);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
+            database.store(event);
         }
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_FAVORITE, event);
+        setResult(RESULT_OK,intent);
+        //finish();
     }
 
     /** Arrow to go back to the main menu */
