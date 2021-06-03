@@ -122,6 +122,7 @@ public class MapFragmentTest extends MapFragmentTestSetup {
         // the idling resource ensures it works, otherwise it timeouts after ~30 secs
     }
 
+    @Ignore("Cirrus loop")
     @Test
     public void startNavWithUiWorks() throws InterruptedException {
         IdlingRegistry.getInstance().register(fragment.waitForNavStart);
