@@ -312,9 +312,12 @@ public class MapFragment extends Fragment {
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
             EspressoIdlingResource.getInstance().lockIdlingResource();
-            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireActivity().getApplicationContext())) {
-                permissionRequestResult = new CompletableFuture<>();
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            Context context = getContext();
+            if (context == null) {
+                if (!DeviceLocationProvider.fineLocationUsageIsAllowed(context.getApplicationContext())) {
+                    permissionRequestResult = new CompletableFuture<>();
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
             }
             deviceLocationProvider.startLocationTracking();
             LatLng latLng = myLocationSymbolManager.getPosition();
