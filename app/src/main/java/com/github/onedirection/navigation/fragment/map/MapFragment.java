@@ -313,7 +313,7 @@ public class MapFragment extends Fragment {
         if (myLocationSymbolManager != null) {
             EspressoIdlingResource.getInstance().lockIdlingResource();
             Context context = getContext();
-            if (context == null) {
+            if (context != null) {
                 if (!DeviceLocationProvider.fineLocationUsageIsAllowed(context.getApplicationContext())) {
                     permissionRequestResult = new CompletableFuture<>();
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
