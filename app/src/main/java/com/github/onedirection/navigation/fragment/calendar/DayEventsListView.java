@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.github.onedirection.R;
@@ -25,51 +26,51 @@ import java.util.concurrent.CompletableFuture;
 @SuppressLint("ViewConstructor")
 
 
-
-public class DayEventsListView extends LinearLayout{
+public class DayEventsListView extends LinearLayout {
 
     private final static int WINDOW_LAYOUT_WIDTH = 1000;
     private final static int WINDOW_LAYOUT_HEIGHT = 1200;
     private final Context context;
     private final ZonedDateTime day;
+    private List<Event> dayEvents;
     private final LayoutInflater inflater;
-    private View view;
-    private CountingIdlingResource idling;
-    private Runnable onDialogDismiss;
+    private final View view;
+    private final CountingIdlingResource idling;
+    private final Runnable onDialogDismiss;
     private AlertDialog alertDialog;
+    private EventsListAdapter eventsListAdapter;
 
-    public DayEventsListView(Context context, ZonedDateTime day, Runnable onDialogDismiss, CountingIdlingResource idling) {
+    public DayEventsListView(Context context, ZonedDateTime day, List<Event> dayEvents, Runnable onDialogDismiss, CountingIdlingResource idling) {
         super(context);
         this.context = context;
         this.day = day;
+        this.dayEvents = dayEvents;
         this.onDialogDismiss = onDialogDismiss;
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.view = inflater.inflate(R.layout.day_events_list, this);
-        this.idling = idling;
+        if(idling != null){
+            this.idling = idling;
+        } else {
+            this.idling = new CountingIdlingResource("Day events loading");
+        }
 
-        refreshView();
+        setupEventsListView(view);
+        setupDialog();
     }
 
-    public void refreshView(){
-        if (idling != null) {
-            idling.increment();
-        }
-        CompletableFuture<List<Event>> dayEvents = getDayEvents(day);
-        dayEvents.whenComplete((events, throwable) -> {
-            if(events.size() == 0){
-                alertDialog.dismiss();
-            }
-            setupEventsListView(events, view);
-            if (idling != null) {
-                idling.decrement();
-            }
-            if(alertDialog == null && events.size() > 0){
-                setupDialog();
-            }
+    public void updateEventsList(){
+
+        idling.increment();
+        CompletableFuture<List<Event>> newEventsList = getDayEvents(day);
+        newEventsList.whenComplete((events, throwable) -> {
+            dayEvents.clear();
+            dayEvents.addAll(events);
+            eventsListAdapter.notifyDataSetChanged();
+            idling.decrement();
         });
     }
 
-    private void setupDialog(){
+    private void setupDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
         builder.setView(view);
@@ -87,19 +88,16 @@ public class DayEventsListView extends LinearLayout{
         return queryManager.getEventsByDay(day);
     }
 
-    private void setupEventsListView(List<Event> dayEvents, View view) {
+    private void setupEventsListView(View view) {
         ListView eventsListView = view.findViewById(R.id.dayEventsList);
-        EventsListAdapter eventsListAdapter = new EventsListAdapter(getContext(), dayEvents, this::onEditEvent, this::onDeleteEvent);
+        eventsListAdapter = new EventsListAdapter(getContext(), dayEvents, this::onDeleteEvent);
         eventsListView.setAdapter(eventsListAdapter);
     }
 
-    private void onEditEvent() {
-        refreshView();
-    }
 
     private void onDeleteEvent() {
-        refreshView();
+        if(eventsListAdapter.getCount() == 0){
+            alertDialog.dismiss();
+        }
     }
 }
-
-

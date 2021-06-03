@@ -8,6 +8,7 @@ import android.view.ViewParent;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -17,6 +18,7 @@ import com.github.onedirection.R;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,10 +57,6 @@ public class HomeTest {
         onView(withId(R.id.editEventName)).perform(ViewActions.typeText("event yeah"));
         pressBack();
         onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
-        //pressBack();
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_home)).perform(ViewActions.click());
-        onView(withId(R.id.recyclerEventView)).perform(ViewActions.longClick());
     }
 
     @Test
@@ -90,7 +88,7 @@ public class HomeTest {
     @Test
     public void testFabButton(){
         ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
+                allOf(withId(R.id.fab), withContentDescription("Add Event"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.nav_host_fragment),
@@ -130,235 +128,25 @@ public class HomeTest {
         appCompatEditText3.perform(pressImeActionButton());
     }
 
+
     @Test
     public void orderAndFavTest(){
-        ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                1),
-                        isDisplayed()));
-        floatingActionButton.perform(click());
+        ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
+        onView(withId(R.id.fabFavorite)).perform(ViewActions.click());
+        onView(withId(R.id.fabOrder)).perform(ViewActions.click());
+        onView(withId(R.id.fabOrder)).perform(ViewActions.click());
+        onView(withId(R.id.fabFavorite)).perform(ViewActions.click());
 
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.editEventName),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText.perform(replaceText("df"), closeSoftKeyboard());
+        onView(withId(R.id.fabOrder)).perform(ViewActions.click());
+        onView(withId(R.id.fabFavorite)).perform(ViewActions.click());
+        onView(withId(R.id.fabFavorite)).perform(ViewActions.click());
+        onView(withId(R.id.fabOrder)).perform(ViewActions.click());
 
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.editEventName), withText("df"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText2.perform(pressImeActionButton());
-
-        ViewInteraction appCompatEditText3 = onView(
-                allOf(withId(R.id.editEventName), withText("df"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText3.perform(pressImeActionButton());
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.buttonEventAdd), withText("Create event"),
-                        childAtPosition(
-                                allOf(withId(R.id.eventCreatorMainFragment),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.FrameLayout")),
-                                                0)),
-                                4)));
-        materialButton.perform(scrollTo(), click());
-
-        ViewInteraction floatingActionButton2 = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                1),
-                        isDisplayed()));
-        floatingActionButton2.perform(click());
-
-        ViewInteraction appCompatEditText4 = onView(
-                allOf(withId(R.id.editEventName),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText4.perform(replaceText("shrek"), closeSoftKeyboard());
-
-        ViewInteraction appCompatEditText5 = onView(
-                allOf(withId(R.id.editEventName), withText("shrek"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText5.perform(pressImeActionButton());
-
-        ViewInteraction appCompatEditText6 = onView(
-                allOf(withId(R.id.editEventLocationName),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.cardView),
-                                        0),
-                                3),
-                        isDisplayed()));
-        appCompatEditText6.perform(pressImeActionButton());
-
-        ViewInteraction materialButton2 = onView(
-                allOf(withId(R.id.buttonEventAdd), withText("Create event"),
-                        childAtPosition(
-                                allOf(withId(R.id.eventCreatorMainFragment),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.FrameLayout")),
-                                                0)),
-                                4)));
-        materialButton2.perform(scrollTo(), click());
-
-        ViewInteraction recyclerView = onView(
-                allOf(withId(R.id.recyclerEventView),
-                        childAtPosition(
-                                withClassName(is("android.widget.FrameLayout")),
-                                0)));
-        recyclerView.perform(actionOnItemAtPosition(0, click()));
-
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withId(R.id.favorite_button),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                6),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
-
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
-
-        ViewInteraction floatingActionButton3 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton3.perform(click());
-
-        ViewInteraction floatingActionButton4 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton4.perform(click());
-
-        ViewInteraction floatingActionButton5 = onView(
-                allOf(withId(R.id.fabOrder), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                3),
-                        isDisplayed()));
-        floatingActionButton5.perform(click());
-
-        ViewInteraction floatingActionButton6 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton6.perform(click());
-
-        ViewInteraction floatingActionButton7 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton7.perform(click());
-
-        ViewInteraction floatingActionButton8 = onView(
-                allOf(withId(R.id.fabOrder), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                3),
-                        isDisplayed()));
-        floatingActionButton8.perform(click());
-
-        ViewInteraction floatingActionButton9 = onView(
-                allOf(withId(R.id.fabOrder), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                3),
-                        isDisplayed()));
-        floatingActionButton9.perform(click());
-
-        ViewInteraction floatingActionButton10 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton10.perform(click());
-
-        ViewInteraction floatingActionButton11 = onView(
-                allOf(withId(R.id.fabOrder), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                3),
-                        isDisplayed()));
-        floatingActionButton11.perform(click());
-
-        ViewInteraction floatingActionButton12 = onView(
-                allOf(withId(R.id.fabFavorite), withContentDescription("Add event"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.nav_host_fragment),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton12.perform(click());
+        onView(withId(R.id.fab)).perform(ViewActions.click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.click());
+        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("shreky"));
+        pressBack();
+        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
     }
 
     private static Matcher<View> childAtPosition(

@@ -63,7 +63,7 @@ public class FavoriteAndSwipeEventTest {
     private final static ZonedDateTime END_TIME = ZonedDateTime.now().plus(DURATION).truncatedTo(Event.TIME_PRECISION);
     private final static Recurrence RECURRING_PERIOD = new Recurrence(Id.generateRandom(), Duration.ofDays(1), END_TIME); //Daily
 
-    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD);
+    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME, RECURRING_PERIOD,false);
 
 
     @Rule
@@ -73,7 +73,7 @@ public class FavoriteAndSwipeEventTest {
     @Test
     public void favoriteAndSwipeEventTest() {
         ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab), withContentDescription("Add event"),
+                allOf(withId(R.id.fab), withContentDescription("Add Event"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.nav_host_fragment),

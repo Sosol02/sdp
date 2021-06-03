@@ -73,6 +73,9 @@ public interface GeocodingService {
 
 }
 
+/**
+ * Class representiong the geocoding services
+ */
 class GeocodingServices {
     private static final String LOGCAT_TAG = "GeocodingServices";
 

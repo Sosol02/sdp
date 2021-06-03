@@ -38,20 +38,25 @@ public class MyLocationSymbolManager {
     }
 
     public void update(Coordinates value) {
-        LatLng latLng = new LatLng(value.latitude, value.longitude);
-        if (myLocation == null) {
-            myLocation = symbolManager.create(new SymbolOptions()
-                    .withLatLng(latLng)
-                    .withIconImage(MY_LOCATION_ID)
-                    .withIconSize(ICON_SIZE)
-            );
+        if (value == null) {
+            setEnableSymbol(false);
         } else {
-            myLocation.setLatLng(latLng);
-            symbolManager.update(myLocation);
+            LatLng latLng = new LatLng(value.latitude, value.longitude);
+            if (myLocation == null) {
+                myLocation = symbolManager.create(new SymbolOptions()
+                        .withLatLng(latLng)
+                        .withIconImage(MY_LOCATION_ID)
+                        .withIconSize(ICON_SIZE)
+                );
+            } else {
+                myLocation.setLatLng(latLng);
+                symbolManager.update(myLocation);
+            }
+            setEnableSymbol(true);
         }
     }
 
-    public void SetEnableSymbol(boolean enable) {
+    public void setEnableSymbol(boolean enable) {
         if (myLocation != null) {
             myLocation.setIconOpacity(enable ? 1f : 0f);
         }

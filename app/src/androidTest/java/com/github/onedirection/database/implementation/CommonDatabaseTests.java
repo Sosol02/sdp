@@ -141,7 +141,7 @@ public class CommonDatabaseTests {
         Boolean stored = db.storeAll(Arrays.asList(events)).get();
         assertTrue(stored);
         Boolean stored2 = db.storeAll(Arrays.asList(events)).get();
-        assertTrue(stored);
+        assertTrue(stored2);
         List<Event> eventsInDb= db.retrieveAll(EventStorer.getInstance()).get();
         assertEquals(events.length, eventsInDb.size());
         for (Event event : events) {
@@ -230,7 +230,7 @@ public class CommonDatabaseTests {
 
     public static void filterWhereGreaterEqLessFiltersLikeRDB(Database db) throws ExecutionException, InterruptedException {
         ZonedDateTime s = ZonedDateTime.now();
-        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
+        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6), false);
         Id stored = db.store(event).get();
         assertEquals(stored, event.getId());
         List<Event> e = db.filterWhereGreaterEqLess(EventStorer.KEY_EPOCH_START_TIME, event.getStartTime().minusHours(1).toEpochSecond(), event.getStartTime().plusHours(1).toEpochSecond(), EventStorer.getInstance()).get();
@@ -243,7 +243,7 @@ public class CommonDatabaseTests {
 
     public static void filterWhereGreaterLessEqFiltersLikeRDB(Database db) throws ExecutionException, InterruptedException {
         ZonedDateTime s = ZonedDateTime.now();
-        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6));
+        Event event = new Event(Id.generateRandom(), "e", "loc", s, s.plusHours(6), false);
         Id stored = db.store(event).get();
         assertEquals(stored, event.getId());
         List<Event> e = db.filterWhereGreaterLessEq(EventStorer.KEY_EPOCH_END_TIME, event.getEndTime().minusHours(1).toEpochSecond(), event.getEndTime().toEpochSecond(), EventStorer.getInstance()).get();

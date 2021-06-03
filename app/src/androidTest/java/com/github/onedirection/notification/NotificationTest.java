@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -60,7 +59,7 @@ public class NotificationTest {
             db.store(new Event(Id.generateRandom(), "Event" + i, "Place" + i, Optional.empty(),
                     ZonedDateTime.now().plusSeconds(5 * i),
                     ZonedDateTime.now().plusSeconds(5 * i + 1),
-                    Optional.empty())).get();
+                    Optional.empty(),false)).get();
         }
 
         // now notifs should eventually show up

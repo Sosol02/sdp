@@ -9,3 +9,7 @@
 To use the production database instead of the emulator use among others by Cirrus,
 you need to change the value of "USE_PROD_DB" to "true" in the app build.gradle.
 
+# Google calendar interoperability
+Google requires the the app to be signed to allow requests.
+As such, if you want to use this functionality, contact me (@Ef55) so that I add your build to the allowed apps
+(The final APK should be signed). 

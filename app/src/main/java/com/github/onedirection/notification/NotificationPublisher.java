@@ -15,8 +15,9 @@ public class NotificationPublisher extends BroadcastReceiver {
 
     private static final String LOG_TAG = "NotificationPublisher";
 
-    // need public 0 argument constructor to exist otherwise it crashes
-    public NotificationPublisher() {}
+    public NotificationPublisher() {
+        //Empty constructor required
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

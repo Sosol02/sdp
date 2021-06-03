@@ -20,7 +20,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class CachedDatabaseTest {
-    private static final int count = 10;
 
     @Before
     public void deleteAllEvents() throws ExecutionException, InterruptedException {

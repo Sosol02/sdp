@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A notification system for the application
+ */
 public class Notifications {
     private static final String CHANNEL_ID = "com.1Direction.events";
     private static final String CHANNEL_NAME = "1directionChannel";
@@ -166,7 +169,7 @@ public class Notifications {
 
         Intent intent = new Intent(context, handler.getClass());
         // https://stackoverflow.com/questions/21526319/whats-requestcode-used-for-on-pendingintent
-        // The request code seems to not really matter for our usecase.
+        // The request code does not matter for our use case.
         if (lastPendingIntent != null) {
             lastPendingIntent.cancel();
         }

@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Represents a database that contains a cache to optimize the number of queries into the database.
+ */
 public class CachedDatabase implements Database {
 
     private final Database innerDatabase;
-    // sadly, we can't have a concrete type for the values. This comment is useful: don't try to refactor this type,
-    // I already thought about it and it was the best i found.
+    // We can't have a concrete type for the values. Refactoring this type should not be attempted.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     final Cache<Id, CompletableFuture<? extends Storable<?>>> storeCache;
     private final Cache<Query, CompletableFuture<? extends List<?>>> queryCache;
@@ -67,7 +69,7 @@ public class CachedDatabase implements Database {
         Objects.requireNonNull(storer);
         queryCache.invalidate();
         storeCache.invalidate(id);
-        // need to invalidate before returning from this function (like don't put the invalidate() in a thenApply)
+        // Need to invalidate before returning from this function (example: one should not put the invalidate() in a thenApply call)
         // Otherwise, someone may call store(x), remove(x), retrieve(x) and still get back x because of the cache.
         return innerDatabase.remove(id, storer);
     }
@@ -92,8 +94,6 @@ public class CachedDatabase implements Database {
         List<T> listToStoreSame = new ArrayList<>(listToStore);
         queryCache.invalidate();
         return innerDatabase.storeAll(listToStoreSame)
-                // This is kinda dumb because the inner db will always return true, it should really
-                // be Void: either it is exceptionally completed or it succeeded, there is no Success(false).
                 .thenApply(res -> {
                     for (T t : listToStoreSame) {
                         CompletableFuture<Storable<?>> fut = new CompletableFuture<>();
@@ -135,7 +135,7 @@ public class CachedDatabase implements Database {
             this.queryType = Objects.requireNonNull(queryType);
             this.key = Objects.requireNonNull(key);
             this.valueUp = Objects.requireNonNull(valueUp);
-            this.valueDown = valueDown; // allow null, this field is unused except for GrEqLe and GrLeEq
+            this.valueDown = valueDown; // Allow null, this field is unused except for GrEqLe and GrLeEq
 
             if (valueDown != null && queryType != QueryType.GrEqLe && queryType != QueryType.GrLeEq)
                 throw new IllegalArgumentException("valueDown may only be null iff queryType is GrEqLe or GrLeEq.");
@@ -162,8 +162,6 @@ public class CachedDatabase implements Database {
             return Objects.hash(classTag, queryType, key, valueUp, valueDown);
         }
     }
-
-    // in these functions most null checks are done in the Query constructor.
 
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {

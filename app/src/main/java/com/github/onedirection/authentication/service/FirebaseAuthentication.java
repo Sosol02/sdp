@@ -21,14 +21,14 @@ final public class FirebaseAuthentication implements AuthenticationService {
     private final static FirebaseAuth auth = FirebaseAuth.getInstance();
     private final static FirebaseAuthentication self = new FirebaseAuthentication();
 
-    public final static FirebaseAuthentication getInstance() {
+    public static FirebaseAuthentication getInstance() {
         return self;
     }
 
     private FirebaseAuthentication() {
     }
 
-    private final static Optional<User> convertUser(FirebaseUser user) {
+    private static Optional<User> convertUser(FirebaseUser user) {
         if (user == null) {
             return Optional.empty();
         } else {
@@ -36,7 +36,7 @@ final public class FirebaseAuthentication implements AuthenticationService {
         }
     }
 
-    private final static CompletableFuture<User> convertAuthTask(Task<AuthResult> auth, String username) {
+    private static CompletableFuture<User> convertAuthTask(Task<AuthResult> auth, String username) {
         CompletableFuture<User> result = new CompletableFuture<>();
 
         auth.addOnCompleteListener(
@@ -62,7 +62,7 @@ final public class FirebaseAuthentication implements AuthenticationService {
         return result;
     }
 
-    private final static CompletableFuture<User> updateProfile(UserProfileChangeRequest profileUpdate) {
+    private static CompletableFuture<User> updateProfile(UserProfileChangeRequest profileUpdate) {
         CompletableFuture<User> result = new CompletableFuture<>();
         if (!sGetCurrentUser().isPresent()) {
             result.completeExceptionally(new NoUserLoggedInException("Profile update"));
