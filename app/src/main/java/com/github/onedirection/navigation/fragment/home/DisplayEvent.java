@@ -121,18 +121,7 @@ public class DisplayEvent extends AppCompatActivity {
     public void buttonStartDeleteEvent(View view){
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
-
-        CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
-
-        /*eventDeleted.whenComplete(((id, throwable) -> {
-                    for (int i = 0; i < HomeFragment.homeFragment.events.size(); i++) {
-                        if (HomeFragment.homeFragment.events.get(i).getId().equals(id)){
-                          HomeFragment.homeFragment.events.remove(i);
-                       }
-                   }
-            //HomeFragment.homeFragment.updateResults();
-            super.onBackPressed();
-        }));*/
+        queryManager.removeEvent(event.getId());
         Intent intent = new Intent();
         intent.putExtra(EXTRA_DELETED, event.getId());
         setResult(RESULT_OK,intent);
@@ -147,20 +136,16 @@ public class DisplayEvent extends AppCompatActivity {
         ImageButton btn = (ImageButton) findViewById(R.id.favorite_button);
         Database database = Database.getDefaultInstance();
         if(isFavorite){
-            //HomeFragment.homeFragment.updateModifiedEvent(id,false);
             event = event.setFavorite(false);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
-            database.store(event);
         }else{
-            //HomeFragment.homeFragment.updateModifiedEvent(id,true);
             event = event.setFavorite(true);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
-            database.store(event);
         }
+        database.store(event);
         Intent intent = new Intent();
         intent.putExtra(EXTRA_FAVORITE, event);
         setResult(RESULT_OK,intent);
-        //finish();
     }
 
     /** Arrow to go back to the main menu */

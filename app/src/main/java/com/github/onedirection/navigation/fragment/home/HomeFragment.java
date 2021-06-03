@@ -49,7 +49,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteListener {
 
-    //public static HomeFragment homeFragment;
     List<Event> events = new ArrayList<Event>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
@@ -140,7 +139,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
             eventList.setAdapter(new EventViewerAdapter(events, this));
         });
 
-        //homeFragment = this;
         onNoteListener = this;
 
         //Set actions for the different fab buttons
@@ -208,43 +206,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    /**
-     * used to update the event list in the recycler view with a new event list
-     *
-     * @param events The new list of events.
-     * */
-    public void updateResults(List<Event> events) {
-        this.events = events;
-        checkEventListIsEmpty();
-        eventList.setAdapter(new EventViewerAdapter(this.events, this));
-    }
-
-    /** used to update the event list in the recycler view if there was a change directly on the list*/
-    public void updateResults() {
-        checkEventListIsEmpty();
-        eventList.setAdapter(new EventViewerAdapter(events, this));
-    }
-
-    /**
-     * used to update the event list in the recycler view when there a specific event with Id that was changed
-     *
-     * @param id The id of the event to be modified in the list of events
-     * */
-    public void updateModifiedEvent(Id id, boolean isFavorite) {
-        int position = 0;
-        for (int i = 0; i < events.size(); i++) {
-            if (events.get(i).getId().equals(id)) {
-                position = i;
-            }
-        }
-        Event event = events.get(position).setFavorite(isFavorite);
-        events.set(position, event);
-        Database database = Database.getDefaultInstance();
-        database.store(event);
-        checkEventListIsEmpty();
-        eventList.setAdapter(new EventViewerAdapter(events, this));
     }
 
     /** Method executed each time we come back to the fragment*/
