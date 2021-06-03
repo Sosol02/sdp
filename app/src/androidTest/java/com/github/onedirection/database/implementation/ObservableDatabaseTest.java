@@ -1,5 +1,7 @@
 package com.github.onedirection.database.implementation;
 
+import androidx.test.filters.Suppress;
+
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.utils.Id;
@@ -92,6 +94,7 @@ public class ObservableDatabaseTest {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testStoreRetrieveAllObservesWell() {
         ObservableDatabase odb = DefaultDatabase.getDefaultInstance();
@@ -124,6 +127,7 @@ public class ObservableDatabaseTest {
         odb.removeAllObservers();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testQueriesWork() {
         ObservableDatabase odb = DefaultDatabase.getDefaultInstance();

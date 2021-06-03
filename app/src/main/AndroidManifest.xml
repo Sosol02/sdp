@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.github.onedirection">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -7,13 +9,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        tools:replace="android:allowBackup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.1Direction">
-        <activity android:name=".navigation.fragment.home.DisplayEvent"></activity>
+        <activity android:name=".navigation.fragment.home.DisplayEvent" />
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -25,7 +28,7 @@
             </intent-filter>
 
 
-        </activity> <!-- Why on god's green earth are those lines needed for EventCreatorTest to pass ? -->
+        </activity>
 
         <activity android:name=".event.ui.EventCreator" />
 

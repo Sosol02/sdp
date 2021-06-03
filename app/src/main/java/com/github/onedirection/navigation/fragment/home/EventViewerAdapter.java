@@ -75,7 +75,7 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
 
         @Override
         public void onClick(View view) {
-            onNoteListener.onNoteClick(getAdapterPosition());
+            onNoteListener.onNoteClick(getBindingAdapterPosition());
         }
     }
 
