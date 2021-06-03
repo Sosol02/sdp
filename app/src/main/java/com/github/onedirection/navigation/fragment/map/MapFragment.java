@@ -312,7 +312,7 @@ public class MapFragment extends Fragment {
     private void OnMyLocationButtonClickResponse() {
         if (myLocationSymbolManager != null) {
             EspressoIdlingResource.getInstance().lockIdlingResource();
-            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireContext().getApplicationContext())) {
+            if (!DeviceLocationProvider.fineLocationUsageIsAllowed(requireActivity().getApplicationContext())) {
                 permissionRequestResult = new CompletableFuture<>();
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             }
@@ -352,8 +352,8 @@ public class MapFragment extends Fragment {
 
         @Override
         public void onRoutesRetrieved(@NonNull List<Route> list) {
+            waitForNavStart.decrement();
             if (list.size() > 0) {
-                waitForNavStart.decrement();
                 navigationManager.startNavigation(list.get(0));
             }
         }
