@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import android.location.Location;
 
@@ -40,14 +40,10 @@ public class DeviceLocationProviderMock implements DeviceLocationProvider {
     }
 
     @Override
-    public void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {
-
-    }
+    public void setLocationCallBackNavigation(LocationCallback locationCallBackNavigation) {}
 
     @Override
-    public void clearLocationCallBackNavigation() {
-
-    }
+    public void clearLocationCallBackNavigation() {}
 
     @Override
     public Coordinates getLastLocation() {

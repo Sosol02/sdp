@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * An application initializer that initializes the notification system
+ * as well as the geocoding caching.
  */
 public class ApplicationInitializer implements Initializer<Notifications> {
 

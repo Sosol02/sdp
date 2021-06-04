@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,7 +45,6 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
     @Test
     public void testNavigation() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
-        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
         final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
         runOnUiThreadAndWaitEndExecution(() -> nav[0] = new com.mapquest.navigation.NavigationManager.Builder(
@@ -56,7 +55,8 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
 
         final boolean[] isNavigationStarted = {false};
 
-        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
+                navigationManager, com.mapquest.navigation.NavigationManager.class);
         navigationManager1.addNavigationStateListener(new NavigationStateListener() {
             @Override
             public void onNavigationStarted() {
@@ -69,20 +69,17 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onNavigationPaused() {
-
-            }
+            public void onNavigationPaused() {}
 
             @Override
-            public void onNavigationResumed() {
-
-            }
+            public void onNavigationResumed() {}
         });
 
         RouteService routeService = new RouteServiceMock();
         setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_1, Collections.singletonList(TEST_VALUE_LATLNG_2), new RoutesResponseListener() {
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_1,
+                Collections.singletonList(TEST_VALUE_LATLNG_2), new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
                 navigationManager.startNavigation(list.get(0));
@@ -90,14 +87,10 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-            }
+            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
 
             @Override
-            public void onRequestMade() {
-
-            }
+            public void onRequestMade() {}
         }));
         try {
             semaphore.acquire();
@@ -114,7 +107,6 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
     @Test
     public void testNavigationUi() throws InterruptedException {
         RoutesManager routesManager = getFragmentField("routesManager", RoutesManager.class);
-        RouteDisplayManager routeDisplayManager = getFragmentField("routeDisplayManager", RouteDisplayManager.class);
         NavigationManager navigationManager = getFragmentField("navigationManager", NavigationManager.class);
         final com.mapquest.navigation.NavigationManager[] nav = new com.mapquest.navigation.NavigationManager[1];
         DeviceLocationProviderMock deviceLocationProviderMock = new DeviceLocationProviderMock(true);
@@ -123,12 +115,14 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
                 new DeviceLocationProviderAdapter(deviceLocationProviderMock))
                 .build());
         setAttributeField("navigationManager", navigationManager, nav[0]);
-        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager", navigationManager, com.mapquest.navigation.NavigationManager.class);
+        com.mapquest.navigation.NavigationManager navigationManager1 = getAttributeField("navigationManager",
+                navigationManager, com.mapquest.navigation.NavigationManager.class);
         navigationManager1.setRerouteBehaviorOverride(coordinate -> false);
         RouteService routeService = new RouteServiceMock();
         setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
-        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_1, Collections.singletonList(TEST_VALUE_LATLNG_2), new RoutesResponseListener() {
+        runOnUiThreadAndWaitEndExecution(() -> routesManager.findRoute(TEST_VALUE_LATLNG_1,
+                Collections.singletonList(TEST_VALUE_LATLNG_2), new RoutesResponseListener() {
             @Override
             public void onRoutesRetrieved(@NonNull List<Route> list) {
                 navigationManager.startNavigation(list.get(0));
@@ -136,14 +130,10 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {
-
-            }
+            public void onRequestFailed(@Nullable Integer integer, @Nullable IOException e) {}
 
             @Override
-            public void onRequestMade() {
-
-            }
+            public void onRequestMade() {}
         }));
         try {
             semaphore.acquire();
@@ -162,6 +152,7 @@ public class NavigationManagerTest extends MapFragmentTestSetup {
 
         onView(withId(R.id.stop)).perform(click());
 
-        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager.NavigationState.STOPPED));
+        assertThat(navigationManager1.getNavigationState(), equalTo(com.mapquest.navigation.NavigationManager
+                .NavigationState.STOPPED));
     }
 }

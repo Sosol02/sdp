@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +50,8 @@ public class RoutesManagerTest extends MapFragmentTestSetup {
         setAttributeField("routeService", routesManager, routeService);
         Semaphore semaphore = new Semaphore(0);
         runOnUiThreadAndWaitEndExecution(() -> {
-            routesManager.findRoute(TEST_VALUE_LATLNG_1, Collections.singletonList(TEST_VALUE_LATLNG_2), new RoutesResponseListener() {
+            routesManager.findRoute(TEST_VALUE_LATLNG_1, Collections.singletonList(TEST_VALUE_LATLNG_2),
+                    new RoutesResponseListener() {
                 @Override
                 public void onRoutesRetrieved(@NonNull List<Route> list) {
                     routeDisplayManager.displayRoute(list.get(0));

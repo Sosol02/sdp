@@ -80,8 +80,8 @@ public class EventCreatorTest {
     private final static String EPFL_QUERY = "EPFL";
     private final static String EPFL_CANTON = "Vaud";
 
-    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME);
-    private final static Event REC_EVENT = new Event(ID, NAME, LOCATION_NAME, START_TIME, END_TIME, RECURRENCE);
+    private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME,false);
+    private final static Event REC_EVENT = new Event(ID, NAME, LOCATION_NAME, START_TIME, END_TIME, RECURRENCE,false);
 
     public static class Wrapper<T> {
         public T val;
@@ -437,7 +437,8 @@ public class EventCreatorTest {
                 "Other name",
                 "Other location",
                 START_TIME,
-                END_TIME
+                END_TIME,
+                false
         );
 
         test(
