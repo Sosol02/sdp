@@ -15,8 +15,11 @@ Google requires the the app to be signed to allow requests.
 As such, if you want to use this functionality, contact me (@Ef55) so that I can add your build to the allowed apps
 (The release APK should be signed). 
 
+# Navigation
+The navigation is sadly only available in the USA.
+
 # API keys / Secrets
 You should add 
-``MAPBOX_DOWNLOADS_TOKEN=<token>``` and ```MAPQUEST_API_TOKEN=<token>```
+```MAPBOX_DOWNLOADS_TOKEN=<token>``` and ```MAPQUEST_API_TOKEN=<token>```
 at the end of [local.properties](https://github.com/Sosol02/sdp/blob/main/local.properties).
 If you also want to run the tests yourself, you should add the file `app/src/main/res/values/test_secrets.xml`.
