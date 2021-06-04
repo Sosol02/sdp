@@ -3,7 +3,6 @@
     tools:ignore="PluralsCandidate">
 
     <string name="app_name">1Direction</string>
-    <string name="title_activity_navigation">NavigationActivity</string>
 
     <string name="nav_header_username">Guest</string>
     <string name="nav_header_email" />
