@@ -132,7 +132,7 @@ public class MarkerSymbolManager {
     public void addEventMarker(@NonNull Event event) {
         Optional<Coordinates> optCoords = event.getCoordinates();
         if (!optCoords.isPresent())
-            return;
+            throw new IllegalArgumentException("An event must have coordinates to be put on map: " + event);
         Coordinates coords = optCoords.get();
         LatLng latLng = new LatLng(coords.latitude, coords.longitude);
         addEventMarkerAt(event, latLng);
@@ -175,15 +175,14 @@ public class MarkerSymbolManager {
         CompletableFuture<CompletableFuture<Void>> futAddEvents = futEvents.handle((ls, err) -> {
             if (err != null) {
                 Log.d(LOG_TAG, "syncEventsWithDb: error: " + err);
-                // @Reviewers: should i put a counter or something to prevent infinite loop?
                 return syncEventsWithDb(); // retry, hopefully it'll work some day.
             } else {
                 Log.d(LOG_TAG, "syncEventsWithDb: register db events: " + ls);
                 removeAllMarkers();
-                //ArrayList<CompletableFuture<Pair<Symbol, LatLng>>> futures = new ArrayList<>();
                 for (Event e : ls) {
-                    //futures.add(addGeocodedEventMarker(e));
-                    addEventMarker(e);
+                    if(e.getCoordinates().isPresent()) {
+                        addEventMarker(e);
+                    }
                 }
                 return CompletableFuture.completedFuture(null);
             }
