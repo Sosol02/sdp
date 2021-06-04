@@ -149,8 +149,9 @@ public class EventCreatorTest {
                 () -> {
                     onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
 
-                    testIsGeolocationFragment();
-                    onView(withId(R.id.buttonSetGeolocation)).check(matches(not(isEnabled())));
+                    testIsMainFragment();
+                    onView(withId(R.id.buttonEventAdd)).perform(scrollTo(), click());
+                    onView(withId(R.id.checkArgsText)).check(matches(isDisplayed()));
                 },
                 (event, edit) -> {
                 }
@@ -355,6 +356,7 @@ public class EventCreatorTest {
                             typeText(eventName)
                     );
                     onView(withId(R.id.checkGeolocation)).perform(scrollTo(), click());
+                    onView(withId(R.id.buttonGotoGeolocation)).perform(scrollTo(), click());
                     testIsGeolocationFragment();
 
                     onView(withId(R.id.editLocationQuery)).perform(scrollTo(), clearText(), typeText(EPFL_QUERY));

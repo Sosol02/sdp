@@ -9,28 +9,39 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
  */
 public class FirebaseUtils {
     private static final boolean useProdDb = BuildConfig.USE_PROD_DB;
-    private static FirebaseFirestore firestore = null;
+    private static boolean INITIALIZED = false;
+
+    private FirebaseUtils() {}
 
     public static FirebaseFirestore getFirestore() {
-        if (firestore == null) {
-            firestore = FirebaseFirestore.getInstance();
-            FirebaseFirestoreSettings settings;
-            if (useProdDb) {
-                settings = new FirebaseFirestoreSettings.Builder()
-                        .setSslEnabled(true)
-                        .setPersistenceEnabled(true)
-                        .build();
-            } else {
-                //firestore.useEmulator("10.0.2.2", 8080);
-                settings = new FirebaseFirestoreSettings.Builder()
-                        .setHost("10.0.2.2:8080")
-                        .setSslEnabled(false)
-                        .setPersistenceEnabled(true)
-                        .build();
-            }
-            firestore.setFirestoreSettings(settings);
+        if(!INITIALIZED){
+            throw new IllegalStateException("Firestore not initialized");
         }
-        return firestore;
+        return FirebaseFirestore.getInstance();
+    }
+
+    public static void init() {
+        if(INITIALIZED){
+            return;
+        }
+
+        INITIALIZED = true;
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings;
+        if (useProdDb) {
+            settings = new FirebaseFirestoreSettings.Builder()
+                    .setSslEnabled(true)
+                    .setPersistenceEnabled(true)
+                    .build();
+        } else {
+            settings = new FirebaseFirestoreSettings.Builder()
+                    .setHost("10.0.2.2:8080")
+                    .setSslEnabled(false)
+                    .setPersistenceEnabled(true)
+                    .build();
+        }
+        firestore.setFirestoreSettings(settings);
     }
 
 }
