@@ -1,5 +1,7 @@
 package com.github.onedirection.database.utils;
 
+import android.util.Log;
+
 import com.github.onedirection.BuildConfig;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -34,14 +36,16 @@ public class FirebaseUtils {
                     .setSslEnabled(true)
                     .setPersistenceEnabled(true)
                     .build();
+            firestore.setFirestoreSettings(settings);
+            firestore.enableNetwork();
         } else {
             settings = new FirebaseFirestoreSettings.Builder()
                     .setHost("10.0.2.2:8080")
                     .setSslEnabled(false)
                     .setPersistenceEnabled(true)
                     .build();
+            firestore.setFirestoreSettings(settings);
         }
-        firestore.setFirestoreSettings(settings);
     }
 
 }

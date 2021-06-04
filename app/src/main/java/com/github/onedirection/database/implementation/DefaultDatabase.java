@@ -8,11 +8,14 @@ import androidx.annotation.VisibleForTesting;
 public class DefaultDatabase {
 
     private static final ConcreteDatabase concreteDatabase = new ConcreteDatabase();
-    // TODO: put back cached database
-    private static final ObservableDatabase database = new ObservableDatabase(new CachedDatabase(concreteDatabase));
+    private static final CachedDatabase cachedDatabase = new CachedDatabase(concreteDatabase);
+    private static final ObservableDatabase database = new ObservableDatabase(cachedDatabase);
 
     public static ObservableDatabase getDefaultInstance() { return database; }
 
-    @VisibleForTesting
+    public static void clearCaches() {
+        cachedDatabase.clearCaches();
+    }
+
     public static ConcreteDatabase getDefaultConcreteInstance() { return concreteDatabase; }
 }
