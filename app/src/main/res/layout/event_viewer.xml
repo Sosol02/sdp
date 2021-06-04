@@ -9,8 +9,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEventView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:contentDescription="@string/recycler_view_events"
+        >
     </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:layout_margin="16dp"
-        android:contentDescription="@string/add_event_button_desc"
+        android:contentDescription="@string/fab_favorite"
         android:src="@drawable/baseline_star_border_24"
         app:tint="@color/white" />
 
@@ -39,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
         android:layout_margin="16dp"
-        android:contentDescription="@string/add_event_button_desc"
+        android:contentDescription="@string/fab_order"
         android:src="@drawable/baseline_reorder_24"
         app:tint="@color/white" />
 
@@ -48,6 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:contentDescription="@string/no_events_yet"
         android:text="@string/no_events_yet"
         android:textSize="24sp" />
 

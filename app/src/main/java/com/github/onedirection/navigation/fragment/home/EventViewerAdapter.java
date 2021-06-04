@@ -33,7 +33,6 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
         private final TextView endTime;
         private final ImageButton favorite;
 
-
         final OnNoteListener onNoteListener;
 
         private ViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
@@ -54,8 +53,12 @@ public class EventViewerAdapter extends RecyclerView.Adapter<EventViewerAdapter.
                     .inflate(R.layout.recycler_view_event_viewer_adapter, parent, false), onNoteListener);
         }
 
+        /**
+         * Method used to bind the viewHolder to its components
+         *
+         * @param position The position in the recyclerView
+         */
         public void setPosition(int position){
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm");
             this.name.setText(events[position].getName());
             if(events[position].getLocationName() != ""){

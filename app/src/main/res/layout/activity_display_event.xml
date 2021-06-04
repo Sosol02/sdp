@@ -12,8 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="160dp"
-        android:layout_marginEnd="72dp"
+        android:layout_marginEnd="52dp"
         android:text="@string/textview"
+
+        android:contentDescription="@string/eventEndTimeDisplay"
         android:textColor="@color/col_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,8 +24,9 @@
         android:id="@+id/eventStartTimeDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
+        android:layout_marginStart="72dp"
         android:layout_marginTop="160dp"
+        android:contentDescription="@string/eventStartTimeDisplay"
         android:text="@string/textview"
         android:textColor="@color/col_primary"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,19 +38,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="@string/no_loc"
+        android:textSize="13sp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:contentDescription="@string/eventNameLocation"
         android:textColor="@color/col_on_secondary"
-        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay" />
+        app:layout_constraintTop_toBottomOf="@+id/eventNameDisplay"
+        />
 
     <TextView
         android:id="@+id/eventNameDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
-        android:textSize="32sp"
         android:text="@string/textview"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:contentDescription="@string/eventNameLocation"
         android:textColor="@color/col_on_secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -62,6 +71,7 @@
         android:layout_marginEnd="73dp"
         android:onClick="buttonStartEditEvent"
         android:text="@string/edit"
+        android:contentDescription="@string/buttonDisplay"
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonDisplayDelete"
         app:layout_constraintEnd_toStartOf="@+id/buttonDisplayDelete"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +84,7 @@
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="144dp"
         android:onClick="buttonStartDeleteEvent"
+        android:contentDescription="@string/buttonDisplayDelete"
         android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,8 +103,46 @@
         android:clickable="true"
         android:onClick="buttonStarEvent"
         android:src="@android:drawable/btn_star_big_off"
+        android:contentDescription="@string/favorite_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/favIcon" />
+         />
+
+    <ImageView
+        android:id="@+id/horlogeIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="159dp"
+        android:contentDescription="@string/horlogeIcon"
+        app:layout_constraintEnd_toStartOf="@+id/eventStartTimeDisplay"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_alarm_24" />
+
+    <ImageView
+        android:id="@+id/horlogeIconEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="159dp"
+        android:contentDescription="@string/horlogeIcon"
+        app:layout_constraintEnd_toStartOf="@+id/eventEndTimeDisplay"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/eventStartTimeDisplay"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_alarm_24" />
+
+    <ImageView
+        android:id="@+id/locationIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="192dp"
+        android:layout_marginTop="184dp"
+        android:contentDescription="@string/locationIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_location_on_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

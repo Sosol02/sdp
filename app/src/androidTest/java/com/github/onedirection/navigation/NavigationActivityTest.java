@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation;
 
+import android.Manifest;
 import android.view.View;
 import android.widget.TextView;
 
@@ -8,8 +9,10 @@ import androidx.test.espresso.contrib.DrawerActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.onedirection.R;
+import com.github.onedirection.testhelpers.WaitAction;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +39,10 @@ public class NavigationActivityTest {
     @Rule
     public ActivityScenarioRule<NavigationActivity> testRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule = GrantPermissionRule.grant(
+            Manifest.permission.ACCESS_FINE_LOCATION);
+
     @Test
     public void testOpenableDrawer() {
         onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open());
@@ -46,6 +53,8 @@ public class NavigationActivityTest {
     public void testNavigationBetweenFragments() throws InterruptedException {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_calendar)).perform(ViewActions.click());
+
+        onView(withId(R.id.toolbar)).perform(new WaitAction(1000));
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_calendar)));
@@ -84,9 +93,9 @@ public class NavigationActivityTest {
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_sign)));
-
-        onView(withContentDescription("Navigate up")).perform(click());
+        
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_create_event)).perform(ViewActions.click());
+        onView(withContentDescription("Navigate up")).perform(click());
     }
 }
