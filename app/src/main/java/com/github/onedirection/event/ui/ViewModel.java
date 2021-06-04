@@ -46,6 +46,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
 
     public Id eventId;
     public Id recId;
+    public boolean isFavorite;
     public boolean isEditing;
     public BiFunction<Event, Boolean, CompletableFuture<?>> callback;
     public CountingIdlingResource idling;
@@ -70,6 +71,7 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
 
         this.eventId = event.getId();
         this.recId = event.getRecurrence().map(Recurrence::getGroupId).orElse(event.getId());
+        this.isFavorite = event.getIsFavorite();
         this.isEditing = isEditing;
         this.callback = callback;
         this.idling = new CountingIdlingResource("Event creator is loading.");
@@ -109,7 +111,8 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
                         coordinates.getValue().get(),
                         startTime.getValue(),
                         endTime.getValue(),
-                        generateRecurrence(), false
+                        generateRecurrence(),
+                        isFavorite
                 ) :
                 new Event(
                         eventId,
@@ -117,7 +120,8 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
                         customLocation.getValue(),
                         startTime.getValue(),
                         endTime.getValue(),
-                        generateRecurrence(),false
+                        generateRecurrence(),
+                        isFavorite
                 );
     }
 

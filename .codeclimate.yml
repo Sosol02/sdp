@@ -11,7 +11,7 @@ checks:
       threshold: 100
   argument-count:
     config:
-      threshold: 6
+      threshold: 7
   file-lines:
     config:
       threshold: 400

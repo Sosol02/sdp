@@ -25,15 +25,17 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * To use to view a unique events, just start the activity an provide the event
+ * To use to view a unique events, just start the activity an provide the event as an intent
  */
 
 public class DisplayEvent extends AppCompatActivity {
 
     public static final String EXTRA_EVENT = "EVENT_ID";
+    public static final String EXTRA_MODIFIED = "EVENT__MODIFIED_ID";
+    public static final String EXTRA_DELETED = "EVENT_DELETED_ID";
+    public static final String EXTRA_FAVORITE = "EVENT_FAVORITE_ID";
 
     Event event;
-
 
     public static boolean hasEventExtra(Intent intent) {
         return intent.hasExtra(EXTRA_EVENT);
@@ -80,75 +82,73 @@ public class DisplayEvent extends AppCompatActivity {
 
         TextView name = this.findViewById(R.id.eventNameDisplay);
         name.setText(event.getName());
+
         TextView location = this.findViewById(R.id.eventNameLocation);
         if(event.getLocationName().equals("")){
             location.setText(R.string.no_loc);
         }else {
             location.setText(event.getLocationName());
         }
+
         TextView startTime = this.findViewById(R.id.eventStartTimeDisplay);
         startTime.setText(event.getStartTime().format(formatter));
+
         TextView endTime = this.findViewById(R.id.eventEndTimeDisplay);
         endTime.setText(event.getEndTime().format(formatter));
 
         if(event.getIsFavorite()){
             ImageButton btn = (ImageButton)findViewById(R.id.favorite_button);
-
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
     }
 
-    /** Called when the user taps the Edit button */
+    /**
+     * Called when the user taps the Edit button, gets the new list with the modified events and pass it to the homeFragment
+     */
     public void buttonStartEditEvent(View view){
         Intent intent = new Intent(this, EventCreator.class);
         intent = EventCreator.putEventExtra(intent,event);
         startActivity(intent);
-        super.onBackPressed();
-        ZonedDateTime date = ZonedDateTime.now();
-
-        CompletableFuture<List<Event>> monthEventsFuture = EventQueries.getEventsInTimeframe(Database.getDefaultInstance(),date,date.plusMonths(1));
-        monthEventsFuture.whenComplete((monthEvents, throwable) -> {
-            HomeFragment.homeFragment.updateResults(monthEvents);
-            super.onBackPressed();
-        });
+        Intent intent2 = new Intent();
+        intent2.putExtra(EXTRA_MODIFIED, event);
+        setResult(RESULT_OK,intent2);
+        finish();
     }
 
-    /** Called when the user taps the Delete button */
+    /**
+     * Called when the user taps the Delete button, deletes the event in the database and update the list of events in homeFragment
+     */
     public void buttonStartDeleteEvent(View view){
         Database database = Database.getDefaultInstance();
         EventQueries queryManager = new EventQueries(database);
-
-        CompletableFuture<Id> eventDeleted = queryManager.removeEvent(event.getId());
-
-        eventDeleted.whenComplete(((id, throwable) -> {
-                    for (int i = 0; i < HomeFragment.homeFragment.events.size(); i++) {
-                        if (HomeFragment.homeFragment.events.get(i).getId().equals(id)){
-                          HomeFragment.homeFragment.events.remove(i);
-                       }
-                   }
-            HomeFragment.homeFragment.updateResults();
-            super.onBackPressed();
-              }));
+        queryManager.removeEvent(event.getId());
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_DELETED, event.getId());
+        setResult(RESULT_OK,intent);
+        finish();
     }
 
-    /** Called when the user taps the star button */
+    /** Called when the user taps the star button to assign an event as favorite */
     public void buttonStarEvent(View view){
         Id id = event.getId();
 
         boolean isFavorite = event.getIsFavorite();
         ImageButton btn = (ImageButton) findViewById(R.id.favorite_button);
-
+        Database database = Database.getDefaultInstance();
         if(isFavorite){
-            HomeFragment.homeFragment.updateModifiedEvent(id,false);
             event = event.setFavorite(false);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_off,this.getTheme()));
         }else{
-            HomeFragment.homeFragment.updateModifiedEvent(id,true);
             event = event.setFavorite(true);
             btn.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(),android.R.drawable.btn_star_big_on,this.getTheme()));
         }
+        database.store(event);
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_FAVORITE, event);
+        setResult(RESULT_OK,intent);
     }
 
+    /** Arrow to go back to the main menu */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -156,6 +156,4 @@ public class DisplayEvent extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
