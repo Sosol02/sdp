@@ -38,7 +38,7 @@ public class ConcreteDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
-        CompletableFuture<Id> result = new CompletableFuture<Id>();
+        CompletableFuture<Id> result = new CompletableFuture<>();
 
         Storer<T> storer = Objects.requireNonNull(toStore).storer();
 
@@ -57,7 +57,7 @@ public class ConcreteDatabase implements Database {
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
         Objects.requireNonNull(storer, "Storer is null");
-        CompletableFuture<T> result = new CompletableFuture<T>();
+        CompletableFuture<T> result = new CompletableFuture<>();
 
         getDoc(storer, id.getUuid())
                 .get()
@@ -81,7 +81,7 @@ public class ConcreteDatabase implements Database {
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> remove(Id id, Storer<T> storer) {
         Objects.requireNonNull(storer, "Storer is null");
-        CompletableFuture<Id> result = new CompletableFuture<Id>();
+        CompletableFuture<Id> result = new CompletableFuture<>();
 
         getDoc(storer, id.getUuid()).delete().addOnCompleteListener(res -> {
             if (res.isSuccessful()) {
@@ -96,12 +96,12 @@ public class ConcreteDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(T storable) {
-        CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
 
         Storer<T> storer = Objects.requireNonNull(storable).storer();
         Map<String, Object> doc = storer.storableToMap(storable);
 
-        Query q = db.collection(storer.getCollection().getCollectionName());
+        Query q = getCollection(storer);
         for(Map.Entry<String, Object> entry : doc.entrySet()) {
             q = q.whereEqualTo(entry.getKey(), entry.getValue());
         }
@@ -120,17 +120,17 @@ public class ConcreteDatabase implements Database {
 
     @Override
     public <T extends Storable<T>> CompletableFuture<Boolean> contains(Id id, Storer<T> storer) {
-        return retrieve(id, storer).thenApply(r -> r != null);
+        return retrieve(id, storer).thenApply(Objects::nonNull);
     }
 
     private <T extends Storable<T>> CompletableFuture<List<T>> completeOnList(Task<QuerySnapshot> t, Storer<T> storer) {
-        CompletableFuture<List<T>> result = new CompletableFuture<List<T>>();
+        CompletableFuture<List<T>> result = new CompletableFuture<>();
 
         Objects.requireNonNull(t)
                 .addOnCompleteListener(res -> {
                     if(res.isSuccessful()) {
                         QuerySnapshot docs = res.getResult();
-                        List<T> storables = new ArrayList<T>();
+                        List<T> storables = new ArrayList<>();
                         if(docs != null) {
                             for (DocumentSnapshot ds : docs) {
                                 storables.add(storer.mapToStorable(ds.getData()));
@@ -152,12 +152,12 @@ public class ConcreteDatabase implements Database {
             Objects.requireNonNull(t);
         }
         if(listToStore.isEmpty()) {
-            CompletableFuture<Boolean> result = new CompletableFuture<Boolean>();
+            CompletableFuture<Boolean> result = new CompletableFuture<>();
             result.complete(true);
             return result;
         }
 
-        List<CompletableFuture<Id>> allStored = new ArrayList<CompletableFuture<Id>>();
+        List<CompletableFuture<Id>> allStored = new ArrayList<>();
         for(T toStore : listToStore) {
             allStored.add(store(toStore));
         }
