@@ -29,6 +29,8 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * A notification system for the application
+ *
+ * Uses the Android notification system.
  */
 public class Notifications {
     private static final String CHANNEL_ID = "com.1Direction.events";
