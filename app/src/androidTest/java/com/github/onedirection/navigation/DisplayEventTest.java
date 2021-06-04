@@ -51,7 +51,6 @@ public class DisplayEventTest {
 
     private final static Event EVENT = new Event(ID, NAME, LOCATION, START_TIME, END_TIME,false);
 
-
     @Rule
     public ActivityScenarioRule<NavigationActivity> mActivityTestRule = new ActivityScenarioRule<>(NavigationActivity.class);
 
