@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import android.Manifest;
 import android.widget.TextView;
@@ -20,7 +20,6 @@ import com.github.onedirection.navigation.NavigationActivity;
 import com.github.onedirection.navigation.fragment.map.MapFragment;
 import com.github.onedirection.utils.EspressoIdlingResource;
 import com.github.onedirection.utils.Id;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 import org.junit.After;
@@ -94,7 +93,7 @@ public abstract class MapFragmentTestSetup {
     }
 
     @After
-    public void AtEndTest() {
+    public void atEndTest() {
         IdlingRegistry.getInstance().unregister(onMapReadyIdlingResource);
         IdlingRegistry.getInstance().unregister(countingIdlingResource);
     }

@@ -18,6 +18,7 @@
 
     <string name="no_loc">No location precised</string>
 
+    <!-- Strings related to sign in/register-->
     <string name="welcome">Welcome</string>
     <string name="sign_in_failed">Sign in failed</string>
     <string name="register_failed">Register failed</string>
@@ -33,6 +34,7 @@
     <string name="dialog_logout_body">Are you sure you want to log out ?</string>
     <string name="dialog_logout_yes">Yes</string>
     <string name="dialog_logout_no">No</string>
+
     <string name="add_event">Add Event</string>
     <string name="fab_favorite">Fab favorite</string>
     <string name="fab_order">Fab order</string>
@@ -61,6 +63,7 @@
     <string name="fragment_map_event_time_end">End time</string>
     <string name="fragment_map_event_location">Location</string>
 
+    <!-- Strings related to map navigation-->
     <string name="navigation_started_text">Navigation started</string>
     <string name="navigation_stopped_text">Navigation ended</string>
     <string name="navigation_reroute_request">Reroute request</string>
@@ -74,9 +77,17 @@
     <string name="route_service_failed">Route request has failed</string>
     <string name="route_service_success">Route has been retrieved</string>
 
+    <string name="navigation_final_destination_reached">You have arrived to your destination</string>
+    <string name="navigation_waypoint_destination_reached">You have arrived at a way point</string>
     <string name="destination_reached">Destination Reached !</string>
     <string name="destination_reached_acceptance">Proceed</string>
     <string name="destination_reached_cancel">Cancel</string>
+
+    <!-- Strings related to changing username in account -->
+    <string name="changed_name_success">Changed name to </string>
+    <string name="changed_name_failure">No user logged in</string>
+    <string name="change_username_fill">Username</string>
+    <string name="change_username_button">Change username</string>
 
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">CREATE AN EVENT</string>

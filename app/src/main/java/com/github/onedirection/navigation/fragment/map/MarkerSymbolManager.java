@@ -8,16 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.github.onedirection.R;
-
 import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
-
-import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.geocoding.GeocodingService;
+import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.utils.Monads;
 import com.github.onedirection.utils.Pair;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -52,7 +49,7 @@ public class MarkerSymbolManager {
     private Symbol tripStartMarker;
 
     private final static String SYMBOL_ID = "MARKER_MAP";
-    private final static String TRIP_ORIGIIN_ID = "MARKER_TRIP_ORIGIN";
+    private final static String TRIP_ORIGIN_ID = "MARKER_TRIP_ORIGIN";
 
     public MarkerSymbolManager(Context context, MapView mapView, MapboxMap mapboxMap, Style style, MapFragment fragment) {
         Objects.requireNonNull(fragment);
@@ -90,7 +87,7 @@ public class MarkerSymbolManager {
         removeTripStartMarker();
         tripStartMarker = symbolManager.create(new SymbolOptions()
                 .withLatLng(position)
-                .withIconImage(TRIP_ORIGIIN_ID)
+                .withIconImage(TRIP_ORIGIN_ID)
                 .withIconSize(1f)
         );
         return tripStartMarker;
@@ -164,7 +161,7 @@ public class MarkerSymbolManager {
         Drawable marker = ContextCompat.getDrawable(context, R.drawable.ic_marker_map);
         style.addImage(SYMBOL_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(marker)));
         Drawable markerTripOrigin = ContextCompat.getDrawable(context, R.drawable.ic_baseline_trip_origin_24);
-        style.addImage(TRIP_ORIGIIN_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(markerTripOrigin)));
+        style.addImage(TRIP_ORIGIN_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(markerTripOrigin)));
     }
 
     public List<Symbol> getAllMarkers() {
