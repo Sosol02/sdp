@@ -84,9 +84,9 @@ public class NavigationActivityTest {
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
                 .check(matches(withText(R.string.menu_sign)));
-
-        onView(withContentDescription("Navigate up")).perform(click());
+        
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_create_event)).perform(ViewActions.click());
+        onView(withContentDescription("Navigate up")).perform(click());
     }
 }
