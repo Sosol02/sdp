@@ -76,7 +76,6 @@
         android:layout_marginEnd="3dp"
         android:background="#00ffffff"
         android:src="@android:drawable/btn_star_big_on"
-        android:contentDescription="@string/favoriteButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
