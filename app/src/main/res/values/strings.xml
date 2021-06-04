@@ -80,6 +80,9 @@
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
     <string name="recurrence_end_text">Repeat until:</string>
+    <string name="add_event_button_desc">Add event</string>
+    <string name="no_location_event">No location specified</string>
+    <string name="set_favorite_button_desc">set favorite</string>
 
     <string name="set_event_location">SET EVENT LOCATION</string>
     <string name="location_name">Location name</string>
@@ -98,7 +101,7 @@
 
     <string name="my_location_button_desc">my_location_button</string>
 
-    <string name="currentdate">CurrentDate</string>
+    <string name="current_date">CurrentDate</string>
     <string name="mon">Mon</string>
     <string name="tue">Tue</string>
     <string name="wed">Wed</string>

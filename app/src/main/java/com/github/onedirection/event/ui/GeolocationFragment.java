@@ -78,7 +78,7 @@ public class GeolocationFragment extends Fragment implements ObserverPattern.Obs
         super.onViewCreated(view, savedInstanceState);
 
         ////////////////////////////////
-        //  Attributs initialization  //
+        //  Attributes initialization  //
         ////////////////////////////////
         this.locationProvider = (DeviceLocationProviderActivity) requireActivity();
 

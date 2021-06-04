@@ -213,8 +213,8 @@ filterWhereGreaterLessEq
      * An event that happened in the database:
      * - Either QueryKind.Store, which is a store operation.
      * - Or QueryKind.Remove which is a remove operation.
-     * - Or a QurtyKind.Retrieve, which corresponds to all other operations
-     * which don't modifiy the database.
+     * - Or a QueryKind.Retrieve, which corresponds to all other operations
+     * which don't modify the database.
      */
     public static class Action {
         public final ActionKind kind;

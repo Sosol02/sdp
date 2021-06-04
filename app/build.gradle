@@ -63,9 +63,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.4.0-beta01'
+    implementation 'com.google.android.material:material:1.4.0-rc01'
     implementation 'androidx.annotation:annotation:1.2.0'
-    // firebases library version are changed to be compatible with mapquest
+    // firebase's library version are changed to be compatible with mapquest
     //noinspection GradleDependency
     implementation 'com.google.firebase:firebase-auth:20.0.3'
     //noinspection GradleDependency
