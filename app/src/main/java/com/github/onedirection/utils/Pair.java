@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * A simple immutable pair.
  *
@@ -12,6 +14,7 @@ import java.util.Objects;
  * @param <S> The first type
  * @param <T> The second type
  */
+@Immutable
 public final class Pair<S, T> implements Serializable {
     public final S first;
     public final T second;
@@ -22,7 +25,7 @@ public final class Pair<S, T> implements Serializable {
     }
 
     public static<S, T> Pair<S, T> of(S first, T second){
-        return new Pair(first, second);
+        return new Pair<>(first, second);
     }
 
     @Override

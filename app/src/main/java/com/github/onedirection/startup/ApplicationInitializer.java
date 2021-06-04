@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.startup.Initializer;
 
 import com.github.onedirection.authentication.service.IdentificationService;
+import com.github.onedirection.database.utils.FirebaseUtils;
 import com.github.onedirection.geolocation.geocoding.GeocodingService;
 import com.github.onedirection.notification.Notifications;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 /**
  * An application initializer that initializes the notification system
+ * as well as the geocoding caching.
  */
 public class ApplicationInitializer implements Initializer<Notifications> {
 
@@ -22,6 +24,7 @@ public class ApplicationInitializer implements Initializer<Notifications> {
     public Notifications create(@NonNull Context context) {
         IdentificationService.initService(context);
         GeocodingService.init(context);
+        FirebaseUtils.init();
         // Starts the notifications handler.
         // DO NOT REMOVE THIS LINE otherwise notifications wont work!
         return Notifications.getInstance(context);

@@ -67,7 +67,7 @@ public class MyLocationSymbolManager {
     }
 
     private void initializeSymbolImage(Context context, Style style) {
-        Drawable myLocationSymbol = ContextCompat.getDrawable(context, R.drawable.my_location_on_map);
+        Drawable myLocationSymbol = ContextCompat.getDrawable(context, R.mipmap.my_location_on_map);
         style.addImage(MY_LOCATION_ID, Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(myLocationSymbol)));
     }
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Location provider relying on Android's location capabilities, and
- * as such requires permissions from the system/user.
+ * as such requiring permissions from the system/user.
  */
 public interface DeviceLocationProvider extends LocationProvider {
     static boolean fineLocationUsageIsAllowed(Context ctx) {

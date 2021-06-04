@@ -1,24 +1,15 @@
 package com.github.onedirection.authentication.service;
 
 import android.content.Context;
-import android.util.Log;
-
-import com.github.onedirection.utils.Monads;
-import com.google.firebase.installations.FirebaseInstallations;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class IdentificationService {
-    private static final String LOG_TAG = "IdentificationService";
-
     private static File fileDir;
-    private static String firebaseInstallationId = null;
     private static String deviceId = null;
 
     public static void initService(Context context) {

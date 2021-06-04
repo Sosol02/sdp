@@ -193,7 +193,7 @@ public final class Cache<K, V> {
      * @param key
      * @param value
      * @param f
-     * @param writeAllocate If true, the cache will also immediatly store the value. If false, it will only invalidate the cache at key.
+     * @param writeAllocate If true, the cache will also immediately store the value. If false, it will only invalidate the cache at key.
      * @return
      */
     public boolean set(K key, V value, BiFunction<? super K, ? super V, Boolean> f, boolean writeAllocate) {
