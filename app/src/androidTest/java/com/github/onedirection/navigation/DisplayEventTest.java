@@ -105,35 +105,11 @@ public class DisplayEventTest {
         });
     }
 
-    /*@Test
-    public void testAllFunctionalitiesWork() {
-        ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
-        onView(withId(R.id.fab)).perform(click());
-        onView(withId(R.id.editEventName)).perform(ViewActions.click());
-        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("shrek"));
-        pressBack();
-        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
-
-        onView(withId(R.id.recyclerEventView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        onView(withId(R.id.favorite_button)).perform(click());
-        onView(withId(R.id.favorite_button)).perform(click());
-        onView(withId(R.id.favorite_button)).perform(click());
-        onView(withId(R.id.buttonDisplay)).perform(click());
-        onView(withId(R.id.editEventName)).perform(ViewActions.click());
-        onView(withId(R.id.editEventName)).perform(ViewActions.typeText("shrek"));
-        pressBack();
-        onView(withId(R.id.buttonEventAdd)).perform(ViewActions.click());
-        onView(withId(R.id.recyclerEventView))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        pressBack();
-    }*/
-
     @Test
-    public void eventCreatorCanBeOpenend() {
+    public void eventCreatorCanBeOpened() {
         ActivityScenarioRule<NavigationActivity> activity = new ActivityScenarioRule<>(NavigationActivity.class);
         onView(withId(R.id.fab)).perform(click());
-        onView(withText("Create")).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonEventAdd)).check(matches(isDisplayed()));
     }
 
     @Test
