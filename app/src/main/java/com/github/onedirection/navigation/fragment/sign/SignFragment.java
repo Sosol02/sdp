@@ -1,5 +1,6 @@
 package com.github.onedirection.navigation.fragment.sign;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -82,6 +84,10 @@ public class SignFragment extends Fragment {
                 logoutMenuItem.setVisible(true);
                 showSignSuccess(user);
                 requireActivity().findViewById(R.id.nav_home).performClick();
+
+                // Close the keyboard
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 

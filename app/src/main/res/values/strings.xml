@@ -1,4 +1,7 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PluralsCandidate">
+
     <string name="app_name">1Direction</string>
     <string name="title_activity_navigation">NavigationActivity</string>
 

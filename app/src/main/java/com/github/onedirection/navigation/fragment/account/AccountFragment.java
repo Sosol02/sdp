@@ -76,6 +76,10 @@ public class AccountFragment extends Fragment {
             }
         });
 
+        if(!AuthenticationService.getDefaultInstance().getCurrentUser().isPresent()){
+            view.findViewById(R.id.usernameChange).setVisibility(View.GONE);
+        }
+
         return view;
     }
 
