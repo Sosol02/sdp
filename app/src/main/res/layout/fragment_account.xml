@@ -42,8 +42,9 @@
             android:layout_height="23dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/usernameChange"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <EditText
                 android:id="@+id/change_username_account_display"
