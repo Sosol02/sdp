@@ -1,7 +1,7 @@
 package com.github.onedirection.notification;
 
 /**
- * A simple ID generator for the notifications
+ * A simple ID generator for the android notifications
  */
 public class NotificationIdGenerator {
     private static Integer counter = 0;
