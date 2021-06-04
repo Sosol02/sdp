@@ -1,7 +1,6 @@
 package com.github.onedirection.navigation.fragment.map;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,6 +18,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapquest.navigation.NavigationManager.NavigationState;
 import com.mapquest.navigation.internal.collection.CollectionsUtil;
 import com.mapquest.navigation.internal.unit.Speed;
 import com.mapquest.navigation.listener.DefaultNavigationProgressListener;
@@ -39,7 +39,6 @@ import com.mapquest.navigation.model.UserLocationTrackingConsentStatus;
 import com.mapquest.navigation.model.location.Destination;
 import com.mapquest.navigation.model.location.Location;
 import com.mapquest.navigation.model.location.LocationObservation;
-import com.mapquest.navigation.NavigationManager.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -76,6 +75,8 @@ public class NavigationManager {
     private final UpdatingSpeedLimitSpanListener updatingSpeedLimitSpanListener;
     private final EtaUpdateResponseListener etaUpdateResponseListener;
 
+    private final MapFragment mapFragment;
+
     private final RelativeLayout maneuverBar;
     private final ImageView nextManeuverIcon;
     private final TextView nextManeuverDistance;
@@ -103,10 +104,12 @@ public class NavigationManager {
     private static final Map<Maneuver.Type, Integer> MANEUVER_RESOURCES_ID_BY_TYPE = buildManeuverIconResources();
 
     public NavigationManager(Context context, DeviceLocationProvider deviceLocationProvider,
-                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view) {
+                             MapboxMap mapboxMap, RouteDisplayManager routeDisplayManager, View view,
+                             MapFragment mapFragment) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(deviceLocationProvider);
         Objects.requireNonNull(routeDisplayManager);
+        Objects.requireNonNull(mapFragment);
         this.mapboxMap = mapboxMap;
         this.context = context;
         this.routeDisplayManager = routeDisplayManager;
@@ -140,6 +143,8 @@ public class NavigationManager {
         speedLimitValue = view.findViewById(R.id.speed_limit);
         destinationAccept = view.findViewById(R.id.destination_reached_acceptance);
         destinationRefuse = view.findViewById(R.id.destination_reached_cancel);
+
+        this.mapFragment = mapFragment;
 
         view.findViewById(R.id.stop).setOnClickListener(v -> {
             if (navigationManager.getNavigationState() == NavigationState.ACTIVE) {
@@ -209,7 +214,8 @@ public class NavigationManager {
         long timeForFinalDestination = lastRouteLeg.getTraffic().getEstimatedTimeOfArrival().getTime();
 
         String lastRouteLegKey = Integer.toString(CollectionsUtil.lastIndex(navigationManager.getRoute().getLegs()));
-        String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs().indexOf(navigationManager.getCurrentRouteLeg()));
+        String currentRouteLegKey = Integer.toString(navigationManager.getRoute().getLegs()
+                .indexOf(navigationManager.getCurrentRouteLeg()));
         updateUiTime(timeForNextDestination, timeForFinalDestination, lastRouteLegKey.equals(currentRouteLegKey));
     }
 
@@ -233,8 +239,9 @@ public class NavigationManager {
             for (SpeedLimitSpan speedLimitSpan : speedLimitSpans) {
                 if (speedLimitSpan.getSpeedLimit().getType() == SpeedLimit.Type.MAXIMUM) {
                     foundMaximumSpeed = true;
-                    speedLimitValue.setText(String.format(Locale.getDefault(), "%d",Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
-                            .toKilometersPerHour() / 10) * 10));
+                    speedLimitValue.setText(String.format(Locale.getDefault(), "%d",
+                            Math.round(Speed.metersPerSecond(speedLimitSpan.getSpeedLimit().getSpeed())
+                            .toKilometersPerHour() / 10) * 10)); // round to a multiple of ten
                 }
             }
             speedLimitBlankSign.setVisibility(foundMaximumSpeed ? View.VISIBLE : View.INVISIBLE);
@@ -243,10 +250,10 @@ public class NavigationManager {
     }
 
     private String getStringDistanceFromIntDistance(int distance) {
-        if (distance > 5000) {
+        if (distance > 5000) { // if the distance is more than 5000 m returns it in km instead
             double distanceKm = ((double) distance) / 1000;
             BigDecimal b = new BigDecimal(Double.toString(distanceKm));
-            b.setScale(1, RoundingMode.CEILING);
+            b = b.setScale(1, RoundingMode.CEILING);
             return b.toString() + " " + context.getResources().getString(R.string.navigation_distance_big_unit);
         } else {
             return distance + " " + context.getResources().getString(R.string.navigation_distance_small_unit);
@@ -257,13 +264,17 @@ public class NavigationManager {
 
         @Override
         public void onNavigationStarted() {
-            Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
+            if (mapFragment.isVisible()) {
+                Toast.makeText(context, R.string.navigation_started_text, Toast.LENGTH_LONG).show();
+            }
             updateUiOnStartAndReroute(navigationManager.getRoute());
         }
 
         @Override
         public void onNavigationStopped(@NonNull RouteStoppedReason routeStoppedReason) {
-            Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
+            if (mapFragment.isVisible()) {
+                Toast.makeText(context, R.string.navigation_stopped_text, Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override
@@ -294,12 +305,16 @@ public class NavigationManager {
 
         @Override
         public void onRerouteRequested(Location location) {
-            Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
+            if (mapFragment.isVisible()) {
+                Toast.makeText(context, R.string.navigation_reroute_request, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
         public void onRerouteReceived(Route route) {
-            Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
+            if (mapFragment.isVisible()) {
+                Toast.makeText(context, R.string.navigation_reroute_success, Toast.LENGTH_SHORT).show();
+            }
             if (route != null) {
                 routeDisplayManager.displayRoute(route);
                 updateUiOnStartAndReroute(route);
@@ -308,7 +323,9 @@ public class NavigationManager {
 
         @Override
         public void onRerouteFailed() {
-            Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
+            if (mapFragment.isVisible()) {
+                Toast.makeText(context, R.string.navigation_reroute_failed, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -343,7 +360,8 @@ public class NavigationManager {
         @Override
         public void onInaccurateObservationReceived(Location location) {}
 
-        private void onDestinationReachedResponse(boolean finalDestination, boolean accepted, DestinationAcceptanceHandler destinationAcceptanceHandler) {
+        private void onDestinationReachedResponse(boolean finalDestination, boolean accepted,
+                                                  DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationAcceptanceHandler.confirmArrival(accepted);
             if (finalDestination && accepted) {
                 stopNavigation();
@@ -357,24 +375,18 @@ public class NavigationManager {
         public void onDestinationReached(@NonNull Destination destination, boolean finalDestination, @NonNull RouteLeg routeLeg,
                                          @NonNull DestinationAcceptanceHandler destinationAcceptanceHandler) {
             destinationReachedBar.setVisibility(View.VISIBLE);
-            if (finalDestination) {
-                Toast.makeText(context, "You have arrived to your destination", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(context, "You have arrived at a way point", Toast.LENGTH_LONG).show();
+            if (mapFragment.isVisible()) {
+                if (finalDestination) {
+                    Toast.makeText(context, R.string.navigation_final_destination_reached, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, R.string.navigation_waypoint_destination_reached, Toast.LENGTH_LONG).show();
+                }
             }
-            destinationAccept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDestinationReachedResponse(finalDestination, true, destinationAcceptanceHandler);
-                }
-            });
+            destinationAccept.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, true,
+                    destinationAcceptanceHandler));
             destinationAccept.setClickable(true);
-            destinationRefuse.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDestinationReachedResponse(finalDestination, false, destinationAcceptanceHandler);
-                }
-            });
+            destinationRefuse.setOnClickListener(v -> onDestinationReachedResponse(finalDestination, false,
+                    destinationAcceptanceHandler));
             destinationRefuse.setClickable(true);
         }
     }
@@ -382,7 +394,8 @@ public class NavigationManager {
     private class UpdatingSpeedLimitSpanListener implements SpeedLimitSpanListener {
 
         @Override
-        public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull Set<SpeedLimitSpan> enteredSpeedLimits) {
+        public void onSpeedLimitBoundariesCrossed(@NonNull Set<SpeedLimitSpan> exitedSpeedLimits, @NonNull
+                Set<SpeedLimitSpan> enteredSpeedLimits) {
             updateUiMaxSpeed(enteredSpeedLimits);
         }
     }
@@ -414,7 +427,6 @@ public class NavigationManager {
         @Override
         public void onRequestMade() {}
     }
-
 
     private static Map<Maneuver.Type, Integer> buildManeuverIconResources() {
         Map<Maneuver.Type,Integer> mapManeuverIdByType = new HashMap<>();
