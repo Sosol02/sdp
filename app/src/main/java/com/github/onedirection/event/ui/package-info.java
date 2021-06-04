@@ -1,3 +1,4 @@
-/*
- * All classes for the EventCreator UI.
+/**
+ * UI to create events.
  */
+package com.github.onedirection.event.ui;

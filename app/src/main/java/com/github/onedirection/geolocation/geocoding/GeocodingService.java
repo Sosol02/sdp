@@ -74,7 +74,9 @@ public interface GeocodingService {
 }
 
 /**
- * Class representiong the geocoding services
+ * Static context for the geocoding interface.
+ *
+ * Contains default instances as well as logic to cache results.
  */
 class GeocodingServices {
     private static final String LOGCAT_TAG = "GeocodingServices";
