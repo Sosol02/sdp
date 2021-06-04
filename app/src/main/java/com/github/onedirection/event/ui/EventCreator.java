@@ -127,6 +127,8 @@ public class EventCreator extends DeviceLocationProviderActivity {
 
     private static CompletableFuture<?> putEventToDatabase(Event event, boolean edited) {
         Log.d(LOGCAT_TAG, event.toString());
+        // TODO: For some reason, while offline, the events are correctly added, but the futures never complete...
+        // Sadly, no nice workaround was found...
         EventQueries db = new EventQueries(Database.getDefaultInstance());
         if (edited) {
             return db.modifyEvent(event);
