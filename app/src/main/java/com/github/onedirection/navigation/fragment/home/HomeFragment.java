@@ -18,10 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.onedirection.R;
 import com.github.onedirection.database.implementation.Database;
 import com.github.onedirection.database.queries.EventQueries;
-import com.github.onedirection.database.store.EventStorer;
-
 import com.github.onedirection.event.model.Event;
-
 import com.github.onedirection.event.ui.EventCreator;
 import com.github.onedirection.utils.Id;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,10 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -45,7 +39,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
 
     public static HomeFragment homeFragment;
     List<Event> events = new ArrayList<Event>();
-    Map<Id, Boolean> favorites = new HashMap<>();
     private RecyclerView eventList;
     private EventViewerAdapter eventViewerAdapter;
     private EventViewerAdapter.OnNoteListener onNoteListener;
@@ -55,6 +48,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
     private List<Event> orderedEvents;
     private View root;
     private TextView displayEmpty;
+
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN |
             ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.END) {
@@ -138,7 +132,6 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         this.events = events;
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(this.events, this));
-
     }
 
     public void updateResults() {
@@ -157,18 +150,19 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
         });
     }
 
-    public void updateModifiedEvent(Id id) {
+    public void updateModifiedEvent(Id id, boolean isFavorite) {
         int position = 0;
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getId().equals(id)) {
                 position = i;
             }
         }
+        Event event = events.get(position).setFavorite(isFavorite);
+        events.set(position, event);
         Database database = Database.getDefaultInstance();
-        CompletableFuture<Event> e = database.retrieve(Objects.requireNonNull(id), EventStorer.getInstance());
+        database.store(event);
         checkEventListIsEmpty();
         eventList.setAdapter(new EventViewerAdapter(events, this));
-        eventViewerAdapter.notifyItemChanged(position);
     }
 
     @Override
@@ -222,7 +216,7 @@ public class HomeFragment extends Fragment implements EventViewerAdapter.OnNoteL
                 if (!isOnFavoriteView) {
                     List<Event> listFavorites = new ArrayList<>();
                     for (Event e : isOnOrderedView ? orderedEvents : events) {
-                        if (favorites.get(e.getId())) listFavorites.add(e);
+                        if (e.getIsFavorite()) listFavorites.add(e);
                     }
                     eventList.setAdapter(new EventViewerAdapter(listFavorites, onNoteListener));
                     isOnFavoriteView = true;

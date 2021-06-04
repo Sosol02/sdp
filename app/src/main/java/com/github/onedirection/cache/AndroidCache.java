@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Represents a general cache for the app.
+ * Utils to use the cache classes with the actual cache directory of Android.
  */
 public final class AndroidCache {
 

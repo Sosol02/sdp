@@ -1,4 +1,4 @@
-package com.github.onedirection.map;
+package com.github.onedirection.navigation.map;
 
 import android.util.Log;
 import android.view.View;
@@ -7,10 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.onedirection.R;
-import com.github.onedirection.database.implementation.ConcreteDatabase;
 import com.github.onedirection.database.implementation.Database;
-import com.github.onedirection.database.implementation.DefaultDatabase;
-import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.event.model.Event;
 import com.github.onedirection.geolocation.model.Coordinates;
 import com.github.onedirection.geolocation.model.NamedCoordinates;
@@ -23,7 +20,6 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,7 +27,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -53,17 +48,32 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
     private final LatLng TEST_VALUE_LATLNG_5 = new LatLng(34.0, -50.0);
     private final LatLng TEST_VALUE_LATLNG_6 = new LatLng(34.0201613,-118.6919115);
 
-    private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event", new NamedCoordinates(48.511197, 2.205589, "Paris"),
-            ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0, ZoneId.systemDefault()),
-            ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0, ZoneId.systemDefault()));
+    private final Event TEST_EVENT_1 = new Event(Id.generateRandom(), "Test event",
+            new NamedCoordinates(48.511197, 2.205589, "Paris"),
+            ZonedDateTime.of(2021, 4, 2, 13, 42, 56, 0,
+                    ZoneId.systemDefault()),
+            ZonedDateTime.of(2021, 4, 2, 13, 58, 56, 0,
+                    ZoneId.systemDefault()),false);
 
     private final Event[] testEvents = new Event[] {
-            new Event(Id.generateRandom(), "Event 1 Paris", "Paris France", new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia", new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 3 New York", "New York USA", new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria", new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile", new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
-            new Event(Id.generateRandom(), "Event 6 Los Angeles", "Los Angeles", new Coordinates(TEST_VALUE_LATLNG_6.getLatitude(), TEST_VALUE_LATLNG_6.getLongitude()), ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5)),
+            new Event(Id.generateRandom(), "Event 1 Paris", "Paris France",
+                    new Coordinates(TEST_VALUE_LATLNG_1.getLatitude(), TEST_VALUE_LATLNG_1.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 2 Moscow", "Moscow Russia",
+                    new Coordinates(TEST_VALUE_LATLNG_2.getLatitude(), TEST_VALUE_LATLNG_2.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 3 New York", "New York USA",
+                    new Coordinates(TEST_VALUE_LATLNG_3.getLatitude(), TEST_VALUE_LATLNG_3.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 4 Lagos", "Lagos Nigeria",
+                    new Coordinates(TEST_VALUE_LATLNG_4.getLatitude(), TEST_VALUE_LATLNG_4.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 5 Santiago", "Santiago Chile",
+                    new Coordinates(TEST_VALUE_LATLNG_5.getLatitude(), TEST_VALUE_LATLNG_5.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
+            new Event(Id.generateRandom(), "Event 6 Los Angeles", "Los Angeles",
+                    new Coordinates(TEST_VALUE_LATLNG_6.getLatitude(), TEST_VALUE_LATLNG_6.getLongitude()),
+                    ZonedDateTime.now(), ZonedDateTime.now().plusSeconds(5),false),
     };
 
     @Test
@@ -109,7 +119,8 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
                     .build());
         });
 
-        getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        getFragmentField("bottomSheetBehavior", BottomSheetBehavior.class).addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -118,9 +129,7 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
         onView(withId(R.id.mapView)).perform(new WaitAction(3000)).perform(click());
         semaphore.acquire();
@@ -136,7 +145,7 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
 
         // Wait acton to make getMarkerSymbolManager work.
         onView(withId(R.id.mapView)).perform(new WaitAction(1000));
-        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);;
+        MarkerSymbolManager markerSymbolManager = getFragmentField("markerSymbolManager", MarkerSymbolManager.class);
         markerSymbolManager.syncEventsWithDb().join();
 
         Semaphore waitForBsbCollapsed = new Semaphore(0);
@@ -174,7 +183,8 @@ public class MarkerSymbolManagerTest extends MapFragmentTestSetup {
             waitForBsbCollapsed.acquire(); // wait for the bsb to settle
 
             assertThat(bsb.getState(), is(BottomSheetBehavior.STATE_COLLAPSED));
-            Log.d("MapFragmentTest", "map_event_name: " + fragment.getActivity().findViewById(R.id.fragment_map_event_name));
+            Log.d("MapFragmentTest", "map_event_name: " + fragment.getActivity()
+                    .findViewById(R.id.fragment_map_event_name));
 
             onView(withId(R.id.fragment_map_event_name)).check(matches(withText(e.getName())));
 
