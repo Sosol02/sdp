@@ -129,16 +129,7 @@ public class MainFragment extends Fragment {
 
         // Checkbox listeners
         useGeolocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                if (model.coordinates.getValue().isPresent()) {
-                    model.useGeolocation.postValue(true);
-                } else {
-                    // Enforce that a geolocation is set
-                    gotoGeolocation();
-                }
-            } else {
-                model.useGeolocation.postValue(false);
-            }
+            model.useGeolocation.postValue(isChecked);
         });
 
         // Recurrence setup
@@ -171,7 +162,7 @@ public class MainFragment extends Fragment {
         recurrencePeriodAmount.setOnFocusChangeListener((v, hasFocus) -> updateRecurrencePeriod());
 
         // Setup final button
-        if(model.isEditing){
+        if (model.isEditing) {
             Button btn = getView().findViewById(R.id.buttonEventAdd);
             btn.setText(R.string.update_event);
         }
@@ -231,22 +222,25 @@ public class MainFragment extends Fragment {
 
     private boolean fieldsAreValid() {
         String checkMsg = null;
-        if(model.name.getValue() == null || model.name.getValue().equals("")) {
+        if (model.name.getValue() == null || model.name.getValue().equals("")) {
             checkMsg = getContext().getString(R.string.empty_event_name);
-        } else if(model.name.getValue().length() > MAX_STRING_LENGTH) {
+        } else if (model.name.getValue().length() > MAX_STRING_LENGTH) {
             checkMsg = String.format(getContext().getString(R.string.event_name_too_long), MAX_STRING_LENGTH);
-        } else if(model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
+        } else if (model.startTime.getValue().toEpochSecond() > model.endTime.getValue().toEpochSecond()) {
             checkMsg = getContext().getString(R.string.end_before_start);
-        } else if(model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > ChronoUnit.DAYS.getDuration().getSeconds()) {
+        } else if (model.endTime.getValue().toEpochSecond() - model.startTime.getValue().toEpochSecond() > ChronoUnit.DAYS.getDuration().getSeconds()) {
             checkMsg = getContext().getString(R.string.event_time_too_long);
-        } else if(model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
+        } else if (model.customLocation.getValue() != null && model.customLocation.getValue().length() > MAX_STRING_LENGTH) {
             checkMsg = String.format(getContext().getString(R.string.location_name_too_long), MAX_STRING_LENGTH);
-        } else if(model.isRecurrent.getValue()) {
-            if(model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
+        } else if (model.isRecurrent.getValue()) {
+            if (model.recurrenceEnd.getValue().toEpochSecond() < model.startTime.getValue().toEpochSecond()) {
                 checkMsg = getContext().getString(R.string.recurrence_end_too_soon);
             }
+        } else if (model.useGeolocation.getValue() && !model.coordinates.getValue().isPresent()) {
+            checkMsg = getContext().getString(R.string.no_geoloc_set);
         }
-        if(checkMsg != null) {
+
+        if (checkMsg != null) {
             TextView checksText = getView().findViewById(R.id.checkArgsText);
             checksText.setText(checkMsg);
             checksText.setVisibility(View.VISIBLE);
@@ -258,7 +252,7 @@ public class MainFragment extends Fragment {
     }
 
     private void addEventCallback(View v) {
-        if(fieldsAreValid()) {
+        if (fieldsAreValid()) {
             model.incrementLoad();
             requireActivity().findViewById(R.id.eventCreatorMainFragment).setEnabled(false);
             model.callback.apply(generateEvent(), model.isEditing).whenComplete((o, throwable) -> {
