@@ -36,8 +36,25 @@
     <string name="dialog_logout_no">No</string>
 
     <string name="add_event">Add Event</string>
+    <string name="fab_favorite">Fab favorite</string>
+    <string name="fab_order">Fab order</string>
+    <string name="recycler_view_events">Recycler view for events</string>
     <string name="update_event">Modify Event</string>
     <string name="no_events_yet">You do not have any events yet</string>
+    <string name="eventEndTimeDisplay">eventEndTimeDisplay</string>
+    <string name="eventStartTimeDisplay">eventStartTimeDisplay</string>
+    <string name="eventNameLocation">eventNameLocation</string>
+    <string name="eventNameDisplay">eventNameDisplay</string>
+    <string name="buttonDisplay">buttonDisplay</string>
+    <string name="buttonDisplayDelete">buttonDisplayDelete</string>
+    <string name="favorite_button">favorite_button</string>
+    <string name="horlogeIcon">horlogeIcon</string>
+    <string name="locationIcon">locationIcon</string>
+    <string name="eventLocation">eventLocation</string>
+    <string name="eventName">eventName</string>
+    <string name="eventStartTime">eventStartTime</string>
+    <string name="eventEndTime">eventEndTime</string>
+    <string name="favoriteButton">favoriteButton</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>
