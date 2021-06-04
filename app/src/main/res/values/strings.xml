@@ -86,6 +86,7 @@
     <string name="changed_name_failure">No user logged in</string>
     <string name="change_username_fill">Username</string>
     <string name="change_username_button">Change username</string>
+    <string name="changed_name_too_long">Username is too long</string>
 
     <!-- Strings related to event creator -->
     <string name="create_an_event_title">CREATE AN EVENT</string>
@@ -112,6 +113,7 @@
     <string name="event_time_too_long">The event cannot last longer than a day. Specify a recurrence if it should last longer than a day.</string>
     <string name="location_name_too_long">The custom location name is too long. Provide a name no longer than %d characters.</string>
     <string name="recurrence_end_too_soon">The recurrence end time is too soon. It should be at least the event start time.</string>
+    <string name="no_geoloc_set">The geolocation must be set.</string>
 
     <string name="my_location_button_desc">my_location_button</string>
 
@@ -156,5 +158,6 @@
 
     <!-- Misc -->
     <string name="text_view">TextView</string>
+
 
 </resources>
