@@ -2,9 +2,12 @@ package com.github.onedirection.authentication.service;
 
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Immutable class representing a user.
  */
+@Immutable
 public class User {
     private final String name;
     private final String email;

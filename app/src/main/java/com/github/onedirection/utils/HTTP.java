@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
- * Simple HTTP class to provide an encode URL encoding
+ * Simple HTTP class to provide URL encoding
  */
 public final class HTTP {
 
