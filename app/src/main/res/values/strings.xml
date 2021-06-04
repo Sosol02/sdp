@@ -44,7 +44,6 @@
     <string name="eventEndTimeDisplay">eventEndTimeDisplay</string>
     <string name="eventStartTimeDisplay">eventStartTimeDisplay</string>
     <string name="eventNameLocation">eventNameLocation</string>
-    <string name="eventNameDisplay">eventNameDisplay</string>
     <string name="buttonDisplay">buttonDisplay</string>
     <string name="buttonDisplayDelete">buttonDisplayDelete</string>
     <string name="favorite_button">favorite_button</string>
@@ -54,7 +53,6 @@
     <string name="eventName">eventName</string>
     <string name="eventStartTime">eventStartTime</string>
     <string name="eventEndTime">eventEndTime</string>
-    <string name="favoriteButton">favoriteButton</string>
 
     <!-- Strings related to calendar and event creation -->
     <string name="cancel"> Cancel </string>
@@ -98,6 +96,8 @@
     <string name="start_time_text">Start time:</string>
     <string name="end_time_text">End time:</string>
     <string name="recurrence_end_text">Repeat until:</string>
+    <string name="no_location_event">No location specified</string>
+    <string name="set_favorite_button_desc">set favorite</string>
 
     <string name="set_event_location">SET EVENT LOCATION</string>
     <string name="location_name">Location name</string>
@@ -117,7 +117,7 @@
 
     <string name="my_location_button_desc">my_location_button</string>
 
-    <string name="currentdate">CurrentDate</string>
+    <string name="current_date">CurrentDate</string>
     <string name="mon">Mon</string>
     <string name="tue">Tue</string>
     <string name="wed">Wed</string>
@@ -158,7 +158,6 @@
 
     <!-- Misc -->
     <string name="text_view">TextView</string>
-    <string name="favIcon">Favorite Icon</string>
 
 
 </resources>

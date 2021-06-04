@@ -48,6 +48,7 @@ public class CachedDatabase implements Database {
                 });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<T> retrieve(Id id, Storer<T> storer) {
         Objects.requireNonNull(id);
@@ -163,6 +164,7 @@ public class CachedDatabase implements Database {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereEquals(String key, Object value, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.Eq, key, value);
@@ -171,6 +173,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreater(String key, Object value, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.Gr, key, value);
@@ -179,6 +182,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEq(String key, Object value, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.GrEq, key, value);
@@ -187,6 +191,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLess(String key, Object value, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.Le, key, value);
@@ -195,6 +200,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereLessEq(String key, Object value, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.LeEq, key, value);
@@ -203,6 +209,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterEqLess(String key, Object valueGreaterEq, Object valueLess, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.GrEqLe, key, valueGreaterEq, valueLess);
@@ -213,6 +220,7 @@ public class CachedDatabase implements Database {
                 .thenApply(res -> (List<T>) res);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Storable<T>> CompletableFuture<List<T>> filterWhereGreaterLessEq(String key, Object valueGreater, Object valueLessEq, Storer<T> storer) {
         final Query query = new Query(storer.classTag(), Query.QueryType.GrLeEq, key, valueGreater, valueLessEq);

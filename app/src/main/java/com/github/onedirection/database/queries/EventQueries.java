@@ -137,7 +137,7 @@ public class EventQueries {
      * Method to create a full series of recurring events based on the attributes of a given event. The events are recurring from the startTime of the given event to time 'endTime' (included)
      * given in the Recurrence attribute of 'event', and the time between each recurrence of the event is based on the period given in the Recurrence attribute of 'event'.
      * Ex use : addRecurringEvent(event("tennis", startTime: "Jan 1 2021).Recurrence(period:"weekly", endTime: " Jan 1 2022")) means the event "tennis" will occur every week
-     * starting at the begining of 2021 and will end at the begining of 2022
+     * starting at the beginning of 2021 and will end at the beginning of 2022
      * Note : the new recurrence series should have as id the given 'event' id (this event is called the root of the recurrence series).
      * @param event (Event) : the given event representing the recurrence series
      * @return (CompletableFuture<Integer>) : If the recurrence series has been successfully created and stored into the database it returns the number of stored events, else it returns 0
