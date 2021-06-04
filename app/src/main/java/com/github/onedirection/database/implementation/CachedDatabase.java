@@ -35,6 +35,11 @@ public class CachedDatabase implements Database {
         this(innerDatabase, Cache.MAX_HISTORY_DEFAULT);
     }
 
+    public void clearCaches() {
+        storeCache.invalidate();
+        queryCache.invalidate();
+    }
+
     @Override
     public <T extends Storable<T>> CompletableFuture<Id> store(T toStore) {
         Objects.requireNonNull(toStore);

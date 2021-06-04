@@ -1,5 +1,9 @@
 package com.github.onedirection.database.implementation;
 
+import com.github.onedirection.authentication.service.FirebaseAuthentication;
+import com.github.onedirection.authentication.service.IdentificationService;
+import com.github.onedirection.authentication.service.User;
+import com.github.onedirection.database.store.EventStorer;
 import com.github.onedirection.database.store.Storable;
 import com.github.onedirection.database.store.Storer;
 import com.github.onedirection.database.utils.FirebaseUtils;
@@ -16,20 +20,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * The auto synced database of the application
  */
 public class ConcreteDatabase implements Database {
+    private final static String USERS_COLLECTIONS_NAME = "users";
+
     private final FirebaseFirestore db;
 
     ConcreteDatabase() {
         db = FirebaseUtils.getFirestore();
     }
 
+    private String getUserId() {
+        Optional<User> userOpt = FirebaseAuthentication.getInstance().getCurrentUser();
+        String userPath;
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            userPath = user.getEmail();
+        } else {
+            userPath = IdentificationService.getDeviceId();
+        }
+        return userPath;
+    }
+
     private <T extends Storable<T>> CollectionReference getCollection(Storer<T> storer) {
-        return db.collection(storer.getCollection().getCollectionName());
+        return db.collection(USERS_COLLECTIONS_NAME).document(getUserId()).collection(storer.getCollection().getCollectionName());
     }
 
     private <T extends Storable<T>> DocumentReference getDoc(Storer<T> storer, String uuid) {

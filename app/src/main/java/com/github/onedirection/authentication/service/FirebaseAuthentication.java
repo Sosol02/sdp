@@ -5,6 +5,11 @@ import android.util.Log;
 import com.github.onedirection.authentication.exceptions.FailedLoginException;
 import com.github.onedirection.authentication.exceptions.FailedRegistrationException;
 import com.github.onedirection.authentication.exceptions.NoUserLoggedInException;
+import com.github.onedirection.database.implementation.ConcreteDatabase;
+import com.github.onedirection.database.implementation.DefaultDatabase;
+import com.github.onedirection.database.store.EventStorer;
+import com.github.onedirection.event.model.Event;
+import com.github.onedirection.utils.Monads;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -96,23 +102,34 @@ final public class FirebaseAuthentication implements AuthenticationService {
 
     @Override
     public CompletableFuture<User> registerUser(String identifier, String credentials) {
+        DefaultDatabase.clearCaches();
         return convertAuthTask(auth.createUserWithEmailAndPassword(identifier, credentials), identifier);
     }
 
     @Override
     public CompletableFuture<User> loginUser(String identifier, String credentials) {
-        return convertAuthTask(auth.signInWithEmailAndPassword(identifier, credentials), identifier);
+        ConcreteDatabase cdb = DefaultDatabase.getDefaultConcreteInstance();
+        CompletableFuture<User> fut = cdb.retrieveAll(
+                EventStorer.getInstance()).thenCompose(events ->
+                        convertAuthTask(auth.signInWithEmailAndPassword(identifier, credentials), identifier)
+                                .thenCompose(user -> cdb.storeAll(events).thenApply(ignore -> user))
+        );
+        IdentificationService.renewDeviceId();
+
+        DefaultDatabase.clearCaches();
+        return fut;
+    }
+
+    @Override
+    public void logoutUser() {
+        DefaultDatabase.clearCaches();
+        auth.signOut();
     }
 
     @Override
     public CompletableFuture<User> updateDisplayName(String newName) {
         UserProfileChangeRequest changes = (new UserProfileChangeRequest.Builder()).setDisplayName(newName).build();
         return updateProfile(changes);
-    }
-
-    @Override
-    public void logoutUser() {
-        auth.signOut();
     }
 
     @Override
